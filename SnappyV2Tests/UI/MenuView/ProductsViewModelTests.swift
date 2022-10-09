@@ -259,7 +259,6 @@ class ProductsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let item = [RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)]
         sut.subcategoriesOrItemsMenuFetch = .loaded(RetailStoreMenuFetch(id: 0, name: "",categories: nil, menuItems: nil, dealSections: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
         
         wait(for: [expectation], timeout: 2)
@@ -353,7 +352,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSearchTextIsEntered_thenSearchTriggers() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Beer", scope: nil, itemsPagination: nil, categoriesPagination: nil)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Beer", scope: nil, itemsPagination: (limit: 100, page: 0), categoriesPagination: (limit: 10, page: 0))]))
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "setupSearchText")
@@ -370,7 +369,7 @@ class ProductsViewModelTests: XCTestCase {
         
         sut.searchText = "Beer"
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         container.services.verify(as: .retailStoreMenu)
     }
@@ -395,7 +394,7 @@ class ProductsViewModelTests: XCTestCase {
         
         sut.searchText = "B"
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         
     }
@@ -451,7 +450,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSearchTapped() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Milk", scope: nil, itemsPagination: nil, categoriesPagination: nil)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Milk", scope: nil, itemsPagination: (limit: 100, page: 0), categoriesPagination: (limit: 10, page: 0))]))
         let sut = makeSUT(container: container)
         
         sut.search(text: "Milk")

@@ -18,7 +18,7 @@ struct MemberDashboardView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
     @Environment(\.presentationMode) var presentation
-    
+
     struct Constants {
         struct LogoutButton {
             static let padding: CGFloat = 10
@@ -75,52 +75,55 @@ struct MemberDashboardView: View {
     }
     
     @ViewBuilder private var mainContent: some View {
-        ScrollView(showsIndicators: false) {
-            if viewModel.noMemberFound && viewModel.isFromInitialView {
-                LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
-            } else {
-                VStack {
-                    if viewModel.noMemberFound {
-                        LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
-                        
-                    } else {
-                        
-                        VStack {
-                            dashboardHeaderView
-                            mainContentView
-                            Spacer()
+        GeometryReader { geo in
+            ScrollView(showsIndicators: false) {
+                if viewModel.noMemberFound && viewModel.isFromInitialView {
+                    LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                } else {
+                    VStack {
+                        if viewModel.noMemberFound {
+                            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                            
+                        } else {
+                            
+                            VStack {
+                                dashboardHeaderView
+                                Spacer()
+                                mainContentView
+                            }
+                            .frame(minHeight: geo.size.height)
+                            .padding(.horizontal)
+                            .padding(.top)
+                            .onAppear {
+                                viewModel.onAppearSendEvent()
+                            }
                         }
-                        .padding(.horizontal)
-                        .padding(.top)
-                        .onAppear {
-                            viewModel.onAppearSendEvent()
+                    }
+                    .background(colorPalette.backgroundMain)
+                    .withAlertToast(container: viewModel.container, error: $viewModel.error)
+                    .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
+                    .withLoadingToast(loading: $viewModel.loading)
+                    .fullScreenCover(
+                        item: $viewModel.driverDependencies,
+                        content: { driverDependencies in
+                            DriverInterfaceView(driverDependencies: driverDependencies)
                         }
+                    )
+                    .navigationViewStyle(.stack)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar(content: {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            SettingsButton(viewModel: .init(container: viewModel.container))
+                        }
+                    })
+                    .toolbar(content: {
+                        ToolbarItem(placement: .principal) {
+                            SnappyLogo()
+                        }
+                    })
                     }
                 }
-                .background(colorPalette.backgroundMain)
-                .withAlertToast(container: viewModel.container, error: $viewModel.error)
-                .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
-                .withLoadingToast(loading: $viewModel.loading)
-                .fullScreenCover(
-                    item: $viewModel.driverDependencies,
-                    content: { driverDependencies in
-                        DriverInterfaceView(driverDependencies: driverDependencies)
-                    }
-                )
-                .navigationViewStyle(.stack)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar(content: {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        SettingsButton(viewModel: .init(container: viewModel.container))
-                    }
-                })
-                .toolbar(content: {
-                    ToolbarItem(placement: .principal) {
-                        SnappyLogo()
-                    }
-                })
-                }
-            }
+        }
     }
     
     @ViewBuilder var dashboardHeaderView: some View {
@@ -197,6 +200,8 @@ struct MemberDashboardView: View {
                 .font(.Body1.regular())
                 .foregroundColor(colorPalette.textGrey1)
             
+            Spacer()
+            
             SnappyButton(
                 container: viewModel.container,
                 type: .primary,
@@ -207,7 +212,8 @@ struct MemberDashboardView: View {
                 isLoading: loading) {
                     buttonAction()
                 }
-            Spacer()
+                .padding()
+                .padding(.bottom, tabViewHeight)
         }
         .padding(.top)
         .frame(maxHeight: .infinity)

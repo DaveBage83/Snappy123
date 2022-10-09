@@ -480,14 +480,14 @@
 "memberdashboard.options.orders" = "Orders";
 "memberdashboard.options.addressescards" = "Addresses & Cards";
 "memberdashboard.options.profile" = "Profile";
-"memberdashboard.options.loyalty" = "Loyalty";
+"memberdashboard.options.loyalty" = "Credit";
 "memberdashboard.options.verifyaccount" = "Verify Account";
 "memberdashboard.options.verifyaccount.body" = "Verify your account. Tap below to receive your verification code.";
 "memberdashboard.loyalty.title" = "Your referral code";
 "memberdashboard.loyalty.explanation" = "£5 credit reward for each new referral for you and your friend.";
 "memberdashboard.loyalty.condition" = "First order needs to exceed £15 in total. For select stores only. One per household.";
 "memberdashboard.loyalty.referfriend.subtitle" = "Credit";
-"memberdashboard.loyalty.referfriend.caption" = "Credit from referrals";
+"memberdashboard.loyalty.referfriend.caption" = "Reward/Refund Credit Discount";
 "memberdashboard.loyalty.referrals.subtitle" = "Referrals";
 "memberdashboard.loyalty.referrals.caption" = "Amount of referrals";
 "memberdashboard.orders.noorders" = "No orders found";
@@ -678,3 +678,8 @@
 "verifymobilenumber.entercodeview.verifedmessage" = "Your account and mobile number have been verified.";
 "verifymobilenumber.entercodeview.instructions" = "A code has been sent to your %@ mobile number. Please enter the code below.";
 "verifymobilenumber.entercodeview.instructionsWhenCoupon" = "The coupon applied to your basket requires a verified member account. A code has been sent to your %@ mobile number. Please enter the code below.";
+
+// MARK: - Age Confirmation Alert
+"ageRestriction.title" = "Age Restricted Item";
+"ageRestriction.message" = "This item is age restricted. Anyone who appears to be under the age of 25 must show valid ID to prove that they are over %@.";
+"ageRestriction.confirmAge" = "I am at least %@";

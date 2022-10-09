@@ -10,7 +10,10 @@ import SwiftUI
 struct LoyaltyView: View {
     typealias ReferFriendStrings = Strings.MemberDashboard.Loyalty.ReferFriend
     typealias ReferralStrings = Strings.MemberDashboard.Loyalty.Referrals
-    
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
+    @Environment(\.mainWindowSize) var mainWindowSize
+
     struct Constants {
         struct General {
             static let vSpacing: CGFloat = 20
@@ -20,32 +23,33 @@ struct LoyaltyView: View {
             static let minCornerRadius: CGFloat = 8
             static let maxCornerRadius: CGFloat = 15
         }
+        
+        struct Credit {
+            static let iconWidth: CGFloat = 32
+            static let cardWidthMultiplier: CGFloat = 0.5
+        }
+        
+        struct MentionMe {
+            static let spacing: CGFloat = 20
+            static let bottomPadding: CGFloat = 34
+            static let hPadding: CGFloat = 40.5
+        }
     }
     
     @StateObject var viewModel: MemberDashboardLoyaltyViewModel
     
+    private var colorPalette: ColorPalette {
+        .init(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
         VStack(spacing: Constants.General.vSpacing) {
+            credit
             
-            mentionMe
-            
-            /*
-            ClipboardReferralCodeField(viewModel: .init(code: viewModel.referralCode))
-    
-            HStack {
-                loyaltyCardView(
-                    headline: viewModel.referralBalance,
-                    subtitle: ReferFriendStrings.subtitle.localized,
-                    caption: ReferFriendStrings.caption.localized,
-                    color: .snappyTeal)
-                
-                loyaltyCardView(
-                    headline: viewModel.numberOfReferrals,
-                    subtitle: ReferralStrings.subtitle.localized,
-                    caption: ReferralStrings.caption.localized,
-                    color: .snappyBlue)
-            }
-            */
+            Spacer()
+            mentionMeView
+                .redacted(reason: viewModel.showMentionMeLoading ? .placeholder : [])
+                .padding(.bottom, tabViewHeight)
         }
         .sheet(isPresented: $viewModel.showMentionMeWebView) {
             MentionMeWebView(
@@ -64,42 +68,57 @@ struct LoyaltyView: View {
         }
     }
     
-    @ViewBuilder private var mentionMe: some View {
-        if viewModel.showMentionMeLoading {
-            ProgressView()
-        } else if let mentionMeButtonText = viewModel.mentionMeButtonText {
+    @ViewBuilder private var credit: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(viewModel.referralBalance)
+                    .font(.heading1.bold())
+                Spacer()
+                Image.Icons.MoneyBill1Wave.filled
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: Constants.Credit.iconWidth)
+                    .foregroundColor(.white.withOpacity(.twenty))
+            }
+            
+            Text(Strings.MemberDashboard.Loyalty.ReferFriend.subtitle.localized)
+                .font(.Body1.semiBold())
+                .padding(.bottom)
+            Text(Strings.MemberDashboard.Loyalty.ReferFriend.caption.localized)
+                .font(.Caption1.semiBold())
+        }
+        .frame(maxWidth: mainWindowSize.width * Constants.Credit.cardWidthMultiplier)
+        .foregroundColor(.white)
+        .padding()
+        .background(colorPalette.alertSuccess)
+        .standardCardFormat()
+    }
+    
+    @ViewBuilder private var mentionMeView: some View {
+        VStack(spacing: Constants.MentionMe.spacing) {
+            VStack {
+                Text(viewModel.mentionMeButtonText ?? Strings.MentionMe.Main.referForDiscount.localized)
+                    .font(.heading2.bold())
+                    .foregroundColor(colorPalette.primaryBlue)
+                
+                Text(Strings.MentionMe.Main.tellFriends.localized)
+                    .font(.Body1.regular())
+                    .foregroundColor(colorPalette.primaryBlue)
+            }
+            
             SnappyButton(
                 container: viewModel.container,
                 type: .primary,
                 size: .large,
-                title: mentionMeButtonText,
+                title: Strings.MentionMe.Main.learnHow.localized,
                 largeTextTitle: nil,
                 icon: nil) {
                     viewModel.showMentionMeDashboard()
                 }
-        } else {
-            EmptyView()
         }
-    }
-    
-    func loyaltyCardView(headline: String, subtitle: String, caption: String, color: Color) -> some View {
-        VStack(alignment: .leading) {
-            Text(headline)
-                .font(.snappyTitle)
-                .fontWeight(.bold)
-            Text(subtitle)
-                .font(.snappyBody)
-                .fontWeight(.semibold)
-            Text(caption)
-                .font(.snappyCaption)
-        }
-        .frame(maxWidth: .infinity)
-        .foregroundColor(.white)
-        .padding(.vertical)
-        .background(color)
-        .cornerRadius(Constants.Cards.minCornerRadius, corners: [.topLeft, .bottomRight])
-        .cornerRadius(Constants.Cards.maxCornerRadius, corners: [.topRight, .bottomLeft])
-        
+        .padding(.top)
+        .padding(.horizontal, Constants.MentionMe.hPadding)
     }
 }
 

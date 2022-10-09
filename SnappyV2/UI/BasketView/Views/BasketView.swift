@@ -111,6 +111,15 @@ struct BasketView: View {
                         .onAppear {
                             viewModel.onBasketViewSendEvent()
                         }
+                        .padding(.bottom, tabViewHeight)
+                    }
+                    .background(colorPalette.backgroundMain)
+                    .navigationTitle(BasketViewStrings.title.localized)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .onTapGesture {
+                        hideKeyboard()
+                    } 
+                    Text("")
                         .alert(isPresented: $viewModel.showCouponAlert) {
                             Alert(
                                 title: Text(CouponStrings.alertTitle.localized),
@@ -121,14 +130,6 @@ struct BasketView: View {
                                         .destructive(Text(CouponStrings.alertRemove.localized), action: { Task { await viewModel.clearCouponAndContinue() } })
                             )
                         }
-                        .padding(.bottom, tabViewHeight)
-                    }
-                    .background(colorPalette.backgroundMain)
-                    .navigationTitle(BasketViewStrings.title.localized)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .onTapGesture {
-                        hideKeyboard()
-                    }
                 }
                 // MARK: NavigationLinks
                 NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
@@ -341,7 +342,7 @@ struct BasketView: View {
             // Savings
             if let savings = viewModel.basket?.savings {
                 ForEach(savings, id: \.self) { saving in
-                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+                    listEntry(text: saving.name, amount: "-\(saving.amount.toCurrencyString())", feeDescription: nil)
 
                     Divider()
                 }

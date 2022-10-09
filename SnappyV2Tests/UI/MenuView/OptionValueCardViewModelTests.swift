@@ -42,7 +42,7 @@ class OptionValueCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.quantity, 0)
         XCTAssertFalse(sut.isSelected)
         XCTAssertNil(sut.sizeExtraCosts)
-        XCTAssertNil(sut.extraCost)
+        XCTAssertEqual(sut.extraCost, 0)
     }
     
     func test_givenOptionControllerWithInitDict_thenQuantityIs0() {

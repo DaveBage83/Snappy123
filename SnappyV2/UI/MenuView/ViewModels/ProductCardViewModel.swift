@@ -37,8 +37,14 @@ class ProductCardViewModel: ObservableObject {
         itemDetail.itemCaptions?.portionSize
     }
     
+    var isComplexItem: Bool {
+        itemDetail.menuItemOptions != nil || itemDetail.menuItemSizes != nil
+    }
+    
     var fromPriceString: String? {
-        if itemDetail.price.fromPrice > 0 {
+        // This logic is wrong, is should be fromPrice != price, but API currently
+        // always sets both prices as the same, so this is stop gap logic
+        if isComplexItem, itemDetail.price.fromPrice > 0 {
             return itemDetail.price.fromPrice.toCurrencyString(
                 using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
             )

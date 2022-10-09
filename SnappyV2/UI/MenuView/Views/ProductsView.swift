@@ -388,33 +388,31 @@ struct ProductsView: View {
                     .font(.Body1.semiBold())
                     .padding(.leading)
                 
-                ScrollView() {
-                    VStack(spacing: AppConstants.productCardGridSpacing) {
-                        ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
-                            HStack(spacing: AppConstants.productCardGridSpacing) {
-                                ForEach(itemCouple, id: \.self) { item in
-                                    ProductCardView(
-                                        viewModel: .init(
-                                            container: viewModel.container,
-                                            menuItem: item,
-                                            productSelected: { item in
-                                                viewModel.logItemIteraction(with: item)
-                                            }
-                                        ),
-                                        productsViewModel: viewModel
-                                    )
-                                }
+                VStack(spacing: AppConstants.productCardGridSpacing) {
+                    ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
+                        HStack(spacing: AppConstants.productCardGridSpacing) {
+                            ForEach(itemCouple, id: \.self) { item in
+                                ProductCardView(
+                                    viewModel: .init(
+                                        container: viewModel.container,
+                                        menuItem: item,
+                                        productSelected: { item in
+                                            viewModel.logItemIteraction(with: item)
+                                        }
+                                    ),
+                                    productsViewModel: viewModel
+                                )
                             }
                         }
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity)
                     }
-                    .padding(.horizontal, AppConstants.productCardGridSpacing)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity)
                 }
-                    .background(colorPalette.backgroundMain)
-                    .simultaneousGesture(DragGesture().onChanged({ _ in
-                        hideKeyboard()
-                    }))
+                .padding(.horizontal, AppConstants.productCardGridSpacing)
+                .background(colorPalette.backgroundMain)
+                .simultaneousGesture(DragGesture().onChanged({ _ in
+                    hideKeyboard()
+                }))
             }
             
             // No search result

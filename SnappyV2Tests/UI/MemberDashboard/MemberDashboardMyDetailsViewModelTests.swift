@@ -20,6 +20,8 @@ class MemberDashboardMyDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showEditAddressView)
         XCTAssertNil(sut.profile)
         XCTAssertTrue(sut.savedCardDetails.isEmpty)
+        XCTAssertFalse(sut.savedCardsLoading)
+        XCTAssertFalse(sut.initialSavedCardsLoading)
     }
     
     // Test profile populated when present in appState
@@ -258,6 +260,7 @@ class MemberDashboardMyDetailsViewModelTests: XCTestCase {
         
         await sut.loadSavedCards()
         
+        XCTAssertTrue(sut.cardsLoaded)
         container.services.verify(as: .member)
     }
     

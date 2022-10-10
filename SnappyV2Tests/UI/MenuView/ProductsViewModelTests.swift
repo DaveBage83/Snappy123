@@ -458,8 +458,35 @@ class ProductsViewModelTests: XCTestCase {
         container.services.verify(as: .retailStoreMenu)
     }
     
-    func test_whenEditingIsTrueAndAResultCategoryIsTapped_thenIsEditingIsFalseAndItemsIsCleared() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .getChildCategoriesAndItems(categoryId: 321)]))
+    func test_whenSearchResultCategoryIsTapped_thenFirebEventIsSent() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .searchResultSelection, with: .firebaseAnalytics, params: ["category_id": 321, "name": "Test Result", "search_term": "Test"])])
+        
+        var retailStoreMenuService = MockedRetailStoreMenuService(expected: [
+            .getRootCategories,
+            .globalSearch(searchTerm: "Test", scope: nil, itemsPagination: (100, 0), categoriesPagination: (10, 0)),
+            .getChildCategoriesAndItems(categoryId: 321)
+        ])
+        retailStoreMenuService.getChildCategoriesAndItemsResponse = .success(RetailStoreMenuFetch.mockedData)
+        retailStoreMenuService.globalSearchResponse = .success(RetailStoreMenuGlobalSearch.mockedData)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: retailStoreMenuService,
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(
+            appState: AppState(),
+            eventLogger: eventLogger,
+            services: services
+        )
         let sut = makeSUT(container: container)
         
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, retailCustomer: nil, searchPostcode: nil))
@@ -471,14 +498,46 @@ class ProductsViewModelTests: XCTestCase {
         
         let category = GlobalSearchResultRecord(id: 321, name: "Test Result", image: nil, price: nil)
         
+        let expectation1 = expectation(description: "searchResultItems")
+        let expectation2 = expectation(description: "isSearchActive")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$searchResultItems
+            .filter { $0.isEmpty == false }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.$isSearchActive
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation1, expectation2], timeout: 2)
+        
         sut.searchCategoryTapped(category: category)
         
+        let expectation3 = expectation(description: "navigationWithIsSearchActive")
+        
+        sut.$navigationWithIsSearchActive
+            .filter { $0 != 0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation3.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation3], timeout: 2)
+        
         XCTAssertFalse(sut.showSearchView)
-        XCTAssertTrue(sut.items.isEmpty)
         
-        sut.backButtonTapped()
-        
-        container.services.verify(as: .retailStoreMenu)
+        retailStoreMenuService.verify()
+        eventLogger.verify()
     }
     
     func test_whenSubCategoriesAndItemsTapped() {

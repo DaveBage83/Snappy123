@@ -67,7 +67,7 @@ class ProductsViewModel: ObservableObject {
     var missedOffer: BasketItemMissedPromotion?
     var offerText: String? // Text used for the banner in missed offers / special offers summary view
     private var cancellables = Set<AnyCancellable>()
-    private var isFromSearchRequest = false
+    private var fetchingGlobalSearchResultRecord: GlobalSearchResultRecord?
     
     // MARK: - Computed variables
     var splitRootCategories: [[RetailStoreMenuCategory]] {
@@ -124,8 +124,9 @@ class ProductsViewModel: ObservableObject {
     var showStandardView: Bool { missedOffer == nil }
     
     var showBackButton: Bool {
-        if viewState == .rootCategories { return false }
-        if isSearchActive { return false }
+        if viewState == .rootCategories && showSearchView == false {
+            return false
+        }
         return true
     }
     
@@ -313,12 +314,6 @@ class ProductsViewModel: ObservableObject {
         
         switch viewState {
         case .items:
-            // This flag controls whether or not we show the search view when the back button is pressed from an item state
-            if isFromSearchRequest {
-                isSearchActive = true
-                isFromSearchRequest = false
-            }
-            
             unsortedItems = []
             sortedItems = []
             // If subcategories is empty then we came directly from the root menu so we need to set subcategoriesOrItemsMenuFetch to .notRequested
@@ -385,17 +380,36 @@ class ProductsViewModel: ObservableObject {
     private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
             .removeDuplicates()
-            .filter { $0.value != nil }
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }
                 
-                if let menuItems = menu.value?.menuItems {
+                guard let value = menu.value else {
+                    self.error = menu.error
+                    return
+                }
+                
+                if
+                    let fetchCategoryId = value.fetchCategoryId,
+                    let searchCategoryId = self.fetchingGlobalSearchResultRecord?.id,
+                    fetchCategoryId == searchCategoryId && (value.menuItems?.isEmpty == false || value.categories?.isEmpty == false)
+                {
+                    // the search category has been confirmed so set the neccessary states
+                    self.subCategories = []
+                    self.subCategoryNavigationTitle = []
+                    self.unsortedItems = []
+                    self.sortedItems = []
+                    self.itemNavigationTitle = self.fetchingGlobalSearchResultRecord?.name
+                    self.navigationWithIsSearchActive = 0
+                    self.fetchingGlobalSearchResultRecord = nil
+                }
+
+                if let menuItems = value.menuItems {
                     self.unsortedItems = menuItems
                     if self.isSearchActive {
                         self.navigationWithIsSearchActive += 1
                     }
-                } else if let subCategories = menu.value?.categories {
+                } else if let subCategories = value.categories {
                     // Despite the .removeDuplicates() above something causes a repeat of
                     // the same sub categories reaching here so the same subcategory is
                     // added twice without this condition
@@ -541,29 +555,18 @@ class ProductsViewModel: ObservableObject {
         default:
             break
         }
-        
+        fetchingGlobalSearchResultRecord = nil
         if let action = category.action, let discountId = action.params?.discountId {
             container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: discountId, discountSectionId: nil)
         } else {
             container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
         }
     }
-    
-    func categoryTapped(with globalSearchCategory: GlobalSearchResultRecord) {
-        itemNavigationTitle = globalSearchCategory.name
-        
-        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: globalSearchCategory.id)
-    }
 
     func searchCategoryTapped(category: GlobalSearchResultRecord) {
         sendSearchResultSelectionEvent(categoryId: category.id, name: category.name)
-        isFromSearchRequest = true
-        //isSearchActive = false
-        subCategories = []
-        subCategoryNavigationTitle = []
-        unsortedItems = []
-        sortedItems = []
-        categoryTapped(with: category)
+        fetchingGlobalSearchResultRecord = category
+        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
     }
     
     func logItemIteraction(with item: RetailStoreMenuItem) {

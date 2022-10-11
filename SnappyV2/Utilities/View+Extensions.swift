@@ -13,6 +13,7 @@ enum NavigationDismissType {
     case cancel
     case close
     case done
+    case none
 }
 
 // From: https://www.hackingwithswift.com/quick-start/swiftui/how-to-dismiss-the-keyboard-for-a-textfield
@@ -68,10 +69,10 @@ extension View {
                         case .cancel:
                             Text(GeneralStrings.cancel.localized)
                                 .font(.Body1.regular())
-                        case .close, .done:
+                        case .close, .done, .none:
                             EmptyView()
                         }
-                    },
+                    }.disabled(navigationDismissType == .none),
                     trailing: Button(action: {
                         if let backButtonAction = backButtonAction {
                             backButtonAction()
@@ -80,7 +81,7 @@ extension View {
                         }
                     }) {
                         switch navigationDismissType {
-                        case .back, .cancel:
+                        case .back, .cancel, .none:
                             EmptyView()
                         case .close:
                             Image.Icons.Xmark.heavy

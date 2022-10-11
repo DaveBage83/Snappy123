@@ -180,9 +180,9 @@ struct ProductsView: View {
                 .background(colorPalette.backgroundMain)
                 .dismissableNavBar(
                     presentation: nil,
-                    color: viewModel.hideNavBar ? .clear : colorPalette.primaryBlue,
-                    title: viewModel.currentNavigationTitle,
-                    navigationDismissType: .back,
+                    color: /*viewModel.hideNavBar ? .clear :*/ colorPalette.primaryBlue,
+                    title: viewModel.hideNavBar ? nil : viewModel.currentNavigationTitle,
+                    navigationDismissType: viewModel.showBackButton ? .back : .none,
                     backButtonAction: {
                         viewModel.backButtonTapped()
                     })

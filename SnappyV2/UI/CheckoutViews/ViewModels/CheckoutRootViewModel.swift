@@ -868,6 +868,11 @@ class CheckoutRootViewModel: ObservableObject {
             
             if result.loginRequired {
                 showOTPPrompt = true
+                
+                let params: [String: Any] = [
+                    "smsPossible": otpTelephone.isEmpty == false
+                ]
+                container.eventLogger.sendEvent(for: .otpPresented, with: .appsFlyer, params: params)
             }
         }
     }

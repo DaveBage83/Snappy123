@@ -394,14 +394,14 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             appsFlyerParams["category_type"] = "items"
         }
         
-        eventLogger.sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams)
+        eventLogger.sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams)
         
         iterableParams["storeId"] = appState.value.userData.selectedStore.value?.id ?? 0
         iterableParams["categoryId"] = categoryId ?? 0
         
-        eventLogger.sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+        eventLogger.sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams)
         
-        let firebaseEvent: AppEvent = fetchResult.categories != nil ? .viewContentList : .viewProductList
+        let firebaseEvent: AppEvent = fetchResult.categories != nil ? .viewCategoryList : .viewProductList
 
         eventLogger.sendEvent(for: firebaseEvent, with: .firebaseAnalytics, params: firebaseParams)
     }

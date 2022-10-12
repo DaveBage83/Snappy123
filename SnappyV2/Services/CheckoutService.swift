@@ -393,15 +393,6 @@ final class CheckoutService: CheckoutServiceProtocol {
         eventLogger.sendEvent(for: .purchase, with: .facebook, params: purchaseParams)
         
         // Firebase
-        let behavior = NSDecimalNumberHandler(
-            roundingMode: .plain,
-            scale: 2,
-            raiseOnExactness: false,
-            raiseOnOverflow: false,
-            raiseOnUnderflow: false,
-            raiseOnDivideByZero: true
-        )
-        
         purchaseParams = [
             AnalyticsParameterTransactionID: "\(businessOrderId)",
             AnalyticsParameterAffiliation: appState.value.userData.selectedStore.value?.storeName ?? "",
@@ -416,7 +407,7 @@ final class CheckoutService: CheckoutServiceProtocol {
                     AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(line.menuItem.id)",
                     AnalyticsParameterItemName: line.menuItem.name,
                     // unit price, not price paid - this is not a mistake
-                    AnalyticsParameterPrice: NSDecimalNumber(value: line.price).rounding(accordingToBehavior: behavior).doubleValue,
+                    AnalyticsParameterPrice: NSDecimalNumber(value: line.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue,
                     AnalyticsParameterQuantity: line.quantity
                 ]
                 if let size = line.size {
@@ -425,8 +416,8 @@ final class CheckoutService: CheckoutServiceProtocol {
                 items.append(item)
             }
             purchaseParams[AnalyticsParameterItems] = items
-            purchaseParams[AnalyticsParameterValue] = NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: behavior).doubleValue
-            purchaseParams[AnalyticsParameterShipping] = NSDecimalNumber(value: basket.fulfilmentMethod.cost).rounding(accordingToBehavior: behavior).doubleValue
+            purchaseParams[AnalyticsParameterValue] = NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+            purchaseParams[AnalyticsParameterShipping] = NSDecimalNumber(value: basket.fulfilmentMethod.cost).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
             if let coupon = basket.coupon {
                 purchaseParams[AnalyticsParameterCoupon] = coupon.code
             }

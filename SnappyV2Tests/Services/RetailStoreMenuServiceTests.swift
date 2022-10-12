@@ -98,9 +98,9 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
             "category_name": menuFetchResult.name!
         ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams),
-            .sendEvent(for: .viewContentList, with: .firebaseAnalytics, params: firebaseParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -180,8 +180,8 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
             "category_name": menuFetchResult.name!
         ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
             .sendEvent(for: .viewProductList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
@@ -278,9 +278,9 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
             "category_name": menuFetchResult.name!
         ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams),
-            .sendEvent(for: .viewContentList, with: .firebaseAnalytics, params: firebaseParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -758,9 +758,9 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             "category_name": "root_menu"
         ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams),
-            .sendEvent(for: .viewContentList, with: .firebaseAnalytics, params: firebaseParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -851,9 +851,9 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             "category_name": "root_menu"
         ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams),
-            .sendEvent(for: .viewContentList, with: .firebaseAnalytics, params: firebaseParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -961,9 +961,9 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             "category_name": "root_menu"
         ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams),
-            .sendEvent(for: .viewContentList, with: .firebaseAnalytics, params: firebaseParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories

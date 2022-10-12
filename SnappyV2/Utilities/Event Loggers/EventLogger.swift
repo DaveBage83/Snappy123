@@ -37,12 +37,12 @@ enum AppEvent: String {
     case futureContact
     
     // For AppsFlyer: parameter "category_type": "child" or "items"
-    case viewContentList
+    case viewCategoryList
     
     // For Firebase: instead of parameter "category_type": "items"
     case viewProductList
     
-    case contentView
+    case viewItemDetail
     case paymentFailure
 	case login
 	case couponReject
@@ -76,8 +76,8 @@ enum AppEvent: String {
         case .applyCoupon:              return "apply_coupon"
         case .search:                   return AFEventSearch
         case .futureContact:            return "future_contact"
-        case .viewContentList:          return "view_content_list"
-        case .contentView:              return AFEventContentView
+        case .viewCategoryList:         return "view_content_list"
+        case .viewItemDetail:           return AFEventContentView
         case .paymentFailure:           return "payment_failure"
         case .login:				    return AFEventLogin
         case .couponReject:			    return "coupon_reject"
@@ -103,8 +103,8 @@ enum AppEvent: String {
     var toIterableString: String? {
         switch self {
         case .viewCart:                 return "viewBasket"
-        case .viewContentList:          return "viewMenuCategory"
-        case .contentView:              return "viewMenuItemDetail"
+        case .viewCategoryList:         return "viewMenuCategory"
+        case .viewItemDetail:           return "viewMenuItemDetail"
         case .storeSearch:              return "searchStores"
         default:                        return nil
         }
@@ -112,12 +112,15 @@ enum AppEvent: String {
     
     var toFirebaseString: String? {
         switch self {
+        case .addToBasket:              return AnalyticsEventAddToCart
+        case .removeFromCart:           return AnalyticsEventRemoveFromCart
         case .purchase:                 return AnalyticsEventPurchase
         case .storeSearchFromStartView: return "store_search_requested_at_start_view"
         case .storeSearch:              return "store_search"
         case .futureContact:            return "no_stores_found_interest_form_submitted"
-        case .viewContentList:          return "view_category_list"
+        case .viewCategoryList:         return "view_category_list"
         case .viewProductList:          return "view_product_list"
+        case .viewItemDetail:           return AnalyticsEventViewItem
         case .search:                   return AnalyticsEventSearch
         case .searchResultSelection:    return "menu_search_result_pressed"
         default:                        return nil
@@ -162,7 +165,7 @@ class EventLogger: EventLoggerProtocol {
     // cached value until Iterable is initialised
     private var deviceToken: Data?
     
-    private let facebookDecimalBehavior = NSDecimalNumberHandler(
+    static let decimalBehavior = NSDecimalNumberHandler(
         roundingMode: .plain,
         scale: 2,
         raiseOnExactness: false,
@@ -351,7 +354,7 @@ class EventLogger: EventLoggerProtocol {
                     .addedToCart,
                     valueToSum: NSDecimalNumber(
                         value: params["valueToSum"] as? Double ?? 0.0
-                    ).rounding(accordingToBehavior: facebookDecimalBehavior).doubleValue,
+                    ).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue,
                     parameters: params["facebookParams"] as? [AppEvents.ParameterName : Any]
                 )
             

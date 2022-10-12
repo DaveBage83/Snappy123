@@ -316,10 +316,7 @@ class ProductsViewModel: ObservableObject {
         case .items:
             unsortedItems = []
             sortedItems = []
-            // If subcategories is empty then we came directly from the root menu so we need to set subcategoriesOrItemsMenuFetch to .notRequested
-            if subCategories.isEmpty {
-                subcategoriesOrItemsMenuFetch = .notRequested
-            }
+            subcategoriesOrItemsMenuFetch = .notRequested
             if subCategoryNavigationTitle.isEmpty == false {
                 subCategoryNavigationTitle.removeLast()
             }
@@ -336,9 +333,7 @@ class ProductsViewModel: ObservableObject {
             if subCategoryNavigationTitle.isEmpty == false {
                 subCategoryNavigationTitle.removeLast()
             }
-            if subCategories.isEmpty {
-                subcategoriesOrItemsMenuFetch = .notRequested
-            }
+            subcategoriesOrItemsMenuFetch = .notRequested
             if navigationWithIsSearchActive > 0 {
                 navigationWithIsSearchActive -= 1
             }
@@ -379,6 +374,7 @@ class ProductsViewModel: ObservableObject {
     
     private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
+            .filter { $0 != .notRequested }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in

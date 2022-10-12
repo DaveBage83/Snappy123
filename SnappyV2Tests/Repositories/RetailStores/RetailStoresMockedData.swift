@@ -763,10 +763,8 @@ extension RetailStoreDetails {
             ],
             paymentMethods: [
                 PaymentMethod.mockedCashData,
-                PaymentMethod.mockedApplePayData,
                 PaymentMethod.mockedApplePayCheckoutComData,
-                PaymentMethod.mockedCardsCheckoutcomFirstData,
-                PaymentMethod.mockedCardsData
+                PaymentMethod.mockedCardsCheckoutcomFirstData
             ],
             paymentGateways: [
                 PaymentGateway.mockedCheckoutcomData,

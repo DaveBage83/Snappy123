@@ -29,21 +29,20 @@ struct CheckoutFulfilmentInfoView: View {
         ScrollView {
             VStack {
                 VStack(spacing: Constants.cardSpacing) {
-                    if viewModel.showPayByCard {
-                        Button(action: { viewModel.payByCardTapped() }) {
-                            PaymentCard(container: viewModel.container, paymentMethod: .card)
-                        }
-                    }
-                    
-                    if viewModel.showPayByApple {
-                        Button(action: { Task { await viewModel.payByAppleTapped() }}) {
-                            PaymentCard(container: viewModel.container, paymentMethod: .apple)
-                        }
-                    }
-                    
-                    if viewModel.showPayByCash {
-                        Button(action: { Task { await viewModel.payByCashTapped() }}) {
-                            PaymentCard(container: viewModel.container, paymentMethod: .cash)
+                    ForEach(viewModel.paymentMethodsOrder, id: \.self) { method in
+                        switch method {
+                        case .payByCard:
+                            Button(action: { viewModel.payByCardTapped() }) {
+                                PaymentCard(container: viewModel.container, paymentMethod: .card)
+                            }
+                        case .payByCash:
+                            Button(action: { Task { await viewModel.payByCashTapped() }}) {
+                                PaymentCard(container: viewModel.container, paymentMethod: .cash)
+                            }
+                        case .payByApple:
+                            Button(action: { Task { await viewModel.payByAppleTapped() }}) {
+                                PaymentCard(container: viewModel.container, paymentMethod: .apple)
+                            }
                         }
                     }
                 }

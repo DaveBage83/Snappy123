@@ -13,10 +13,10 @@ import PassKit
 
 @MainActor
 class CheckoutFulfilmentInfoViewModel: ObservableObject {
-    enum PaymentNavigation {
-        case payByCard
-        case payByApple
-        case payByCash
+    enum PaymentMethod: String {
+        case payByCard = "cards"
+        case payByApple = "applepay"
+        case payByCash = "cash"
     }
     
     let container: DIContainer
@@ -43,13 +43,29 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     var businessOrderId: Int?
     var hasConfirmedCashPayment = false
     @Published var showConfirmCashPaymentAlert = false
+    var paymentMethodsOrder = [PaymentMethod]()
     
     @Published var error: Error?
     
     var showPayByCard: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
-            return store.isCompatible(with: .realex) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .realex)
+            return store.isCompatible(with: .checkoutcom) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .checkoutcom)
             })
+        }
+        return false
+    }
+    
+    var showPayByApple: Bool {
+        if PKPaymentAuthorizationController.canMakePayments(
+            usingNetworks: [.masterCard, .visa, .JCB, .discover]
+        ) {
+            if let store = selectedStore, let paymentMethods = store.paymentMethods {
+                return paymentMethods.contains {
+                    $0.name.lowercased() == PaymentMethod.payByApple.rawValue && paymentMethods.contains(where: {
+                        $0.isCompatible(with: fulfilmentType, for: .checkoutcom)
+                    })
+                }
+            }
         }
         return false
     }
@@ -117,7 +133,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         if let basket = basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
             self.prefilledAddressName = Name(firstName: details.firstName ?? "", secondName: details.lastName ?? "")
         }
-        
+        setPaymentTypeOrder()
         setupBasket(with: appState)
         setupDeliveryLocation()
         setupSelectedDeliveryAddressBinding(with: appState)
@@ -189,6 +205,19 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func setPaymentTypeOrder() {
+        guard let paymentMethods = selectedStore?.paymentMethods else { return }
+        for paymentMethod in paymentMethods {
+            if paymentMethod.name.lowercased() == PaymentMethod.payByCash.rawValue && showPayByCash {
+                paymentMethodsOrder.append(.payByCash)
+            } else if paymentMethod.name.lowercased() == PaymentMethod.payByCard.rawValue && showPayByCard {
+                paymentMethodsOrder.append(.payByCard)
+            } else if paymentMethod.name.lowercased() == PaymentMethod.payByApple.rawValue && showPayByApple {
+                paymentMethodsOrder.append(.payByApple)
+            }
+        }
     }
     
     #warning("Do we need to cater for email and telephone number missing?")
@@ -344,21 +373,6 @@ extension CheckoutFulfilmentInfoViewModel {
 
 // MARK: - Apple Pay
 extension CheckoutFulfilmentInfoViewModel {
-    var showPayByApple: Bool {
-        if PKPaymentAuthorizationController.canMakePayments(
-            usingNetworks: [.masterCard, .visa, .JCB, .discover]
-        ) {
-            if let store = selectedStore, let paymentMethods = store.paymentMethods {
-                return paymentMethods.contains {
-                    $0.name.lowercased() == "applepay" && paymentMethods.contains(where: {
-                        $0.isCompatible(with: fulfilmentType, for: .checkoutcom)
-                    })
-                }
-            }
-        }
-        return false
-    }
-    
     func payByAppleTapped() async {
         
         let draftOrderDetailsRequest = createDraftOrderRequest()

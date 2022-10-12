@@ -1160,7 +1160,8 @@ class CheckoutRootViewModelTests: XCTestCase {
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil), staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())
         let email = "test@test.com"
 
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(memberService: [.checkRegistrationStatus(email: email)]))
+        let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpPresented, with: .appsFlyer, params: ["smsPossible":true])])
+        let container = DIContainer(appState: appState, eventLogger: mockedEvent, services: .mocked(memberService: [.checkRegistrationStatus(email: email)]))
         
         var setDeliveryTriggered = false
         var updateMarketingPrefsTriggered = false
@@ -1183,6 +1184,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showOTPPrompt)
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
+        mockedEvent.verify()
     }
     
     func test_givenStoreWithMemberEmailCheck_whenGoToPaymentTappedGivenFieldErrorsExist_ReturnEarly() async {
@@ -1191,7 +1193,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil), staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())
         let email = "test@test.com"
 
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(memberService: [.checkRegistrationStatus(email: email)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         
         var setDeliveryTriggered = false
         var updateMarketingPrefsTriggered = false

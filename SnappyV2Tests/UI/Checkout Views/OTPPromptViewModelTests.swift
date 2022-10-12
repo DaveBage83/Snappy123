@@ -40,7 +40,9 @@ class OTPPromptViewModelTests: XCTestCase {
     
     func test_givenEmail_whenSendOTPTriggered_thenCorrectCallTriggered() async {
         let email = "someone@domain.com"
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.requestMessageWithOneTimePassword(email: email, type: .email)]))
+        
+        let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpEmail, with: .appsFlyer, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.requestMessageWithOneTimePassword(email: email, type: .email)]))
         let sut = makeSUT(container: container, email: email)
         
         await sut.sendOTP(via: .email)
@@ -48,12 +50,14 @@ class OTPPromptViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showOTPCodePrompt)
         
         container.services.verify(as: .member)
+        mockedEvent.verify()
     }
     
     func test_givenTelephone_whenSendOTPTriggered_thenCorrectCallTriggered() async {
         let email = "someone@domain.com"
         let telephone = "0987654321"
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.requestMessageWithOneTimePassword(email: email, type: .sms)]))
+        let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpSms, with: .appsFlyer, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.requestMessageWithOneTimePassword(email: email, type: .sms)]))
         let sut = makeSUT(container: container, email: email, otpTelephone: telephone)
         
         XCTAssertTrue(sut.showOTPTelephone)
@@ -63,6 +67,7 @@ class OTPPromptViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showOTPCodePrompt)
         
         container.services.verify(as: .member)
+        mockedEvent.verify()
     }
     
     func test_whenDismissOTPPromptTriggered_thenDimissActionCalled() {
@@ -115,7 +120,8 @@ class OTPPromptViewModelTests: XCTestCase {
         
         func triggerDismiss() { dismissTriggered = true }
         
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode)]))
+        let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpLogin, with: .appsFlyer, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode)]))
         
         let sut = makeSUT(container: container, dismiss: { triggerDismiss() })
         sut.email = email
@@ -126,6 +132,30 @@ class OTPPromptViewModelTests: XCTestCase {
         XCTAssertTrue(dismissTriggered)
         
         container.services.verify(as: .member)
+        mockedEvent.verify()
+    }
+    
+    func test_givenCorrectCodeAndProfile_whenLoginWithOtpTriggered_thenDismissOtpPromptAndCorrectEvent() async {
+        var dismissTriggered = false
+        let email = "someone@domain.com"
+        let otpCode = "SOMECODE"
+        
+        func triggerDismiss() { dismissTriggered = true }
+        let profile = MemberProfile.mockedData
+        let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpLogin, with: .appsFlyer, params: ["member_id":profile.uuid])])
+        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode)]))
+        container.appState.value.userData.memberProfile = profile
+        
+        let sut = makeSUT(container: container, dismiss: { triggerDismiss() })
+        sut.email = email
+        sut.otpCode = otpCode
+        
+        await sut.loginWithOTP()
+        
+        XCTAssertTrue(dismissTriggered)
+        
+        container.services.verify(as: .member)
+        mockedEvent.verify()
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), email: String = "", otpTelephone: String = "", dismiss: @escaping ()->() = {}) -> OTPPromptViewModel {

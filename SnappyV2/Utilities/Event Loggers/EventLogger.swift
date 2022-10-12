@@ -56,6 +56,11 @@ enum AppEvent: String {
     case mentionMeRefereeView
     case mentionMeDashboardView
     case apiError
+    case otpPresented
+    case otpEmail
+    case otpSms
+    case otpLogin
+    case otpWrong
     
     var toAppsFlyerString: String? {
         switch self {
@@ -86,6 +91,11 @@ enum AppEvent: String {
         case .mentionMeRefereeView:     return "mentionme_referee_view"
         case .mentionMeDashboardView:   return "mentionme_dashboard_view"
         case .apiError:                 return "api_error"
+        case .otpPresented:             return "otc_presented"
+        case .otpEmail:                 return "otc_email"
+        case .otpSms:                   return "otc_sms"
+        case .otpLogin:                 return "otc_login"
+        case .otpWrong:                 return "otc_wrong"
         default:                        return nil
         }
     }

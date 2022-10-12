@@ -45,6 +45,8 @@ class OTPPromptViewModel: ObservableObject {
         do {
             let result = try await container.services.memberService.requestMessageWithOneTimePassword(email: email, type: type)
             
+            container.eventLogger.sendEvent(for: type == .email ? .otpEmail : .otpSms, with: .appsFlyer, params: [:])
+            
             isSendingOTPRequest = false
             
             if result.success {
@@ -71,11 +73,19 @@ class OTPPromptViewModel: ObservableObject {
         do {
             try await container.services.memberService.login(email: email, oneTimePassword: otpCode)
             
+            var params: [String: Any] = [:]
+            if let memberUUID = container.appState.value.userData.memberProfile?.uuid {
+                params["member_id"] = memberUUID
+            }
+            container.eventLogger.sendEvent(for: .otpLogin, with: .appsFlyer, params: params)
+            
             isSendingOTPCode = false
             
             dismissOTPPrompt()
         } catch {
             self.error = error
+            
+            container.eventLogger.sendEvent(for: .otpWrong, with: .appsFlyer, params: [:])
             
             isSendingOTPCode = false
         }

@@ -646,11 +646,28 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertNil(sut.selectedOffer)
     }
     
-    func test_whenIsEditingIsTrue_thenShowBackButtonReturnsFalse() {
+    func test_whenEitherSearchIsActiveOrSearchNavigation_showSearchViewReturnFalse() {
         let sut = makeSUT()
-        sut.subCategories = [[RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil, description: "", action: nil)]]
+        sut.isSearchActive = false
+        sut.navigationWithIsSearchActive = 0
+        XCTAssertFalse(sut.showSearchView)
         sut.isSearchActive = true
-        
+        sut.navigationWithIsSearchActive = 1
+        XCTAssertFalse(sut.showSearchView)
+        sut.isSearchActive = false
+        sut.navigationWithIsSearchActive = 1
+        XCTAssertFalse(sut.showSearchView)
+    }
+    
+    func test_whenSearchActiveAndNoSearchNavigation_showSearchViewReturnTrue() {
+        let sut = makeSUT()
+        sut.isSearchActive = true
+        sut.navigationWithIsSearchActive = 0
+        XCTAssertTrue(sut.showSearchView)
+    }
+
+    func test_whenNoNonRootCategoryLoaded_thenShowBackButtonReturnsFalse() {
+        let sut = makeSUT()
         XCTAssertFalse(sut.showBackButton)
     }
     

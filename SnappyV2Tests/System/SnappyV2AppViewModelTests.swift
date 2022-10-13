@@ -77,13 +77,13 @@ class SnappyV2AppViewModelTests: XCTestCase {
         
         sut.dismissMobileVerifyNumberView(error: nil, toast: nil)
 
-        XCTAssertNil(sut.error)
+        XCTAssertNil(sut.container.appState.value.latestError)
         XCTAssertNil(sut.successMessage)
 
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         sut.dismissMobileVerifyNumberView(error: networkError, toast: nil)
 
-        XCTAssertEqual(sut.error as? NSError, networkError)
+        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
         XCTAssertNil(sut.successMessage)
         
         sut.dismissMobileVerifyNumberView(error: nil, toast: "test message")

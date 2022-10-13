@@ -22,7 +22,6 @@ class VerifyMobileNumberViewModel: ObservableObject {
     
     @Published var isRequestingOrSendingVerificationCode: Bool = false
     @Published var verifyCode: String = ""
-    @Published var error: Error?
     @Published var submitDisabled = true
     @Published var toastMessage: String?
     
@@ -75,7 +74,7 @@ class VerifyMobileNumberViewModel: ObservableObject {
                 toastMessage = VerifyMobileNumberStrings.EnterCodeViewStaticText.resendMessage.localized
             }
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             isRequestingOrSendingVerificationCode = false
             Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
         }
@@ -88,7 +87,7 @@ class VerifyMobileNumberViewModel: ObservableObject {
             dismissAction(nil, VerifyMobileNumberStrings.EnterCodeViewStaticText.verifiedMessage.localized)
         } catch {
             isRequestingOrSendingVerificationCode = false
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to verify account code: \(error.localizedDescription)")
         }
     }

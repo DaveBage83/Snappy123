@@ -60,7 +60,7 @@ struct PushNotificationSettingsView: View {
                 
             }
         }
-        .displayError(viewModel.error)
+//        .displayError(viewModel.error)
     }
 }
 

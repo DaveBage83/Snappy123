@@ -57,23 +57,24 @@ struct CheckoutFulfilmentInfoView: View {
                       secondaryButton: .default(Text(Strings.CheckoutView.Payment.placeOrder.localized), action: { Task { await viewModel.confirmCashPayment() }})
                 )
             }
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .background(colorPalette.typefaceInvert)
             .standardCardFormat()
             .padding()
-            .sheet(isPresented: $viewModel.handleGlobalPayment) {
-                if let draftOrderDetails = viewModel.draftOrderFulfilmentDetails {
-                    if #available(iOS 15.0, *) {
-                        GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
-                            viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
-                        }))
-                        .interactiveDismissDisabled()
-                    } else {
-                        GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
-                            viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
-                        }))
-                    }
-                }
+            .snappySheet(container: viewModel.container, isPresented: $viewModel.handleGlobalPayment, sheetContent: paymentSheet)
+        }
+    }
+    
+    @ViewBuilder private var paymentSheet: some View {
+        if let draftOrderDetails = viewModel.draftOrderFulfilmentDetails {
+            if #available(iOS 15.0, *) {
+                GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
+                    viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
+                }))
+                .interactiveDismissDisabled()
+            } else {
+                GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
+                    viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
+                }))
             }
         }
     }

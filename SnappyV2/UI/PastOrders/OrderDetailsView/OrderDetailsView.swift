@@ -115,12 +115,12 @@ struct OrderDetailsView: View {
             }
             .background(colorPalette.backgroundMain)
             .edgesIgnoringSafeArea(.bottom)
-            .withStandardAlert(
-                container: viewModel.container,
-                isPresenting: $viewModel.showMapError,
-                type: .error,
-                title: Strings.DriverMap.Error.title.localized,
-                subtitle: Strings.DriverMap.Error.body.localized)
+////            .withStandardAlert(
+//                container: viewModel.container,
+//                isPresenting: $viewModel.showMapError,
+//                type: .error,
+//                title: Strings.DriverMap.Error.title.localized,
+//                subtitle: Strings.DriverMap.Error.body.localized)
             .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.PlacedOrders.OrderDetailsView.title.localized, navigationDismissType: .close, backButtonAction: nil)
         }
         .onAppear {

@@ -295,6 +295,7 @@
 		555C89CE27874528007AA575 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 555C89D027874528007AA575 /* Localizable.strings */; };
 		5560BE0E27887A6B00630137 /* StringsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5560BE0D27887A6B00630137 /* StringsTests.swift */; };
 		5560BE122788A84C00630137 /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5560BE112788A84C00630137 /* Images.swift */; };
+		5566B0BD28F5CDA600114BBE /* ToastableViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5566B0BC28F5CDA600114BBE /* ToastableViewContainer.swift */; };
 		55678435286310FC00423E65 /* String+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55678434286310FC00423E65 /* String+ExtensionsTests.swift */; };
 		55696F81289C14EC00609C85 /* ItemDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55696F80289C14EC00609C85 /* ItemDetailsView.swift */; };
 		5569A5DA283FDA2B00BD67BF /* SocialMediaLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5569A5D9283FDA2B00BD67BF /* SocialMediaLoginView.swift */; };
@@ -914,6 +915,7 @@
 		555C89D12787452B007AA575 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5560BE0D27887A6B00630137 /* StringsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringsTests.swift; sourceTree = "<group>"; };
 		5560BE112788A84C00630137 /* Images.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
+		5566B0BC28F5CDA600114BBE /* ToastableViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastableViewContainer.swift; sourceTree = "<group>"; };
 		55678434286310FC00423E65 /* String+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+ExtensionsTests.swift"; sourceTree = "<group>"; };
 		55696F80289C14EC00609C85 /* ItemDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailsView.swift; sourceTree = "<group>"; };
 		5569A5D9283FDA2B00BD67BF /* SocialMediaLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaLoginView.swift; sourceTree = "<group>"; };
@@ -3041,6 +3043,7 @@
 				AF00E20E28D38928001B8184 /* ExpandableContentView.swift */,
 				559E5DE128E47AED0040FE98 /* CardOnBackgroundImageViewContainer.swift */,
 				554BDD7828E4A77F006E34DB /* SettingsButton.swift */,
+				5566B0BC28F5CDA600114BBE /* ToastableViewContainer.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3708,6 +3711,7 @@
 				AFAE47CD26FA241B00B4FEC3 /* RootViewModel.swift in Sources */,
 				55696F81289C14EC00609C85 /* ItemDetailsView.swift in Sources */,
 				0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */,
+				5566B0BD28F5CDA600114BBE /* ToastableViewContainer.swift in Sources */,
 				AF4B61E628A141F000BF20D6 /* Checkoutcom3DSHandleView.swift in Sources */,
 				553B78CD27D77D2100B955AB /* LoginView.swift in Sources */,
 				55C815D827E69B440028851F /* LoyaltyView.swift in Sources */,

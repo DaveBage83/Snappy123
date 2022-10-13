@@ -45,7 +45,7 @@ struct OTPPromptView: View {
             }
         }
         .font(.body)
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
+//        .withAlertToast(container: viewModel.container, error: $viewModel.error)
         
         
         // MARK: NavigationLinks

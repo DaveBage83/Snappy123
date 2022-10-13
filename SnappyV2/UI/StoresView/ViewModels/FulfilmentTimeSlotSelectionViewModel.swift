@@ -64,7 +64,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var fulfilmentType: RetailStoreOrderMethodType
     @Published var isTodaySelectedWithSlotSelectionRestrictions: Bool = false
     @Published var earliestFulfilmentTimeString: String?
-    @Published private(set) var error: Error?
     @Published var basket: Basket?
     @Published var isPaused = false
     @Published var showSuccessfullyUpdateTimeSlotAlert = false
@@ -326,7 +325,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             self.container.appState.value.userData.tempTodayTimeSlot = tempTimeSlot
             self.dismissView()
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
             self.isReservingTimeSlot = false
         }

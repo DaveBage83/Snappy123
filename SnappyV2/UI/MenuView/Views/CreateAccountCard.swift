@@ -160,7 +160,7 @@ struct CreateAccountCard: View {
                 
             }
         }
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
+//        .withAlertToast(container: viewModel.container, error: $viewModel.error)
         .padding(Constants.General.padding)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()

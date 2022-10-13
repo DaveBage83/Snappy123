@@ -88,7 +88,7 @@ struct PaymentCardEntryView: View {
                     }})
             }
             .padding()
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+//            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .dismissableNavBar(
                 presentation: presentationMode,
                 color: colorPalette.primaryBlue,
@@ -96,14 +96,13 @@ struct PaymentCardEntryView: View {
                 navigationDismissType: .close,
                 backButtonAction: nil
             )
-            .sheet(isPresented: $viewModel.showCardCamera) {
-                CardCameraScanView() { name, number, expiry in
-                    viewModel.handleCardCameraReturn(name: name, number: number, expiry: expiry)
-                }
-                .onDisappear() {
-                    viewModel.showCardCamera = false
-                }
+            .snappySheet(container: viewModel.container, isPresented: $viewModel.showCardCamera,
+                         sheetContent: CardCameraScanView() { name, number, expiry in
+                viewModel.handleCardCameraReturn(name: name, number: number, expiry: expiry)
             }
+            .onDisappear() {
+                viewModel.showCardCamera = false
+            })
             .onChange(of: viewModel.dismissView ) { dismissed in
                 if dismissed {
                     presentationMode.wrappedValue.dismiss()

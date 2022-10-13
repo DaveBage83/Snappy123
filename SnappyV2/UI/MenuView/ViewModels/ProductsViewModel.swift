@@ -47,7 +47,6 @@ class ProductsViewModel: ObservableObject {
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
-    @Published var error: Error?
     
     // Search variables
     @Published var searchText: String
@@ -428,7 +427,7 @@ class ProductsViewModel: ObservableObject {
                         }
                     }
                 } else {
-                    self.error = Errors.categoryEmpty
+                    self.container.appState.value.errors.append(Errors.categoryEmpty)
                 }
             }
             .store(in: &cancellables)

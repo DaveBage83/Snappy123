@@ -44,9 +44,7 @@ final class ProductOptionsViewModel: ObservableObject {
     @Published var scrollToOptionId: Int?
     let basketItem: BasketItem?
     var itemDetails = [ItemDetails]()
-    
-    @Published private(set) var error: Error?
-    
+        
     private var cancellables = Set<AnyCancellable>()
     
     var showUpdateButtonText: Bool { basketItem != nil }
@@ -243,7 +241,7 @@ final class ProductOptionsViewModel: ObservableObject {
             self.isAddingToBasket = false
             self.dismissView()
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.product.error("Error adding/updating \(String(describing: self.item.name)) with options to/in basket - \(error.localizedDescription)")
             self.isAddingToBasket = false
         }

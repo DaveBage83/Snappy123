@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct AppState: Equatable {
+struct AppState {    
     var system = System()
     var routing = ViewRouting()
     var openViews = OpenViews()
@@ -22,6 +22,24 @@ struct AppState: Equatable {
     var storeMenu = StoreMenu()
     var retailStoreReview: RetailStoreReview?
     var passwordResetCode: String?
+    
+    // Toast properties
+    var loading = false
+    var viewIDs = [UUID]() // In the real project this would be UUID - using String for ease of recognition here
+    var errors: [Swift.Error] = []
+    var successToastStrings = [String]()
+    
+    var latestViewID: UUID? {
+        viewIDs.last
+    }
+    
+    var latestSuccessToast: String? {
+        successToastStrings.first
+    }
+    
+    var latestError: Swift.Error? {
+        errors.first
+    }
 }
 
 extension AppState {
@@ -98,7 +116,7 @@ extension AppState {
             displayMode: .banner(.pop),
             type: .complete(.snappyRed),
             title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
-            subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized, tapToDismiss: false
+            subTitle: .constant(Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized), tapToDismiss: false
         )
     }
 }

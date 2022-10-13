@@ -60,7 +60,7 @@ struct CheckoutPaymentHandlingView: View {
                 VStack(alignment: .leading) {
                     payByCardHeader
                     
-                    EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: checkoutRootViewModel.setContactDetails, errorHandler: checkoutRootViewModel.setCheckoutError)
+                    EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: checkoutRootViewModel.setContactDetails, errorHandler: checkoutRootViewModel.setError(_:))
                         .id(Constants.scrollToID)
                     
                     cardDetailsSection()
@@ -78,7 +78,7 @@ struct CheckoutPaymentHandlingView: View {
                                 await viewModel.continueButtonTapped(fieldErrors: editAddressViewModel.fieldErrors()) {
                                     try await editAddressViewModel.setAddress(email: editAddressViewModel.contactEmail, phone: editAddressViewModel.contactPhone)
                                 } errorHandler: { error in
-                                    checkoutRootViewModel.setCheckoutError(error)
+                                    viewModel.container.appState.value.errors.append(error)
                                 }
                             }
                         }
@@ -100,18 +100,16 @@ struct CheckoutPaymentHandlingView: View {
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .padding()
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .sheet(item: $viewModel.threeDSWebViewURLs) { url in
                 Checkoutcom3DSHandleView(urls: url, delegate: viewModel.threeDSDelegate)
             }
-            .sheet(isPresented: $viewModel.showCardCamera) {
-                CardCameraScanView() { name, number, expiry in
-                    viewModel.handleCardCameraReturn(name: name, number: number, expiry: expiry)
-                }
-                .onDisappear() {
-                    viewModel.showCardCamera = false
-                }
+            .snappySheet(container: viewModel.container, isPresented: $viewModel.showCardCamera,
+                         sheetContent: CardCameraScanView() { name, number, expiry in
+                viewModel.handleCardCameraReturn(name: name, number: number, expiry: expiry)
             }
+            .onDisappear() {
+                viewModel.showCardCamera = false
+            })
         }
     }
     

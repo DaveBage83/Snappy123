@@ -241,8 +241,6 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
-            .withAlertToast(container: viewModel.container, error: $viewModel.locationManager.error)
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .withLoadingToast(loading: .constant(viewModel.isLoading || viewModel.driverSettingsLoading))
             .alert(item: $viewModel.showAlert) { alert in
                 switch alert.id {
@@ -362,7 +360,9 @@ struct InitialView: View {
                             Spacer()
                         }
                     )
-                    .disabled(viewModel.isLoading || viewModel.locationIsLoading)
+//                    .disabled(viewModel.isLoading || viewModel.locationIsLoading)
+                    .disabled(viewModel.container.appState.value.loading)
+
                 
                 SnappyButton(
                     container: viewModel.container,
@@ -373,7 +373,8 @@ struct InitialView: View {
                     icon: Image.Icons.MagnifyingGlass.heavy, isLoading: .constant(viewModel.isLoading)) {
                         Task { await viewModel.tapLoadRetailStores() }
                     }
-                    .disabled(viewModel.postcode.isEmpty || viewModel.isLoading || viewModel.locationIsLoading)
+//                    .disabled(viewModel.postcode.isEmpty || viewModel.isLoading || viewModel.locationIsLoading)
+                    .disabled(viewModel.postcode.isEmpty || viewModel.container.appState.value.loading)
                     .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.PostcodeSearch.largeDeviceWidth)
             }
             .padding(.horizontal, Constants.PostcodeSearch.hPadding)

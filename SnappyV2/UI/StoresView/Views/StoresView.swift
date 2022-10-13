@@ -160,20 +160,6 @@ struct StoresView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .withLoadingToast(loading: $viewModel.locationIsLoading)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.invalidPostcodeError,
-            type: .error,
-            title: FailedSearchStrings.invalidPostcodeTitle.localized,
-            subtitle: FailedSearchStrings.invalidPostcodeSubtitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.successfullyRegisteredForNotifications,
-            type: .success,
-            title: Strings.ToastNotifications.StoreSearch.title.localized,
-            subtitle: Strings.ToastNotifications.StoreSearch.subtitle.localized)
-        .displayError(viewModel.error)
     }
     
     // MARK: - Postcode search bar and button
@@ -370,9 +356,12 @@ struct StoresView: View {
                             }
                             
                         }) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
+//                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.container.appState.value.loading && viewModel.storeLoadingId == details.id))
                         }
-                        .disabled(viewModel.storeIsLoading)
+//                        .disabled(viewModel.storeIsLoading)
+                        .disabled(viewModel.container.appState.value.loading)
+
                     }
                 }
             }
@@ -387,9 +376,12 @@ struct StoresView: View {
                             }
                             
                         }) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
+//                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.container.appState.value.loading && viewModel.storeLoadingId == details.id))
                         }
-                        .disabled(viewModel.storeIsLoading)
+//                        .disabled(viewModel.storeIsLoading)
+                        .disabled(viewModel.container.appState.value.loading)
+
                     }
                 }
             }

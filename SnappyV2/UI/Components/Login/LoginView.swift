@@ -90,7 +90,6 @@ struct LoginView: View {
                 LoadingView()
             }
         }
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
         .onAppear {
             viewModel.onAppearSendEvent()
         }

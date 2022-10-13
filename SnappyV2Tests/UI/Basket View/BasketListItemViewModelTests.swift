@@ -24,7 +24,6 @@ class BasketListItemViewModelTests: XCTestCase {
         XCTAssertTrue(sut.bannerDetails.isEmpty)
         XCTAssertNil(sut.missedPromoShown)
         XCTAssertNil(sut.complexItemShown)
-        XCTAssertNil(sut.error)
         XCTAssertTrue(sut.optionTexts.isEmpty)
     }
     

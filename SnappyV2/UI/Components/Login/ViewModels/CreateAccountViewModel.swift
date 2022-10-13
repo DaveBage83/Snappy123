@@ -20,7 +20,6 @@ class CreateAccountViewModel: ObservableObject {
     @Published var email = ""
     @Published var phone = ""
     @Published var password = ""
-    @Published var error: Error?
     @Published var showAlreadyRegisteredAlert = false
     
     // Controls show / hide password functionality
@@ -160,7 +159,7 @@ class CreateAccountViewModel: ObservableObject {
             
             container.eventLogger.sendEvent(for: .completeRegistration, with: .appsFlyer, params: [AFEventCompleteRegistration: isPostCheckout ? "postcheckout" : "precheckout"])
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to register member.")
         }
         self.isLoading = false

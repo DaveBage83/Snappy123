@@ -140,36 +140,20 @@ struct BasketView: View {
             }
             .background(colorPalette.backgroundMain)
         }
-        .toast(isPresenting: $viewModel.showingServiceFeeAlert, subtitle: viewModel.serviceFeeDescription?.description ?? "", disableAutoDismiss: true, alert: { text, tapToDismiss in
-            AlertToast(
-                displayMode: .alert,
-                type: .regular,
-                title: viewModel.serviceFeeDescription?.title ?? "", // should never end up empty as we unwrap the text before setting alert to true
-                subTitle: text,
-                style: .style(
-                    backgroundColor: colorPalette.alertHighlight,
-                    titleColor: colorPalette.secondaryWhite,
-                    subTitleColor: colorPalette.secondaryWhite,
-                    titleFont: .Body1.semiBold(),
-                    subTitleFont: .Body1.regular()),
-                tapToDismiss: tapToDismiss
-            )
-        })
-        .sheet(isPresented: $viewModel.showMentionMeWebView) {
-            MentionMeWebView(
-                viewModel: MentionMeWebViewModel(
-                    container: viewModel.container,
-                    mentionMeRequestResult: viewModel.mentionMeRefereeRequestResult,
-                    dismissWebViewHandler: { couponAction in
-                        viewModel.mentionMeWebViewDismissed(with: couponAction)
-                    }
-                )
-            )
-        }
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
+                     sheetContent: MentionMeWebView(
+                        viewModel: MentionMeWebViewModel(
+                            container: viewModel.container,
+                            mentionMeRequestResult: viewModel.mentionMeRefereeRequestResult,
+                            dismissWebViewHandler: { couponAction in
+                                viewModel.mentionMeWebViewDismissed(with: couponAction)
+                            }
+                        )
+                     ))
         // informative error, customers needs to meet a criteria
-        .withAlertToast(container: viewModel.container, error: $viewModel.errorNeedsUserAction)
-        // critical error which needs a dismiss
-        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successfulCouponText)
+        //        .withAlertToast(container: viewModel.container, error: $viewModel.errorNeedsUserAction)
+        //        // critical error which needs a dismiss
+        //        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successfulCouponText)
         .navigationViewStyle(.stack)
     }
     

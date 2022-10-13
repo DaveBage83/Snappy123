@@ -23,7 +23,6 @@ class SnappyV2AppViewModel: ObservableObject {
     let container: DIContainer
     private let networkMonitor: NetworkMonitor
     
-    @Published var error: Error?
     @Published var showInitialView: Bool
     @Published var isActive: Bool
     @Published var isConnected: Bool
@@ -281,7 +280,7 @@ class SnappyV2AppViewModel: ObservableObject {
     func dismissMobileVerifyNumberView(error: Error?, toast: String?) {
         showVerifyMobileNumberView = false
         if let error = error {
-            self.error = error
+            self.container.appState.value.errors.append(error)
         } else if let toast = toast {
             successMessage = toast
         }

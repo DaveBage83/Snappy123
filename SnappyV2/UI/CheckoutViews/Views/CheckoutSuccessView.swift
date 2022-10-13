@@ -116,17 +116,16 @@ struct CheckoutSuccessView: View {
         .bottomSheet(container: viewModel.container, item: $viewModel.triggerBottomSheet, title: nil, windowSize: mainWindowSize, content: {_ in
             mentionMe
         })
-        .sheet(isPresented: $viewModel.showMentionMeWebView) {
-            MentionMeWebView(
-                viewModel: MentionMeWebViewModel(
-                    container: viewModel.container,
-                    mentionMeRequestResult: viewModel.mentionMeOfferRequestResult,
-                    dismissWebViewHandler: { _ in
-                        viewModel.mentionMeWebViewDismissed()
-                    }
-                )
-            )
-        }
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
+                     sheetContent: MentionMeWebView(
+                        viewModel: MentionMeWebViewModel(
+                            container: viewModel.container,
+                            mentionMeRequestResult: viewModel.mentionMeOfferRequestResult,
+                            dismissWebViewHandler: { _ in
+                                viewModel.mentionMeWebViewDismissed()
+                            }
+                        )
+                     ))
         .onChange(of: viewModel.webViewURL) { url in
             if let url = url {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)

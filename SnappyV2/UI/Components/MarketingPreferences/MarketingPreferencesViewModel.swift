@@ -35,9 +35,7 @@ class MarketingPreferencesViewModel: ObservableObject {
     private let viewContext: ViewContext
     
     @Published var marketingPreferencesAreLoading = false
-    
-    @Published private(set) var error: Error?
-    
+        
     var marketingIntroText: String {
         marketingPreferencesFetch?.marketingPreferencesIntro ?? Strings.CheckoutDetails.MarketingPreferences.prompt.localized
     }
@@ -154,7 +152,7 @@ class MarketingPreferencesViewModel: ObservableObject {
             self.marketingPreferencesFetch = try await self.container.services.memberService.getMarketingOptions(isCheckout: self.hideAcceptedMarketingOptions, notificationsEnabled: true)
             self.marketingPreferencesAreLoading = false
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to get marketing options - Error: \(error.localizedDescription)")
             self.marketingPreferencesAreLoading = false
         }
@@ -177,7 +175,7 @@ class MarketingPreferencesViewModel: ObservableObject {
             }
             
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to update marketing options - Error: \(error.localizedDescription)")
         }
     }

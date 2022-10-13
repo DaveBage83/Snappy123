@@ -108,7 +108,7 @@ struct ManualInputAddressView: View {
                 }
             }
             .padding()
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+//            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .dismissableNavBar(
                 presentation: presentation,
                 color: colorPalette.primaryBlue,

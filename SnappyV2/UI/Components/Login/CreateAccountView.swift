@@ -68,7 +68,7 @@ struct CreateAccountView: View {
             .alert(isPresented: $viewModel.showAlreadyRegisteredAlert) {
                 Alert(title: Text(Strings.CreateAccount.existingUserTitle.localized), message: Text(Strings.CreateAccount.existingUserBody.localized), dismissButton: .default(Text(GeneralStrings.gotIt.localized)))
             }
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+//            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
             .edgesIgnoringSafeArea(.bottom)
     }
@@ -86,7 +86,6 @@ struct CreateAccountView: View {
             }
         }
         .padding(.bottom, viewModel.isFromInitialView ? Constants.General.standardPadding : tabViewHeight)
-        .displayError(viewModel.error)
     }
     
     @ViewBuilder private var createAccountView: some View {

@@ -55,7 +55,7 @@ struct MarketingPreferencesView: View {
                 marketingPreference(type: .telephone)
             }
         }
-        .displayError(viewModel.error)
+//        .displayError(viewModel.error)
         .padding(.horizontal, Constants.mainPadding)
     }
     

@@ -147,7 +147,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 2)
         
-        XCTAssertEqual(sut.totalPrice, "£0.00")
+        XCTAssertEqual(sut.totalPrice, "£10.00")
     }
     
     func test_givenInitWithPriceAndOptionWithPrices_whenOptionSelected_thenTotalPriceIsCorrect() {
@@ -179,7 +179,7 @@ class ProductOptionsViewModelTests: XCTestCase {
 
         wait(for: [expectationTotalPrice], timeout: 2)
 
-        XCTAssertEqual(sut.totalPrice, "£4.50")
+        XCTAssertEqual(sut.totalPrice, "£14.50")
     }
     
     func test_givenInitWithPriceAndSizesWithPrices_whenSizeSelected_thenTotalPriceIsCorrect() {

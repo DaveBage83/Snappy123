@@ -132,6 +132,8 @@ final class ProductOptionsViewModel: ObservableObject {
                             prices.append(size.price.price)
                         }
                     }
+                } else {
+                    prices.append(self.item.price.price)
                 }
                 
                 for option in self.filteredOptions {

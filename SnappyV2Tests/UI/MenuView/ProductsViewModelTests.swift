@@ -540,6 +540,28 @@ class ProductsViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
+    func test_associatedSearchTerm_givenNoSearchResultOrNavigationSearch_thenNil() {
+        let sut = makeSUT()
+        // No search result
+        XCTAssertNil(sut.associatedSearchTerm)
+        // Search result but not active
+        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: "Test", fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        sut.isSearchActive = false
+        XCTAssertNil(sut.associatedSearchTerm)
+        // Search result and active but with navigation
+        sut.isSearchActive = true
+        sut.navigationWithIsSearchActive = 1
+        XCTAssertNil(sut.associatedSearchTerm)
+    }
+    
+    func test_associatedSearchTerm_givenActiveSearchResultwithoutNavigationSearch_thenReturnSearchTerm() {
+        let searchTerm = "Test"
+        let sut = makeSUT()
+        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: searchTerm, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        sut.isSearchActive = true
+        XCTAssertEqual(sut.associatedSearchTerm, searchTerm)
+    }
+    
     func test_whenSubCategoriesAndItemsTapped() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .getChildCategoriesAndItems(categoryId: 321)]))
         let sut = makeSUT(container: container)

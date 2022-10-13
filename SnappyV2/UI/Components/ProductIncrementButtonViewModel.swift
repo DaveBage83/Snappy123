@@ -171,7 +171,6 @@ class ProductIncrementButtonViewModel: ObservableObject {
     
     func addItem() async {
         interactionLoggerHandler?(item)
-
         if hasAgeRestriction {
             if item.ageRestriction > container.appState.value.userData.confirmedAge {
                 self.isDisplayingAgeAlert = true

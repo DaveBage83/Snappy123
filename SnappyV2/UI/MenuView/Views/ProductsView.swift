@@ -304,9 +304,17 @@ struct ProductsView: View {
             ForEach(viewModel.splitItems(storeItems: viewModel.items, into: numberOfColumns), id: \.self) { itemCouple in
                 HStack(spacing: AppConstants.productCardGridSpacing) {
                     ForEach(itemCouple, id: \.self) { item in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: { product in
-                            viewModel.selectItem(product)
-                        }), productsViewModel: viewModel)
+                        ProductCardView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                menuItem: item,
+                                associatedSearchTerm: viewModel.associatedSearchTerm,
+                                productSelected: { product in
+                                    viewModel.selectItem(product)
+                                }
+                            ),
+                            productsViewModel: viewModel
+                        )
                     }
                 }
             }
@@ -319,18 +327,35 @@ struct ProductsView: View {
     @ViewBuilder func missedOffersView() -> some View {
         if viewModel.missedOfferMenus.isEmpty {
             ForEach(viewModel.specialOfferItems) { item in
-                ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, isOffer: true, productSelected: { product in
-                    viewModel.selectItem(product)
-                }), productsViewModel: viewModel)
+                ProductCardView(
+                    viewModel: .init(
+                        container: viewModel.container,
+                        menuItem: item,
+                        isOffer: true,
+                        productSelected: { product in
+                            viewModel.selectItem(product)
+                        }
+                    ),
+                    productsViewModel: viewModel
+                )
                 .padding([.top, .horizontal])
             }
         } else {
             ForEach(viewModel.missedOfferMenus) { menu in
                 ExpandableContentView(viewModel: .init(container: viewModel.container, title: menu.name, shortTitle: nil, showExpandableContent: true)) {
                     ForEach(menu.items) { item in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, isOffer: true, productSelected: { product in
-                            viewModel.selectItem(product)
-                        }), productsViewModel: viewModel)
+                        ProductCardView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                menuItem: item,
+                                isOffer: true,
+                                associatedSearchTerm: viewModel.associatedSearchTerm,
+                                productSelected: { product in
+                                    viewModel.selectItem(product)
+                                }
+                            ),
+                            productsViewModel: viewModel
+                        )
                     }
                 }
                 .padding(.top)
@@ -347,7 +372,14 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, productSelected: {_ in}), productsViewModel: viewModel)
+                        ProductCardView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                menuItem: result,
+                                associatedSearchTerm: viewModel.associatedSearchTerm,
+                                productSelected: {_ in}),
+                            productsViewModel: viewModel
+                        )
                     }
                 }
                 .padding(.horizontal, Constants.ItemsGrid.padding)
@@ -396,6 +428,7 @@ struct ProductsView: View {
                                     viewModel: .init(
                                         container: viewModel.container,
                                         menuItem: item,
+                                        associatedSearchTerm: viewModel.associatedSearchTerm,
                                         productSelected: { item in
                                             viewModel.logItemIteraction(with: item)
                                         }

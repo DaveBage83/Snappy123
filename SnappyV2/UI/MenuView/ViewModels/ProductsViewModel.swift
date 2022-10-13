@@ -185,6 +185,18 @@ class ProductsViewModel: ObservableObject {
         return isSearchActive && navigationWithIsSearchActive == 0
     }
     
+    // used by this view model and injected into ProductCardViewModel
+    var associatedSearchTerm: String? {
+        // only record the event if the activity is from the first step of the fetched
+        // search results
+        guard
+            let searchResult = searchResult.value,
+            let fetchSearchTerm = searchResult.fetchSearchTerm,
+            isSearchActive && navigationWithIsSearchActive == 0
+        else { return nil }
+        return fetchSearchTerm
+    }
+    
     var isSearching: Bool {
         switch searchResult {
         case .isLoading(last: _, cancelBag: _):
@@ -570,15 +582,9 @@ class ProductsViewModel: ObservableObject {
     }
     
     private func sendSearchResultSelectionEvent(categoryId: Int, itemId: Int? = nil, dealId: Int? = nil, name: String) {
-        // only record the event if the activity is from the first step of the fetched
-        // search results
-        guard
-            let searchResult = searchResult.value,
-            let fetchSearchTerm = searchResult.fetchSearchTerm,
-            isSearchActive && navigationWithIsSearchActive == 0
-        else { return }
+        guard let associatedSearchTerm = associatedSearchTerm else { return }
         var firebaseAnalyticsParams: [String : Any] = [
-            AnalyticsParameterSearchTerm: fetchSearchTerm,
+            AnalyticsParameterSearchTerm: associatedSearchTerm,
             "name": name,
             "category_id": categoryId
         ]

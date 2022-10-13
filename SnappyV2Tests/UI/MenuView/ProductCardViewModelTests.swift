@@ -7,6 +7,10 @@
 
 import XCTest
 import Combine
+
+// 3rd party
+import Firebase
+
 @testable import SnappyV2
 
 @MainActor
@@ -92,7 +96,8 @@ class ProductCardViewModelTests: XCTestCase {
         let store = RetailStoreDetails.mockedData
         
         let request = RetailStoreMenuItemRequest(itemId: item.id, storeId: store.id, categoryId: nil, fulfilmentMethod: .delivery, fulfilmentDate: "")
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getItem(request: request)]))
+        let eventLogger = MockedEventLogger()
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(retailStoreMenuService: [.getItem(request: request)]))
         container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         let sut = makeSUT(container: container, menuItem: RetailStoreMenuItem.mockedData)
@@ -100,6 +105,40 @@ class ProductCardViewModelTests: XCTestCase {
         do {
             try await sut.productCardTapped()
             container.services.verify(as: .retailStoreMenu)
+            // No events should be logged without an associated search term
+            eventLogger.verify()
+        } catch {
+            XCTFail("Unexpected error trying to get product details")
+        }
+    }
+    
+    func test_whenProductCardTapped_givenStoreSelectedAndAssociatedTerm_thenProductDetailsRequestedAndEventSent() async {
+        let searchTerm = "Test"
+        let item = RetailStoreMenuItem.mockedData
+        let store = RetailStoreDetails.mockedData
+        
+        let request = RetailStoreMenuItemRequest(itemId: item.id, storeId: store.id, categoryId: nil, fulfilmentMethod: .delivery, fulfilmentDate: "")
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(
+                for: SnappyV2.AppEvent.searchResultSelection,
+                with: SnappyV2.EventLoggerType.firebaseAnalytics,
+                params: [
+                    AnalyticsParameterSearchTerm: searchTerm,
+                    "name": item.name,
+                    "item_id": item.id,
+                    "category_id": item.mainCategory.id
+                ]
+            )
+        ])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(retailStoreMenuService: [.getItem(request: request)]))
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let sut = makeSUT(container: container, menuItem: RetailStoreMenuItem.mockedData, associatedSearchTerm: searchTerm)
+        
+        do {
+            try await sut.productCardTapped()
+            container.services.verify(as: .retailStoreMenu)
+            eventLogger.verify()
         } catch {
             XCTFail("Unexpected error trying to get product details")
         }
@@ -115,10 +154,9 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showSpecialOfferPillAsButton)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductCardViewModel {
-        let sut = ProductCardViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket, productSelected: {
-        _ in}
-)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false, associatedSearchTerm: String? = nil) -> ProductCardViewModel {
+        let sut = ProductCardViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket, associatedSearchTerm: associatedSearchTerm, productSelected: {
+        _ in})
         
         trackForMemoryLeaks(sut)
         

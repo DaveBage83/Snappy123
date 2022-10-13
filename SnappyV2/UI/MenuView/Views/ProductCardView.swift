@@ -138,7 +138,6 @@ struct ProductCardView: View {
     
     private var productImageButton: some View {
         Button(action: {
-            productsViewModel.logItemIteraction(with: viewModel.itemDetail)
             Task {
                 try await viewModel.productCardTapped()
             }
@@ -153,7 +152,6 @@ struct ProductCardView: View {
     
     private var productDetails: some View {
         Button(action: {
-            productsViewModel.logItemIteraction(with: viewModel.itemDetail)
             Task {
                 try await viewModel.productCardTapped()
             }

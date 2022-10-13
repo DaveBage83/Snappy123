@@ -24,8 +24,7 @@ struct AppState {
     var passwordResetCode: String?
     
     // Toast properties
-    var loading = false
-    var viewIDs = [UUID]() // In the real project this would be UUID - using String for ease of recognition here
+    var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
     var errors: [Swift.Error] = []
     var successToastStrings = [String]()
     

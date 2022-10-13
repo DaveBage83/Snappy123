@@ -286,8 +286,7 @@ class StoresViewModel: ObservableObject {
     
     func selectStore(id: Int) async {
         self.storeLoadingId = id
-//        self.storeIsLoading = true
-        self.container.appState.value.loading = true
+        self.storeIsLoading = true
         selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
             do {

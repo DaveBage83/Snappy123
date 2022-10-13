@@ -42,12 +42,10 @@ struct ToastableViewContainer<Content: View>: View {
                         viewModel.container.appState.value.successToastStrings = successes
                     }
                 }
-                viewModel.container.appState.value.loading =  false
             }
             .onAppear {
                 // ... or from a view
                 viewModel.container.appState.value.errors = []
-                viewModel.container.appState.value.loading =  false
             }
             .edgesIgnoringSafeArea(.all)
     }

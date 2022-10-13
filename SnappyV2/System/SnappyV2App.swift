@@ -232,7 +232,6 @@ struct SnappyV2StudyApp: View {
                             })
                             .navigationViewStyle(.stack)
                     }, isModal: false, viewModel: .init(container: viewModel.container))
-
                 }
             }
             
@@ -270,7 +269,6 @@ struct SnappyV2StudyApp: View {
                 showStoreReview(storeReview)
             }
         }
-//        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
         .onChange(of: viewModel.showPushNotificationsEnablePromptView) { showPrompt in
             if showPrompt {
                 showPushNotificationsEnablePromptView()
@@ -296,6 +294,5 @@ struct SnappyV2StudyApp: View {
         .onChange(of: scenePhase) { newPhase in
             viewModel.setAppForegroundStatus(phase: newPhase)
         }
-//        .withAlertToast(container: viewModel.container, error: $viewModel.error)
     }
 }

@@ -27,7 +27,6 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var isActive: Bool
     @Published var isConnected: Bool
     @Published var storeReview: RetailStoreReview?
-    @Published var successMessage: String?
     @Published var pushNotification: DisplayablePushNotification?
     @Published var urlToOpen: URL?
     @Published var showPushNotificationsEnablePromptView: Bool
@@ -282,14 +281,14 @@ class SnappyV2AppViewModel: ObservableObject {
         if let error = error {
             self.container.appState.value.errors.append(error)
         } else if let toast = toast {
-            successMessage = toast
+            container.appState.value.successToastStrings.append(toast)
         }
     }
     
     func dismissRetailStoreReviewView(reviewSent: Bool) {
         container.appState.value.retailStoreReview = nil
         storeReview = nil
-        successMessage = Strings.StoreReview.StaticText.submittedMessage.localized
+        container.appState.value.successToastStrings.append(Strings.StoreReview.StaticText.submittedMessage.localized)
     }
     
     func urlToOpenAttempted() {

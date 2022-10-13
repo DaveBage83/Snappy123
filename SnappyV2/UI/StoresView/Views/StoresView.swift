@@ -356,12 +356,9 @@ struct StoresView: View {
                             }
                             
                         }) {
-//                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.container.appState.value.loading && viewModel.storeLoadingId == details.id))
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
                         }
-//                        .disabled(viewModel.storeIsLoading)
-                        .disabled(viewModel.container.appState.value.loading)
-
+                        .disabled(viewModel.storeIsLoading)
                     }
                 }
             }
@@ -376,12 +373,9 @@ struct StoresView: View {
                             }
                             
                         }) {
-//                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.container.appState.value.loading && viewModel.storeLoadingId == details.id))
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
                         }
-//                        .disabled(viewModel.storeIsLoading)
-                        .disabled(viewModel.container.appState.value.loading)
-
+                        .disabled(viewModel.storeIsLoading)
                     }
                 }
             }

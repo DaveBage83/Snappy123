@@ -356,9 +356,9 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         container.services.verify(as: .checkout)
     }
     
-    func test_givenStoreSupportsRealex_thenShowPayByCardIsTrue() {
-        let paymentMethod = PaymentMethod(name: "realex", title: "realex", description: nil, settings: PaymentMethodSettings(title: "realex", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["realex"], saveCards: nil, cutOffTime: nil))
-        let paymentGateway = PaymentGateway(name: "realex", mode: .sandbox, fields: nil)
+    func test_givenStoreSupportsCheckoutCom_thenShowPayByCardIsTrue() {
+        let paymentMethod = PaymentMethod(name: "checkoutcom", title: "CheckoutCom", description: nil, settings: PaymentMethodSettings(title: "CheckoutCom", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["checkoutcom"], saveCards: nil, cutOffTime: nil))
+        let paymentGateway = PaymentGateway(name: "checkoutcom", mode: .sandbox, fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, retailCustomer: nil, searchPostcode: nil)
         let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
@@ -538,6 +538,15 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         XCTAssertNotNil(sut.error)
         eventLogger.verify()
+    }
+    
+    func test_givenStoreWithMultiplePaymentMethods_whenInit_thenPaymentMethodsOrderIsInCorrectOrder() {
+        let store = RetailStoreDetails.mockedDataWithCheckoutComApplePay
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedStore = .loaded(store)
+        let sut = makeSUT(container: container)
+        
+        XCTAssertEqual(sut.paymentMethodsOrder, [.payByCash, .payByApple, .payByCard])
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), checkoutState: @escaping (CheckoutRootViewModel.CheckoutState) -> Void = {_ in }, dateGenerator: @escaping () -> Date = Date.init) -> CheckoutFulfilmentInfoViewModel {

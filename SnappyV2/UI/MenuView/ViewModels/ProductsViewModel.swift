@@ -392,7 +392,9 @@ class ProductsViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 guard let value = menu.value else {
-                    self.error = menu.error
+                    if let error = menu.error {
+                        self.container.appState.value.errors.append(error)
+                    }
                     return
                 }
                 

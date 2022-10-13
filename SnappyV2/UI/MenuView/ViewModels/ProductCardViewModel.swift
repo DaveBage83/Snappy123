@@ -8,6 +8,9 @@
 import Combine
 import Foundation
 
+// 3rd party
+import Firebase
+
 @MainActor
 class ProductCardViewModel: ObservableObject {
     let container: DIContainer
@@ -18,6 +21,7 @@ class ProductCardViewModel: ObservableObject {
     @Published var showItemDetails = false
     let isInBasket: Bool
     let isOffer: Bool
+    let associatedSearchTerm: String?
     let productSelected: (RetailStoreMenuItem) -> Void
     
     var isReduced: Bool {
@@ -63,18 +67,32 @@ class ProductCardViewModel: ObservableObject {
         itemDetail.availableDeals?.max { $0.id < $1.id }
     }
 
-    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false, isOffer: Bool = false, productSelected: @escaping (RetailStoreMenuItem) -> Void) {
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false, isOffer: Bool = false, associatedSearchTerm: String? = nil, productSelected: @escaping (RetailStoreMenuItem) -> Void) {
         self.container = container
         self.itemDetail = menuItem
         self.isInBasket = isInBasket
-        self.productSelected = productSelected
         self.isOffer = isOffer
+        self.associatedSearchTerm = associatedSearchTerm
+        self.productSelected = productSelected
+    }
+    
+    private func sendSearchResultSelectionEvent() {
+        guard let associatedSearchTerm = associatedSearchTerm else { return }
+        var firebaseAnalyticsParams: [String : Any] = [
+            AnalyticsParameterSearchTerm: associatedSearchTerm,
+            "name": itemDetail.name,
+            "category_id": itemDetail.mainCategory.id,
+            "item_id": itemDetail.id
+        ]
+        container.eventLogger.sendEvent(for: .searchResultSelection, with: .firebaseAnalytics, params: firebaseAnalyticsParams)
     }
     
     func productCardTapped() async throws {
         guard let selectedStore = container.appState.value.userData.selectedStore.value else {
             return
         }
+        
+        sendSearchResultSelectionEvent()
         
         isGettingProductDetails = true
         

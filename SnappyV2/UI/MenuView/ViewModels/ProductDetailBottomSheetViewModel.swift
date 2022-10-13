@@ -7,7 +7,10 @@
 
 import Foundation
 import Combine
+
+// 3rd party
 import AppsFlyerLib
+import Firebase
 
 class ProductDetailBottomSheetViewModel: ObservableObject {
     let container: DIContainer
@@ -57,23 +60,38 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
         
         setupBasket(with: appState)
         setupBasketQuantity()
-        sendContentViewEvent()
+        sendContentViewEvent(with: appState)
     }
     
-    private func sendContentViewEvent() {
+    private func sendContentViewEvent(with appState: Store<AppState>) {
         let appsFlyerParams: [String: Any] = [
             AFEventParamContentId: item.id,
             "product_name": item.name,
             AFEventParamContentType: item.mainCategory.name
         ]
-        container.eventLogger.sendEvent(for: .contentView, with: .appsFlyer, params: appsFlyerParams)
+        container.eventLogger.sendEvent(for: .viewItemDetail, with: .appsFlyer, params: appsFlyerParams)
         
         let iterableParams: [String: Any] = [
             "itemId": item.id,
             "name": item.name,
             "storeId": container.appState.value.userData.selectedStore.value?.id ?? 0
         ]
-        container.eventLogger.sendEvent(for: .contentView, with: .iterable, params: iterableParams)
+        container.eventLogger.sendEvent(for: .viewItemDetail, with: .iterable, params: iterableParams)
+
+        let value = NSDecimalNumber(value: item.price.fromPrice).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+
+        let itemValues: [String: Any] = [
+            AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            AnalyticsParameterItemName: item.name,
+            AnalyticsParameterPrice: value,
+        ]
+        
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterCurrency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+            AnalyticsParameterValue: NSDecimalNumber(value: value).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue,
+            AnalyticsParameterItems: [itemValues]
+        ]
+        container.eventLogger.sendEvent(for: .viewItemDetail, with: .firebaseAnalytics, params: firebaseParams)
     }
     
     private func setupBasket(with appState: Store<AppState>) {

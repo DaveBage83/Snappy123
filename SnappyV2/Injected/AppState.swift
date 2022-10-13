@@ -35,10 +35,19 @@ extension AppState {
 
 extension AppState {
     struct StoreMenu: Equatable {
+        // for general menu navigation
         var rootCategories = [RetailStoreMenuCategory]()
-        var subCategories = [RetailStoreMenuCategory]()
+        var subCategories = [[RetailStoreMenuCategory]]()
         var unsortedItems = [RetailStoreMenuItem]()
         var specialOfferItems = [RetailStoreMenuItem]()
+        // for the search state restore:
+        var searchText = ""
+        var searchResultCategories = [GlobalSearchResultRecord]()
+        var searchResultItems = [RetailStoreMenuItem]()
+        var navigationWithIsSearchActive = 0
+        // titles
+        var subCategoryNavigationTitle = [String]()
+        var itemNavigationTitle: String? = nil
     }
 }
 

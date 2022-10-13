@@ -30,6 +30,22 @@ class ProductIncrementButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.quantityLimitReached)
     }
     
+    func test_whenAddOrRemoveTapped_thenInteractionLoggerHandlerCalled() async {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 0, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil, deal: nil)
+        
+        var handlerCallCount = 0
+        let sut = makeSUT(menuItem: menuItem) { item in
+            XCTAssertEqual(item, menuItem)
+            handlerCallCount += 1
+        }
+        
+        await sut.addItem()
+        sut.removeItem()
+        
+        XCTAssertEqual(handlerCallCount, 2)
+    }
+    
     func test_whenMenuSizesIsNotNil_thenItemHasOptionOrSizesIsTrue() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [], menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil, deal: nil)
@@ -494,8 +510,8 @@ class ProductIncrementButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.quantityLimitReached)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductIncrementButtonViewModel {
-        let sut = ProductIncrementButtonViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false, interactionLoggerHandler: ((RetailStoreMenuItem)->())? = nil) -> ProductIncrementButtonViewModel {
+        let sut = ProductIncrementButtonViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket, interactionLoggerHandler: interactionLoggerHandler)
         
         trackForMemoryLeaks(sut)
         

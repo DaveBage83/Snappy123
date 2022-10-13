@@ -183,13 +183,25 @@ class InitialViewModelTests: XCTestCase {
     }
     
     func test_whenTapLoadRetailStoresTriggered_thenServiceCalledAndShowInitialViewIsFalse() async {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4AG")]))
+        
+        let postcode = "PA34 4AG"
+        let eventLogger = MockedEventLogger(
+            expected: [.sendEvent(for: .storeSearchFromStartView, with: .firebaseAnalytics, params: ["search_text": postcode])]
+        )
+        
+        let container = DIContainer(
+            appState: AppState(),
+            eventLogger: eventLogger,
+            services: .mocked(retailStoreService: [.searchRetailStores(postcode: postcode)])
+        )
         let sut = makeSUT(container: container)
+        sut.postcode = postcode
         
         await sut.tapLoadRetailStores()
         
         XCTAssertFalse(sut.container.appState.value.routing.showInitialView)
         container.services.verify(as: .retailStore)
+        eventLogger.verify()
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {

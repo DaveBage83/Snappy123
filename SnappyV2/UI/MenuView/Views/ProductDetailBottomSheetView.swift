@@ -150,7 +150,7 @@ struct ProductDetailBottomSheetView: View {
     @ViewBuilder var offerPill: some View {
         if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
             Button {
-                productsViewModel.specialOfferPillTapped(offer: latestOffer) {
+                productsViewModel.specialOfferPillTapped(offer: latestOffer, fromItem: viewModel.item) {
                     dismissViewHandler()
                 }
             } label: {

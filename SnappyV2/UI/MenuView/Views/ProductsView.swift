@@ -136,7 +136,9 @@ struct ProductsView: View {
                         }
                         .padding(.bottom, tabViewHeight)
                         .background(colorPalette.backgroundMain)
-                    }
+                    }.simultaneousGesture(DragGesture().onChanged({ _ in
+                        hideKeyboard()
+                    }))
                 }
                 .toolbar(content: {
                     ToolbarItem(placement: .principal) {
@@ -162,6 +164,9 @@ struct ProductsView: View {
                         .padding(.bottom, tabViewHeight)
                         .background(colorPalette.backgroundMain)
                     }
+                    .simultaneousGesture(DragGesture().onChanged({ _ in
+                        hideKeyboard()
+                    }))
                 }
             }
             .background(colorPalette.backgroundMain)
@@ -175,9 +180,9 @@ struct ProductsView: View {
                 .background(colorPalette.backgroundMain)
                 .dismissableNavBar(
                     presentation: nil,
-                    color: viewModel.hideNavBar ? .clear : colorPalette.primaryBlue,
-                    title: viewModel.currentNavigationTitle,
-                    navigationDismissType: .back,
+                    color: /*viewModel.hideNavBar ? .clear :*/ colorPalette.primaryBlue,
+                    title: viewModel.hideNavBar ? nil : viewModel.currentNavigationTitle,
+                    navigationDismissType: viewModel.showBackButton ? .back : .none,
                     backButtonAction: {
                         viewModel.backButtonTapped()
                     })
@@ -194,7 +199,7 @@ struct ProductsView: View {
             EmptyView()
         } else if viewModel.showEnterMoreCharactersView {
             enterMoreCharacters
-        } else if viewModel.isSearchActive {
+        } else if viewModel.showSearchView {
             searchView()
         } else {
             switch viewModel.viewState {
@@ -265,7 +270,7 @@ struct ProductsView: View {
     @ViewBuilder private func subCategoriesView() -> some View {
         if sizeClass == .compact {
             VStack(spacing: Constants.CategoriesView.vSpacing) {
-                ForEach(viewModel.subCategories, id: \.id) { details in
+                ForEach(viewModel.lastSubCategories, id: \.id) { details in
                     Button(action: { viewModel.categoryTapped(with: details, fromState: .subCategories) }) {
                         ProductCategoryCardView(container: viewModel.container, categoryDetails: details)
                             .padding(.horizontal)
@@ -299,9 +304,17 @@ struct ProductsView: View {
             ForEach(viewModel.splitItems(storeItems: viewModel.items, into: numberOfColumns), id: \.self) { itemCouple in
                 HStack(spacing: AppConstants.productCardGridSpacing) {
                     ForEach(itemCouple, id: \.self) { item in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: { product in
-                            viewModel.selectItem(product)
-                        }), productsViewModel: viewModel)
+                        ProductCardView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                menuItem: item,
+                                associatedSearchTerm: viewModel.associatedSearchTerm,
+                                productSelected: { product in
+                                    viewModel.selectItem(product)
+                                }
+                            ),
+                            productsViewModel: viewModel
+                        )
                     }
                 }
             }
@@ -314,18 +327,35 @@ struct ProductsView: View {
     @ViewBuilder func missedOffersView() -> some View {
         if viewModel.missedOfferMenus.isEmpty {
             ForEach(viewModel.specialOfferItems) { item in
-                ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, isOffer: true, productSelected: { product in
-                    viewModel.selectItem(product)
-                }), productsViewModel: viewModel)
+                ProductCardView(
+                    viewModel: .init(
+                        container: viewModel.container,
+                        menuItem: item,
+                        isOffer: true,
+                        productSelected: { product in
+                            viewModel.selectItem(product)
+                        }
+                    ),
+                    productsViewModel: viewModel
+                )
                 .padding([.top, .horizontal])
             }
         } else {
             ForEach(viewModel.missedOfferMenus) { menu in
                 ExpandableContentView(viewModel: .init(container: viewModel.container, title: menu.name, shortTitle: nil, showExpandableContent: true)) {
                     ForEach(menu.items) { item in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, isOffer: true, productSelected: { product in
-                            viewModel.selectItem(product)
-                        }), productsViewModel: viewModel)
+                        ProductCardView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                menuItem: item,
+                                isOffer: true,
+                                associatedSearchTerm: viewModel.associatedSearchTerm,
+                                productSelected: { product in
+                                    viewModel.selectItem(product)
+                                }
+                            ),
+                            productsViewModel: viewModel
+                        )
                     }
                 }
                 .padding(.top)
@@ -342,7 +372,14 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, productSelected: {_ in}), productsViewModel: viewModel)
+                        ProductCardView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                menuItem: result,
+                                associatedSearchTerm: viewModel.associatedSearchTerm,
+                                productSelected: {_ in}),
+                            productsViewModel: viewModel
+                        )
                     }
                 }
                 .padding(.horizontal, Constants.ItemsGrid.padding)
@@ -372,6 +409,9 @@ struct ProductsView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.leading)
                 }
+                .simultaneousGesture(DragGesture().onChanged({ _ in
+                    hideKeyboard()
+                }))
             }
             
             // Search result items card list
@@ -384,7 +424,17 @@ struct ProductsView: View {
                     ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
                         HStack(spacing: AppConstants.productCardGridSpacing) {
                             ForEach(itemCouple, id: \.self) { item in
-                                ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: {_ in}), productsViewModel: viewModel)
+                                ProductCardView(
+                                    viewModel: .init(
+                                        container: viewModel.container,
+                                        menuItem: item,
+                                        associatedSearchTerm: viewModel.associatedSearchTerm,
+                                        productSelected: { item in
+                                            viewModel.logItemIteraction(with: item)
+                                        }
+                                    ),
+                                    productsViewModel: viewModel
+                                )
                             }
                         }
                     }
@@ -393,6 +443,9 @@ struct ProductsView: View {
                 }
                 .padding(.horizontal, AppConstants.productCardGridSpacing)
                 .background(colorPalette.backgroundMain)
+                .simultaneousGesture(DragGesture().onChanged({ _ in
+                    hideKeyboard()
+                }))
             }
             
             // No search result

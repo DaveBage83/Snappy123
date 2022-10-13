@@ -11,6 +11,7 @@ import OSLog
 
 // 3rd party
 import AppsFlyerLib
+import Firebase
 
 enum RetailStoreMenuServiceError: Swift.Error {
     case unableToPersistResult
@@ -125,7 +126,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 .sinkToLoadable {
                     searchFetch.wrappedValue = $0
                     if let unwrappedSearchResult = $0.value {
-                        sendAppsFlyerSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
+                        sendSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
                     }
                 }
                 .store(in: cancelBag)
@@ -141,15 +142,15 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 .sinkToLoadable {
                     searchFetch.wrappedValue = $0
                     if let unwrappedSearchResult = $0.value {
-                        sendAppsFlyerSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
+                        sendSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
                     }
                 }
                 .store(in: cancelBag)
         }
     }
     
-    private func sendAppsFlyerSearchEvent(searchTerm: String, searchResult: RetailStoreMenuGlobalSearch) {
-        var params: [String: Any] = [
+    private func sendSearchEvent(searchTerm: String, searchResult: RetailStoreMenuGlobalSearch) {
+        var appsFlyerParams: [String: Any] = [
             AFEventParamSearchString: searchTerm
         ]
         
@@ -175,11 +176,17 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             }
         }
         
-        params["item_names"] = itemNames
-        params["category_names"] = categoryNames
-        params["deal_names"] = dealNames
+        appsFlyerParams["item_names"] = itemNames
+        appsFlyerParams["category_names"] = categoryNames
+        appsFlyerParams["deal_names"] = dealNames
         
-        eventLogger.sendEvent(for: .search, with: .appsFlyer, params: params)
+        eventLogger.sendEvent(for: .search, with: .appsFlyer, params: appsFlyerParams)
+        
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterSearchTerm: searchTerm
+        ]
+        
+        eventLogger.sendEvent(for: .search, with: .firebaseAnalytics, params: firebaseParams)
     }
     
     func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?) {
@@ -370,8 +377,13 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             "name": categoryName
         ]
         
+        var firebaseParams: [String: Any] = [
+            "category_name": categoryName
+        ]
+        
         if let id = categoryId {
             appsFlyerParams["category_id"] = id
+            firebaseParams["category_id"] = id
         }
         
         if let categories = fetchResult.categories {
@@ -382,12 +394,16 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             appsFlyerParams["category_type"] = "items"
         }
         
-        eventLogger.sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams)
+        eventLogger.sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams)
         
         iterableParams["storeId"] = appState.value.userData.selectedStore.value?.id ?? 0
         iterableParams["categoryId"] = categoryId ?? 0
         
-        eventLogger.sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+        eventLogger.sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams)
+        
+        let firebaseEvent: AppEvent = fetchResult.categories != nil ? .viewCategoryList : .viewProductList
+
+        eventLogger.sendEvent(for: firebaseEvent, with: .firebaseAnalytics, params: firebaseParams)
     }
     
     private func firstWebFetchBeforeCheckingStore(

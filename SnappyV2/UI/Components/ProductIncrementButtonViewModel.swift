@@ -14,6 +14,7 @@ import AppsFlyerLib
 class ProductIncrementButtonViewModel: ObservableObject {
     let container: DIContainer
     let item: RetailStoreMenuItem
+    let interactionLoggerHandler: ((RetailStoreMenuItem)->())?
     @Published var basket: Basket?
     @Published var basketQuantity: Int = 0
     @Published var changeQuantity: Int = 0
@@ -49,10 +50,11 @@ class ProductIncrementButtonViewModel: ObservableObject {
     
     var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
     
-    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false) {
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false, interactionLoggerHandler: ((RetailStoreMenuItem)->())? = nil) {
         self.container = container
         let appState = container.appState
         self.item = menuItem
+        self.interactionLoggerHandler = interactionLoggerHandler
         self._basket = .init(initialValue: appState.value.userData.basket)
         self.isInBasket = isInBasket
         
@@ -127,7 +129,6 @@ class ProductIncrementButtonViewModel: ObservableObject {
             
             do {
                 try await self.container.services.basketService.addItem(basketItemRequest: basketItem, item: self.item)
-                
                 Logger.product.info("Added \(String(describing: self.item.name)) x \(newValue) to basket")
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
@@ -169,13 +170,14 @@ class ProductIncrementButtonViewModel: ObservableObject {
     }
     
     func addItem() async {
+        interactionLoggerHandler?(item)
         if hasAgeRestriction {
             if item.ageRestriction > container.appState.value.userData.confirmedAge {
                 self.isDisplayingAgeAlert = true
                 return
             }
         }
-        
+
         if quickAddIsEnabled {
             changeQuantity += 1
         } else {
@@ -185,6 +187,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
     }
     
     func removeItem() {
+        interactionLoggerHandler?(item)
         if quickAddIsEnabled {
             changeQuantity -= 1
         } else if basketQuantity == 1 {

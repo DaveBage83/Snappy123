@@ -7,13 +7,20 @@
 
 import XCTest
 import Combine
+
+// 3rd party
 import AppsFlyerLib
+import Firebase
+
 @testable import SnappyV2
 
 class ProductDetailBottomSheetViewModelTests: XCTestCase {
     
-    func test_givenInitWithItem_thenSendAppsFlyerEventCalled() {
+    func test_givenInitWithItem_thenSendViewItemDetailsEventCalled() {
+        
+        let store = RetailStoreDetails.mockedData
         let item = RetailStoreMenuItem.mockedData
+        
         let appsFlyerParams: [String: Any] = [
             AFEventParamContentId: item.id,
             "product_name": item.name,
@@ -22,13 +29,29 @@ class ProductDetailBottomSheetViewModelTests: XCTestCase {
         let iterableParams: [String: Any] = [
             "itemId": item.id,
             "name": item.name,
-            "storeId": 0
+            "storeId": store.id
         ]
+        let value = NSDecimalNumber(value: item.price.fromPrice).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        let itemValues: [String: Any] = [
+            AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            AnalyticsParameterItemName: item.name,
+            AnalyticsParameterPrice: value,
+        ]
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterCurrency: store.currency.currencyCode,
+            AnalyticsParameterValue: NSDecimalNumber(value: value).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue,
+            AnalyticsParameterItems: [itemValues]
+        ]
+        
         let eventLogger = MockedEventLogger.init(expected: [
-            .sendEvent(for: .contentView, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .contentView, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewItemDetail, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewItemDetail, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewItemDetail, with: .firebaseAnalytics, params: firebaseParams)
         ])
-        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let userData = AppState.UserData(selectedStore: .loaded(store), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         _ = makeSUT(container: container, menuItem: item)
         
         eventLogger.verify()

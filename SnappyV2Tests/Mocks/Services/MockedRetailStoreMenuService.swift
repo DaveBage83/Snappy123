@@ -103,6 +103,10 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
     
     let actions: MockActions<Action>
     
+    let cancelBag = CancelBag()
+    var getChildCategoriesAndItemsResponse: Result<RetailStoreMenuFetch, Error> = .failure(MockError.valueNotSet)
+    var globalSearchResponse: Result<RetailStoreMenuGlobalSearch, Error> = .failure(MockError.valueNotSet)
+    
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
     }
@@ -113,6 +117,12 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
     
     func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int) {
         register(.getChildCategoriesAndItems(categoryId: categoryId))
+        getChildCategoriesAndItemsResponse
+            .publish()
+            .sinkToLoadable {
+                menuFetch.wrappedValue = $0
+            }
+            .store(in: cancelBag)
     }
     
     func globalSearch(
@@ -130,6 +140,12 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
                 categoriesPagination: categoriesPagination
             )
         )
+        globalSearchResponse
+            .publish()
+            .sinkToLoadable {
+                searchFetch.wrappedValue = $0
+            }
+            .store(in: cancelBag)
     }
     
     func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?) {

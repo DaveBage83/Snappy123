@@ -7,7 +7,11 @@
 
 import XCTest
 import Combine
+
+// 3rd party
 import AppsFlyerLib
+import Firebase
+
 @testable import SnappyV2
 
 class RetailStoreMenuServiceTests: XCTestCase {
@@ -89,9 +93,96 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
             "name": menuFetchResult.name!,
             "storeId": store.id
         ]
+        let firebaseParams: [String: Any] = [
+            "category_id": 0,
+            "category_name": menuFetchResult.name!
+        ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
+        ])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.loadRetailStoreMenuSubCategoriesAndItemsResponse = .success(menuFetchResult)
+        mockedDBRepo.clearRetailStoreMenuFetchResponse = .success(true)
+        mockedDBRepo.storeCategoryResponse = .success(storedMenuFetchResult)
+        
+        let exp = expectation(description: #function)
+        
+        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
+        sut.getChildCategoriesAndItems(menuFetch: result.binding, categoryId: 0)
+        result.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(storedMenuFetchResult)
+            ])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+            exp.fulfill()
+        }
+        .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_whenSuccessfulCategoriesResult_givenJustItems_thenReturnCategories() {
+        
+        let menuFetchResult = RetailStoreMenuFetch.mockedDataItems
+        let store = RetailStoreDetails.mockedData
+        appState.value.userData.selectedStore = .loaded(store)
+        let dateString = appState.value.userData.selectedStore.value?.storeDateToday()
+        let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
+        appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
+        
+        let storedMenuFetchResult = RetailStoreMenuFetch(
+            id: menuFetchResult.id ?? 0,
+            name: menuFetchResult.name ?? "",
+            categories: menuFetchResult.categories,
+            menuItems: menuFetchResult.menuItems,
+            dealSections: menuFetchResult.dealSections,
+            fetchStoreId: store.id,
+            fetchCategoryId: 0,
+            fetchFulfilmentMethod: fulfilmentMethod,
+            fetchFulfilmentDate: dateString,
+            fetchTimestamp: Date()
+        )
+        
+        // Configuring expected actions on repositories and events
+        
+        mockedWebRepo.actions = .init(
+            expected: [.loadRetailStoreMenuSubCategoriesAndItems(storeId: store.id, categoryId: 0, fulfilmentMethod: .delivery, fulfilmentDate: nil)]
+        )
+        
+        mockedDBRepo.actions = .init(
+            expected: [
+                .clearRetailStoreMenuFetch(forStoreId: store.id, categoryId: 0, fulfilmentMethod: fulfilmentMethod, fulfilmentDate: dateString),
+                .store(fetchResult: menuFetchResult, forStoreId: store.id, categoryId: 0, fulfilmentMethod: fulfilmentMethod, fulfilmentDate: dateString)
+            ]
+        )
+        
+        let appsFlyerParams: [String: Any] = [
+            "category_id": 0,
+            AFEventParamContentType: menuFetchResult.name!,
+            AFEventParamQuantity: menuFetchResult.menuItems?.count ?? 0,
+            "category_type": "items"
+        ]
+        let iterableParams: [String: Any] = [
+            "categoryId": 0,
+            "name": menuFetchResult.name!,
+            "storeId": store.id
+        ]
+        let firebaseParams: [String: Any] = [
+            "category_id": 0,
+            "category_name": menuFetchResult.name!
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewProductList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -182,9 +273,14 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
             "name": menuFetchResult.name!,
             "storeId": store.id
         ]
+        let firebaseParams: [String: Any] = [
+            "category_id": 0,
+            "category_name": menuFetchResult.name!
+        ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -312,22 +408,33 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
 final class GlobalSearchTests: RetailStoreMenuServiceTests {
     
     func test_whenSuccessfulSearch_thenReturnCorrectResult() {
+        
+        let searchTerm = "Bags"
+        
         let searchResult = RetailStoreMenuGlobalSearch.mockedDataFromAPI
         let selectedStore = RetailStoreDetails.mockedData
         sut.appState.value.userData.selectedStore = .loaded(selectedStore)
         
         // Configuring expected actions on repositories and events
         
-        mockedWebRepo.actions = .init(expected: [.globalSearch(storeId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: "Bags")])
-        mockedDBRepo.actions = .init(expected: [.clearGlobalSearch(forStoreId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: "Bags"), .store(fetchResult: searchResult, forStoreId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: "Bags")])
+        mockedWebRepo.actions = .init(expected: [.globalSearch(storeId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: searchTerm)])
+        mockedDBRepo.actions = .init(expected: [.clearGlobalSearch(forStoreId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: searchTerm), .store(fetchResult: searchResult, forStoreId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: searchTerm)])
         
-        let params: [String: Any] = [
-            AFEventParamSearchString:"Bags",
-            "category_names":["Bags", "Bags & Wrap", "Bags & Wrap"],
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchTerm,
+            "category_names": ["Bags", "Bags & Wrap", "Bags & Wrap"],
             "item_names":["Basket limit conflict", "Option Grid Max(2) Min (0) Mutually Exclusive (true)"],
-            "deal_names":[]
+            "deal_names": []
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .search, with: .appsFlyer, params: params)])
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterSearchTerm: searchTerm
+        ]
+        mockedEventLogger.actions = .init(
+            expected: [
+                .sendEvent(for: .search, with: .appsFlyer, params: appsFlyerParams),
+                .sendEvent(for: .search, with: .firebaseAnalytics, params: firebaseParams)
+            ]
+        )
         
         // Configuring responses from repositories
         
@@ -340,7 +447,7 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuGlobalSearch>.notRequested)
         sut.globalSearch(
             searchFetch: result.binding,
-            searchTerm: "Bags",
+            searchTerm: searchTerm,
             scope: nil,
             itemsPagination: nil,
             categoriesPagination: nil
@@ -420,13 +527,21 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         mockedWebRepo.actions = .init(expected: [.globalSearch(storeId: selectedStore.id, fulfilmentMethod: fulfilmentMethod, searchTerm: searchTerm)])
         mockedDBRepo.actions = .init(expected: [.retailStoreMenuGlobalSearch(forStoreId: selectedStore.id, fulfilmentMethod: fulfilmentMethod, searchTerm: searchTerm)])
         
-        let params: [String: Any] = [
-            AFEventParamSearchString:searchTerm,
-            "category_names":["Bags", "Bags & Wrap", "Bags & Wrap"],
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchTerm,
+            "category_names": ["Bags", "Bags & Wrap", "Bags & Wrap"],
             "item_names":["Basket limit conflict", "Option Grid Max(2) Min (0) Mutually Exclusive (true)"],
-            "deal_names":[]
+            "deal_names": []
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .search, with: .appsFlyer, params: params)])
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterSearchTerm: searchTerm
+        ]
+        mockedEventLogger.actions = .init(
+            expected: [
+                .sendEvent(for: .search, with: .appsFlyer, params: appsFlyerParams),
+                .sendEvent(for: .search, with: .firebaseAnalytics, params: firebaseParams)
+            ]
+        )
         
         // Configuring responses from repositories
         
@@ -489,13 +604,21 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         mockedWebRepo.actions = .init(expected: [.globalSearch(storeId: selectedStore.id, fulfilmentMethod: fulfilmentMethod, searchTerm: searchTerm)])
         mockedDBRepo.actions = .init(expected: [.retailStoreMenuGlobalSearch(forStoreId: selectedStore.id, fulfilmentMethod: fulfilmentMethod, searchTerm: searchTerm)])
         
-        let params: [String: Any] = [
-            AFEventParamSearchString:searchTerm,
-            "category_names":["Bags", "Bags & Wrap", "Bags & Wrap"],
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchTerm,
+            "category_names": ["Bags", "Bags & Wrap", "Bags & Wrap"],
             "item_names":["Basket limit conflict", "Option Grid Max(2) Min (0) Mutually Exclusive (true)"],
-            "deal_names":[]
+            "deal_names": []
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .search, with: .appsFlyer, params: params)])
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterSearchTerm: searchTerm
+        ]
+        mockedEventLogger.actions = .init(
+            expected: [
+                .sendEvent(for: .search, with: .appsFlyer, params: appsFlyerParams),
+                .sendEvent(for: .search, with: .firebaseAnalytics, params: firebaseParams)
+            ]
+        )
         
         // Configuring responses from repositories
         
@@ -631,9 +754,13 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             "name": "root_menu",
             "storeId": store.id
         ]
+        let firebaseParams: [String: Any] = [
+            "category_name": "root_menu"
+        ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -720,9 +847,13 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             "name": "root_menu",
             "storeId": store.id
         ]
+        let firebaseParams: [String: Any] = [
+            "category_name": "root_menu"
+        ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories
@@ -826,9 +957,13 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             "name": "root_menu",
             "storeId": store.id
         ]
+        let firebaseParams: [String: Any] = [
+            "category_name": "root_menu"
+        ]
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewCategoryList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCategoryList, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCategoryList, with: .firebaseAnalytics, params: firebaseParams)
         ])
         
         // Configuring responses from repositories

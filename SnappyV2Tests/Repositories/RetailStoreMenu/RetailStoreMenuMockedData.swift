@@ -474,6 +474,22 @@ extension RetailStoreMenuItemAvailableDeal {
 
 extension RetailStoreMenuGlobalSearch {
     
+    static let mockedData = RetailStoreMenuGlobalSearch(
+        categories: GlobalSearchResult.mockedCategoriesData,
+        menuItems: GlobalSearchItemsResult.mockedData,
+        deals: GlobalSearchResult.mockedEmptyData,
+        noItemFoundHint: GlobalSearchNoItemHint.mockedData,
+        fetchStoreId: 910,
+        fetchFulfilmentMethod: .delivery,
+        fetchSearchTerm: "Test",
+        fetchSearchScope: nil,
+        fetchTimestamp: nil,
+        fetchItemsLimit: nil,
+        fetchItemsPage: nil,
+        fetchCategoriesLimit: nil,
+        fetchCategoryPage: nil
+    )
+    
     static let mockedDataFromAPI = RetailStoreMenuGlobalSearch(
         categories: GlobalSearchResult.mockedCategoriesData,
         menuItems: GlobalSearchItemsResult.mockedData,

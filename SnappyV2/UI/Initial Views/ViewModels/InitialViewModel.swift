@@ -372,6 +372,15 @@ class InitialViewModel: ObservableObject {
                 
                 try await self.container.services.retailStoresService.searchRetailStores(location: coordinate).singleOutput()
                 
+                self.container.eventLogger.sendEvent(
+                    for: .storeSearchFromStartView,
+                    with: .firebaseAnalytics,
+                    params: [
+                        "latitude": coordinate.latitude,
+                        "longitude": coordinate.longitude
+                    ]
+                )
+                
                 self.container.appState.value.routing.showInitialView = false
                 
                 self.locationIsLoading = false
@@ -547,7 +556,15 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() async {
         do {
-            try await container.services.retailStoresService.searchRetailStores(postcode: self.postcode).singleOutput()
+            try await container.services.retailStoresService.searchRetailStores(postcode: postcode).singleOutput()
+            
+            container.eventLogger.sendEvent(
+                for: .storeSearchFromStartView,
+                with: .firebaseAnalytics,
+                params: [
+                    "search_text": postcode
+                ]
+            )
             
             self.container.appState.value.routing.showInitialView = false
         } catch {

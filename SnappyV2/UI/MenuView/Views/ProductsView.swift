@@ -84,13 +84,15 @@ struct ProductsView: View {
         NavigationView {
             if #available(iOS 15.0, *) {
                 mainContent
-                    .bottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: Strings.ProductsView.ProductCard.title.localized, windowSize: mainWindowSize) { item in
+                    .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: Strings.ProductsView.ProductCard.title.localized, windowSize: mainWindowSize) { item in
                         bottomSheet(selectedItem: item)
                     }
             } else {
                 mainContent
                     .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
-                        bottomSheet(selectedItem: item)
+                        ToastableViewContainer(content: {
+                            bottomSheet(selectedItem: item)
+                        }, isModal: true, viewModel: .init(container: viewModel.container))
                     }
             }
         }
@@ -149,8 +151,6 @@ struct ProductsView: View {
                 })
             }
             .background(colorPalette.backgroundMain)
-//            .withAlertToast(container: viewModel.container, error: $viewModel.error)
-
         } else {
             VStack(spacing: 0) {
                 ScrollViewReader { proxy in

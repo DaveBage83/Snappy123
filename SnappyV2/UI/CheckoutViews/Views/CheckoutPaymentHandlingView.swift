@@ -101,7 +101,9 @@ struct CheckoutPaymentHandlingView: View {
             .standardCardFormat()
             .padding()
             .sheet(item: $viewModel.threeDSWebViewURLs) { url in
-                Checkoutcom3DSHandleView(urls: url, delegate: viewModel.threeDSDelegate)
+                ToastableViewContainer(content: {
+                    Checkoutcom3DSHandleView(urls: url, delegate: viewModel.threeDSDelegate)
+                }, isModal: true, viewModel: .init(container: viewModel.container))
             }
             .snappySheet(container: viewModel.container, isPresented: $viewModel.showCardCamera,
                          sheetContent: CardCameraScanView() { name, number, expiry in

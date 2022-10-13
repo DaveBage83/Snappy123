@@ -19,7 +19,7 @@ extension LoginError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .appleLoginFailure:
-            return "Unable to complete Apple sign in"
+            return GeneralStrings.Login.appleSignInFail.localized
         }
     }
 }
@@ -39,7 +39,6 @@ class LoginViewModel: ObservableObject {
 
     @Published var showForgotPassword = false
     @Published var successMessage: String?
-//    @Published var error: Error?
     
     private var cancellables = Set<AnyCancellable>()
        

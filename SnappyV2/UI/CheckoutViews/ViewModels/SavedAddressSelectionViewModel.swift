@@ -24,9 +24,6 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     @Published var showDeliveryAddressSetterError = false
     @Published var showNoSelectedAddressError = false
     
-    // MARK: - Error
-//    var addressSetterError: String?
-    
     // MARK: - Required values
     let firstName: String
     let lastName: String

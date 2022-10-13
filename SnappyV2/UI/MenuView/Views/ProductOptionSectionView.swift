@@ -30,7 +30,7 @@ struct ProductOptionSectionView: View {
             optionSectionTypeViews
         }
         .padding(.bottom, Constants.padding)
-        .bottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize, omitCloseButton: true) { _ in
+        .snappyBottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize, omitCloseButton: true) { _ in
             bottomSheetView
         }
         .onDisappear {

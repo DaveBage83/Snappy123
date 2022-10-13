@@ -255,7 +255,7 @@ struct StandardSuccessToast: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $showAlert, subtitle: .constant(successText), tapToDismissOverride: true, alert: { subtitle, tapToDismiss in
+            .toast(isPresenting: $showAlert, subtitle: .constant(successText), tapToDismissOverride: false, alert: { subtitle, tapToDismiss in
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,

@@ -88,7 +88,6 @@ struct PaymentCardEntryView: View {
                     }})
             }
             .padding()
-//            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .dismissableNavBar(
                 presentation: presentationMode,
                 color: colorPalette.primaryBlue,

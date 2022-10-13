@@ -18,7 +18,7 @@ class InitialViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         
-//        XCTAssertEqual(sut.container.appState.value, AppState())
+        XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertFalse(sut.loginButtonPressed)
         XCTAssertFalse(sut.hasStore)
         XCTAssertEqual(sut.searchResult, .notRequested)

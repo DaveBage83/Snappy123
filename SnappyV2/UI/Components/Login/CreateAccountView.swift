@@ -68,7 +68,6 @@ struct CreateAccountView: View {
             .alert(isPresented: $viewModel.showAlreadyRegisteredAlert) {
                 Alert(title: Text(Strings.CreateAccount.existingUserTitle.localized), message: Text(Strings.CreateAccount.existingUserBody.localized), dismissButton: .default(Text(GeneralStrings.gotIt.localized)))
             }
-//            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
             .edgesIgnoringSafeArea(.bottom)
     }

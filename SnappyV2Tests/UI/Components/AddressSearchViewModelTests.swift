@@ -36,9 +36,7 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertNil(sut.selectedAddress)
         XCTAssertEqual(sut.selectionCountries, [])
         XCTAssertNil(sut.selectedAddress)
-        // We have had to remove the conformity of AppState to equatable
-
-//        XCTAssertEqual(sut.container.appState.value, AppState())
+        XCTAssertEqual(sut.container.appState.value, AppState())
     }
     
     func test_whenNamePassedIntoInit_thenNameTextIsPopulated() {

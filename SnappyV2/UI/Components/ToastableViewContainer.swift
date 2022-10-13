@@ -11,7 +11,7 @@ import Combine
 class ToastableViewModel: ObservableObject {
     let id = UUID()
     let container: DIContainer
-
+    
     init(container: DIContainer) {
         self.container = container
     }
@@ -46,8 +46,14 @@ struct ToastableViewContainer<Content: View>: View {
             .onAppear {
                 // ... or from a view
                 viewModel.container.appState.value.errors = []
+                if !viewModel.container.appState.value.viewIDs.contains(where: {$0 == viewModel.id}) {
+                    viewModel.container.appState.value.viewIDs.append(viewModel.id)
+                }
             }
-            .edgesIgnoringSafeArea(.all)
+            .onDisappear {
+                viewModel.container.appState.value.viewIDs.removeAll(where: { $0 == viewModel.id })
+            }
+            .edgesIgnoringSafeArea(.bottom)
     }
 }
 

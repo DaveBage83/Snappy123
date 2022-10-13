@@ -370,7 +370,6 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Init
     init(container: DIContainer) {
-
         self.container = container
         let appState = container.appState
         self._memberProfile = .init(initialValue: appState.value.userData.memberProfile)
@@ -473,6 +472,7 @@ class CheckoutRootViewModel: ObservableObject {
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] profile in
                 guard let self = self else { return }

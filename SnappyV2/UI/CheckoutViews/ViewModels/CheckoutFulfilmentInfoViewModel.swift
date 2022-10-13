@@ -44,9 +44,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     var hasConfirmedCashPayment = false
     @Published var showConfirmCashPaymentAlert = false
     var paymentMethodsOrder = [PaymentMethod]()
-    
-//    @Published var error: Swift.Error?
-    
+
     var showPayByCard: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
             return store.isCompatible(with: .checkoutcom) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .checkoutcom)

@@ -98,7 +98,7 @@ struct LoginView: View {
     private var loginView: some View {
         VStack {
             LoginHomeView(viewModel: viewModel, socialLoginViewModel: socialLoginViewModel)
-            
+             
             NavigationLink("", isActive: $viewModel.showCreateAccountView) {
                 CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
                     .onAppear {

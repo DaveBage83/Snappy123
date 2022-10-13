@@ -100,7 +100,6 @@ struct PushNotificationView: View {
 
         }
         .font(.body)
-//        .withAlertToast(container: viewModel.container, error: $viewModel.error)
         .alert(isPresented: $viewModel.showCallInformationAlert) {
             Alert(
                 title: Text(Strings.PushNotifications.call.localized),

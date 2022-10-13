@@ -13,7 +13,7 @@ struct CheckoutSuccessView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize
     @Environment(\.tabViewHeight) var tabViewHeight
-
+    
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias PaymentStrings = Strings.CheckoutView.Payment
     
@@ -55,65 +55,65 @@ struct CheckoutSuccessView: View {
     }
     
     var body: some View {
-            ScrollView {
-                HStack(spacing: Constants.SuccessImage.hSpacing) {
-                    Image.CheckoutView.success
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: Constants.SuccessImage.width)
-                    
-                    Text(Strings.CheckoutView.Payment.paymentSuccess.localized)
-                        .font(.heading2.bold())
-                        .foregroundColor(colorPalette.alertSuccess)
-                }
-                .padding()
-
-                if let basket = viewModel.basket {
-                    OrderSummaryCard(container: viewModel.container, order: nil, basket: basket)
-                        .padding()
-                }
+        ScrollView {
+            HStack(spacing: Constants.SuccessImage.hSpacing) {
+                Image.CheckoutView.success
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: Constants.SuccessImage.width)
                 
-                // Only show call store button if a store number is present
-                if viewModel.showCallStoreButton {
-                    SnappyButton(
-                        container: viewModel.container,
-                        type: .outline,
-                        size: .large,
-                        title: GeneralStrings.callStore.localized,
-                        largeTextTitle: GeneralStrings.callStoreShort.localized,
-                        icon: Image.Icons.Phone.filled) {
-                            viewModel.callStoreTapped()
-                        }
-                        .padding()
-                }
-                
-                VStack(spacing: Constants.HelpStack.spacing) {
-                    Text(PaymentStrings.needHelp.localized)
-                        .font(.Body1.semiBold())
-                        .foregroundColor(colorPalette.typefacePrimary)
-                    
-                    // For some reason, hyperlinks here only work when using .init with text. This means we have to keep this logic in the view
-                    if let phone = viewModel.storeNumber {
-                        Text(.init(Strings.CheckoutView.PaymentCustom.callStore.localizedFormat(phone, AppV2Constants.Business.faqURL)))
-                            .font(.hyperlink1())
-                            .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
-                            .multilineTextAlignment(.center)
-                    } else {
-                        Text(.init(Strings.CheckoutView.Payment.getHelp.localized))
-                            .font(.hyperlink1())
-                            .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
-                            .multilineTextAlignment(.center)
+                Text(Strings.CheckoutView.Payment.paymentSuccess.localized)
+                    .font(.heading2.bold())
+                    .foregroundColor(colorPalette.alertSuccess)
+            }
+            .padding()
+            
+            if let basket = viewModel.basket {
+                OrderSummaryCard(container: viewModel.container, order: nil, basket: basket)
+                    .padding()
+            }
+            
+            // Only show call store button if a store number is present
+            if viewModel.showCallStoreButton {
+                SnappyButton(
+                    container: viewModel.container,
+                    type: .outline,
+                    size: .large,
+                    title: GeneralStrings.callStore.localized,
+                    largeTextTitle: GeneralStrings.callStoreShort.localized,
+                    icon: Image.Icons.Phone.filled) {
+                        viewModel.callStoreTapped()
                     }
-                }
+                    .padding()
+            }
+            
+            VStack(spacing: Constants.HelpStack.spacing) {
+                Text(PaymentStrings.needHelp.localized)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.typefacePrimary)
                 
-                if viewModel.showCreateAccountCard {
-                    CreateAccountCard(viewModel: .init(container: viewModel.container))
-                        .padding(.bottom, tabViewHeight)
-                        .padding(.horizontal)
+                // For some reason, hyperlinks here only work when using .init with text. This means we have to keep this logic in the view
+                if let phone = viewModel.storeNumber {
+                    Text(.init(Strings.CheckoutView.PaymentCustom.callStore.localizedFormat(phone, AppV2Constants.Business.faqURL)))
+                        .font(.hyperlink1())
+                        .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
+                        .multilineTextAlignment(.center)
+                } else {
+                    Text(.init(Strings.CheckoutView.Payment.getHelp.localized))
+                        .font(.hyperlink1())
+                        .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
+                        .multilineTextAlignment(.center)
                 }
             }
-            .background(colorPalette.backgroundMain)
-        .bottomSheet(container: viewModel.container, item: $viewModel.triggerBottomSheet, title: nil, windowSize: mainWindowSize, content: {_ in
+            
+            if viewModel.showCreateAccountCard {
+                CreateAccountCard(viewModel: .init(container: viewModel.container))
+                    .padding(.bottom, tabViewHeight)
+                    .padding(.horizontal)
+            }
+        }
+        .background(colorPalette.backgroundMain)
+        .snappyBottomSheet(container: viewModel.container, item: $viewModel.triggerBottomSheet, title: nil, windowSize: mainWindowSize, content: {_ in
             mentionMe
         })
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,

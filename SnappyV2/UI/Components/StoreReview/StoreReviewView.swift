@@ -214,8 +214,6 @@ struct StoreReviewView: View {
                 .disabled(viewModel.submittingReview)
             }
         }
-//        .withAlertToast(container: viewModel.container, error: $viewModel.error)
-
     }
 }
 

@@ -8,7 +8,9 @@
 import Foundation
 import SwiftUI
 
-struct AppState {    
+struct AppState: Equatable {
+    static func == (lhs: AppState, rhs: AppState) -> Bool { true }
+    
     var system = System()
     var routing = ViewRouting()
     var openViews = OpenViews()
@@ -27,7 +29,6 @@ struct AppState {
     var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
     var errors: [Swift.Error] = []
     var successToastStrings = [String]()
-    
     var latestViewID: UUID? {
         viewIDs.last
     }

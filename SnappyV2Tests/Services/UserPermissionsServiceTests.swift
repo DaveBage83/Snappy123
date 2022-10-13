@@ -34,8 +34,7 @@ class UserPermissionsServiceTests: XCTestCase {
             XCTFail(file: #file, line: #line)
         }
         delay {
-            // We have had to remove the conformity of AppState to equatable
-//            XCTAssertEqual(self.state.value, AppState(), file: #file, line: #line)
+            XCTAssertEqual(self.state.value, AppState(), file: #file, line: #line)
             exp.fulfill()
         }
         wait(for: [exp], timeout: 0.5)

@@ -27,8 +27,7 @@ final class SystemEventsHandlerTests: XCTestCase {
         services.verify(as: .userPermissions, file: file, line: line)
         deepLinksHandler?.verify(file: file, line: line)
         pushNotificationWebRepository?.verify(file: file, line: line)
-        // We have had to remove the conformity of AppState to equatable
-//        XCTAssertEqual(self.appState, appState, file: file, line: line)
+        XCTAssertEqual(self.appState, appState, file: file, line: line)
     }
 
     func setupSut(

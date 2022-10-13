@@ -398,12 +398,11 @@ public struct AlertToast: Equatable, View{
                         .multilineTextAlignment(.leading)
                         .textColor(style?.titleColor ?? nil)
                 }
-                if subTitle != nil{
-                    Text(LocalizedStringKey(subTitle ?? ""))
+                if subTitle.isEmpty == false {
+                    Text(LocalizedStringKey(subTitle))
                         .font(style?.subTitleFont ?? Font.footnote)
                         .opacity(0.7)
                         .multilineTextAlignment(.leading)
-//                        .frame(maxWidth: UIScreen.screenWidth * 0.8)
                         .fixedSize(horizontal: false, vertical: true)
                         .textColor(style?.subtitleColor ?? nil)
                 }
@@ -659,7 +658,7 @@ fileprivate struct BackgroundModifier: ViewModifier{
                 .background(color)
         }else{
             content
-//                .background(BlurView())
+                .background(BlurView())
         }
     }
 }

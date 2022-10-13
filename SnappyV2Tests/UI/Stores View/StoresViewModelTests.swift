@@ -19,8 +19,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isDeliverySelected)
         XCTAssertEqual(sut.selectedOrderMethod, .delivery)
         XCTAssertEqual(sut.emailToNotify, "")
-        // We have had to remove the conformity of AppState to equatable
-//        XCTAssertEqual(sut.container.appState.value, AppState())
+        XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertEqual(sut.postcodeSearchString, "")
         XCTAssertEqual(sut.storeSearchResult, .notRequested)
         XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)

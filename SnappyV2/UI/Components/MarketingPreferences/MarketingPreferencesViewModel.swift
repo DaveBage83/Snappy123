@@ -152,7 +152,6 @@ class MarketingPreferencesViewModel: ObservableObject {
             self.marketingPreferencesFetch = try await self.container.services.memberService.getMarketingOptions(isCheckout: self.hideAcceptedMarketingOptions, notificationsEnabled: true)
             self.marketingPreferencesAreLoading = false
         } catch {
-            self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to get marketing options - Error: \(error.localizedDescription)")
             self.marketingPreferencesAreLoading = false
         }

@@ -223,7 +223,6 @@ struct SnappyV2StudyApp: View {
                             .navigationViewStyle(.stack)
                     }, isModal: false, viewModel: .init(container: viewModel.container))
                     
-                    
                 } else {
                     ToastableViewContainer(content: {
                         RootView(viewModel: rootViewModel)

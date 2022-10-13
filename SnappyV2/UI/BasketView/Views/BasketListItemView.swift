@@ -54,13 +54,17 @@ struct BasketListItemView: View {
             }
         }
         .sheet(item: $viewModel.complexItemShown) { item in
-            ProductOptionsView(viewModel: .init(container: viewModel.container, item: item, basketItem: viewModel.item))
+            ToastableViewContainer(content: {
+                ProductOptionsView(viewModel: .init(container: viewModel.container, item: item, basketItem: viewModel.item))
+            }, isModal: true, viewModel: .init(container: viewModel.container))
         }
         .sheet(item: $viewModel.missedPromoShown) { promo in
-            NavigationView {
-                ProductsView(viewModel: .init(container: viewModel.container, missedOffer: promo))
-                    .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: promo.name, navigationDismissType: .close) { viewModel.dismissTapped() }
-            }
+            ToastableViewContainer(content: {
+                NavigationView {
+                    ProductsView(viewModel: .init(container: viewModel.container, missedOffer: promo))
+                        .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: promo.name, navigationDismissType: .close) { viewModel.dismissTapped() }
+                }
+            }, isModal: true, viewModel: .init(container: viewModel.container))
         }
     }
     

@@ -15,9 +15,7 @@ class BasketViewModelTests: XCTestCase {
     
     func test_init() {
         let sut = makeSUT()
-        // We have had to remove the conformity of AppState to equatable
-
-//        XCTAssertEqual(sut.container.appState.value, AppState())
+        XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertNil(sut.basket)
         XCTAssertTrue(sut.couponCode.isEmpty)
         XCTAssertFalse(sut.applyingCoupon)

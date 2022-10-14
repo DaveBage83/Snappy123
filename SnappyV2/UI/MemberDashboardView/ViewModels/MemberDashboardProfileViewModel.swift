@@ -40,9 +40,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
     @Published var changePasswordLoading = false
     
     @Published var profile: MemberProfile?
-    
-    @Published var resetPasswordError: Swift.Error?
-    
+        
     // MARK: - Computed error variables
     
     // Update profile fields
@@ -205,12 +203,12 @@ class MemberDashboardProfileViewModel: ObservableObject {
     // Change password
     func changePassword(didResetPassword: (String) -> ()) async {
         guard passwordFieldsHaveErrors() == false else {
-            resetPasswordError = FormError.missingDetails
+            self.container.appState.value.errors.append(FormError.missingDetails)
             return
         }
         
         guard newPassword == verifyNewPassword else {
-            resetPasswordError = FormError.passwordsDoNotMatch
+            self.container.appState.value.errors.append(FormError.passwordsDoNotMatch)
             newPasswordHasError = true
             verifyNewPasswordHasError = true
             return
@@ -226,7 +224,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
         } catch {
             Logger.member.error("Unable to change password: \(error.localizedDescription)")
             self.changePasswordLoading = false
-            self.resetPasswordError = error
+            self.container.appState.value.errors.append(error)
         }
     }
     

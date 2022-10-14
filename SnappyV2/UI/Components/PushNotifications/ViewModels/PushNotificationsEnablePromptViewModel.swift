@@ -31,9 +31,7 @@ class PushNotificationsEnablePromptViewModel: ObservableObject {
     var nonNotificationsButtonTitle: String {
         container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationNoneButton ?? Strings.PushNotifications.defaultEnabledNone.localized
     }
-    
-    @Published var error: Error?
-    
+        
     func ordersOnlyTapped() {
         container.services.userPermissionsService.setPushNotificationMarketingSelection(to: .optOut)
         dismissPushNotificationsEnablePromptView()

@@ -27,7 +27,6 @@ class OTPPromptViewModel: ObservableObject {
     
     var optCodeSendDestination: String { otpType == .sms ? otpTelephone : email }
     
-    @Published var error: Error?
     
     init(container: DIContainer, email: String, otpTelephone: String, dismiss: @escaping ()->()) {
         self.container = container
@@ -53,7 +52,7 @@ class OTPPromptViewModel: ObservableObject {
                 showOTPCodePrompt = true
             }
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             
             isSendingOTPRequest = false
         }
@@ -83,10 +82,9 @@ class OTPPromptViewModel: ObservableObject {
             
             dismissOTPPrompt()
         } catch {
-            self.error = error
-            
+            self.container.appState.value.errors.append(error)
             container.eventLogger.sendEvent(for: .otpWrong, with: .appsFlyer, params: [:])
-            
+
             isSendingOTPCode = false
         }
     }

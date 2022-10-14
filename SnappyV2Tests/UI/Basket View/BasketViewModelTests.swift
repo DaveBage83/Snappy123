@@ -15,7 +15,6 @@ class BasketViewModelTests: XCTestCase {
     
     func test_init() {
         let sut = makeSUT()
-        
         XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertNil(sut.basket)
         XCTAssertTrue(sut.couponCode.isEmpty)
@@ -31,7 +30,6 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.driverTip, 0)
         XCTAssertFalse(sut.showCouponAlert)
         XCTAssertNil(sut.unmetCouponMemberAccountRequirement)
-        XCTAssertNil(sut.errorNeedsUserAction)
     }
     
     func test_whenBasketIsNil_thenBasketIsEmptyIsTrue() {
@@ -243,7 +241,7 @@ class BasketViewModelTests: XCTestCase {
         
         await sut.checkoutTapped()
         
-        XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
+        XCTAssertEqual(sut.container.appState.value.latestError as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
     }
     
     func test_whenCheckoutTapped_givenUnmetCouponMemberAccountRequirement_thenSetErrorNeedsUserAction() async {
@@ -258,7 +256,7 @@ class BasketViewModelTests: XCTestCase {
         await sut.checkoutTapped()
         
         XCTAssertNotNil(sut.unmetCouponMemberAccountRequirement)
-        XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
+        XCTAssertEqual(sut.container.appState.value.latestError as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
         // check that the requestMobileVerificationCode was NOT called
         container.services.verify(as: .member)
     }
@@ -292,7 +290,7 @@ class BasketViewModelTests: XCTestCase {
         await sut.checkoutTapped()
         
         XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenMobileNumber)
-        XCTAssertNil(sut.errorNeedsUserAction)
+        XCTAssertNil(sut.container.appState.value.latestError)
         XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
         // check that the requestMobileVerificationCode WAS called
         container.services.verify(as: .member)
@@ -328,7 +326,7 @@ class BasketViewModelTests: XCTestCase {
         await sut.checkoutTapped()
         
         XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenMobileNumber)
-        XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
+        XCTAssertEqual(sut.container.appState.value.latestError as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
         XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
         // check that the requestMobileVerificationCode WAS called
         container.services.verify(as: .member)

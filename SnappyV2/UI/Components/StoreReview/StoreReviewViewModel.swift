@@ -21,7 +21,6 @@ class StoreReviewViewModel: ObservableObject {
     @Published var missingWarning = StoreReviewStrings.StaticText.missingRating.localized
     @Published var showMissingWarning = true
     @Published var submittingReview = false
-    @Published var error: Error?
     
     let minimumCommentsLength = 10
     
@@ -101,7 +100,7 @@ class StoreReviewViewModel: ObservableObject {
             dismissStoreReviewViewHandler(true)
         } catch {
             submittingReview = false
-            self.error = error
+            self.container.appState.value.errors.append(error)
         }
     }
     

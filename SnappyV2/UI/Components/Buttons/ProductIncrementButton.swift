@@ -65,7 +65,9 @@ struct ProductIncrementButton: View {
     var body: some View {
         quickAdd()
             .sheet(item: $viewModel.optionsShown) { item in
-                ProductOptionsView(viewModel: .init(container: viewModel.container, item: item))
+                ToastableViewContainer(content: {
+                    ProductOptionsView(viewModel: .init(container: viewModel.container, item: item))
+                }, viewModel: .init(container: viewModel.container, isModal: true))
             }
             .alert(isPresented: $viewModel.showMultipleComplexItemsAlert, content: {
                 Alert(

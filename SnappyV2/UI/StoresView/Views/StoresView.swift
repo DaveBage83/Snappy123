@@ -160,20 +160,6 @@ struct StoresView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .withLoadingToast(loading: $viewModel.locationIsLoading)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.invalidPostcodeError,
-            type: .error,
-            title: FailedSearchStrings.invalidPostcodeTitle.localized,
-            subtitle: FailedSearchStrings.invalidPostcodeSubtitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.successfullyRegisteredForNotifications,
-            type: .success,
-            title: Strings.ToastNotifications.StoreSearch.title.localized,
-            subtitle: Strings.ToastNotifications.StoreSearch.subtitle.localized)
-        .displayError(viewModel.error)
     }
     
     // MARK: - Postcode search bar and button

@@ -10,6 +10,20 @@ import Combine
 import AuthenticationServices
 import OSLog
 
+enum LoginError: Swift.Error {
+    case appleLoginFailure
+
+}
+
+extension LoginError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .appleLoginFailure:
+            return GeneralStrings.Login.appleSignInFail.localized
+        }
+    }
+}
+
 @MainActor
 class LoginViewModel: ObservableObject {
     @Published var email = ""
@@ -25,7 +39,6 @@ class LoginViewModel: ObservableObject {
 
     @Published var showForgotPassword = false
     @Published var successMessage: String?
-    @Published var error: Error?
     
     private var cancellables = Set<AnyCancellable>()
        
@@ -84,7 +97,7 @@ class LoginViewModel: ObservableObject {
             guard let self = self else { return }
             self.isLoading = false
             if let error = error {
-                self.error = error
+                self.container.appState.value.errors.append(error)
             }
         }
     }
@@ -110,7 +123,7 @@ class LoginViewModel: ObservableObject {
             }
             
         case .failure:
-            self.error = error
+            container.appState.value.errors.append(LoginError.appleLoginFailure)
             Logger.member.error("Unable to sign in with Apple")
         }
     }

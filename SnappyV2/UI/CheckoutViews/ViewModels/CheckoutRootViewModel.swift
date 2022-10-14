@@ -34,9 +34,7 @@ extension CheckoutRootViewError: LocalizedError {
 
 @MainActor
 class CheckoutRootViewModel: ObservableObject {
-    
-    @Published var checkoutError: Swift.Error?
-    
+        
     // MARK: - Checkout root view state control
     enum CheckoutState {
         case initial
@@ -372,7 +370,6 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Init
     init(container: DIContainer) {
-
         self.container = container
         let appState = container.appState
         self._memberProfile = .init(initialValue: appState.value.userData.memberProfile)
@@ -475,6 +472,7 @@ class CheckoutRootViewModel: ObservableObject {
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] profile in
                 guard let self = self else { return }
@@ -682,6 +680,10 @@ class CheckoutRootViewModel: ObservableObject {
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
     }
     
+    func setError(_ err: Error) {
+        container.appState.value.errors.append(err)
+    }
+    
     #warning("Replace store location with one returned from basket addresses")
     private func checkAndAssignASAP() {
         if basket?.selectedSlot?.todaySelected == true, tempTodayTimeSlot == nil, let selectedStore = selectedStore {
@@ -723,7 +725,7 @@ class CheckoutRootViewModel: ObservableObject {
                     
                     registrationChecked = true
                 } catch {
-                    checkoutError = error
+                    self.setError(error)
                 }
             }
         } else {
@@ -745,7 +747,7 @@ class CheckoutRootViewModel: ObservableObject {
                     } catch {
                         Logger.checkout.error("storeRetailMembershipId error: \(error.localizedDescription)")
                         retailMembershipIdHasWarning = true
-                        checkoutError = error
+                        setError(error)
                         isSubmitting = false
                         return
                     }
@@ -770,9 +772,9 @@ class CheckoutRootViewModel: ObservableObject {
                 isSubmitting = false
                 #warning("Ideally we would set field errors here and scroll the the relevant section. However, with the API error codes unintuitive, this is not currently possible")
                 if let error = error as? APIErrorResult {
-                    self.checkoutError = error
+                    self.setError(error)
                 } else {
-                    self.checkoutError = error
+                    self.setError(error)
                 }
             }
         }
@@ -916,10 +918,6 @@ class CheckoutRootViewModel: ObservableObject {
     
     func noErrors() -> Bool {
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning
-    }
-    
-    func setCheckoutError(_ error: Swift.Error) {
-        self.checkoutError = error
     }
     
     func setCheckoutState(state: CheckoutRootViewModel.CheckoutState) {

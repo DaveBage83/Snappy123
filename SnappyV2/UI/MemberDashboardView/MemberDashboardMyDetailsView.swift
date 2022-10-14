@@ -50,42 +50,39 @@ struct MemberDashboardMyDetailsView: View {
             }
             .padding(.bottom, tabViewHeight)
         }
-        .sheet(isPresented: $viewModel.showAddDeliveryAddressView) {
-            AddressSelectionView(
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showAddDeliveryAddressView,
+                     sheetContent: AddressSelectionView(
+                        viewModel: .init(
+                            container: viewModel.container,
+                            addressSelectionType: viewModel.addressType,
+                            addresses: [],
+                            showAddressSelectionView: .constant(true),
+                            firstName: "",
+                            lastName: "",
+                            email: "",
+                            phone: "",
+                            starterPostcode: "",
+                            isInCheckout: false),
+                        didSelectAddress: { _ in },
+                        addressSaved: {
+                            viewModel.dismissAddDeliveryAddressView()
+                        }))
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showEditAddressView,
+                     sheetContent: NavigationView {
+            ManualInputAddressView(
                 viewModel: .init(
                     container: viewModel.container,
-                    addressSelectionType: viewModel.addressType,
-                    addresses: [],
-                    showAddressSelectionView: .constant(true),
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    phone: "",
-                    starterPostcode: "",
-                    isInCheckout: false),
-                didSelectAddress: { _ in },
+                    address: viewModel.addressToEdit,
+                    addressType: viewModel.addressType, viewState: .editAddress),
                 addressSaved: {
-                    viewModel.dismissAddDeliveryAddressView()
+                    viewModel.dismissEditAddressView()
                 })
-        }
-        .sheet(isPresented: $viewModel.showEditAddressView) {
-            NavigationView {
-                ManualInputAddressView(
-                    viewModel: .init(
-                        container: viewModel.container,
-                        address: viewModel.addressToEdit,
-                        addressType: viewModel.addressType, viewState: .editAddress),
-                    addressSaved: {
-                        viewModel.dismissEditAddressView()
-                    })
-            }
-        }
-        .sheet(isPresented: $viewModel.showAddCardView) {
-            PaymentCardEntryView(viewModel: .init(container: viewModel.container), editAddressViewModel: .init(container: viewModel.container, addressType: .card))
-                .onDisappear {
-                    Task { await viewModel.loadSavedCards() }
-                }
-        }
+        })
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showAddCardView,
+                     sheetContent: PaymentCardEntryView(viewModel: .init(container: viewModel.container), editAddressViewModel: .init(container: viewModel.container, addressType: .card))
+            .onDisappear {
+                Task { await viewModel.loadSavedCards() }
+            })
     }
 
     private var savedCardsView: some View {

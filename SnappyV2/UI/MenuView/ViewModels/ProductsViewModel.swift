@@ -47,7 +47,6 @@ class ProductsViewModel: ObservableObject {
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
-    @Published var error: Error?
     
     // Search variables
     @Published var searchText: String
@@ -213,6 +212,11 @@ class ProductsViewModel: ObservableObject {
         default:
             return false
         }
+    }
+    
+    // We use this only to display a redacted view for when the root categories are loading
+    var dummyRootCategory: RetailStoreMenuCategory {
+        RetailStoreMenuCategory(id: 1, parentId: 1, name: "Dummy Category", image: nil, description: "Dummy Category Desctiption", action: nil)
     }
 
     // MARK: - Init
@@ -393,7 +397,9 @@ class ProductsViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 guard let value = menu.value else {
-                    self.error = menu.error
+                    if let error = menu.error {
+                        self.container.appState.value.errors.append(error)
+                    }
                     return
                 }
                 
@@ -428,7 +434,7 @@ class ProductsViewModel: ObservableObject {
                         }
                     }
                 } else {
-                    self.error = Errors.categoryEmpty
+                    self.container.appState.value.errors.append(Errors.categoryEmpty)
                 }
             }
             .store(in: &cancellables)

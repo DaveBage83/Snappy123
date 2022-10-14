@@ -104,17 +104,14 @@ struct LoginHomeView: View {
                     viewModel.createAccountTapped()
                 }
         }
-        .sheet(isPresented: $viewModel.showForgotPassword) {
-            NavigationView {
-                ForgotPasswordView(
-                    viewModel: .init(container: viewModel.container,
-                    dismissHandler: { email in
-                        viewModel.forgotPasswordDismissed(sendingEmail: email)
-                    })
-                )
-            }
-        }
-        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showForgotPassword, sheetContent: NavigationView {
+            ForgotPasswordView(
+                viewModel: .init(container: viewModel.container,
+                dismissHandler: { email in
+                    viewModel.forgotPasswordDismissed(sendingEmail: email)
+                })
+            )
+        })
     }
     
     // MARK: - Sign in fields & button

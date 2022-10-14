@@ -100,8 +100,6 @@ struct MemberDashboardView: View {
                         }
                     }
                     .background(colorPalette.backgroundMain)
-                    .withAlertToast(container: viewModel.container, error: $viewModel.error)
-                    .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
                     .withLoadingToast(loading: $viewModel.loading)
                     .fullScreenCover(
                         item: $viewModel.driverDependencies,
@@ -150,15 +148,15 @@ struct MemberDashboardView: View {
             MemberDashboardOrdersView(viewModel: .init(container: viewModel.container, categoriseOrders: true))
         case .myDetails:
             MemberDashboardMyDetailsView(viewModel: .init(container: viewModel.container), memberDashboardViewModel: viewModel, didSetError: { error in
-                viewModel.error = error
+                viewModel.container.appState.value.errors.append(error)
             }, setIsLoading: { isLoading in
                 viewModel.loading = isLoading
             })
         case .profile:
             MemberDashboardProfileView(viewModel: .init(container: viewModel.container), didSetError: { error in
-                viewModel.error = error
+                viewModel.container.appState.value.errors.append(error)
             }, didSucceed: { message in
-                viewModel.successMessage = message
+                viewModel.container.appState.value.successToastStrings.append(message)
             })
         case .loyalty:
             LoyaltyView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))

@@ -106,13 +106,6 @@ struct AddressSelectionView: View {
             }
         }
         .withLoadingToast(loading: $viewModel.searchingForAddresses)
-        .withAlertToast(container: viewModel.container, error: $viewModel.addressSelectionError)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showDeliveryAddressSetterError,
-            type: .error,
-            title: Strings.CheckoutDetails.AddressSelectionView.addressErrorTitle.localized,
-            subtitle: viewModel.addressSetterError ?? Strings.CheckoutDetails.AddressSelectionView.addressErrorGeneric.localized)
     }
     
     private var enterManuallyButtonStack: some View {

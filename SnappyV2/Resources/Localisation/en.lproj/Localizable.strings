@@ -80,6 +80,7 @@
 "general.login.pay" = "Pay";
 "general.login.noaccount" = "Don't have an account with us?";
 "general.login.noaccount.shortened" = "No account?";
+"general.login.applesigninfail" = "Unable to complete Apple sign in";
 "general.logout.verify" = "Are you sure you want to log out?";
 "general.logout.title" = "Log out";
 "general.firstname" = "First Name";

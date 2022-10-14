@@ -307,12 +307,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentProgress, 2)
     }
     
-    func test_whenSetNoAddressErrorTriggered_thenCheckoutErrorIsNoAddressesFound() {
-        let sut = makeSUT()
-        sut.setCheckoutError(CheckoutRootViewError.noAddressesFound)
-        XCTAssertEqual(sut.checkoutError?.localizedDescription, CheckoutRootViewError.noAddressesFound.localizedDescription)
-    }
-    
     func test_whenFulfilmentIsDelivery_thenIsDeliveryIsTrue() {
         let sut = makeSUT()
         sut.container.appState.value.userData.basket = Basket.mockedData
@@ -1366,7 +1360,7 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
-        XCTAssertNil(sut.checkoutError)
+        XCTAssertNil(sut.container.appState.value.latestError)
         XCTAssertFalse(sut.retailMembershipIdHasWarning)
     }
     
@@ -1468,12 +1462,13 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
-        XCTAssertNil(sut.checkoutError)
+        XCTAssertNil(sut.container.appState.value.latestError)
         XCTAssertFalse(sut.retailMembershipIdHasWarning)
     }
     
+    // Need to look at this one
     func test_goToPaymentTapped_givenMemberWithRetailMembershipField_butErrorStoreRetailMembershipId_setError() {
-        
+
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let retailMemberId = "SOMETHINGNEW"
 
@@ -1535,7 +1530,8 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         wait(for: [expectation1], timeout: 2)
 
-        sut.$checkoutError
+        sut.container.appState
+            .map(\.latestError)
             .map { $0 != nil } // Convert into an Equatable type
             .filter { $0 }
             .removeDuplicates()
@@ -1544,14 +1540,14 @@ class CheckoutRootViewModelTests: XCTestCase {
                 expectation2.fulfill()
             }
             .store(in: &cancellables)
-        
+
         sut.firstname = request.firstName
         sut.lastname = request.lastName
         sut.email = request.email
         sut.phoneNumber = request.telephone
         sut.selectedChannel = .init(id: 123, name: "Test")
         sut.retailMembershipId = retailMemberId
-        
+
         // Theory: declaring this test_ method with "async" should be sufficient so that
         // "Task { ... }" is not needed below.
         // In practice: as soon as "async" is used with this test_method then the sut
@@ -1566,12 +1562,12 @@ class CheckoutRootViewModelTests: XCTestCase {
             )
 
         }
-        
+
         wait(for: [expectation2], timeout: 2)
 
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
-        XCTAssertEqual(sut.checkoutError as? NSError, networkError)
+        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
         XCTAssertTrue(sut.retailMembershipIdHasWarning)
     }
 

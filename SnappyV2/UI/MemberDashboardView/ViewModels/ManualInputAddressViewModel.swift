@@ -75,7 +75,6 @@ class ManualInputAddressViewModel: ObservableObject {
     @Published var addressLine1HasError = false
     @Published var townHasError = false
     @Published var postcodeHasError = false
-    @Published var error: Swift.Error?
     
     let addressType: AddressType
     
@@ -146,7 +145,7 @@ class ManualInputAddressViewModel: ObservableObject {
     // Save address button action
     func saveAddressTapped(addressSaved: () -> ()) async {
         guard fieldsHaveErrors() == false else {
-            self.error = FormError.missingDetails
+            self.container.appState.value.errors.append(FormError.missingDetails)
             return
         }
         
@@ -180,7 +179,7 @@ class ManualInputAddressViewModel: ObservableObject {
             addressSaved()
         } catch {
             savingAddress = false
-            self.error = error
+            self.container.appState.value.errors.append(error)
         }
     }
     

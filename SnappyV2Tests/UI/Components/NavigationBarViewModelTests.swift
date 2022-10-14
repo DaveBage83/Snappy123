@@ -12,7 +12,6 @@ class NavigationBarViewModelTests: XCTestCase {
     
     func test_init() {
         let sut = makeSUT()
-        
         XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertEqual(sut.selectedStore, .notRequested)
         XCTAssertEqual(sut.selectedFulfilmentMethod, .delivery)

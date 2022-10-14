@@ -53,7 +53,6 @@ final class PaymentCardEntryViewModel: ObservableObject {
     var showJCBCard: Bool { (shownCardType == .jcb || shownCardType == nil) }
     var showDiscoverCard: Bool { (shownCardType == .discover || shownCardType == nil) }
     
-    @Published var error: Error?
     private var memberProfile: MemberProfile?
     @Published var dismissView: Bool = false
     
@@ -162,8 +161,7 @@ final class PaymentCardEntryViewModel: ObservableObject {
             savingNewCard = false
             dismissView = true
         } catch {
-            self.error = error
-            
+            self.container.appState.value.errors.append(error)
             savingNewCard = false
             dismissView = true
         }

@@ -287,16 +287,18 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
     }
     
     @ViewBuilder func body(content: Content) -> some View {
-        content
-            .onChange(of: item) { _ in
-                present()
-            }
+        ToastableViewContainer(content: {
+            content
+                .onChange(of: item) { _ in
+                    present()
+                }
+        }, viewModel: .init(container: container, isModal: true))
     }
 }
 
 public extension View {
     
-   internal func bottomSheet<Item, Content>(
+   internal func snappyBottomSheet<Item, Content>(
         container: DIContainer,
         item: Binding<Item?>,
         title: String?,

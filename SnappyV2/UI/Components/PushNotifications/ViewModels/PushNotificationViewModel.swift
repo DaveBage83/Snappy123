@@ -22,7 +22,6 @@ class PushNotificationViewModel: ObservableObject {
     
     @Published var options: [PushNotificationOption] = []
     @Published var showCallInformationAlert = false
-    @Published var error: Error?
     
     private(set) var showTelephoneNumber = ""
 

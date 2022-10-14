@@ -99,7 +99,6 @@ struct CheckoutRootView: View {
                         }
                     }
                 }
-                .withAlertToast(container: viewModel.container, error: $viewModel.checkoutError)
             }
             .disabled(viewModel.showOTPPrompt)
             

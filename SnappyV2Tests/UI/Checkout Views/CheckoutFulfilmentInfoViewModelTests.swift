@@ -536,7 +536,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         sut.handleGlobalPaymentResult(businessOrderId: nil, error: GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]))
         
-        XCTAssertNotNil(sut.error)
+        XCTAssertNotNil(sut.container.appState.value.latestError)
         eventLogger.verify()
     }
     

@@ -38,7 +38,6 @@ class TabBarViewModel: ObservableObject {
             .store(in: &cancellables)
         
         appState
-            .removeDuplicates()
             .map(\.routing.selectedTab)
             .removeDuplicates()
             .assignWeak(to: \.selectedTab, on: self)

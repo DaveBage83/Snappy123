@@ -23,7 +23,6 @@ final class ResetPasswordViewModelTests: XCTestCase {
         XCTAssertFalse(sut.newPasswordHasError, file: #file, line: #line)
         XCTAssertFalse(sut.confirmationPasswordHasError, file: #file, line: #line)
         XCTAssertFalse(sut.isLoading, file: #file, line: #line)
-        XCTAssertNil(sut.error, file: #file, line: #line)
         XCTAssertFalse(sut.isLoading, file: #file, line: #line)
     }
     
@@ -152,7 +151,7 @@ final class ResetPasswordViewModelTests: XCTestCase {
         await sut.submitTapped()
         XCTAssertTrue(sut.newPasswordHasError, file: #file, line: #line)
         XCTAssertTrue(sut.confirmationPasswordHasError, file: #file, line: #line)
-        XCTAssertEqual(sut.error as? ResetPasswordViewModel.ResetPasswordViewError, ResetPasswordViewModel.ResetPasswordViewError.passwordFieldErrors, file: #file, line: #line)
+        XCTAssertEqual(sut.container.appState.value.latestError as? ResetPasswordViewModel.ResetPasswordViewError, ResetPasswordViewModel.ResetPasswordViewError.passwordFieldErrors, file: #file, line: #line)
     }
     
     func test_whenSubmitTapped_thenIsLoadingIsTrue() async {
@@ -204,7 +203,7 @@ final class ResetPasswordViewModelTests: XCTestCase {
         await sut.submitTapped()
 
         XCTAssertNil(dismissHandlerCalled, file: #file, line: #line)
-        XCTAssertNil(sut.error, file: #file, line: #line)
+        XCTAssertNil(sut.container.appState.value.latestError, file: #file, line: #line)
         XCTAssertTrue(sut.dismiss, file: #file, line: #line)
     }
     
@@ -232,7 +231,7 @@ final class ResetPasswordViewModelTests: XCTestCase {
         await sut.submitTapped()
 
         XCTAssertNil(dismissHandlerCalled, file: #file, line: #line)
-        XCTAssertEqual(sut.error as? ResetPasswordViewModel.ResetPasswordViewError, ResetPasswordViewModel.ResetPasswordViewError.passwordFieldErrors, file: #file, line: #line)
+        XCTAssertEqual(sut.container.appState.value.latestError as? ResetPasswordViewModel.ResetPasswordViewError, ResetPasswordViewModel.ResetPasswordViewError.passwordFieldErrors, file: #file, line: #line)
         XCTAssertFalse(sut.dismiss, file: #file, line: #line)
     }
     

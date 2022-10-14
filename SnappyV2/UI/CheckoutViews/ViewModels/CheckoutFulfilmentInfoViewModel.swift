@@ -44,9 +44,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     var hasConfirmedCashPayment = false
     @Published var showConfirmCashPaymentAlert = false
     var paymentMethodsOrder = [PaymentMethod]()
-    
-    @Published var error: Error?
-    
+
     var showPayByCard: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
             return store.isCompatible(with: .checkoutcom) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .checkoutcom)
@@ -249,10 +247,14 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             self.settingDeliveryAddress = false
             self.checkAndAssignASAP()
         } catch {
-            self.error = error
+            self.setError(error)
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             self.settingDeliveryAddress = false
         }
+    }
+    
+    private func setError(_ err: Error) {
+        container.appState.value.errors.append(err)
     }
     
     #warning("Replace store location with one returned from basket addresses")
@@ -282,7 +284,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 handleGlobalPayment = true
             } else {
                 Logger.checkout.error("Card payment failed - Payment Gateway mismatch")
-                self.error = error
+                self.container.appState.value.errors.append(GenericError.somethingWrong)
             }
         }
     }
@@ -328,7 +330,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             self.processingPayByCash = false
             setCheckoutState(.paymentSuccess)
         } catch {
-            self.error = error
+            self.setError(error)
             Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
             self.hasConfirmedCashPayment = false
             self.processingPayByCash = false
@@ -365,7 +367,7 @@ extension CheckoutFulfilmentInfoViewModel {
                 
                 self.container.eventLogger.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)
                 Logger.checkout.error("Payment failed - Error: \(error.localizedDescription)")
-                self.error = error
+                self.setError(GenericError.somethingWrong)
             }
         }
     }
@@ -396,17 +398,18 @@ extension CheckoutFulfilmentInfoViewModel {
                 
                 guard let _ = businessOrderId else {
                     Logger.checkout.error("Apple pay failed - BusinessOrderId not returned")
-                    self.error = error
+                    self.setError(GenericError.somethingWrong)
+
                     return
                 }
                 setCheckoutState(.paymentSuccess)
             } catch {
                 Logger.checkout.error("Apple pay failed - Error: \(error.localizedDescription)")
-                self.error = error
+                self.setError(error)
             }
         } else {
             Logger.checkout.error("Apple pay failed - Missing publicKey or merchantId")
-            self.error = error
+            self.setError(GenericError.somethingWrong)
         }
     }
 }

@@ -23,7 +23,6 @@ class OTPPromptViewModelTests: XCTestCase {
         XCTAssertTrue(sut.otpCode.isEmpty)
         XCTAssertEqual(sut.otpType, .sms)
         XCTAssertTrue(sut.disableLogin)
-        XCTAssertNil(sut.error)
         XCTAssertTrue(sut.optCodeSendDestination.isEmpty)
     }
     

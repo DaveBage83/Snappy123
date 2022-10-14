@@ -47,7 +47,6 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var repeatOrderRequested = false
     @Published var showDetailsView = false
     @Published var showDriverMap = false
-    @Published private(set) var error: Error?
     @Published var showMapError = false
     @Published var showTrackOrderButtonOverride: Bool?
     @Published var mapLoading = false
@@ -240,7 +239,7 @@ class OrderDetailsViewModel: ObservableObject {
         // First we check if there is a delivery address on the order. If not, we cannot proceed, so throw error
         guard let deliveryAddress = order.fulfilmentMethod.address else {
             Logger.member.error("No delivery address on order")
-            self.error = OrderDetailsError.noDeliveryAddressOnOrder
+            self.container.appState.value.errors.append(OrderDetailsError.noDeliveryAddressOnOrder)
             return
         }
         
@@ -287,7 +286,7 @@ class OrderDetailsViewModel: ObservableObject {
                 throw OrderDetailsError.noMatchingStoreFound
             }
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.member.error("Error trying to repeat order: \(error.localizedDescription)")
             self.getRepeatOrderInProgress(false)
         }

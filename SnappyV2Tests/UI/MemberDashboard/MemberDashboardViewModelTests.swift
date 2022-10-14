@@ -185,7 +185,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(requestingVerifyCodeWasTrue)
         XCTAssertFalse(sut.requestingVerifyCode)
         XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
-        XCTAssertNil(sut.error)
+        XCTAssertNil(sut.container.appState.value.latestError)
     }
     
     func test_whenVerifyAccountTappedAndOpenViewResultFalse_thenSetRoutingShowVerifyMobileViewToFalse() async {
@@ -231,7 +231,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(requestingVerifyCodeWasTrue)
         XCTAssertFalse(sut.requestingVerifyCode)
         XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
-        XCTAssertNil(sut.error)
+        XCTAssertNil(sut.container.appState.value.latestError)
     }
     
     func test_whenVerifyAccountTappedAndOpenViewIsErrorResult_thenSetError() async {
@@ -278,7 +278,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(requestingVerifyCodeWasTrue)
         XCTAssertFalse(sut.requestingVerifyCode)
         XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
-        XCTAssertEqual(sut.error as? NSError, networkError)
+        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
     }
     
     func test_whenLogoutTapped_thenViewStateIsLogoutAndIsLogoutSelectedIsTrue() {
@@ -333,7 +333,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         let sut = makeSUT()
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         sut.resetPasswordDismissed(withError: networkError)
-        XCTAssertEqual(sut.error as? NSError, networkError)
+        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
     }
     
     func test_setupResetPaswordDeepLinkNavigation_givenPasswordResetCode_thenSetResetToken() {

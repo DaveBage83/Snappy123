@@ -83,6 +83,7 @@ public enum Strings {
             case noAccountShortened = "general.login.noaccount.shortened"
             case register = "general.login.register"
             case continueWithEmail = "general.login.continuewithemail"
+            case appleSignInFail = "general.login.applesigninfail"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case signInWith = "general.login.customisable.signinwith"

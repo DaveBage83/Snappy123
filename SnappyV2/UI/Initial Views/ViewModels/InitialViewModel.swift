@@ -321,7 +321,7 @@ class InitialViewModel: ObservableObject {
             self.error = error
         }
     }
-    
+
     func loadBusinessProfile() async {
         
         businessProfileIsLoading = true

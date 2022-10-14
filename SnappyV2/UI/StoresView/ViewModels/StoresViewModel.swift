@@ -27,7 +27,6 @@ class StoresViewModel: ObservableObject {
     @Published var invalidPostcodeError: Bool = false
     @Published var successfullyRegisteredForNotifications: Bool = false
     @Published var storeLoadingId: Int? // Used to identify which store we apply the activity indicator to
-    @Published private(set) var error: Error?
     
     @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
@@ -36,7 +35,6 @@ class StoresViewModel: ObservableObject {
     @Published var isFocused = false
     @Published var showFulfilmentSlotSelection = false
     @Published var storeIsLoading = false
-            
     private(set) var selectedStoreID: Int?
     private var locationManager = LocationManager()
     
@@ -230,10 +228,10 @@ class StoresViewModel: ObservableObject {
             Logger.stores.fault("Failed to reserve today slot: \(error.localizedDescription)")
         }
     }
-    
+
     func searchViaLocationTapped() async {
         locationIsLoading = true
-            
+        
         locationManager.$lastLocation
             .removeDuplicates()
             .asyncMap { [weak self] lastLocation in
@@ -264,7 +262,7 @@ class StoresViewModel: ObservableObject {
             
             successfullyRegisteredForNotifications = true
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
         }
     }
     
@@ -318,7 +316,7 @@ class StoresViewModel: ObservableObject {
                 }
             } catch {
                 self.storeIsLoading = false
-                self.error = error
+                self.container.appState.value.errors.append(error)
             }
         }
     }

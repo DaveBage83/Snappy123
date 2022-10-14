@@ -296,7 +296,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
             successMessage = "Success!" // Should not reach here
         })
         
-        XCTAssertEqual(sut.resetPasswordError?.localizedDescription, FormError.missingDetails.localizedDescription)
+        XCTAssertEqual(sut.container.appState.value.latestError as? FormError, FormError.missingDetails)
         XCTAssertEqual(successMessage, "")
     }
     
@@ -313,7 +313,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
             successMessage = "Success!" // Should not reach here
         })
         
-        XCTAssertEqual(sut.resetPasswordError?.localizedDescription, FormError.passwordsDoNotMatch.localizedDescription)
+        XCTAssertEqual(sut.container.appState.value.latestError as? FormError, FormError.passwordsDoNotMatch)
         XCTAssertTrue(sut.newPasswordHasError)
         XCTAssertTrue(sut.verifyNewPasswordHasError)
         XCTAssertEqual(successMessage, "")

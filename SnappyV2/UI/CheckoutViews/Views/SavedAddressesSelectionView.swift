@@ -65,18 +65,6 @@ struct SavedAddressesSelectionView: View {
                 .background(colorPalette.backgroundMain)
             }
         }
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showNoSelectedAddressError,
-            type: .error,
-            title: SavedAddressesStrings.noAddressTitle.localized, // Should never see this as we set address on init
-            subtitle: SavedAddressesStrings.noAddressSubtitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showDeliveryAddressSetterError,
-            type: .error,
-            title: SavedAddressesStrings.addressSetterErrorTitle.localized,
-            subtitle: viewModel.addressSetterError ?? SavedAddressesStrings.addressSetterErrorGeneric.localized)
     }
     
     // MARK: - Saved addresses stack

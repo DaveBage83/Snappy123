@@ -26,9 +26,7 @@ class PushNotificationSettingsViewModel: ObservableObject {
     private let viewContext: ViewContext
     
     @Published var marketingPreferencesAreLoading = false
-    
-    @Published private(set) var error: Error?
-    
+        
     var useLargeTitles: Bool {
         viewContext == .settings
     }

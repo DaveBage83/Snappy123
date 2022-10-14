@@ -120,12 +120,6 @@ struct FulfilmentTimeSlotSelectionView: View {
         }
         .padding(.bottom, tabViewHeight - Constants.ShopNowButton.paddingAdjustment)
         .background(colorPalette.backgroundMain)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showSuccessfullyUpdateTimeSlotAlert,
-            type: .success,
-            title: Strings.FulfilmentTimeSlotSelection.Update.successTitle.localized,
-            subtitle: Strings.FulfilmentTimeSlotSelection.Update.successSubtitle.localized)
     }
     
     // MARK: - Store unavailable view (holiday / paused)
@@ -256,7 +250,6 @@ struct FulfilmentTimeSlotSelectionView: View {
             .padding(.horizontal)
             .padding(.bottom)
             .background(Color.clear)
-            .displayError(viewModel.error)
     }
 }
 

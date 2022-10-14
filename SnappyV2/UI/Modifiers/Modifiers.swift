@@ -64,93 +64,32 @@ struct MeasureSizeModifier: ViewModifier {
   }
 }
 
-struct StandardAlert: ViewModifier {
-    @Environment(\.colorScheme) var colorScheme
-    @Environment(\.tabViewHeight) var tabViewHeight
-
-    let container: DIContainer
-    let tapToDismissOverride: Bool
-    
-    enum StandardAlertType {
-        case error
-        case info
-        case success
-    }
-    
-    @Binding var isPresenting: Bool
-    let type: StandardAlertType
-    let title: String
-    let subtitle: String
-    
-    private var colorPalette: ColorPalette {
-        ColorPalette(container: container, colorScheme: colorScheme)
-    }
-    
-    private var backgroundColor: Color {
-        switch type {
-        case .error:
-            return colorPalette.alertWarning
-        case .info:
-            return colorPalette.primaryBlue.withOpacity(.ten)
-        case .success:
-            return colorPalette.alertSuccess
-        }
-    }
-    
-    private var textColor: Color {
-        switch type {
-        case .error:
-            return .white
-        case .info:
-            return colorPalette.typefacePrimary
-        case .success:
-            return .white
-        }
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .toast(isPresenting: $isPresenting, subtitle: subtitle, tapToDismissOverride: tapToDismissOverride, alert: { text, tapToDismiss in
-                AlertToast(
-                    displayMode: .banner(.slide),
-                    type: .regular,
-                    title: title,
-                    subTitle: text,
-                    style: .style(
-                        backgroundColor: backgroundColor,
-                        titleColor: textColor,
-                        subTitleColor: textColor,
-                        titleFont: .Body1.semiBold(),
-                        subTitleFont: .Body1.regular()),
-                    tapToDismiss: tapToDismiss
-                )
-            })
-    }
-}
-
 struct StandardAlertToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
-
+    
     @Binding var error: Swift.Error?
     @State var showAlert = false
+    let container: DIContainer
+    let viewID: UUID
     
     var text: String {
-        guard let error = error else { return "" }
-        if let error = error as? APIErrorResult {
-            return error.errorDisplay
-        } else {
-            return error.localizedDescription
+        guard let error = container.appState.value.latestError else { return "" }
+        if let err = error as? APIErrorResult {
+            return err.errorDisplay
         }
+        return error.localizedDescription
     }
     
-    let container: DIContainer
+    @State var errorText = ""
+    
     let tapToDismissOverride: Bool
     
-    init(container: DIContainer, tapToDismissOverride: Bool, error: Binding<Swift.Error?>) {
+    init(container: DIContainer, tapToDismissOverride: Bool, error: Binding<Swift.Error?>, viewID: UUID) {
         self._error = error
-        self.container = container
         self.tapToDismissOverride = tapToDismissOverride
+        self.container = container
+        self.viewID = viewID
     }
     
     private var colorPalette: ColorPalette {
@@ -159,14 +98,14 @@ struct StandardAlertToast: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $showAlert, subtitle: text, tapToDismissOverride: tapToDismissOverride, alert: { subtitle, tapToDismiss  in
+            .toast(isPresenting: $showAlert, subtitle: $errorText, tapToDismissOverride: tapToDismissOverride, alert: { subtitle, tapToDismiss  in
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,
                     title: GeneralStrings.oops.localized,
-                    subTitle: subtitle,
+                    subTitle: $errorText,
                     style: .style(
-                        backgroundColor: colorPalette.alertWarning,
+                        backgroundColor: .red,
                         titleColor: .white,
                         subTitleColor: .white,
                         titleFont: .Body1.semiBold(),
@@ -174,14 +113,29 @@ struct StandardAlertToast: ViewModifier {
                     tapToDismiss: tapToDismiss
                 )
             })
-            .padding(.bottom, showAlert ? tabViewHeight : 0)
-            .onChange(of: error?.localizedDescription) { err in
-                if err?.isEmpty == false {
-                    showAlert = true
+            .padding(.bottom)
+            .onChange(of: container.appState.value.latestError?.localizedDescription) { errText in
+                if errText != nil && showAlert == false && container.appState.value.latestViewID == viewID {
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        
+                        if let err = container.appState.value.latestError as? APIErrorResult {
+                            self.errorText = err.errorDisplay
+                            showAlert = true
+                            self.errorText = err.errorDisplay
+                        } else {
+                            self.errorText = container.appState.value.latestError?.localizedDescription ?? ""
+                            showAlert = true
+                            self.errorText = container.appState.value.latestError?.localizedDescription ?? ""
+                        }
+                        
+
+                    }
                 }
             }
             .onChange(of: showAlert) { newValue in
-                if newValue == false {
+                if newValue == false && container.appState.value.latestViewID == viewID {
+                    container.appState.value.errors.removeAll(where: { $0.localizedDescription == error?.localizedDescription })
                     error = nil
                 }
             }
@@ -281,15 +235,18 @@ struct BasketAndPastOrderImage: ViewModifier {
 struct StandardSuccessToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
-        
+    
     @Binding var toastText: String?
     @State var showAlert = false
+    @State var successText = ""
     
     let container: DIContainer
+    let viewID: UUID
 
-    init(container: DIContainer, toastText: Binding<String?>) {
+    init(container: DIContainer, viewID: UUID, toastText: Binding<String?>) {
         self._toastText = toastText
         self.container = container
+        self.viewID = viewID
     }
     
     private var colorPalette: ColorPalette {
@@ -298,12 +255,12 @@ struct StandardSuccessToast: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $showAlert, subtitle: toastText ?? "", tapToDismissOverride: true, alert: { subtitle, tapToDismiss in
+            .toast(isPresenting: $showAlert, subtitle: .constant(successText), tapToDismissOverride: false, alert: { subtitle, tapToDismiss in
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,
                     title: GeneralStrings.success.localized,
-                    subTitle: subtitle,
+                    subTitle: $successText,
                     style: .style(
                         backgroundColor: colorPalette.alertSuccess,
                         titleColor: .white,
@@ -314,13 +271,18 @@ struct StandardSuccessToast: ViewModifier {
                 )
             })
             .padding(.bottom, showAlert ? tabViewHeight : 0)
-            .onChange(of: toastText) { toastText in
-                if toastText?.isEmpty == false {
-                    showAlert = true
+            .onChange(of: container.appState.value.latestSuccessToast) { toastText in
+                if toastText?.isEmpty == false && container.appState.value.latestViewID == viewID {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.successText = container.appState.value.latestSuccessToast ?? ""
+
+                        showAlert = true
+                    }
                 }
             }
             .onChange(of: showAlert) { newValue in
                 if newValue == false {
+                    container.appState.value.successToastStrings.removeAll(where: { $0 == toastText })
                     toastText = nil
                 }
             }
@@ -360,19 +322,6 @@ struct WithNavigationAnimation: ViewModifier {
     }
 }
 
-#warning("Still using in a few places but need to deprecate.")
-extension View {
-    func withStandardAlert(container: DIContainer, isPresenting: Binding<Bool>, type: StandardAlert.StandardAlertType, title: String, subtitle: String, tapToDismissOverride: Bool = false) -> some View {
-        modifier(StandardAlert(
-            container: container,
-            tapToDismissOverride: tapToDismissOverride,
-            isPresenting: isPresenting,
-            type: type,
-            title: title,
-            subtitle: subtitle))
-    }
-}
-
 struct LoadingToast: ViewModifier {
     @Binding var loading: Bool
 
@@ -382,10 +331,11 @@ struct LoadingToast: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $loading, subtitle: "", tapToDismissOverride: true, alert: { _, _  in
+            .toast(isPresenting: $loading, subtitle: .constant(""), tapToDismissOverride: true, alert: { _, _  in
                 AlertToast(
                     displayMode: .alert,
                     type: .loading,
+                    subtitle: .constant(""),
                     tapToDismiss: false
                 )
             })
@@ -399,14 +349,15 @@ extension View {
 }
 
 extension View {
-    func withAlertToast(container: DIContainer, tapToDismissOverride: Bool = false, error: Binding<Swift.Error?>) -> some View {
-        modifier(StandardAlertToast(container: container, tapToDismissOverride: tapToDismissOverride, error: error))
+    func withAlertToast(container: DIContainer, tapToDismissOverride: Bool = false, error: Binding<Swift.Error?>, viewID: UUID) -> some View {
+        modifier(StandardAlertToast(container: container, tapToDismissOverride: tapToDismissOverride, error: error, viewID: viewID))
+
     }
 }
 
 extension View {
-    func withSuccessToast(container: DIContainer, toastText: Binding<String?>) -> some View {
-        modifier(StandardSuccessToast(container: container, toastText: toastText))
+    func withSuccessToast(container: DIContainer, viewID: UUID, toastText: Binding<String?>) -> some View {
+        modifier(StandardSuccessToast(container: container, viewID: viewID, toastText: toastText))
     }
 }
 
@@ -468,6 +419,17 @@ extension View {
 extension View {
     func withInfoButtonAndText(container: DIContainer, text: String) -> some View {
         modifier(WithInfoButtonAndText(container: container, infoText: text))
+    }
+}
+
+extension View {
+    func snappySheet(container: DIContainer, isPresented: Binding<Bool>, sheetContent: some View) -> some View {
+        self
+            .sheet(isPresented: isPresented) {
+                ToastableViewContainer(content: {
+                    sheetContent
+                }, viewModel: .init(container: container, isModal: true))
+            }
     }
 }
 

@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 struct AppState: Equatable {
+    static func == (lhs: AppState, rhs: AppState) -> Bool { true }
+    
     var system = System()
     var routing = ViewRouting()
     var openViews = OpenViews()
@@ -22,6 +24,22 @@ struct AppState: Equatable {
     var storeMenu = StoreMenu()
     var retailStoreReview: RetailStoreReview?
     var passwordResetCode: String?
+    
+    // Toast properties
+    var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
+    var errors: [Swift.Error] = []
+    var successToastStrings = [String]()
+    var latestViewID: UUID? {
+        viewIDs.last
+    }
+    
+    var latestSuccessToast: String? {
+        successToastStrings.first
+    }
+    
+    var latestError: Swift.Error? {
+        errors.first
+    }
 }
 
 extension AppState {
@@ -98,7 +116,7 @@ extension AppState {
             displayMode: .banner(.pop),
             type: .complete(.snappyRed),
             title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
-            subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized, tapToDismiss: false
+            subTitle: .constant(Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized), tapToDismiss: false
         )
     }
 }

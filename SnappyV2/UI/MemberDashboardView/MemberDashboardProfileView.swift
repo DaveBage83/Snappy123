@@ -63,21 +63,19 @@ struct MemberDashboardProfileView: View {
         updateProfileDetailsView
             .padding(.top, Constants.General.topPadding)
             .padding(.bottom, tabViewHeight)
-            .sheet(isPresented: $viewModel.showPasswordResetView, content: {
-                NavigationView {
-                    VStack(spacing: 0) {
-                        Divider()
-                        changePasswordView
-                            .dismissableNavBar(
-                                presentation: nil,
-                                color: colorPalette.primaryBlue,
-                                title: Strings.MemberDashboard.Profile.updatePassword.localized,
-                                navigationDismissType: .close,
-                                backButtonAction: {
-                                    viewModel.dismissPasswordResetView()
-                                })
-                    }
-                    .withAlertToast(container: viewModel.container, error: $viewModel.resetPasswordError)
+            .snappySheet(container: viewModel.container, isPresented: $viewModel.showPasswordResetView,
+                         sheetContent: NavigationView {
+                VStack(spacing: 0) {
+                    Divider()
+                    changePasswordView
+                        .dismissableNavBar(
+                            presentation: nil,
+                            color: colorPalette.primaryBlue,
+                            title: Strings.MemberDashboard.Profile.updatePassword.localized,
+                            navigationDismissType: .close,
+                            backButtonAction: {
+                                viewModel.dismissPasswordResetView()
+                            })
                 }
             })
     }

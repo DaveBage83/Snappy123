@@ -27,7 +27,6 @@ final class StoreReviewViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showMissingWarning, file: #file, line: #line)
         XCTAssertEqual(sut.missingWarning, Strings.StoreReview.StaticText.missingRating.localized, file: #file, line: #line)
         XCTAssertFalse(sut.submittingReview, file: #file, line: #line)
-        XCTAssertNil(sut.error, file: #file, line: #line)
     }
     
     func test_commentsPlaceholder_changesWhenRatingLessThanFour() {
@@ -139,7 +138,8 @@ final class StoreReviewViewModelTests: XCTestCase {
         if let reviewSentResult = reviewSentResult {
             XCTAssertTrue(reviewSentResult, file: #file, line: #line)
         }
-        XCTAssertNil(sut.error, file: #file, line: #line)
+        
+        XCTAssertNil(sut.container.appState.value.latestError, file: #file, line: #line)
     }
     
     func test_tappedSubmitReview_whenRatingCriteriaIsMetWithSendError_setError() async {
@@ -184,7 +184,7 @@ final class StoreReviewViewModelTests: XCTestCase {
         XCTAssertTrue(submittingReviewStarted, file: #file, line: #line)
         XCTAssertFalse(sut.submittingReview, file: #file, line: #line)
         XCTAssertNil(reviewSentResult, file: #file, line: #line)
-        XCTAssertEqual(sut.error as? NSError, networkError, file: #file, line: #line)
+        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError, file: #file, line: #line)
     }
 
     func test_tappedClose() {

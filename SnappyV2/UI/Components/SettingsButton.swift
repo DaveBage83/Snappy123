@@ -47,17 +47,18 @@ struct SettingsButton: View {
                 .frame(height: Constants.buttonHeight)
                 .foregroundColor(colorPalette.primaryBlue)
         }
-        .sheet(isPresented: $viewModel.showSettingsView) {
-            NavigationView {
-                MemberDashboardSettingsView(
-                    viewModel: .init(container: viewModel.container),
-                    marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
-                    pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
-                    dismissViewHandler: {
-                        viewModel.settingsDismissed()
-                        
-                    })
-            }
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showSettingsView, sheetContent: dashboardSettings)
+    }
+    
+    private var dashboardSettings: some View {
+        NavigationView {
+            MemberDashboardSettingsView(
+                viewModel: .init(container: viewModel.container),
+                marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
+                pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
+                dismissViewHandler: {
+                    viewModel.settingsDismissed()
+                })
         }
     }
 }

@@ -37,11 +37,8 @@ struct OrderSummaryCardDetailsButton: View {
                     await viewModel.getDriverLocationIfOrderIncomplete(orderProgress: viewModel.order.orderProgress)
                 }
             }
-            .sheet(isPresented: $viewModel.showDetailsView) {
-                if let order = viewModel.order {
-                    OrderDetailsView(viewModel: .init(container: viewModel.container, order: order), orderSummaryCardViewModel: orderSummaryCardViewModel)
-                }
-            }
+            .snappySheet(container: viewModel.container, isPresented: $viewModel.showDetailsView,
+                         sheetContent: OrderDetailsView(viewModel: .init(container: viewModel.container, order: viewModel.order), orderSummaryCardViewModel: orderSummaryCardViewModel))
     }
 }
 

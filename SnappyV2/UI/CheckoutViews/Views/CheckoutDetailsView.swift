@@ -80,7 +80,7 @@ struct CheckoutDetailsView: View {
                     yourDetails()
                     
                     if viewModel.fulfilmentType?.type == .delivery {
-                        EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: viewModel.setContactDetails, errorHandler: viewModel.setCheckoutError)
+                        EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: viewModel.setContactDetails, errorHandler: viewModel.setError(_:))
                     }
                     
                     deliverySlotInfo

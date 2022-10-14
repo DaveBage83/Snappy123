@@ -86,9 +86,7 @@ class BasketViewModel: ObservableObject {
     @Published var isContinueToCheckoutTapped = false
     
     @Published var profile: MemberProfile?
-    
-    @Published var errorNeedsUserAction: Error?
-    
+        
     var isMemberSignedIn: Bool {
         profile != nil
     }
@@ -348,13 +346,13 @@ class BasketViewModel: ObservableObject {
                 }
                 
             } catch {
-                self.errorNeedsUserAction = error
+                self.setError(error)
                 Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
                 self.applyingCoupon = false
                 couponFieldHasError = true
             }
         } else {
-            errorNeedsUserAction = BasketViewError.couponAppliedUnsuccessfully
+            self.setError(BasketViewError.couponAppliedUnsuccessfully)
             couponFieldHasError = true
         }
     }
@@ -369,11 +367,15 @@ class BasketViewModel: ObservableObject {
                 Logger.basket.info("Removed coupon: \(coupon.name)")
                 self.removingCoupon = false
             } catch {
-                self.errorNeedsUserAction = error
+                self.setError(error)
                 Logger.basket.error("Failed to remove coupon: \(coupon.name) - \(error.localizedDescription)")
                 self.removingCoupon = false
             }
         }
+    }
+    
+    private func setError(_ err: Error) {
+        self.container.appState.value.errors.append(err)
     }
     
     func clearCouponAndContinue() async {
@@ -383,7 +385,7 @@ class BasketViewModel: ObservableObject {
     
     func checkoutTapped() async {
         guard minimumSpendReached else {
-            errorNeedsUserAction = BasketViewError.minimumSpendNotMet
+            setError(BasketViewError.minimumSpendNotMet)
             return
         }
         
@@ -403,11 +405,11 @@ class BasketViewModel: ObservableObject {
                     // the original error message - better than displaying the network error
                     // because requestMobileVerificationCode() is more of a background call than
                     // being explicity initiated by the user
-                    errorNeedsUserAction = unmetCouponMemberAccountRequirement
+                    self.setError(unmetCouponMemberAccountRequirement)
                     Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
                 }
             } else {
-                errorNeedsUserAction = unmetCouponMemberAccountRequirement
+                self.setError(unmetCouponMemberAccountRequirement)
             }
             // block the customer checking out until verified
             return
@@ -471,7 +473,7 @@ class BasketViewModel: ObservableObject {
                 
                 self.isUpdatingItem = false
             } catch {
-                self.errorNeedsUserAction = error
+                self.setError(error)
                 Logger.basket.error("Error updating \(basketItem.basketLineId) in basket - \(error.localizedDescription)")
                 
                 self.isUpdatingItem = false
@@ -485,7 +487,7 @@ class BasketViewModel: ObservableObject {
             
             self.isUpdatingItem = false
         } catch {
-            self.errorNeedsUserAction = error
+            self.setError(error)
             Logger.basket.info("Failed to remove item - Error: \(error.localizedDescription)")
             
             self.isUpdatingItem = false
@@ -508,7 +510,7 @@ class BasketViewModel: ObservableObject {
                 self.changeTipBy = 0
             }
         } catch {
-            self.errorNeedsUserAction = error
+            self.setError(error)
             Logger.basket.error("Could not update driver tip - Error: \(error.localizedDescription)")
             self.updatingTip = false
             self.changeTipBy = 0

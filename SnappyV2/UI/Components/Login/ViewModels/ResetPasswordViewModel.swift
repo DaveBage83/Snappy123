@@ -29,7 +29,6 @@ class ResetPasswordViewModel: ObservableObject {
     @Published private(set) var newPasswordHasError = false
     @Published private(set) var confirmationPasswordHasError = false
     @Published var isLoading = false
-    @Published private(set) var error: Error?
     @Published var dismiss = false
         
     let container: DIContainer
@@ -101,7 +100,7 @@ class ResetPasswordViewModel: ObservableObject {
         confirmationPasswordHasError = confirmationPassword.isEmpty || confirmationPasswordDifferent
         
         guard newPasswordHasError == false && confirmationPasswordHasError == false else {
-            self.error = ResetPasswordViewError.passwordFieldErrors
+            self.container.appState.value.errors.append(ResetPasswordViewError.passwordFieldErrors)
             return
         }
         
@@ -126,7 +125,7 @@ class ResetPasswordViewModel: ObservableObject {
                 dismissHandler(error)
             default:
                 Logger.member.error("Failed to reset password with error: \(error.localizedDescription)")
-                self.error = error
+                self.container.appState.value.errors.append(error)
             }
         }
         

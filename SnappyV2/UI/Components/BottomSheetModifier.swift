@@ -292,7 +292,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
                 .onChange(of: item) { _ in
                     present()
                 }
-        }, isModal: true, viewModel: .init(container: container))
+        }, viewModel: .init(container: container, isModal: true))
     }
 }
 

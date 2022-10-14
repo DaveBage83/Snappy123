@@ -443,7 +443,7 @@ public struct AlertToastModifier: ViewModifier{
     ///Tap to dismiss alert
 
     var tapToDismiss: Bool {
-        subtitle.count > 20 || tapToDismissOverride == true
+        subtitle.count > AppV2Constants.Business.maxAlertCharacterLengthForAutoDismiss || tapToDismissOverride == true
     }
     
     let tapToDismissOverride: Bool

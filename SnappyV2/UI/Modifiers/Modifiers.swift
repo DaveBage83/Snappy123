@@ -428,7 +428,7 @@ extension View {
             .sheet(isPresented: isPresented) {
                 ToastableViewContainer(content: {
                     sheetContent
-                }, isModal: true, viewModel: .init(container: container))
+                }, viewModel: .init(container: container, isModal: true))
             }
     }
 }

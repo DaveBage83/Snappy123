@@ -11,9 +11,39 @@ import Combine
 class ToastableViewModel: ObservableObject {
     let id = UUID()
     let container: DIContainer
+    let isModal: Bool
     
-    init(container: DIContainer) {
+    init(container: DIContainer, isModal: Bool) {
         self.container = container
+        self.isModal = isModal
+    }
+    
+    private func clearErrorsAndToasts() {
+        container.appState.value.errors = []
+        container.appState.value.successToastStrings = []
+    }
+    
+    func manageToastsOnDisappear() {
+        let errors = container.appState.value.errors // keep local copy of errors
+        let successes = container.appState.value.successToastStrings
+        clearErrorsAndToasts()
+        
+        if isModal { // if modal, we need to repopulate the errors so that the parent view can react
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.000000001) { [weak self] in
+                guard let self = self else { return }
+                self.container.appState.value.errors = errors
+                self.container.appState.value.successToastStrings = successes
+            }
+        }
+        
+        container.appState.value.viewIDs.removeAll(where: { $0 == id })
+    }
+    
+    func manageToastsOnAppear() {
+        clearErrorsAndToasts()
+        if !container.appState.value.viewIDs.contains(where: {$0 == id}) {
+            container.appState.value.viewIDs.append(id)
+        }
     }
 }
 
@@ -21,7 +51,6 @@ class ToastableViewModel: ObservableObject {
 /// when AppState values are changed
 struct ToastableViewContainer<Content: View>: View {
     var content: () -> Content
-    let isModal: Bool
     
     @StateObject var viewModel: ToastableViewModel
     
@@ -30,37 +59,21 @@ struct ToastableViewContainer<Content: View>: View {
             .withAlertToast(container: viewModel.container, error: .constant(viewModel.container.appState.value.latestError), viewID: viewModel.id)
             .withSuccessToast(container: viewModel.container, viewID: viewModel.id, toastText: .constant(viewModel.container.appState.value.latestSuccessToast))
             .onDisappear {
-                // Clear errors when navigating to ...
-                let errors = viewModel.container.appState.value.errors // keep local copy of errors
-                let successes = viewModel.container.appState.value.successToastStrings
-                viewModel.container.appState.value.errors = []
-                viewModel.container.appState.value.successToastStrings = []
-                
-                if isModal { // if modal, we need to repopulate the errors so that the parent view can react
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.000000001) {
-                        viewModel.container.appState.value.errors = errors
-                        viewModel.container.appState.value.successToastStrings = successes
-                    }
-                }
+                viewModel.manageToastsOnDisappear()
             }
             .onAppear {
-                // ... or from a view
-                viewModel.container.appState.value.errors = []
-                if !viewModel.container.appState.value.viewIDs.contains(where: {$0 == viewModel.id}) {
-                    viewModel.container.appState.value.viewIDs.append(viewModel.id)
-                }
-            }
-            .onDisappear {
-                viewModel.container.appState.value.viewIDs.removeAll(where: { $0 == viewModel.id })
+                viewModel.manageToastsOnAppear()
             }
             .edgesIgnoringSafeArea(.bottom)
     }
 }
 
+#if DEBUG
 struct ToastableViewContainer_Previews: PreviewProvider {
     static var previews: some View {
         ToastableViewContainer(content: {
             Text("This is a test")
-        }, isModal: false, viewModel: .init(container: .preview))
+        }, viewModel: .init(container: .preview, isModal: false))
     }
 }
+#endif

@@ -221,7 +221,7 @@ struct SnappyV2StudyApp: View {
                                 viewModel.openUniversalLink(url: url)
                             })
                             .navigationViewStyle(.stack)
-                    }, isModal: false, viewModel: .init(container: viewModel.container))
+                    }, viewModel: .init(container: viewModel.container, isModal: false))
                     
                 } else {
                     ToastableViewContainer(content: {
@@ -230,7 +230,7 @@ struct SnappyV2StudyApp: View {
                                 viewModel.openUniversalLink(url: url)
                             })
                             .navigationViewStyle(.stack)
-                    }, isModal: false, viewModel: .init(container: viewModel.container))
+                    }, viewModel: .init(container: viewModel.container, isModal: false))
                 }
             }
             

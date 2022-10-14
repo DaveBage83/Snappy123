@@ -92,7 +92,7 @@ struct ProductsView: View {
                     .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
-                        }, isModal: true, viewModel: .init(container: viewModel.container))
+                        }, viewModel: .init(container: viewModel.container, isModal: true))
                     }
             }
         }

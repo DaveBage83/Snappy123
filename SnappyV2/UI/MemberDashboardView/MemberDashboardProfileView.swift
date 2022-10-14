@@ -149,7 +149,8 @@ struct MemberDashboardProfileView: View {
                     text: $viewModel.phoneNumber,
                     hasError: $viewModel.phoneHasError,
                     labelText: GeneralStrings.phone.localized,
-                    largeTextLabelText: nil)
+                    largeTextLabelText: nil,
+                    keyboardType: .phonePad)
                 .onReceive(Just(viewModel.phoneNumber)) { newValue in
                     viewModel.filterPhoneNumber(newValue: newValue)
                 }

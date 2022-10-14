@@ -25,7 +25,7 @@ struct ProductsView: View {
     
     // MARK: - Typealias
     typealias AppConstants = AppV2Constants.Business
-
+    
     // MARK: - Constants
     struct Constants {
         struct RootGrid {
@@ -59,7 +59,7 @@ struct ProductsView: View {
             static let largeScreenWidthMultiplier: CGFloat = 1.5
         }
     }
-
+    
     // MARK: - View model
     @StateObject var viewModel: ProductsViewModel
     
@@ -99,7 +99,7 @@ struct ProductsView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .withLoadingToast(loading: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching))
+        .withLoadingToast(loading: .constant(viewModel.isSearching))
     }
     
     private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {
@@ -119,6 +119,7 @@ struct ProductsView: View {
                 ScrollViewReader { proxy in
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 0) {
+                            
                             if viewModel.showStandardView {
                                 ProductsNavigationAndSearch(
                                     productsViewModel: viewModel,
@@ -197,6 +198,17 @@ struct ProductsView: View {
         if viewModel.isSearching {
             // When searching, we do not want to show previously found items
             EmptyView()
+        } else if viewModel.rootCategoriesIsLoading {
+            VStack {
+                // We use dummy content here in order to display a redacted view whilst loading
+                ForEach(1...20, id: \.self) { _ in
+                    ProductCategoryCardView(container: viewModel.container, categoryDetails: viewModel.dummyRootCategory)
+                        .padding(.horizontal)
+                        .redacted(reason: viewModel.rootCategoriesIsLoading ? .placeholder: [])
+                }
+            }
+            .padding(.vertical)
+            
         } else if viewModel.showEnterMoreCharactersView {
             enterMoreCharacters
         } else if viewModel.showSearchView {

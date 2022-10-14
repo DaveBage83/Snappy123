@@ -29,8 +29,7 @@ class ToastableViewModel: ObservableObject {
         clearErrorsAndToasts()
         
         if isModal { // if modal, we need to repopulate the errors so that the parent view can react
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.000000001) { [weak self] in
-                guard let self = self else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.000000001) {
                 self.container.appState.value.errors = errors
                 self.container.appState.value.successToastStrings = successes
             }

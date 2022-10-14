@@ -213,6 +213,11 @@ class ProductsViewModel: ObservableObject {
             return false
         }
     }
+    
+    // We use this only to display a redacted view for when the root categories are loading
+    var dummyRootCategory: RetailStoreMenuCategory {
+        RetailStoreMenuCategory(id: 1, parentId: 1, name: "Dummy Category", image: nil, description: "Dummy Category Desctiption", action: nil)
+    }
 
     // MARK: - Init
     init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {

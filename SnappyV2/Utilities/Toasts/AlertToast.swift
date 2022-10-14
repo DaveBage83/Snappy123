@@ -90,6 +90,7 @@ public struct AlertToast: Equatable, View{
     public static func == (lhs: AlertToast, rhs: AlertToast) -> Bool { return true }
     
     @Environment(\.presentationMode) var presentation
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     public enum BannerAnimation{
         case slide, pop
@@ -267,8 +268,8 @@ public struct AlertToast: Equatable, View{
                                 .font(style?.titleFont ?? Font.headline.bold())
                         }
                         
-                        if subTitle != nil{
-                            Text(verbatim: subTitle ?? "")
+                        if !subTitle.isEmpty {
+                            Text(verbatim: subTitle)
                                 .font(style?.subTitleFont ?? Font.subheadline)
                                 .multilineTextAlignment(.leading)
                         }
@@ -291,8 +292,9 @@ public struct AlertToast: Equatable, View{
                     }
                 }
             }
+            .padding(.bottom, tabViewHeight)
         }
-        .padding()
+        .padding(.horizontal)
     }
     
     ///HUD View

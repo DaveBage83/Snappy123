@@ -113,7 +113,6 @@ struct StandardAlertToast: ViewModifier {
                     tapToDismiss: tapToDismiss
                 )
             })
-            .padding(.bottom)
             .onChange(of: container.appState.value.latestError?.localizedDescription) { errText in
                 if errText != nil && showAlert == false && container.appState.value.latestViewID == viewID {
 
@@ -270,7 +269,6 @@ struct StandardSuccessToast: ViewModifier {
                     tapToDismiss: false // success toast should not be tap to dismiss
                 )
             })
-            .padding(.bottom, showAlert ? tabViewHeight : 0)
             .onChange(of: container.appState.value.latestSuccessToast) { toastText in
                 if toastText?.isEmpty == false && container.appState.value.latestViewID == viewID {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

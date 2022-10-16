@@ -26,11 +26,9 @@ class AddressSelectionViewModel: ObservableObject {
         
     // MARK: - Binding
     @Binding var showAddressSelectionView: Bool
-    @Published var addressSelectionError: Swift.Error?
 
     // MARK: - Properties
     let container: DIContainer
-    var addressSetterError: String?
     private let email: String
     private let phone: String
     private let firstName: String
@@ -133,7 +131,7 @@ class AddressSelectionViewModel: ObservableObject {
             self.settingDeliveryAddress = false
             self.showAddressSelectionView = false
         } catch {
-            self.addressSelectionError = error as? APIErrorResult
+            self.container.appState.value.errors.append(error)
             
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             self.settingDeliveryAddress = false

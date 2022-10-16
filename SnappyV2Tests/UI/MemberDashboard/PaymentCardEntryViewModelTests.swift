@@ -31,7 +31,6 @@ class PaymentCardEntryViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isUnvalidExpiry)
         XCTAssertFalse(sut.isUnvalidCVV)
         XCTAssertFalse(sut.showCardCamera)
-        XCTAssertNil(sut.error)
         XCTAssertFalse(sut.dismissView)
         XCTAssertFalse(sut.isUnvalidCardName)
         XCTAssertTrue(sut.saveNewCardButtonDisabled)

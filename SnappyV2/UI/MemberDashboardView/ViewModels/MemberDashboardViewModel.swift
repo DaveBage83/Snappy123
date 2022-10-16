@@ -132,8 +132,6 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var viewState: OptionType = .dashboard
     @Published var loggingOut = false
     @Published var loading = false
-    @Published var error: Error?
-    @Published var successMessage: String?
     @Published var showSettings = false
     @Published var driverSettingsLoading = false
     @Published var driverDependencies: DriverDependencyInjectionContainer?
@@ -236,12 +234,17 @@ class MemberDashboardViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
     
+    private func setError(_ err: Error) {
+        container.appState.value.errors.append(err)
+    }
+    
     func addAddress(address: Address) async {
         do {
             try await self.container.services.memberService.addAddress(address: address)
             Logger.member.log("Successfully added address with ID \(String(address.id ?? 0))")
         } catch {
-            self.error = error
+            self.setError(error)
+            
             Logger.member.error("Failed to add address with ID \(String(address.id ?? 0)): \(error.localizedDescription)")
         }
     }
@@ -251,7 +254,7 @@ class MemberDashboardViewModel: ObservableObject {
             try await self.container.services.memberService.updateAddress(address: address)
             Logger.member.log("Successfully update address with ID \(String(address.id ?? 0))")
         } catch {
-            self.error = error
+            self.setError(error)
             Logger.member.error("Failed to update address with ID \(String(address.id ?? 0)): \(error.localizedDescription)")
         }
     }
@@ -263,7 +266,7 @@ class MemberDashboardViewModel: ObservableObject {
             self.loggingOut = false
             self.viewState = .dashboard
         } catch {
-            self.error = error
+            self.setError(error)
             Logger.member.error("Failed to log user out: \(error.localizedDescription)")
         }
     }
@@ -301,7 +304,7 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     func resetPasswordDismissed(withError error: Error) {
-        self.error = error
+        self.setError(error)
     }
     
     func startDriverShiftTapped() async {
@@ -311,7 +314,7 @@ class MemberDashboardViewModel: ObservableObject {
             startDriverInterface(with: sessionSettings)
             driverSettingsLoading = false
         } catch {
-            self.error = error
+            self.setError(error)
             driverSettingsLoading = false
             Logger.initial.error("Failed to fetch driver settings: \(error.localizedDescription)")
         }
@@ -330,7 +333,7 @@ class MemberDashboardViewModel: ObservableObject {
             }
             requestingVerifyCode = false
         } catch {
-            self.error = error
+            self.setError(error)
             requestingVerifyCode = false
             Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
         }

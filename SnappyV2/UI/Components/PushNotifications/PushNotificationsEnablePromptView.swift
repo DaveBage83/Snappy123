@@ -96,8 +96,6 @@ struct PushNotificationsEnablePromptView: View {
 
         }
         .font(.body)
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
-        
     }
 }
 

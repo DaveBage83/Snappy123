@@ -119,7 +119,6 @@ struct ResetPasswordView: View {
             }
         }
         .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
-        .displayError(viewModel.error)
         .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: ResetPasswordStrings.title.localized)
         .onChange(of: viewModel.dismiss, perform: { dismiss in
             if dismiss {

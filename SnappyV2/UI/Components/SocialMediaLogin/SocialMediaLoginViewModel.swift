@@ -14,9 +14,8 @@ class SocialMediaLoginViewModel: ObservableObject {
     let container: DIContainer
     
     @Published var isLoading = false
-    
-    @Published private(set) var error: Error?
-    
+    @Published var error: Error?
+        
     init(container: DIContainer) {
         self.container = container
     }
@@ -24,7 +23,7 @@ class SocialMediaLoginViewModel: ObservableObject {
     func updateFinishedPublishedStates(error: Error?) {
         self.isLoading = false
         if let error = error {
-            self.error = error
+            self.container.appState.value.errors.append(error)
         }
     }
     
@@ -49,7 +48,7 @@ class SocialMediaLoginViewModel: ObservableObject {
             try await container.services.memberService.loginWithFacebook(registeringFromScreen: .startScreen)
             self.isLoading = false
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to log in with Facebook: \(error.localizedDescription)")
             self.isLoading = false
         }
@@ -73,6 +72,9 @@ class SocialMediaLoginViewModel: ObservableObject {
             
         case .failure:
             self.error = error
+            if let error = error {
+                self.container.appState.value.errors.append(error)
+            }
             Logger.member.error("Unable to sign in with Apple")
         }
     }

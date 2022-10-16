@@ -97,7 +97,6 @@ struct ForgotPasswordView: View {
         .edgesIgnoringSafeArea(.bottom)
         .background(colorPalette.backgroundMain)
         .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
-        .displayError(viewModel.error)
         .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized, navigationDismissType: .close)
 		.onAppear {
             viewModel.onAppearSendEvent()

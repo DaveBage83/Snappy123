@@ -77,18 +77,18 @@ class SnappyV2AppViewModelTests: XCTestCase {
         
         sut.dismissMobileVerifyNumberView(error: nil, toast: nil)
 
-        XCTAssertNil(sut.error)
-        XCTAssertNil(sut.successMessage)
+        XCTAssertNil(sut.container.appState.value.latestError)
+        XCTAssertNil(sut.container.appState.value.latestSuccessToast)
 
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         sut.dismissMobileVerifyNumberView(error: networkError, toast: nil)
 
-        XCTAssertEqual(sut.error as? NSError, networkError)
-        XCTAssertNil(sut.successMessage)
-        
+        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
+        XCTAssertNil(sut.container.appState.value.latestSuccessToast)
+
         sut.dismissMobileVerifyNumberView(error: nil, toast: "test message")
 
-        XCTAssertEqual(sut.successMessage, "test message")
+        XCTAssertEqual(sut.container.appState.value.latestSuccessToast, "test message")
     }
     
     func test_openUniversalLink_givenResetPasswordDeepLink_addToPostponedQueue() {

@@ -241,8 +241,6 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
-            .withAlertToast(container: viewModel.container, error: $viewModel.locationManager.error)
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .withLoadingToast(loading: .constant(viewModel.isLoading || viewModel.driverSettingsLoading))
             .alert(item: $viewModel.showAlert) { alert in
                 switch alert.id {

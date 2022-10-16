@@ -24,9 +24,6 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     @Published var showDeliveryAddressSetterError = false
     @Published var showNoSelectedAddressError = false
     
-    // MARK: - Error
-    var addressSetterError: String?
-    
     // MARK: - Required values
     let firstName: String
     let lastName: String
@@ -140,9 +137,7 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
             
             self.settingDeliveryAddress = false
         } catch {
-            if let error = error as? APIErrorResult {
-                self.addressSetterError = error.errorText
-            }
+            self.container.appState.value.errors.append(error)
             
             self.showDeliveryAddressSetterError = true
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")

@@ -51,17 +51,17 @@ struct LoyaltyView: View {
                 .redacted(reason: viewModel.showMentionMeLoading ? .placeholder : [])
                 .padding(.bottom, tabViewHeight)
         }
-        .sheet(isPresented: $viewModel.showMentionMeWebView) {
-            MentionMeWebView(
-                viewModel: MentionMeWebViewModel(
-                    container: viewModel.container,
-                    mentionMeRequestResult: viewModel.mentionMeDashboardRequestResult,
-                    dismissWebViewHandler: { _ in
-                        viewModel.mentionMeWebViewDismissed()
-                    }
-                )
-            )
-        }.onChange(of: viewModel.webViewURL) { url in
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
+                     sheetContent: MentionMeWebView(
+                        viewModel: MentionMeWebViewModel(
+                            container: viewModel.container,
+                            mentionMeRequestResult: viewModel.mentionMeDashboardRequestResult,
+                            dismissWebViewHandler: { _ in
+                                viewModel.mentionMeWebViewDismissed()
+                            }
+                        )
+                     ))
+        .onChange(of: viewModel.webViewURL) { url in
             if let url = url {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }

@@ -13,7 +13,6 @@ final class ForgotPasswordViewModel: ObservableObject {
     @Published var email = ""
     @Published var emailHasError = false
     @Published var isLoading = false
-    @Published private(set) var error: Error?
         
     let container: DIContainer
     let dismissHandler: (String?) -> Void
@@ -30,15 +29,16 @@ final class ForgotPasswordViewModel: ObservableObject {
         guard emailHasError == false else {
             return
         }
-        
+                
         isLoading = true
         
         do {
             try await self.container.services.memberService.resetPasswordRequest(email: email)
             Logger.member.log("Email sent to reset password")
+            container.appState.value.successToastStrings.append(Strings.ForgetPasswordCustom.confirmation.localizedFormat(email))
             dismissHandler(email)
         } catch {
-            self.error = error
+            self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to send password reset message with error: \(error.localizedDescription)")
         }
         

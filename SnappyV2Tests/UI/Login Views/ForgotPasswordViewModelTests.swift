@@ -17,7 +17,6 @@ final class ForgotPasswordViewModelTests: XCTestCase {
         XCTAssertFalse(sut.emailHasError)
         XCTAssertFalse(sut.isLoading)
         XCTAssertEqual(sut.email, "")
-        XCTAssertNil(sut.error)
     }
     
     func test_whenSubmitTapped_givenEmailIsEmpty_thenEmailHasError() async {

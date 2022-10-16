@@ -22,7 +22,6 @@ final class BasketListItemViewModel: ObservableObject {
     @Published var bannerDetails = [BannerDetails]()
     @Published var missedPromoShown: BasketItemMissedPromotion?
     @Published var complexItemShown: RetailStoreMenuItem?
-    @Published var error: Error?
     @Published var optionTexts =  [OptionText]()
     private var cancellables = Set<AnyCancellable>()
     

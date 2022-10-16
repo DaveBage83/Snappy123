@@ -44,9 +44,7 @@ struct OTPPromptView: View {
                 requestOTPPrompt()
             }
         }
-        .font(.body)
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
-        
+        .font(.body)        
         
         // MARK: NavigationLinks
         NavigationLink("", isActive: $viewModel.showLoginView) {

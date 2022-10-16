@@ -58,36 +58,34 @@ struct EditAddressView: View {
                 fieldsView
             }
         }
-        .sheet(isPresented: $viewModel.showAddressSelector) {
-            AddressSelectionView(
-                viewModel: .init(
-                    container: viewModel.container,
-                    addressSelectionType: viewModel.addressType,
-                    addresses: viewModel.foundAddresses,
-                    showAddressSelectionView: $viewModel.showAddressSelector,
-                    firstName: viewModel.contactFirstName,
-                    lastName: viewModel.contactLastName,
-                    email: viewModel.contactEmail,
-                    phone: viewModel.contactPhone,
-                    starterPostcode: viewModel.postcodeText,
-                    isInCheckout: true),
-                didSelectAddress: { address in
-                    viewModel.populateFields(address: address)
-                }, addressSaved: {})
-        }
-        .sheet(isPresented: $viewModel.showSavedAddressSelector) {
-            SavedAddressesSelectionView(
-                viewModel: .init(
-                    container: viewModel.container,
-                    savedAddressType: viewModel.addressType,
-                    addresses: viewModel.savedAddresses,
-                    firstName: viewModel.contactFirstName,
-                    lastName: viewModel.contactLastName,
-                    email: viewModel.contactEmail,
-                    phone:viewModel.contactPhone), didSetAddress: { address in
-                        viewModel.populateFields(address: address)
-                    })
-        }
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showAddressSelector,
+                     sheetContent: AddressSelectionView(
+                        viewModel: .init(
+                            container: viewModel.container,
+                            addressSelectionType: viewModel.addressType,
+                            addresses: viewModel.foundAddresses,
+                            showAddressSelectionView: $viewModel.showAddressSelector,
+                            firstName: viewModel.contactFirstName,
+                            lastName: viewModel.contactLastName,
+                            email: viewModel.contactEmail,
+                            phone: viewModel.contactPhone,
+                            starterPostcode: viewModel.postcodeText,
+                            isInCheckout: true),
+                        didSelectAddress: { address in
+                            viewModel.populateFields(address: address)
+                        }, addressSaved: {}))
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.showSavedAddressSelector,
+                     sheetContent: SavedAddressesSelectionView(
+                        viewModel: .init(
+                            container: viewModel.container,
+                            savedAddressType: viewModel.addressType,
+                            addresses: viewModel.savedAddresses,
+                            firstName: viewModel.contactFirstName,
+                            lastName: viewModel.contactLastName,
+                            email: viewModel.contactEmail,
+                            phone:viewModel.contactPhone), didSetAddress: { address in
+                                viewModel.populateFields(address: address)
+                            }))
     }
     
     private var fieldsView: some View {

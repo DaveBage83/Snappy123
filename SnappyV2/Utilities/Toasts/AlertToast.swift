@@ -90,6 +90,7 @@ public struct AlertToast: Equatable, View{
     public static func == (lhs: AlertToast, rhs: AlertToast) -> Bool { return true }
     
     @Environment(\.presentationMode) var presentation
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     public enum BannerAnimation{
         case slide, pop
@@ -194,7 +195,7 @@ public struct AlertToast: Equatable, View{
     public var title: String? = nil
     
     ///The subtitle of the alert (`Optional(String)`)
-    public var subTitle: String? = nil
+    @Binding var subTitle: String
     
     ///Customize your alert appearance
     public var style: AlertStyle? = nil
@@ -206,14 +207,14 @@ public struct AlertToast: Equatable, View{
     public init(displayMode: DisplayMode = .alert,
                 type: AlertType,
                 title: String? = nil,
-                subTitle: String? = nil,
+                subTitle: Binding<String>,
                 style: AlertStyle? = nil,
                 tapToDismiss: Bool){
         
         self.displayMode = displayMode
         self.type = type
         self.title = title
-        self.subTitle = subTitle
+        self._subTitle = subTitle
         self.style = style
         self.tapToDismiss = tapToDismiss
     }
@@ -223,12 +224,14 @@ public struct AlertToast: Equatable, View{
     public init(displayMode: DisplayMode,
                 type: AlertType,
                 title: String? = nil,
+                subtitle: Binding<String>,
                 tapToDismiss: Bool){
         
         self.displayMode = displayMode
         self.type = type
         self.title = title
         self.tapToDismiss = tapToDismiss
+        self._subTitle = subtitle
     }
     
     ///Banner from the bottom of the view
@@ -265,8 +268,8 @@ public struct AlertToast: Equatable, View{
                                 .font(style?.titleFont ?? Font.headline.bold())
                         }
                         
-                        if subTitle != nil{
-                            Text(verbatim: subTitle ?? "")
+                        if !subTitle.isEmpty {
+                            Text(verbatim: subTitle)
                                 .font(style?.subTitleFont ?? Font.subheadline)
                                 .multilineTextAlignment(.leading)
                         }
@@ -289,8 +292,9 @@ public struct AlertToast: Equatable, View{
                     }
                 }
             }
+            .padding(.bottom, tabViewHeight)
         }
-        .padding()
+        .padding(.horizontal)
     }
     
     ///HUD View
@@ -396,12 +400,11 @@ public struct AlertToast: Equatable, View{
                         .multilineTextAlignment(.leading)
                         .textColor(style?.titleColor ?? nil)
                 }
-                if subTitle != nil{
-                    Text(LocalizedStringKey(subTitle ?? ""))
+                if subTitle.isEmpty == false {
+                    Text(LocalizedStringKey(subTitle))
                         .font(style?.subTitleFont ?? Font.footnote)
                         .opacity(0.7)
                         .multilineTextAlignment(.leading)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.8)
                         .fixedSize(horizontal: false, vertical: true)
                         .textColor(style?.subtitleColor ?? nil)
                 }
@@ -433,7 +436,7 @@ public struct AlertToastModifier: ViewModifier{
     @Binding var isPresenting: Bool
     
     @State var disableAutoDismiss: Bool
-    
+        
     ///Duration time to display the alert
     var duration: Double {
         tapToDismiss ? 500 : 4
@@ -461,7 +464,7 @@ public struct AlertToastModifier: ViewModifier{
     @State private var hostRect: CGRect = .zero
     @State private var alertRect: CGRect = .zero
     
-    let subtitle: String
+    @Binding var subtitle: String
     
     private var screen: CGRect {
         return UIScreen.main.bounds
@@ -704,7 +707,7 @@ public extension View{
     ///   - show: Binding<Bool>
     ///   - alert: () -> AlertToast
     /// - Returns: `AlertToast`
-    func toast(isPresenting: Binding<Bool>, subtitle: String, tapToDismissOverride: Bool = false, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping (String, Bool) -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
+    internal func toast(isPresenting: Binding<Bool>, subtitle: Binding<String>, tapToDismissOverride: Bool = false, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping (String, Bool) -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
         modifier(AlertToastModifier(isPresenting: isPresenting, disableAutoDismiss: disableAutoDismiss, tapToDismissOverride: tapToDismissOverride, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion, subtitle: subtitle))
     }
     

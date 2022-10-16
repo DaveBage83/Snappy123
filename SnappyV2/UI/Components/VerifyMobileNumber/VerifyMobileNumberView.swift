@@ -97,8 +97,6 @@ struct VerifyMobileNumberView: View {
                 .withLoadingToast(loading: $viewModel.isRequestingOrSendingVerificationCode)
         }
             .font(.body)
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
-            .withSuccessToast(container: viewModel.container, toastText: $viewModel.toastMessage)
     }
 }
 

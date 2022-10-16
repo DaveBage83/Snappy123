@@ -90,7 +90,6 @@ struct LoginView: View {
                 LoadingView()
             }
         }
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
         .onAppear {
             viewModel.onAppearSendEvent()
         }
@@ -99,7 +98,7 @@ struct LoginView: View {
     private var loginView: some View {
         VStack {
             LoginHomeView(viewModel: viewModel, socialLoginViewModel: socialLoginViewModel)
-            
+             
             NavigationLink("", isActive: $viewModel.showCreateAccountView) {
                 CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
                     .onAppear {

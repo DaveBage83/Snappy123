@@ -52,19 +52,20 @@ struct RootView: View {
                         }
                 })
         }
+        .navigationViewStyle(.stack)
         .environment(\.tabViewHeight, tabViewHeight)
         .edgesIgnoringSafeArea(.bottom)
-        .sheet(isPresented: $viewModel.displayDriverMap) {
-            DriverMapView(
-                viewModel: DriverMapViewModel(
-                    container: viewModel.container,
-                    mapParameters: viewModel.driverMapParameters,
-                    dismissDriverMapHandler: {
-                        viewModel.dismissDriverMap()
-                    }
-                ), isModal: true
-            )
-        }
+        
+        .snappySheet(container: viewModel.container, isPresented: $viewModel.displayDriverMap,
+                     sheetContent: DriverMapView(
+                        viewModel: DriverMapViewModel(
+                            container: viewModel.container,
+                            mapParameters: viewModel.driverMapParameters,
+                            dismissDriverMapHandler: {
+                                viewModel.dismissDriverMap()
+                            }
+                        ), isModal: true
+                    ))
         .onAppear() {
             viewModel.viewShown()
         }

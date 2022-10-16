@@ -215,17 +215,22 @@ struct SnappyV2StudyApp: View {
         ZStack {
             Group {
                 if viewModel.showInitialView {
-                    InitialView(viewModel: initialViewModel)
-                        .onOpenURL(perform: { (url) in
-                            viewModel.openUniversalLink(url: url)
-                        })
-                        .navigationViewStyle(.stack)
+                    ToastableViewContainer(content: {
+                        InitialView(viewModel: initialViewModel)
+                            .onOpenURL(perform: { (url) in
+                                viewModel.openUniversalLink(url: url)
+                            })
+                            .navigationViewStyle(.stack)
+                    }, viewModel: .init(container: viewModel.container, isModal: false))
+                    
                 } else {
-                    RootView(viewModel: rootViewModel)
-                        .onOpenURL(perform: { (url) in
-                            viewModel.openUniversalLink(url: url)
-                        })
-                        .navigationViewStyle(.stack)
+                    ToastableViewContainer(content: {
+                        RootView(viewModel: rootViewModel)
+                            .onOpenURL(perform: { (url) in
+                                viewModel.openUniversalLink(url: url)
+                            })
+                            .navigationViewStyle(.stack)
+                    }, viewModel: .init(container: viewModel.container, isModal: false))
                 }
             }
             
@@ -263,7 +268,6 @@ struct SnappyV2StudyApp: View {
                 showStoreReview(storeReview)
             }
         }
-        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
         .onChange(of: viewModel.showPushNotificationsEnablePromptView) { showPrompt in
             if showPrompt {
                 showPushNotificationsEnablePromptView()
@@ -289,6 +293,5 @@ struct SnappyV2StudyApp: View {
         .onChange(of: scenePhase) { newPhase in
             viewModel.setAppForegroundStatus(phase: newPhase)
         }
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
     }
 }

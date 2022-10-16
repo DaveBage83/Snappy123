@@ -101,7 +101,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     @Published var selectedSavedCardCVV: String = ""
     @Published var isUnvalidSelectedCardCVV: Bool = true
     
-    @Published var error: Error?
     let paymentSuccess: () -> Void
     let paymentFailure: () -> Void
     
@@ -306,10 +305,15 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             
             self.settingBillingAddress = false
         } catch {
-            self.error = error
+            self.setError(error)
+        
             Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")
             self.settingBillingAddress = false
         }
+    }
+    
+    private func setError(_ err: Error) {
+        container.appState.value.errors.append(err)
     }
         
     func continueButtonTapped(fieldErrors: [CheckoutRootViewModel.DetailsFormElements], setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
@@ -355,7 +359,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             try await handleCheckoutcomCardPayment(gateway: paymentGateway)
         } else {
             Logger.checkout.error("Card payment failed - Missing Checkoutcom Payment Gateway")
-            error = CheckoutPaymentHandlingViewModelError.missingCheckoutcomPaymentGateway
+            self.setError(CheckoutPaymentHandlingViewModelError.missingCheckoutcomPaymentGateway)
         }
     }
 }
@@ -400,16 +404,16 @@ extension CheckoutPaymentHandlingViewModel {
                     return
                 } else {
                     Logger.checkout.error("Card payment failed - processCardPaymentOrder result empty")
-                    error = CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty
+                    self.setError(CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty)
                 }
                 
             } else {
                 Logger.checkout.error("Card payment failed - Missing publicKey")
-                error = CheckoutPaymentHandlingViewModelError.missingPublicKey
+                self.setError(CheckoutPaymentHandlingViewModelError.missingPublicKey)
             }
         } else {
             Logger.checkout.error("Card payment failed - Missing draftOrderFulfilmentDetails")
-            error = CheckoutPaymentHandlingViewModelError.missingDraftOrderFulfilmentDetails
+            self.setError(CheckoutPaymentHandlingViewModelError.missingDraftOrderFulfilmentDetails)
         }
     }
     
@@ -423,7 +427,7 @@ extension CheckoutPaymentHandlingViewModel {
             paymentOutcome = .successful
         } catch {
             Logger.checkout.error("Card payment failed - verification failed")
-            self.error = CheckoutPaymentHandlingViewModelError.verificationFailed
+            self.setError(CheckoutPaymentHandlingViewModelError.verificationFailed)
         }
     }
     
@@ -431,7 +435,7 @@ extension CheckoutPaymentHandlingViewModel {
     func threeDSFail() {
         threeDSWebViewURLs = nil
         Logger.checkout.error("Card payment failed - 3DS verification failed")
-        error = CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed
+        self.setError(CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed)
     }
     
     func onAppearTrigger() async {

@@ -32,6 +32,7 @@ enum AppEvent: String {
     case initiatedCheckout
     case completeRegistration
     case applyCoupon
+    case applyCouponPressed
     case search
     case searchResultSelection
     case futureContact
@@ -62,6 +63,8 @@ enum AppEvent: String {
     case otpLogin
     case otpWrong
     case checkoutBlockedByMinimumSpend
+    case couponAppliedAtBaskedView
+    case couponRejectedAtBasketView
     
     var toAppsFlyerString: String? {
         switch self {
@@ -126,6 +129,9 @@ enum AppEvent: String {
         case .searchResultSelection:            return "menu_search_result_pressed"
         case .viewCart:                         return AnalyticsEventViewCart
         case .checkoutBlockedByMinimumSpend:    return "minimum_delivery_spend_warning"
+        case .applyCouponPressed:               return "apply_coupon_pressed"
+        case .couponAppliedAtBaskedView:        return "coupon_applied_at_basket"
+        case .couponRejectedAtBasketView:       return "coupon_rejected_at_basket"
         default:                                return nil
         }
     }

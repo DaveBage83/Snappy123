@@ -321,16 +321,32 @@ class BasketViewModel: ObservableObject {
     }
     
     func submitCoupon() async {
+        
+        couponCode = couponCode.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        
         if couponCode.isEmpty == false {
             applyingCoupon = true
             
+            var firebaseParams: [String: Any] = [
+                AnalyticsParameterCoupon: couponCode
+            ]
+            container.eventLogger.sendEvent(for: .applyCouponPressed, with: .firebaseAnalytics, params: firebaseParams)
+            
             do {
-                try await self.container.services.basketService.applyCoupon(code: self.couponCode)
+                try await self.container.services.basketService.applyCoupon(code: couponCode)
+                
+                if
+                    let coupon = container.appState.value.userData.basket?.coupon,
+                    coupon.code.lowercased() == couponCode.lowercased()
+                {
+                    firebaseParams["value"] = NSDecimalNumber(value: -coupon.deductCost).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+                    container.eventLogger.sendEvent(for: .couponAppliedAtBaskedView, with: .firebaseAnalytics, params: firebaseParams)
+                }
                 
                 Logger.basket.info("Added coupon: \(self.couponCode)")
-                self.applyingCoupon = false
-                self.successfulCouponText = Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(self.couponCode)
-                self.couponCode = ""
+                applyingCoupon = false
+                successfulCouponText = Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(self.couponCode)
+                couponCode = ""
                 couponFieldHasError = false
                 
                 // silently trigger fetching a mobile verification code if required by the coupon
@@ -349,13 +365,19 @@ class BasketViewModel: ObservableObject {
                 }
                 
             } catch {
-                self.setError(error)
+                if let error = error as? APIErrorResult {
+                    firebaseParams["error"] = "\(error.errorCode)" + error.errorText + " : " + error.errorDisplay
+                } else {
+                    firebaseParams["error"] = error.localizedDescription
+                }
+                container.eventLogger.sendEvent(for: .couponRejectedAtBasketView, with: .firebaseAnalytics, params: firebaseParams)
+                setError(error)
                 Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
-                self.applyingCoupon = false
+                applyingCoupon = false
                 couponFieldHasError = true
             }
         } else {
-            self.setError(BasketViewError.couponAppliedUnsuccessfully)
+            setError(BasketViewError.couponAppliedUnsuccessfully)
             couponFieldHasError = true
         }
     }

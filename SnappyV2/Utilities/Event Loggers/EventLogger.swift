@@ -132,6 +132,7 @@ enum AppEvent: String {
         case .applyCouponPressed:               return "apply_coupon_pressed"
         case .couponAppliedAtBaskedView:        return "coupon_applied_at_basket"
         case .couponRejectedAtBasketView:       return "coupon_rejected_at_basket"
+        case .initiatedCheckout:                return AnalyticsEventBeginCheckout
         default:                                return nil
         }
     }

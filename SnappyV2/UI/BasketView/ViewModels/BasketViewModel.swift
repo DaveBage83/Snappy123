@@ -453,22 +453,33 @@ class BasketViewModel: ObservableObject {
                     totalItemQuantity += item.quantity
                 }
                 
-                var params: [String: Any] = [:]
+                var appsFlyerParams: [String: Any] = [:]
                 
                 if let storeId = basket.storeId {
-                    params["store_id"] = "\(storeId)"
+                    appsFlyerParams["store_id"] = "\(storeId)"
                 }
                 
-                params[AFEventParamPrice] = basket.orderTotal
-                params[AFEventParamContentId] = itemIds
-                params[AFEventParamCurrency] = AppV2Constants.Business.currencyCode
-                params[AFEventParamQuantity] = totalItemQuantity
+                appsFlyerParams[AFEventParamPrice] = basket.orderTotal
+                appsFlyerParams[AFEventParamContentId] = itemIds
+                appsFlyerParams[AFEventParamCurrency] = AppV2Constants.Business.currencyCode
+                appsFlyerParams[AFEventParamQuantity] = totalItemQuantity
                 
                 if let member = container.appState.value.userData.memberProfile {
-                    params["member_id"] = member.uuid
+                    appsFlyerParams["member_id"] = member.uuid
                 }
                 
-                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)
+                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: appsFlyerParams)
+                
+                var firebaseParams: [String: Any] = [
+                    AnalyticsParameterItems: EventLogger.getFirebaseItemsArray(from: basket.items),
+                    AnalyticsParameterCurrency: container.appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+                    AnalyticsParameterValue: NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+                ]
+                if let coupon = basket.coupon {
+                    firebaseParams[AnalyticsParameterCoupon] = coupon.code
+                }
+                
+                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .firebaseAnalytics, params: firebaseParams)
             }
         } else {
             showCouponAlert = true

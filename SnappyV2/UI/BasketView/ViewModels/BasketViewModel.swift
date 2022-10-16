@@ -8,8 +8,11 @@
 import Combine
 import Foundation
 import OSLog
-import AppsFlyerLib
 import UIKit // required for UIApplication.shared.open
+
+// import 3rd party
+import AppsFlyerLib
+import Firebase
 
 struct BasketDisplayableFee: Identifiable {
     let id: UUID
@@ -384,6 +387,7 @@ class BasketViewModel: ObservableObject {
     func checkoutTapped() async {
         guard minimumSpendReached else {
             errorNeedsUserAction = BasketViewError.minimumSpendNotMet
+            container.eventLogger.sendEvent(for: .checkoutBlockedByMinimumSpend, with: .firebaseAnalytics, params: [:])
             return
         }
         
@@ -553,6 +557,14 @@ class BasketViewModel: ObservableObject {
                 "basketTotal": basket.orderTotal
             ]
             container.eventLogger.sendEvent(for: .viewCart, with: .iterable, params: params)
+            
+            params = [
+                AnalyticsParameterItems: EventLogger.getFirebaseItemsArray(from: basket.items),
+                AnalyticsParameterCurrency: container.appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+                AnalyticsParameterValue: NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+            ]
+            
+            container.eventLogger.sendEvent(for: .viewCart, with: .firebaseAnalytics, params: params)
         }
     }
     

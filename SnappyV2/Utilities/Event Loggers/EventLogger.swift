@@ -47,7 +47,7 @@ enum AppEvent: String {
 	case login
 	case couponReject
 	case viewCart
-	case removeFromCart
+	case removeFromBasket
 	case updateCart
 	case addBillingInfo
     case viewScreen
@@ -61,6 +61,7 @@ enum AppEvent: String {
     case otpSms
     case otpLogin
     case otpWrong
+    case checkoutBlockedByMinimumSpend
     
     var toAppsFlyerString: String? {
         switch self {
@@ -82,7 +83,7 @@ enum AppEvent: String {
         case .login:				    return AFEventLogin
         case .couponReject:			    return "coupon_reject"
         case .viewCart:				    return "view_cart"
-        case .removeFromCart:		    return "remove_from_cart"
+        case .removeFromBasket:		    return "remove_from_cart"
         case .updateCart:			    return "update_cart"
 		case .addBillingInfo:		    return "add_billing_info"
         case .viewScreen:               return "view_screen"
@@ -112,18 +113,20 @@ enum AppEvent: String {
     
     var toFirebaseString: String? {
         switch self {
-        case .addToBasket:              return AnalyticsEventAddToCart
-        case .removeFromCart:           return AnalyticsEventRemoveFromCart
-        case .purchase:                 return AnalyticsEventPurchase
-        case .storeSearchFromStartView: return "store_search_requested_at_start_view"
-        case .storeSearch:              return "store_search"
-        case .futureContact:            return "no_stores_found_interest_form_submitted"
-        case .viewCategoryList:         return "view_category_list"
-        case .viewProductList:          return "view_product_list"
-        case .viewItemDetail:           return AnalyticsEventViewItem
-        case .search:                   return AnalyticsEventSearch
-        case .searchResultSelection:    return "menu_search_result_pressed"
-        default:                        return nil
+        case .addToBasket:                      return AnalyticsEventAddToCart
+        case .removeFromBasket:                 return AnalyticsEventRemoveFromCart
+        case .purchase:                         return AnalyticsEventPurchase
+        case .storeSearchFromStartView:         return "store_search_requested_at_start_view"
+        case .storeSearch:                      return "store_search"
+        case .futureContact:                    return "no_stores_found_interest_form_submitted"
+        case .viewCategoryList:                 return "view_category_list"
+        case .viewProductList:                  return "view_product_list"
+        case .viewItemDetail:                   return AnalyticsEventViewItem
+        case .search:                           return AnalyticsEventSearch
+        case .searchResultSelection:            return "menu_search_result_pressed"
+        case .viewCart:                         return AnalyticsEventViewCart
+        case .checkoutBlockedByMinimumSpend:    return "minimum_delivery_spend_warning"
+        default:                                return nil
         }
     }
 }
@@ -146,6 +149,7 @@ protocol EventLoggerProtocol {
     func setCustomerID(profileUUID: String)
     func clearCustomerID()
     func pushNotificationDeviceRegistered(deviceToken: Data)
+    static func getFirebaseItemsArray(from: [BasketItem]) -> [[String: Any]]
 }
 
 class EventLogger: EventLoggerProtocol {
@@ -349,7 +353,7 @@ class EventLogger: EventLoggerProtocol {
                     parameters: params["facebookParams"] as? [AppEvents.ParameterName : Any]
                 )
                 
-            case .addToBasket, .removeFromCart, .updateCart:
+            case .addToBasket, .removeFromBasket, .updateCart:
                 AppEvents.shared.logEvent(
                     .addedToCart,
                     valueToSum: NSDecimalNumber(
@@ -420,6 +424,26 @@ class EventLogger: EventLoggerProtocol {
             self.deviceToken = deviceToken
         }
     }
+    
+    static func getFirebaseItemsArray(from lines: [BasketItem]) -> [[String: Any]] {
+        var items: [[String: Any]] = []
+        for line in lines {
+            var item: [String: Any] = [
+                AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(line.menuItem.id)",
+                AnalyticsParameterItemName: line.menuItem.name,
+                // future reference:
+                // AnalyticsParameterItemCategory: "pants",
+                // AnalyticsParameterItemBrand: "Google",
+                AnalyticsParameterPrice: NSDecimalNumber(value: line.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue,
+                AnalyticsParameterQuantity: line.quantity
+            ]
+            if let size = line.size {
+                item[AnalyticsParameterItemVariant] = AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(size.id)"
+            }
+            items.append(item)
+        }
+        return items
+    }
 }
 
 extension EventLogger: IterableAuthDelegate {
@@ -453,6 +477,7 @@ struct StubEventLogger: EventLoggerProtocol {
     func setCustomerID(profileUUID: String) {}
     func clearCustomerID() {}
     func pushNotificationDeviceRegistered(deviceToken: Data) {}
+    static func getFirebaseItemsArray(from: [BasketItem]) -> [[String: Any]] { return [] }
 }
 
 #if DEBUG

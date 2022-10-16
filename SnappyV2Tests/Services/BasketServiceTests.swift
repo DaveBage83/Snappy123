@@ -11,6 +11,7 @@ import Combine
 // import 3rd party
 import AppsFlyerLib
 import FBSDKCoreKit
+import Firebase
 
 @testable import SnappyV2
 
@@ -625,6 +626,9 @@ final class AddItemTests: BasketServiceTests {
         let basket = Basket.mockedData
         let item = basket.items.first!.menuItem
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
+        let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -649,32 +653,44 @@ final class AddItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        
         let appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          item.price.price,
             AFEventParamContent:        item.eposCode ?? "",
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       itemRequest.quantity ?? 1,
             "product_name":             item.name
         ]
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: item.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentID: contentId,
             .contentType: "product",
             .numItems: itemRequest.quantity ?? 1,
             .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
         ]
-        
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "valueToSum": item.price.price,
             "facebookParams": facebookParams
         ]
         
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: itemRequest.quantity ?? 1,
+            AnalyticsParameterPrice: NSDecimalNumber(value: item.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: item.price.price * Double(itemRequest.quantity ?? 1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .addToBasket, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .addToBasket, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .addToBasket, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories
@@ -704,6 +720,9 @@ final class AddItemTests: BasketServiceTests {
         let basket = Basket.mockedData
         let item = basket.items.first!.menuItem
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
+        let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -720,32 +739,44 @@ final class AddItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        
         let appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          item.price.price,
             AFEventParamContent:        item.eposCode ?? "",
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       itemRequest.quantity ?? 1,
             "product_name":             item.name
         ]
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: item.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)",
+            .contentID: contentId,
             .contentType: "product",
             .numItems: itemRequest.quantity ?? 1,
-            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+            .currency: currencyCode
         ]
-        
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "valueToSum": item.price.price,
             "facebookParams": facebookParams
         ]
         
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: itemRequest.quantity ?? 1,
+            AnalyticsParameterPrice: NSDecimalNumber(value: item.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: item.price.price * Double(itemRequest.quantity ?? 1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .addToBasket, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .addToBasket, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .addToBasket, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories
@@ -825,6 +856,9 @@ final class UpdateItemTests: BasketServiceTests {
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)"
+        let currencyCode = store.currency.currencyCode
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -849,11 +883,12 @@ final class UpdateItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        
         var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          basket.items.first!.menuItem.price.price,
             AFEventParamContentId:      basket.items.first!.menuItem.id,
             AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       itemRequest.quantity ?? 2,
             "product_name":             basket.items.first!.menuItem.name
         ]
@@ -863,20 +898,31 @@ final class UpdateItemTests: BasketServiceTests {
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: basket.items.first!.menuItem.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)",
+            .contentID: contentId,
             .contentType: "product",
-            .numItems: 1,
+            .numItems: itemRequest.quantity ?? 2,
             .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
         ]
-        
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "valueToSum": basket.items.first!.menuItem.price.price,
             "facebookParams": facebookParams
         ]
         
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: itemRequest.quantity ?? 2,
+            AnalyticsParameterPrice: NSDecimalNumber(value: basket.items.first!.menuItem.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: basket.items.first!.menuItem.price.price * Double(itemRequest.quantity ?? 1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .updateCart, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories
@@ -905,6 +951,9 @@ final class UpdateItemTests: BasketServiceTests {
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)"
+        let currencyCode = store.currency.currencyCode
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -921,11 +970,12 @@ final class UpdateItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        
         var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          basket.items.first!.menuItem.price.price,
             AFEventParamContentId:      basket.items.first!.menuItem.id,
             AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       itemRequest.quantity ?? 2,
             "product_name":             basket.items.first!.menuItem.name
         ]
@@ -937,18 +987,29 @@ final class UpdateItemTests: BasketServiceTests {
             .description: basket.items.first!.menuItem.name,
             .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)",
             .contentType: "product",
-            .numItems: 1,
+            .numItems: itemRequest.quantity ?? 2,
             .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
         ]
-        
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "valueToSum": basket.items.first!.menuItem.price.price,
             "facebookParams": facebookParams
         ]
         
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: itemRequest.quantity ?? 2,
+            AnalyticsParameterPrice: NSDecimalNumber(value: basket.items.first!.menuItem.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: basket.items.first!.menuItem.price.price * Double(itemRequest.quantity ?? 1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .updateCart, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories
@@ -974,7 +1035,6 @@ final class UpdateItemTests: BasketServiceTests {
 final class ChangeItemQuantityTests: BasketServiceTests {
     
     func test_unsuccessChangeItem_whenNoStoreSelected_returnError() async {
-        let basket = Basket.mockedData
         let basketItem = BasketItem.mockedData
         
         do {
@@ -995,8 +1055,6 @@ final class ChangeItemQuantityTests: BasketServiceTests {
     }
     
     func test_unsuccessChangeItemQuantity_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
-        
-        let basket = Basket.mockedData
         let basketItem = BasketItem.mockedData
         let store = RetailStoreDetails.mockedData
         
@@ -1027,6 +1085,10 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         let basket = Basket.mockedData
         let basketItem = BasketItem.mockedData
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)"
+        let currencyCode = store.currency.currencyCode
+        let changeQuantity = 2
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -1042,7 +1104,7 @@ final class ChangeItemQuantityTests: BasketServiceTests {
             .changeItemQuantity(
                 basketToken: basket.basketToken,
                 basketLineId: basketItem.basketLineId,
-                changeQuantity: 2)
+                changeQuantity: changeQuantity)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearBasket,
@@ -1054,8 +1116,8 @@ final class ChangeItemQuantityTests: BasketServiceTests {
             AFEventParamPrice:          basketItem.menuItem.price.price,
             AFEventParamContentId:      basketItem.menuItem.id,
             AFEventParamContentType:    basketItem.menuItem.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
-            AFEventParamQuantity:       2,
+            AFEventParamCurrency:       currencyCode,
+            AFEventParamQuantity:       changeQuantity,
             "product_name":             basketItem.menuItem.name
         ]
         if let eposCode = basketItem.menuItem.eposCode {
@@ -1064,20 +1126,32 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: basketItem.menuItem.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)",
+            .contentID: contentId,
             .contentType: "product",
-            .numItems: 1,
-            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+            .numItems: changeQuantity,
+            .currency: currencyCode
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "valueToSum": basketItem.menuItem.price.price,
             "facebookParams": facebookParams
         ]
         
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: changeQuantity,
+            AnalyticsParameterPrice: NSDecimalNumber(value: basketItem.menuItem.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: basketItem.menuItem.price.price * Double(changeQuantity)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .updateCart, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories
@@ -1087,7 +1161,7 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: 2)
+            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: changeQuantity)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -1106,6 +1180,10 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         let basket = Basket.mockedData
         let basketItem = BasketItem.mockedData
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)"
+        let currencyCode = store.currency.currencyCode
+        let changeQuantity = 2
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -1115,18 +1193,19 @@ final class ChangeItemQuantityTests: BasketServiceTests {
             .changeItemQuantity(
                 basketToken: basket.basketToken,
                 basketLineId: basketItem.basketLineId,
-                changeQuantity: 2)
+                changeQuantity: changeQuantity)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearBasket,
             .store(basket: basket)
         ])
+        
         var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          basketItem.menuItem.price.price,
             AFEventParamContentId:      basketItem.menuItem.id,
             AFEventParamContentType:    basketItem.menuItem.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
-            AFEventParamQuantity:       2,
+            AFEventParamCurrency:       currencyCode,
+            AFEventParamQuantity:       changeQuantity,
             "product_name":             basketItem.menuItem.name
         ]
         if let eposCode = basketItem.menuItem.eposCode {
@@ -1135,20 +1214,31 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: basketItem.menuItem.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)",
+            .contentID: contentId,
             .contentType: "product",
-            .numItems: 1,
-            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+            .numItems: changeQuantity,
+            .currency: currencyCode
         ]
-        
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "valueToSum": basketItem.menuItem.price.price,
             "facebookParams": facebookParams
         ]
         
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: changeQuantity,
+            AnalyticsParameterPrice: NSDecimalNumber(value: basketItem.menuItem.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: basketItem.menuItem.price.price * Double(changeQuantity)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .updateCart, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories
@@ -1157,7 +1247,7 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: 2)
+            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: changeQuantity)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -1228,6 +1318,9 @@ final class RemoveItemTests: BasketServiceTests {
         let basket = Basket.mockedData
         let item = RetailStoreMenuItem.mockedData
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
+        let currencyCode = store.currency.currencyCode
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -1251,11 +1344,12 @@ final class RemoveItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        
         var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          0.0,
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       0,
             "product_name":             item.name
         ]
@@ -1265,20 +1359,31 @@ final class RemoveItemTests: BasketServiceTests {
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: item.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentID: contentId,
             .contentType: "product",
             .numItems: -1,
-            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+            .currency: currencyCode
         ]
-        
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "valueToSum":-10.0,
             "facebookParams": facebookParams
         ]
         
+        let removedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: 1,
+            AnalyticsParameterPrice: NSDecimalNumber(value: item.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [removedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: item.price.price * Double(1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .removeFromCart, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .removeFromCart, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .removeFromBasket, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .removeFromBasket, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .removeFromBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories
@@ -1307,6 +1412,9 @@ final class RemoveItemTests: BasketServiceTests {
         let basket = Basket.mockedData
         let item = RetailStoreMenuItem.mockedData
         
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
+        let currencyCode = store.currency.currencyCode
+        
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
@@ -1322,11 +1430,12 @@ final class RemoveItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        
         var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          0.0,
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       0,
             "product_name":             item.name
         ]
@@ -1336,20 +1445,31 @@ final class RemoveItemTests: BasketServiceTests {
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: item.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentID: contentId,
             .contentType: "product",
             .numItems: -1,
             .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
         ]
-        
         let firebaseEventParameters: [String: Any] = [
             "valueToSum":-10.0,
             "facebookParams": facebookParams
         ]
         
+        let removedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: 1,
+            AnalyticsParameterPrice: NSDecimalNumber(value: item.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [removedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: item.price.price * Double(1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
-            .sendEvent(for: .removeFromCart, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .removeFromCart, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .removeFromBasket, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .removeFromBasket, with: .facebook, params: firebaseEventParameters),
+            .sendEvent(for: .removeFromBasket, with: .firebaseAnalytics, params: firebaseEventParams)
         ])
         
         // Configuring responses from repositories

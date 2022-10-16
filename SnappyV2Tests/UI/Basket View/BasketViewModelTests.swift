@@ -7,7 +7,11 @@
 
 import XCTest
 import Combine
+
+// 3rd parties
 import AppsFlyerLib
+import Firebase
+
 @testable import SnappyV2
 
 @MainActor
@@ -230,20 +234,15 @@ class BasketViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
-        let params: [String: Any] = [
-            AFEventParamPrice:basket.orderTotal,
-            AFEventParamContentId:[],
-            AFEventParamCurrency:AppV2Constants.Business.currencyCode,
-            AFEventParamQuantity:0,
-            "member_id":member.uuid
-        ]
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .checkoutBlockedByMinimumSpend, with: .firebaseAnalytics, params: [:])])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
         await sut.checkoutTapped()
         
         XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
+        
+        eventLogger.verify()
     }
     
     func test_whenCheckoutTapped_givenUnmetCouponMemberAccountRequirement_thenSetErrorNeedsUserAction() async {
@@ -744,8 +743,11 @@ class BasketViewModelTests: XCTestCase {
     
     func test_givenBasket_whenOnBasketViewSendEventTriggered_thenSendAppsFlyerEventCalled() {
         let basket = Basket.mockedData
+        let store = RetailStoreDetails.mockedData
         var appState = AppState()
         appState.userData.basket = basket
+        appState.userData.selectedStore = .loaded(store)
+        
         var totalItemQuantity: Int = 0
         for item in basket.items {
             totalItemQuantity += item.quantity
@@ -757,9 +759,16 @@ class BasketViewModelTests: XCTestCase {
         let iterableParams: [String: Any] = [
             "basketTotal": basket.orderTotal
         ]
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterItems: EventLogger.getFirebaseItemsArray(from: basket.items),
+            AnalyticsParameterCurrency: appState.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+            AnalyticsParameterValue: NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         let eventLogger = MockedEventLogger(expected: [
             .sendEvent(for: .viewCart, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewCart, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewCart, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCart, with: .firebaseAnalytics, params: firebaseParams)
         ])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)

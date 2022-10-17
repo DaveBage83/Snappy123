@@ -46,6 +46,7 @@ enum AppEvent: String {
     case viewItemDetail
     case paymentFailure
 	case login
+    case loginAtCheckout
 	case couponReject
 	case viewCart
 	case removeFromBasket
@@ -65,6 +66,8 @@ enum AppEvent: String {
     case checkoutBlockedByMinimumSpend
     case couponAppliedAtBaskedView
     case couponRejectedAtBasketView
+    case checkoutAsGuestChosen
+    case checkoutAsNewMemberChosen
     
     var toAppsFlyerString: String? {
         switch self {
@@ -133,6 +136,10 @@ enum AppEvent: String {
         case .couponAppliedAtBaskedView:        return "coupon_applied_at_basket"
         case .couponRejectedAtBasketView:       return "coupon_rejected_at_basket"
         case .initiatedCheckout:                return AnalyticsEventBeginCheckout
+        case .checkoutAsGuestChosen:            return "continue_as_guest_pressed"
+        case .checkoutAsNewMemberChosen:        return "continue_as_new_member_pressed"
+        case .login:                            return AnalyticsEventLogin
+        case .loginAtCheckout:                  return "login_during_checkout"
         default:                                return nil
         }
     }

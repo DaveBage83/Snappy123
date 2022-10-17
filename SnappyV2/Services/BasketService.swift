@@ -12,6 +12,7 @@ import SwiftUI
 // 3rd party
 import AppsFlyerLib
 import FBSDKCoreKit
+import Firebase
 
 enum BasketServiceError: Swift.Error {
     case storeSelectionRequired
@@ -239,28 +240,48 @@ actor BasketService: BasketServiceProtocol {
     }
     
     private func sendAddToBasketEvents(item: RetailStoreMenuItem, quantity: Int) {
-        eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: [
+        
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
+        let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        
+        let appsFlyerParams: [String: Any] = [
             AFEventParamPrice:          item.price.price,
             AFEventParamContent:        item.eposCode ?? "",
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
-            AFEventParamCurrency:       appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       quantity,
             "product_name":             item.name
-        ])
+        ]
+        
+        eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: appsFlyerParams)
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: item.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentID: contentId,
             .contentType: "product",
             .numItems: quantity,
-            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+            .currency: currencyCode
         ]
 
         eventLogger.sendEvent(for: .addToBasket, with: .facebook, params: [
             "valueToSum": item.price.price,
             "facebookParams": facebookParams
         ])
+        
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: quantity,
+            AnalyticsParameterPrice: NSDecimalNumber(value: item.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: item.price.price * Double(quantity)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+
+        eventLogger.sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseParams)
     }
     
     func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws {
@@ -323,34 +344,66 @@ actor BasketService: BasketServiceProtocol {
         }
     }
     
+    // Observed behaviour:
+    // - when removeFromCart is true then quantity = 0
+    // - otherwise quanity is negative when reducing the quantity but leaving a basket line
     func sendRemoveFromOrUpdateCartEvents(removeFromCart: Bool, item: RetailStoreMenuItem, quantity: Int = 0, previousQuantity: Int = 0) {
+        
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
+        let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        
         var params: [String: Any] = [
             AFEventParamPrice:          removeFromCart ? 0.0 : item.price.price,
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       currencyCode,
             AFEventParamQuantity:       quantity,
             "product_name":             item.name
         ]
         if let eposCode = item.eposCode {
             params[AFEventParamContent] = eposCode
         }
-        eventLogger.sendEvent(for: removeFromCart ? .removeFromCart : .updateCart, with: .appsFlyer, params: params)
+        eventLogger.sendEvent(for: removeFromCart ? .removeFromBasket : .updateCart, with: .appsFlyer, params: params)
         
-        let quantityChange = quantity - previousQuantity
+        let quantityChange: Int
+        if removeFromCart && quantity == 0 {
+            quantityChange = -previousQuantity
+        } else {
+            quantityChange = quantity
+        }
         
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: item.name,
-            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentID: contentId,
             .contentType: "product",
             .numItems: quantityChange,
             .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
         ]
 
-        eventLogger.sendEvent(for: removeFromCart ? .removeFromCart : .updateCart, with: .facebook, params: [
+        eventLogger.sendEvent(for: removeFromCart ? .removeFromBasket : .updateCart, with: .facebook, params: [
             "valueToSum": quantityChange > 0 ? item.price.price : -item.price.price,
             "facebookParams": facebookParams
         ])
+        
+        // no update for event for Firebase
+        if quantityChange != 0 {
+            
+            // use an absolute value for quantity because even the remove event expects a non negative value
+            
+            let itemParams: [String: Any] = [
+                AnalyticsParameterItemID: contentId,
+                AnalyticsParameterQuantity: abs(quantityChange),
+                AnalyticsParameterPrice: NSDecimalNumber(value: item.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+            ]
+
+            let firebaseParams: [String: Any] = [
+                AnalyticsParameterCurrency: currencyCode,
+                AnalyticsParameterItems: [itemParams],
+                AnalyticsParameterValue: NSDecimalNumber(value: item.price.price * Double(abs(quantityChange))).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+            ]
+
+            eventLogger.sendEvent(for: quantityChange > 0 ? .addToBasket : .removeFromBasket, with: .firebaseAnalytics, params: firebaseParams)
+        }
     }
     
     func applyCoupon(code: String) async throws {

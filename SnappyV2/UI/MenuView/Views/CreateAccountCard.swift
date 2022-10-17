@@ -25,6 +25,7 @@ extension QuickCreateAccountError: LocalizedError {
 @MainActor
 class CreateAccountCardViewModel: ObservableObject {
     let container: DIContainer
+    let isInCheckout: Bool
     @Published var password = ""
     @Published var passwordHasError = false
     @Published var creatingAccount = false
@@ -32,8 +33,9 @@ class CreateAccountCardViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer) {
+    init(container: DIContainer, isInCheckout: Bool) {
         self.container = container
+        self.isInCheckout = isInCheckout
         setupPasswordHasError()
     }
     
@@ -85,7 +87,8 @@ class CreateAccountCardViewModel: ObservableObject {
                 member: member,
                 password: password,
                 referralCode: nil,
-                marketingOptions: nil
+                marketingOptions: nil,
+                atCheckout: isInCheckout
             )
             // Once registered go to account tab
             creatingAccount = false
@@ -195,7 +198,7 @@ struct CreateAccountCard: View {
 #if DEBUG
 struct CreateAccountCard_Previews: PreviewProvider {
     static var previews: some View {
-        CreateAccountCard(viewModel: .init(container: .preview))
+        CreateAccountCard(viewModel: .init(container: .preview, isInCheckout: false))
             .environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
 
     }

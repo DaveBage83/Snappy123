@@ -6,7 +6,11 @@
 //
 
 import XCTest
+
+// 3rd party
 import AppsFlyerLib
+import Firebase
+
 @testable import SnappyV2
 
 class EventLoggerTests: XCTestCase {
@@ -78,6 +82,39 @@ class EventLoggerTests: XCTestCase {
         sut.clearCustomerID()
         
         XCTAssertNil(AppsFlyerLib.shared().customerUserID)
+    }
+    
+    func test_getFirebaseItemsArray_givenBasketItemsArray_returnFirebaseItemsArray() {
+        let basketItem = BasketItem.mockedDataComplex
+        
+        var item: [String: Any] = [
+            AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)",
+            AnalyticsParameterItemName: basketItem.menuItem.name,
+            AnalyticsParameterPrice: NSDecimalNumber(value: basketItem.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue,
+            AnalyticsParameterQuantity: basketItem.quantity
+        ]
+        if let size = basketItem.size {
+            item[AnalyticsParameterItemVariant] = AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(size.id)"
+        }
+        
+        // no "sut" instance because of the static function being tested
+        
+        let firebaseItemsArray = EventLogger.getFirebaseItemsArray(from: [basketItem])
+        
+        // cannot use XCTAssertEqual because of the "Any" in the dictionary despite trying:
+        //extension Array {
+        //    static func == (lhs: Array<[String : Any]>, rhs: Array<[String : Any]>) -> Bool {
+        //        guard lhs.count == rhs.count else { return false }
+        //        for (index, entry) in lhs.enumerated() {
+        //            if entry.isEqual(to: rhs[index]) == false {
+        //                return false
+        //            }
+        //        }
+        //        return true
+        //    }
+        //}
+        
+        XCTAssertTrue(firebaseItemsArray.first!.isEqual(to: item))
     }
     
     func makeSUT(webRepository: EventLoggerWebRepositoryProtocol = MockedEventLoggerWebRepository(), appState: AppState = AppState()) -> EventLogger {

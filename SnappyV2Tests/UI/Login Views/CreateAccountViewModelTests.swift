@@ -66,7 +66,7 @@ class CreateAccountViewModelTests: XCTestCase {
         ]
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .completeRegistration, with: .appsFlyer, params: [AFEventCompleteRegistration:"precheckout"])])
         
-        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: nil, marketingOptions: marketingPreferences)]))
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: nil, marketingOptions: marketingPreferences, atCheckout: false)]))
         
         let sut = makeSUT(container: container)
         

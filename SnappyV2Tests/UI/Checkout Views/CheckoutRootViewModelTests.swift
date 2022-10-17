@@ -865,11 +865,14 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.checkoutState, .paymentSuccess)
     }
 
-    func test_whenGuestCheckoutTapped_thenNavigationDirectionIsForwardAndCheckoutStateIsDetails() {
-        let sut = makeSUT()
+    func test_whenGuestCheckoutTapped_thenNavigationDirectionIsForwardAndCheckoutStateIsDetailsAndTriggerEvent() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .checkoutAsGuestChosen, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
         sut.guestCheckoutTapped()
         XCTAssertEqual(sut.navigationDirection, .forward)
         XCTAssertEqual(sut.checkoutState, .details)
+        eventLogger.verify()
     }
     
     func test_whenLoginTapped_thenNavigationDirectionIsForwardAndCheckoutStateIsLogin() {
@@ -879,11 +882,14 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.checkoutState, .login)
     }
     
-    func test_whenCreateAccountTapped_thenNavigationDirectionIsForwardAndCheckoutStateIsCreate() {
-        let sut = makeSUT()
+    func test_whenCreateAccountTapped_thenNavigationDirectionIsForwardAndCheckoutStateIsCreateAndTriggerEvent() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .checkoutAsNewMemberChosen, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
         sut.createAccountTapped()
         XCTAssertEqual(sut.navigationDirection, .forward)
         XCTAssertEqual(sut.checkoutState, .createAccount)
+        eventLogger.verify()
     }
     
     func test_whenFirstNameIsEmpty_givenBasketAddressFirstNameIsPopulated_thenFirstNameMatchesBasket() {

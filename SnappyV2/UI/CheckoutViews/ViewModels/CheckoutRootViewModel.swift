@@ -561,6 +561,7 @@ class CheckoutRootViewModel: ObservableObject {
     func guestCheckoutTapped() {
         navigationDirection = .forward
         checkoutState = .details
+        container.eventLogger.sendEvent(for: .checkoutAsGuestChosen, with: .firebaseAnalytics, params: [:])
     }
     
     func loginToAccountTapped() {
@@ -571,6 +572,7 @@ class CheckoutRootViewModel: ObservableObject {
     func createAccountTapped() {
         navigationDirection = .forward
         checkoutState = .createAccount
+        container.eventLogger.sendEvent(for: .checkoutAsNewMemberChosen, with: .firebaseAnalytics, params: [:])
     }
     
     // MARK: - Field error setting

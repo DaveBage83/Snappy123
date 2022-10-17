@@ -15,6 +15,7 @@ import KeychainAccess
 import FacebookLogin
 import GoogleSignIn
 import AppsFlyerLib
+import Firebase
 import Frames
 
 // internal errors for the developers - needs to be Equatable for unit tests
@@ -53,6 +54,18 @@ enum RegisteringFromScreenType: String {
     case billingCheckout = "billing_checkout"
     case webReferAFriend = "web_refer_friend"
     case freeDelivery = "free_delivery"
+}
+
+enum LoginType: String {
+    case email
+    case facebook
+    case appleSignIn = "apple_sign_in"
+    case googleSignIn = "google_sign_in"
+}
+
+enum LoginContext: Equatable {
+    case outsideCheckout(LoginType)
+    case atCheckout(LoginType)
 }
 
 extension UserServiceError: LocalizedError {
@@ -115,8 +128,8 @@ extension UserServiceError: LocalizedError {
 }
 
 protocol MemberServiceProtocol {
-    func login(email: String, password: String) async throws
-    func login(email: String, oneTimePassword: String) async throws
+    func login(email: String, password: String, atCheckout: Bool) async throws
+    func login(email: String, oneTimePassword: String, atCheckout: Bool) async throws
     
     // Apple Sign In and Facebook Login automatically create a new member if there
     // was no corresponding account. The registeringFromScreen is set to help
@@ -134,7 +147,7 @@ protocol MemberServiceProtocol {
     // resetToken - from the resetPasswordRequest and is required if the customer is not signed in
     // currentPassword - required when the resetToken is not supplied (general path when customer signed in)
     // email - always optional but required to sign in the member after the password has been changed
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws
     
     // Automatically signs in succesfully registering members
     // Notes:
@@ -148,7 +161,8 @@ protocol MemberServiceProtocol {
         member: MemberProfileRegisterRequest,
         password: String,
         referralCode: String?,
-        marketingOptions: [UserMarketingOptionResponse]?
+        marketingOptions: [UserMarketingOptionResponse]?,
+        atCheckout: Bool
     ) async throws -> Bool
     
     //* methods that require a member to be signed in *//
@@ -159,7 +173,7 @@ protocol MemberServiceProtocol {
     // When filterDeliveryAddresses is true the delivery addresses will be filtered for
     // the selected store. Use the parameter when a result is required during the
     // checkout flow.
-    func getProfile(filterDeliveryAddresses: Bool) async throws
+    func getProfile(filterDeliveryAddresses: Bool, loginContext: LoginContext?) async throws
     
     // These address functions are designed to be used from the member account UI area
     // because they return the unfiltered delivery addresses
@@ -194,6 +208,7 @@ protocol MemberServiceProtocol {
 }
 
 struct UserService: MemberServiceProtocol {
+
     let webRepository: UserWebRepositoryProtocol
     let dbRepository: UserDBRepositoryProtocol
     let appState: Store<AppState>
@@ -226,7 +241,7 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
-    func login(email: String, password: String) async throws {
+    func login(email: String, password: String, atCheckout: Bool) async throws {
         
         let result = try await webRepository.login(
             email: email,
@@ -250,7 +265,7 @@ struct UserService: MemberServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        try await getProfile(filterDeliveryAddresses: false)
+        try await getProfile(filterDeliveryAddresses: false, loginContext: atCheckout ? .atCheckout(.email) : .outsideCheckout(.email))
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "email"
@@ -262,7 +277,7 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
-    func login(email: String, oneTimePassword: String) async throws {
+    func login(email: String, oneTimePassword: String, atCheckout: Bool) async throws {
         
         let result = try await webRepository.login(
             email: email,
@@ -286,7 +301,7 @@ struct UserService: MemberServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        try await getProfile(filterDeliveryAddresses: false)
+        try await getProfile(filterDeliveryAddresses: false, loginContext: atCheckout ? .atCheckout(.email) : .outsideCheckout(.email))
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "one_time_password"
@@ -333,7 +348,10 @@ struct UserService: MemberServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        try await getProfile(filterDeliveryAddresses: false)
+        try await getProfile(
+            filterDeliveryAddresses: false,
+            loginContext: registeringFromScreen == .billingCheckout ? .atCheckout(.appleSignIn) : .outsideCheckout(.appleSignIn)
+        )
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "apple_sign_in"
@@ -405,7 +423,10 @@ struct UserService: MemberServiceProtocol {
                 throw UserServiceError.unableToLogin
             }
             
-            try await getProfile(filterDeliveryAddresses: false)
+            try await getProfile(
+                filterDeliveryAddresses: false,
+                loginContext: registeringFromScreen == .billingCheckout ? .atCheckout(.facebook) : .outsideCheckout(.facebook)
+            )
             keychain[memberSignedInKey] = "facebook_login"
             
             // invalidate the cached results
@@ -484,7 +505,10 @@ struct UserService: MemberServiceProtocol {
                 throw UserServiceError.unableToLogin
             }
             
-            try await getProfile(filterDeliveryAddresses: false)
+            try await getProfile(
+                filterDeliveryAddresses: false,
+                loginContext: registeringFromScreen == .billingCheckout ? .atCheckout(.googleSignIn) : .outsideCheckout(.googleSignIn)
+            )
             keychain[memberSignedInKey] = "google_sign_in"
         }
         
@@ -519,7 +543,7 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws  {
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws  {
         
         if resetToken == nil && appState.value.userData.memberProfile == nil {
             throw UserServiceError.memberRequiredToBeSignedIn
@@ -542,7 +566,7 @@ struct UserService: MemberServiceProtocol {
             }
             if let email = knownEmail, appState.value.userData.memberProfile == nil {
                 do {
-                    try await login(email: email, password: password)
+                    try await login(email: email, password: password, atCheckout: atCheckout)
                 } catch {
                     throw UserServiceError.unableToLoginAfterResetingPassword(error.localizedDescription)
                 }
@@ -552,7 +576,7 @@ struct UserService: MemberServiceProtocol {
         }
     }
 
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool) async throws -> Bool {
         
         if appState.value.userData.memberProfile != nil {
             throw UserServiceError.unableToRegisterWhileMemberSignIn
@@ -579,7 +603,7 @@ struct UserService: MemberServiceProtocol {
                 let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
                 
                 // If we are here, we can retrieve a profile
-                try await getProfile(filterDeliveryAddresses: false)
+                try await getProfile(filterDeliveryAddresses: false, loginContext: nil)
                 
                 // Mark the user login state as "email" in the keychain
                 keychain[memberSignedInKey] = "email"
@@ -597,7 +621,7 @@ struct UserService: MemberServiceProtocol {
             if let registerError = error as? APIErrorResult {
                 if registerError.errorCode == 150001 {
                     do {
-                        try await login(email: member.emailAddress, password: password)
+                        try await login(email: member.emailAddress, password: password, atCheckout: atCheckout)
                         return true
                     } catch {
                         // throw the original error rather than the
@@ -639,18 +663,34 @@ struct UserService: MemberServiceProtocol {
         guard keychain[memberSignedInKey] != nil else { return }
         
         do {
-            try await getProfile(filterDeliveryAddresses: false)
+            try await getProfile(filterDeliveryAddresses: false, loginContext: nil)
         } catch {
             throw error
         }
     }
     
-    private func sendAppsFlyerLoginEvent(profileUUID: String) {
+    private func setProfileEventUUID(to profileUUID: String) {
         eventLogger.setCustomerID(profileUUID: profileUUID)
-        eventLogger.sendEvent(for: .login, with: .appsFlyer, params: [:])
     }
     
-    func getProfile(filterDeliveryAddresses: Bool) async throws {
+    private func sendLoginEvent(loginContext: LoginContext) {
+        eventLogger.sendEvent(for: .login, with: .appsFlyer, params: [:])
+
+        let appEvent: AppEvent
+        let method: LoginType
+        switch loginContext {
+        case let .atCheckout(loginType):
+            appEvent = .loginAtCheckout
+            method = loginType
+        case let .outsideCheckout(loginType):
+            appEvent = .login
+            method = loginType
+        }
+        
+        eventLogger.sendEvent(for: appEvent, with: .firebaseAnalytics, params: [AnalyticsParameterMethod: method.rawValue])
+    }
+    
+    func getProfile(filterDeliveryAddresses: Bool, loginContext: LoginContext?) async throws {
         let storeId = filterDeliveryAddresses ? appState.value.userData.selectedStore.value?.id : nil
         
         // We do not need to check if member is signed in here as getProfile() is only triggered with successful login
@@ -702,7 +742,10 @@ struct UserService: MemberServiceProtocol {
                 appState.value.userData.memberProfile = profile
             }
             
-            sendAppsFlyerLoginEvent(profileUUID: profile.uuid)
+            setProfileEventUUID(to: profile.uuid)
+            if let loginContext = loginContext {
+                sendLoginEvent(loginContext: loginContext)
+            }
 			
         } catch {
             Logger.member.error("Failed to get user profile: \(error.localizedDescription)")
@@ -1184,9 +1227,9 @@ struct StubUserService: MemberServiceProtocol {
 
     func restoreLastUser() async throws { }
 
-    func login(email: String, password: String) async throws { }
+    func login(email: String, password: String, atCheckout: Bool) async throws { }
     
-    func login(email: String, oneTimePassword: String) async throws { }
+    func login(email: String, oneTimePassword: String, atCheckout: Bool) async throws { }
 
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws { }
 
@@ -1196,15 +1239,15 @@ struct StubUserService: MemberServiceProtocol {
 
     func resetPasswordRequest(email: String) async throws { }
 
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws { }
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws { }
 
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool) async throws -> Bool {
         return false
     }
 
     func logout() async throws { }
 
-    func getProfile(filterDeliveryAddresses: Bool) async throws { }
+    func getProfile(filterDeliveryAddresses: Bool, loginContext: LoginContext?) async throws { }
 
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws { }
 

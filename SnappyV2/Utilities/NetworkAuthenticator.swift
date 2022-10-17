@@ -81,6 +81,15 @@ struct APIErrorResult: Decodable, Error, Equatable {
     */
 }
 
+// Avoid the "The operation couldn’t be completed. (SnappyV2.APIErrorResult error 1.)"
+// default because APIErrorResult.errorDisplay will always be more specific and
+// user-friendly.
+extension APIErrorResult: LocalizedError {
+    var errorDescription: String? {
+        return errorDisplay
+    }
+}
+
 enum NetworkAuthenticatorError: Swift.Error {
     case selfError
     case unknown

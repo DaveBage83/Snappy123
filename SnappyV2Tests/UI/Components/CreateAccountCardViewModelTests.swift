@@ -41,7 +41,7 @@ class CreateAccountCardViewModelTests: XCTestCase {
             defaultBillingDetails: nil, savedAddresses: nil)
 
         
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: nil, marketingOptions: nil)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: nil, marketingOptions: nil, atCheckout: false)]))
         
         container.appState.value.userData.successCheckoutBasket = .mockedData
 
@@ -53,7 +53,7 @@ class CreateAccountCardViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CreateAccountCardViewModel {
-        let sut = CreateAccountCardViewModel(container: container)
+        let sut = CreateAccountCardViewModel(container: container, isInCheckout: false)
         
         trackForMemoryLeaks(sut)
         

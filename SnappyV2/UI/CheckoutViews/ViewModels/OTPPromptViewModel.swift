@@ -11,6 +11,7 @@ import Foundation
 class OTPPromptViewModel: ObservableObject {
     let container: DIContainer
     let dismissAction: () -> ()
+    let isInCheckout: Bool
     
     @Published var email = ""
     
@@ -28,10 +29,11 @@ class OTPPromptViewModel: ObservableObject {
     var optCodeSendDestination: String { otpType == .sms ? otpTelephone : email }
     
     
-    init(container: DIContainer, email: String, otpTelephone: String, dismiss: @escaping ()->()) {
+    init(container: DIContainer, email: String, otpTelephone: String, isInCheckout: Bool, dismiss: @escaping ()->()) {
         self.container = container
         self.email = email
         self.otpTelephone = otpTelephone
+        self.isInCheckout = isInCheckout
         self.dismissAction = dismiss
         
         if otpTelephone.isEmpty == false { showOTPTelephone = true }
@@ -70,7 +72,7 @@ class OTPPromptViewModel: ObservableObject {
         isSendingOTPCode = true
         
         do {
-            try await container.services.memberService.login(email: email, oneTimePassword: otpCode)
+            try await container.services.memberService.login(email: email, oneTimePassword: otpCode, atCheckout: isInCheckout)
             
             var params: [String: Any] = [:]
             if let memberUUID = container.appState.value.userData.memberProfile?.uuid {

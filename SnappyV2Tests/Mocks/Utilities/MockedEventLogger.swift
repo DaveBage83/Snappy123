@@ -25,6 +25,7 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
         case setCustomerID(profileUUID: String)
         case clearCustomerID
         case pushNotificationDeviceRegistered(deviceToken: Data)
+        case getFirebaseItemsArray(from: [BasketItem])
         
         // required because sendEvent(for eventName: String, with type: EventLoggerType, params: [String : Any]) is not Equatable
         static func == (lhs: MockedEventLogger.Action, rhs: MockedEventLogger.Action) -> Bool {
@@ -50,6 +51,9 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
                 
             case (let .pushNotificationDeviceRegistered(deviceToken: lhsDeviceTokenData), let .pushNotificationDeviceRegistered(deviceToken: rhsDeviceTokenData)):
                 return lhsDeviceTokenData == rhsDeviceTokenData
+                
+            case (let .getFirebaseItemsArray(from: lhsBasketItems), let .getFirebaseItemsArray(from: rhsBasketItems)):
+                return lhsBasketItems == rhsBasketItems
 
             default:
                 return false
@@ -99,5 +103,11 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
     
     func pushNotificationDeviceRegistered(deviceToken: Data) {
         register(.pushNotificationDeviceRegistered(deviceToken: deviceToken))
+    }
+    
+    static func getFirebaseItemsArray(from items: [BasketItem]) -> [[String: Any]] {
+        // unfortunately a static func will not be able to use the Mock register(Action)
+        //register(.getFirebaseItemsArray(from: items))
+        return []
     }
 }

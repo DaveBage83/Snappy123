@@ -78,11 +78,11 @@ struct MemberDashboardView: View {
         GeometryReader { geo in
             ScrollView(showsIndicators: false) {
                 if viewModel.noMemberFound && viewModel.isFromInitialView {
-                    LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                    LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false))
                 } else {
                     VStack {
                         if viewModel.noMemberFound {
-                            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false))
                             
                         } else {
                             

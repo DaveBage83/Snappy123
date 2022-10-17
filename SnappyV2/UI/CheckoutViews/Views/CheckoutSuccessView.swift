@@ -107,7 +107,7 @@ struct CheckoutSuccessView: View {
             }
             
             if viewModel.showCreateAccountCard {
-                CreateAccountCard(viewModel: .init(container: viewModel.container))
+                CreateAccountCard(viewModel: .init(container: viewModel.container, isInCheckout: true))
                     .padding(.bottom, tabViewHeight)
                     .padding(.horizontal)
             }

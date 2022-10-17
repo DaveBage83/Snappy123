@@ -102,32 +102,6 @@ class LoginViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Login methods
-    
-    #warning("Needs to be tested manually")
-
-    func handleAppleLoginResult(result: Result<ASAuthorization, Error>) {
-        switch result {
-        case let .success(authResults):
-            isLoading = true
-            Task {
-                var loginError: Error?
-                do {
-                    try await container.services.memberService.login(appleSignInAuthorisation: authResults, registeringFromScreen: .accountTab)
-                    Logger.member.log("Succesfully logged in with Apple")
-                } catch {
-                    loginError = error
-                    Logger.member.error("Failed to log user in with Apple: \(error.localizedDescription)")
-                }
-                updateFinishedPublishedStates(error: loginError)
-            }
-            
-        case .failure:
-            container.appState.value.errors.append(LoginError.appleLoginFailure)
-            Logger.member.error("Unable to sign in with Apple")
-        }
-    }
-    
     // MARK: - Button tap methods
     
     func createAccountTapped() {
@@ -145,8 +119,6 @@ class LoginViewModel: ObservableObject {
         }
     }
     
-    #warning("Needs to be tested manually")
-    
     func loginTapped() async {
         self.passwordHasError = password.isEmpty
         self.emailHasError = email.isEmpty
@@ -158,28 +130,13 @@ class LoginViewModel: ObservableObject {
         
         var loginError: Error?
         do {
-            try await container.services.memberService.login(email: email, password: password)
+            try await container.services.memberService.login(email: email, password: password, atCheckout: isInCheckout)
             Logger.member.log("Succesfully logged in")
         } catch {
             loginError = error
             Logger.member.error("Failed to log user in: \(error.localizedDescription)")
         }
         updateFinishedPublishedStates(error: loginError)
-    }
-    
-    func googleSignInTapped() {
-        isLoading = true
-        Task {
-            var loginError: Error?
-            do {
-                try await container.services.memberService.loginWithGoogle(registeringFromScreen: .accountTab)
-                Logger.member.log("Succesfully logged in with Google")
-            } catch {
-                loginError = error
-                Logger.member.error("Failed to log user in with Google: \(error.localizedDescription)")
-            }
-            updateFinishedPublishedStates(error: loginError)
-        }
     }
     
     func onAppearSendEvent() {

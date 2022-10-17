@@ -8,8 +8,11 @@
 import Combine
 import Foundation
 import OSLog
-import AppsFlyerLib
 import UIKit // required for UIApplication.shared.open
+
+// import 3rd party
+import AppsFlyerLib
+import Firebase
 
 struct BasketDisplayableFee: Identifiable {
     let id: UUID
@@ -318,16 +321,32 @@ class BasketViewModel: ObservableObject {
     }
     
     func submitCoupon() async {
+        
+        couponCode = couponCode.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        
         if couponCode.isEmpty == false {
             applyingCoupon = true
             
+            var firebaseParams: [String: Any] = [
+                AnalyticsParameterCoupon: couponCode
+            ]
+            container.eventLogger.sendEvent(for: .applyCouponPressed, with: .firebaseAnalytics, params: firebaseParams)
+            
             do {
-                try await self.container.services.basketService.applyCoupon(code: self.couponCode)
+                try await self.container.services.basketService.applyCoupon(code: couponCode)
+                
+                if
+                    let coupon = container.appState.value.userData.basket?.coupon,
+                    coupon.code.lowercased() == couponCode.lowercased()
+                {
+                    firebaseParams["value"] = NSDecimalNumber(value: -coupon.deductCost).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+                    container.eventLogger.sendEvent(for: .couponAppliedAtBaskedView, with: .firebaseAnalytics, params: firebaseParams)
+                }
                 
                 Logger.basket.info("Added coupon: \(self.couponCode)")
-                self.applyingCoupon = false
-                self.successfulCouponText = Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(self.couponCode)
-                self.couponCode = ""
+                applyingCoupon = false
+                successfulCouponText = Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(self.couponCode)
+                couponCode = ""
                 couponFieldHasError = false
                 
                 // silently trigger fetching a mobile verification code if required by the coupon
@@ -346,13 +365,19 @@ class BasketViewModel: ObservableObject {
                 }
                 
             } catch {
-                self.setError(error)
+                if let error = error as? APIErrorResult {
+                    firebaseParams["error"] = "\(error.errorCode)" + error.errorText + " : " + error.errorDisplay
+                } else {
+                    firebaseParams["error"] = error.localizedDescription
+                }
+                container.eventLogger.sendEvent(for: .couponRejectedAtBasketView, with: .firebaseAnalytics, params: firebaseParams)
+                setError(error)
                 Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
-                self.applyingCoupon = false
+                applyingCoupon = false
                 couponFieldHasError = true
             }
         } else {
-            self.setError(BasketViewError.couponAppliedUnsuccessfully)
+            setError(BasketViewError.couponAppliedUnsuccessfully)
             couponFieldHasError = true
         }
     }
@@ -385,6 +410,7 @@ class BasketViewModel: ObservableObject {
     
     func checkoutTapped() async {
         guard minimumSpendReached else {
+            container.eventLogger.sendEvent(for: .checkoutBlockedByMinimumSpend, with: .firebaseAnalytics, params: [:])
             setError(BasketViewError.minimumSpendNotMet)
             return
         }
@@ -427,22 +453,33 @@ class BasketViewModel: ObservableObject {
                     totalItemQuantity += item.quantity
                 }
                 
-                var params: [String: Any] = [:]
+                var appsFlyerParams: [String: Any] = [:]
                 
                 if let storeId = basket.storeId {
-                    params["store_id"] = "\(storeId)"
+                    appsFlyerParams["store_id"] = "\(storeId)"
                 }
                 
-                params[AFEventParamPrice] = basket.orderTotal
-                params[AFEventParamContentId] = itemIds
-                params[AFEventParamCurrency] = AppV2Constants.Business.currencyCode
-                params[AFEventParamQuantity] = totalItemQuantity
+                appsFlyerParams[AFEventParamPrice] = basket.orderTotal
+                appsFlyerParams[AFEventParamContentId] = itemIds
+                appsFlyerParams[AFEventParamCurrency] = AppV2Constants.Business.currencyCode
+                appsFlyerParams[AFEventParamQuantity] = totalItemQuantity
                 
                 if let member = container.appState.value.userData.memberProfile {
-                    params["member_id"] = member.uuid
+                    appsFlyerParams["member_id"] = member.uuid
                 }
                 
-                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)
+                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: appsFlyerParams)
+                
+                var firebaseParams: [String: Any] = [
+                    AnalyticsParameterItems: EventLogger.getFirebaseItemsArray(from: basket.items),
+                    AnalyticsParameterCurrency: container.appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+                    AnalyticsParameterValue: NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+                ]
+                if let coupon = basket.coupon {
+                    firebaseParams[AnalyticsParameterCoupon] = coupon.code
+                }
+                
+                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .firebaseAnalytics, params: firebaseParams)
             }
         } else {
             showCouponAlert = true
@@ -555,6 +592,14 @@ class BasketViewModel: ObservableObject {
                 "basketTotal": basket.orderTotal
             ]
             container.eventLogger.sendEvent(for: .viewCart, with: .iterable, params: params)
+            
+            params = [
+                AnalyticsParameterItems: EventLogger.getFirebaseItemsArray(from: basket.items),
+                AnalyticsParameterCurrency: container.appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+                AnalyticsParameterValue: NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+            ]
+            
+            container.eventLogger.sendEvent(for: .viewCart, with: .firebaseAnalytics, params: params)
         }
     }
     

@@ -75,7 +75,7 @@ class LoginViewModelTests: XCTestCase {
     }
     
     func test_whenLoginTapped_thenIsLoadingSetToFalseAndLoginSucceeds() async {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.login(email: "test@test.com", password: "password1")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.login(email: "test@test.com", password: "password1", atCheckout: false)]))
                                     
         let sut = makeSUT(container: container)
         

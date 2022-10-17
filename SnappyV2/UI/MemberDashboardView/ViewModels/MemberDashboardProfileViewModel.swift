@@ -217,7 +217,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
         self.changePasswordLoading = true
         
         do {
-            try await container.services.memberService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword)
+            try await container.services.memberService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword, atCheckout: false)
             self.changePasswordLoading = false
             didResetPassword(Strings.MemberDashboard.Profile.successfullyResetPassword.localized)
             self.showPasswordResetView = false

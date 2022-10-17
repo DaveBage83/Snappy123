@@ -7,7 +7,11 @@
 
 import XCTest
 import Combine
+
+// 3rd parties
 import AppsFlyerLib
+import Firebase
+
 @testable import SnappyV2
 
 @MainActor
@@ -67,10 +71,18 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_whenApplyCouponTapped_givenCouponIsEmpty_thenError() async {
-        let sut = makeSUT()
+        let eventLogger = MockedEventLogger()
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        // white spaces should be removed
+        sut.couponCode = "  ";
         await sut.submitCoupon()
         
         XCTAssertTrue(sut.couponFieldHasError)
+        XCTAssertEqual(sut.couponCode, "")
+        // no events should be sent
+        eventLogger.verify()
     }
     
     func test_basketItemsAreNotEmpty_thenBasketIsEmptyIsTrue() {
@@ -202,18 +214,30 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.basket, basket)
     }
     
-    func test_whenCheckoutTapped_givenMinSpendReached_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() async {
+    func test_whenCheckoutTapped_givenMinSpendReached_thenIsContinueToCheckoutTappedTrueAndEventsTriggered() async {
+        let storeDetails = RetailStoreDetails.mockedData
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
-        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
-        let params: [String: Any] = [
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+        let appsFlyerParams: [String: Any] = [
             AFEventParamPrice:basket.orderTotal,
             AFEventParamContentId:[],
             AFEventParamCurrency:AppV2Constants.Business.currencyCode,
             AFEventParamQuantity:0,
             "member_id":member.uuid
         ]
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)])
+        var firebaseParams: [String: Any] = [
+            AnalyticsParameterItems: EventLogger.getFirebaseItemsArray(from: basket.items),
+            AnalyticsParameterCurrency: storeDetails.currency.currencyCode,
+            AnalyticsParameterValue: NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        if let coupon = basket.coupon {
+            firebaseParams[AnalyticsParameterCoupon] = coupon.code
+        }
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .initiatedCheckout, with: .firebaseAnalytics, params: firebaseParams)
+        ])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
@@ -228,20 +252,14 @@ class BasketViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
-        let params: [String: Any] = [
-            AFEventParamPrice:basket.orderTotal,
-            AFEventParamContentId:[],
-            AFEventParamCurrency:AppV2Constants.Business.currencyCode,
-            AFEventParamQuantity:0,
-            "member_id":member.uuid
-        ]
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .checkoutBlockedByMinimumSpend, with: .firebaseAnalytics, params: [:])])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
         await sut.checkoutTapped()
         
         XCTAssertEqual(sut.container.appState.value.latestError as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
+        eventLogger.verify()
     }
     
     func test_whenCheckoutTapped_givenUnmetCouponMemberAccountRequirement_thenSetErrorNeedsUserAction() async {
@@ -333,12 +351,17 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_givenBasketPopulated_whenSubmittingCouponCode_thenApplyingCouponChangesAndApplyCouponTriggers() async {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
+        // the coupon needs to be in the basket for the events because the MocketBasketService does
+        // not have access to the app state to simulate updating
+        let coupon = BasketCoupon.mockedData
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: coupon, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: MemberProfile.mockedData))
         
-        let code = "SPRING10"
+        // add whitespaces to test their automatic removal
+        let code = "  " + coupon.code + "  "
+        let trimmedCode = code.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         
-        var basketService = MockedBasketService(expected: [.applyCoupon(code: code)])
+        var basketService = MockedBasketService(expected: [.applyCoupon(code: trimmedCode)])
         basketService.applyCouponResponse = .success(true)
         
         let services = DIContainer.Services(
@@ -355,16 +378,23 @@ class BasketViewModelTests: XCTestCase {
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
         
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .applyCouponPressed, with: .firebaseAnalytics, params: [AnalyticsParameterCoupon: trimmedCode]),
+            .sendEvent(for: .couponAppliedAtBaskedView, with: .firebaseAnalytics, params: [
+                AnalyticsParameterCoupon: trimmedCode,
+                "value": -coupon.deductCost
+            ])
+        ])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
         let sut = makeSUT(container: container)
         sut.couponCode = code
         
         await sut.submitCoupon()
         
         XCTAssertFalse(sut.applyingCoupon)
-        XCTAssertEqual(sut.successfulCouponText, Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(code))
+        XCTAssertEqual(sut.successfulCouponText, Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(trimmedCode))
         XCTAssertTrue(sut.couponCode.isEmpty)
-        
+        eventLogger.verify()
         container.services.verify(as: .basket)
         // check that the requestMobileVerificationCode was NOT called
         container.services.verify(as: .member)
@@ -393,7 +423,14 @@ class BasketViewModelTests: XCTestCase {
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
         
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .applyCouponPressed, with: .firebaseAnalytics, params: [AnalyticsParameterCoupon: code]),
+            .sendEvent(for: .couponRejectedAtBasketView, with: .firebaseAnalytics, params: [
+                AnalyticsParameterCoupon: code,
+                "error": BasketServiceError.unableToProceedWithoutBasket.localizedDescription
+            ])
+        ])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
         let sut = makeSUT(container: container)
         sut.couponCode = code
         
@@ -401,7 +438,7 @@ class BasketViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.applyingCoupon)
         XCTAssertTrue(sut.couponFieldHasError)
-        
+        eventLogger.verify()
         container.services.verify(as: .basket)
         // check that the requestMobileVerificationCode was NOT called
         container.services.verify(as: .member)
@@ -742,8 +779,11 @@ class BasketViewModelTests: XCTestCase {
     
     func test_givenBasket_whenOnBasketViewSendEventTriggered_thenSendAppsFlyerEventCalled() {
         let basket = Basket.mockedData
+        let store = RetailStoreDetails.mockedData
         var appState = AppState()
         appState.userData.basket = basket
+        appState.userData.selectedStore = .loaded(store)
+        
         var totalItemQuantity: Int = 0
         for item in basket.items {
             totalItemQuantity += item.quantity
@@ -755,9 +795,16 @@ class BasketViewModelTests: XCTestCase {
         let iterableParams: [String: Any] = [
             "basketTotal": basket.orderTotal
         ]
+        let firebaseParams: [String: Any] = [
+            AnalyticsParameterItems: EventLogger.getFirebaseItemsArray(from: basket.items),
+            AnalyticsParameterCurrency: appState.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+            AnalyticsParameterValue: NSDecimalNumber(value: basket.orderTotal).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
         let eventLogger = MockedEventLogger(expected: [
             .sendEvent(for: .viewCart, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .viewCart, with: .iterable, params: iterableParams)
+            .sendEvent(for: .viewCart, with: .iterable, params: iterableParams),
+            .sendEvent(for: .viewCart, with: .firebaseAnalytics, params: firebaseParams)
         ])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)

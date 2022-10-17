@@ -100,7 +100,7 @@ struct LoginView: View {
             LoginHomeView(viewModel: viewModel, socialLoginViewModel: socialLoginViewModel)
              
             NavigationLink("", isActive: $viewModel.showCreateAccountView) {
-                CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout))
                     .onAppear {
                         viewModel.onCreateAccountAppearSendEvent()
                     }
@@ -112,7 +112,7 @@ struct LoginView: View {
 #if DEBUG
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView(loginViewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview))
+        LoginView(loginViewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview, isInCheckout: false))
     }
 }
 #endif

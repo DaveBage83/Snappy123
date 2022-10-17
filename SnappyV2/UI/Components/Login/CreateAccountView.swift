@@ -249,7 +249,7 @@ struct CreateAccountView: View {
 #if DEBUG
 struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateAccountView(viewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview))
+        CreateAccountView(viewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview, isInCheckout: false))
     }
 }
 #endif

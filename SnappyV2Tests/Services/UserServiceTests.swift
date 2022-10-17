@@ -9,7 +9,10 @@ import XCTest
 import Combine
 import AuthenticationServices
 @testable import SnappyV2
+
+// 3rd party
 import KeychainAccess
+import Firebase
 
 class UserServiceTests: XCTestCase {
     
@@ -53,8 +56,9 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
     
     // MARK: - func login(email:password:)
     
-    func test_successfulLoginByEmailPassword() async throws {
+    func test_successfulLoginByEmailPassword_whenNotAtCheckout_thenNotAtCheckoutEvents() async throws {
 
+        let atCheckout = false
         let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
 
@@ -72,7 +76,11 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: member.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login, with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login, with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
@@ -82,7 +90,51 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
         do {
-            try await sut.login(email: "h.dover@gmail.com", password: "password321!")
+            try await sut.login(email: "h.dover@gmail.com", password: "password321!", atCheckout: atCheckout)
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successfulLoginByEmailPassword_whenAtCheckout_thenAtCheckoutEvents() async throws {
+
+        let atCheckout = true
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
+        let member = MemberProfile.mockedData
+
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .login(email: "h.dover@gmail.com", password: "password321!", basketToken: nil),
+            .setToken(to: loginData.token!),
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
+        ])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login, with: .appsFlyer, params: [:]),
+            .sendEvent(for: .loginAtCheckout, with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
+        mockedWebRepo.getProfileResponse = .success(member)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        do {
+            try await sut.login(email: "h.dover@gmail.com", password: "password321!", atCheckout: atCheckout)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
@@ -116,7 +168,11 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: member.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login, with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login, with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
@@ -126,7 +182,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
         do {
-            try await sut.login(email: "h.dover@gmail.com", password: "password321!")
+            try await sut.login(email: "h.dover@gmail.com", password: "password321!", atCheckout: false)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
@@ -151,7 +207,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         mockedWebRepo.loginByEmailPasswordResponse = .failure(failError)
         
         do {
-            try await sut.login(email: "failme@gmail.com", password: "password321!")
+            try await sut.login(email: "failme@gmail.com", password: "password321!", atCheckout: false)
             XCTFail("Unexpected login success", file: #file, line: #line)
         } catch {
             if let loginError = error as? APIErrorResult {
@@ -171,8 +227,8 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
     
     // MARK: - func login(email: String, oneTimePassword: String) async throws -> Void
     
-    func test_successfulLoginByEmailOneTimePassword() async {
-        
+    func test_successfulLoginByEmailOneTimePassword_whenNotAtCheckout_thenNotAtCheckoutEvents() async {
+        let atCheckout = false
         let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
         
@@ -190,7 +246,11 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: member.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login, with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login, with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
@@ -200,7 +260,50 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
         do {
-            try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83")
+            try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", atCheckout: atCheckout)
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successfulLoginByEmailOneTimePassword_whenAtCheckout_thenAtCheckoutEvents() async {
+        let atCheckout = true
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
+        let member = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", basketToken: nil),
+            .setToken(to: loginData.token!),
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
+        ])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login, with: .appsFlyer, params: [:]),
+            .sendEvent(for: .loginAtCheckout, with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
+        mockedWebRepo.getProfileResponse = .success(member)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        do {
+            try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", atCheckout: atCheckout)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
@@ -234,7 +337,11 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: member.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login, with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login, with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
@@ -244,7 +351,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
         do {
-            try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83")
+            try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", atCheckout: false)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
@@ -270,7 +377,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         mockedWebRepo.loginByEmailOneTimePasswordResponse = .failure(failError)
         
         do {
-            try await sut.login(email: "failme@gmail.com", oneTimePassword: "6B9A83")
+            try await sut.login(email: "failme@gmail.com", oneTimePassword: "6B9A83", atCheckout: false)
             XCTFail("Unexpected login success", file: #file, line: #line)
         } catch {
             if let loginError = error as? APIErrorResult {
@@ -420,7 +527,8 @@ final class ResetPasswordTests: UserServiceTests {
                 logoutFromAll: false,
                 email: nil,
                 password: "password1",
-                currentPassword: nil
+                currentPassword: nil,
+                atCheckout: false
             )
         
         self.mockedWebRepo.verify()
@@ -468,7 +576,8 @@ final class ResetPasswordTests: UserServiceTests {
                 logoutFromAll: false,
                 email: "kevin.palser@gmail.com",
                 password: "password1",
-                currentPassword: nil
+                currentPassword: nil,
+                atCheckout: false
             )
         
         XCTAssertEqual(appState.value.userData.memberProfile, member, file: #file, line: #line)
@@ -502,7 +611,8 @@ final class ResetPasswordTests: UserServiceTests {
                 logoutFromAll: false,
                 email: "kevin.palser@gmail.com",
                 password: "password1",
-                currentPassword: "oldpassword1"
+                currentPassword: "oldpassword1",
+                atCheckout: false
             )
         
         self.mockedWebRepo.verify()
@@ -521,7 +631,8 @@ final class ResetPasswordTests: UserServiceTests {
                     logoutFromAll: false,
                     email: "kevin.palser@gmail.com",
                     password: "password1",
-                    currentPassword: "oldpassword1"
+                    currentPassword: "oldpassword1",
+                    atCheckout: false
                 )
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
@@ -550,7 +661,8 @@ final class ResetPasswordTests: UserServiceTests {
                     logoutFromAll: false,
                     email: "kevin.palser@gmail.com",
                     password: "password1",
-                    currentPassword: "oldpassword1"
+                    currentPassword: "oldpassword1",
+                    atCheckout: false
                 )
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
@@ -594,7 +706,7 @@ final class RegisterTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: member.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: member.uuid)])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .success(data)
@@ -604,7 +716,7 @@ final class RegisterTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(member)
         
         do {
-            let userRegistered = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let userRegistered = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil, atCheckout: false)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
             XCTAssertFalse(userRegistered)
         } catch {
@@ -641,7 +753,11 @@ final class RegisterTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: member.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login, with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login, with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .failure(data)
@@ -652,7 +768,7 @@ final class RegisterTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(member)
         
         do {
-            let userRegistered = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let userRegistered = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil, atCheckout: false)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
             XCTAssertTrue(userRegistered)
         } catch {
@@ -688,7 +804,7 @@ final class RegisterTests: UserServiceTests {
         mockedWebRepo.loginByEmailPasswordResponse = .failure(loginError)
         
         do {
-            let _ = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let _ = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil, atCheckout: false)
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
             if let error = error as? APIErrorResult {
@@ -710,7 +826,7 @@ final class RegisterTests: UserServiceTests {
         appState.value.userData.memberProfile = MemberProfile.mockedData
         
         do {
-            let _ = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let _ = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil, atCheckout: false)
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
             if let loginError = error as? UserServiceError {
@@ -840,7 +956,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid)])
         
         // Configuring responses from repositories
         
@@ -849,7 +965,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(profile)
         
         do {
-            try await sut.getProfile(filterDeliveryAddresses: false)
+            try await sut.getProfile(filterDeliveryAddresses: false, loginContext: nil)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData, file: #file, line: #line)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
@@ -877,7 +993,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: retailStore.id)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid)])
 
         // Configuring responses from repositories
 
@@ -886,7 +1002,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(profile)
         
         do {
-            try await sut.getProfile(filterDeliveryAddresses: true)
+            try await sut.getProfile(filterDeliveryAddresses: true, loginContext: nil)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
@@ -912,14 +1028,14 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.actions = .init(expected: [
             .memberProfile
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid)])
 
         // Configuring responses from repositories
         mockedWebRepo.getProfileResponse = .failure(networkError)
         mockedDBRepo.memberProfileResult = .success(profile)
         
         do {
-            try await sut.getProfile(filterDeliveryAddresses: true)
+            try await sut.getProfile(filterDeliveryAddresses: true, loginContext: nil)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
@@ -949,7 +1065,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.memberProfileResult = .success(nil)
         
         do {
-            try await sut.getProfile(filterDeliveryAddresses: false)
+            try await sut.getProfile(filterDeliveryAddresses: false, loginContext: nil)
             XCTFail("Failed to hit expected error")
         } catch {
             XCTAssertEqual(error as NSError, networkError)
@@ -998,7 +1114,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.memberProfileResult = .success(storedProfile)
         
         do {
-            try await sut.getProfile(filterDeliveryAddresses: false)
+            try await sut.getProfile(filterDeliveryAddresses: false, loginContext: nil)
             XCTFail("Failed to hit expected error")
         } catch {
             XCTAssertEqual(error as NSError, networkError)

@@ -68,7 +68,7 @@ struct SocialMediaLoginView: View {
 #if DEBUG
 struct SocialMediaLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        SocialMediaLoginView(viewModel: .init(container: .preview))
+        SocialMediaLoginView(viewModel: .init(container: .preview, isInCheckout: false))
     }
 }
 #endif

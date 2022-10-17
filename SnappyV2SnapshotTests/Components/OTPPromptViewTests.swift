@@ -33,7 +33,7 @@ class OTPPromptViewTests: XCTestCase {
     }
     
     func makeSUT() -> OTPPromptView {
-        OTPPromptView(viewModel: .init(container: .preview, email: "email@domain.com", otpTelephone: "0987654321", dismiss: {}))
+        OTPPromptView(viewModel: .init(container: .preview, email: "email@domain.com", otpTelephone: "0987654321", isInCheckout: false, dismiss: {}))
     }
     
 }

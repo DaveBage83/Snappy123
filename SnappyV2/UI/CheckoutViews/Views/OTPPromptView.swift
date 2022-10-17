@@ -48,7 +48,7 @@ struct OTPPromptView: View {
         
         // MARK: NavigationLinks
         NavigationLink("", isActive: $viewModel.showLoginView) {
-            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout))
         }
     }
     
@@ -178,7 +178,7 @@ struct OTPPromptView: View {
 #if DEBUG
 struct OTPPromptView_Previews: PreviewProvider {
     static var previews: some View {
-        OTPPromptView(viewModel: .init(container: .preview, email: "email@domain.com", otpTelephone: "0987654321", dismiss: {}))
+        OTPPromptView(viewModel: .init(container: .preview, email: "email@domain.com", otpTelephone: "0987654321", isInCheckout: false, dismiss: {}))
     }
 }
 #endif

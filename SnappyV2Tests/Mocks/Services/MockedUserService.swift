@@ -12,16 +12,16 @@ import AuthenticationServices
 
 struct MockedUserService: Mock, MemberServiceProtocol {
     enum Action: Equatable {
-        case login(email: String, password: String)
-        case login(email: String, oneTimePassword: String)
+        case login(email: String, password: String, atCheckout: Bool)
+        case login(email: String, oneTimePassword: String, atCheckout: Bool)
         case login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType)
         case loginWithFacebook(registeringFromScreen: RegisteringFromScreenType)
         case loginWithGoogle(registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
-        case resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?)
-        case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
+        case resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool)
+        case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool)
         case logout
-        case getProfile(filterDeliveryAddresses: Bool)
+        case getProfile(filterDeliveryAddresses: Bool, loginContext: LoginContext?)
         case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
         case addAddress(address: Address)
         case updateAddress(address: Address)
@@ -55,12 +55,12 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func login(email: String, password: String) async throws {
-        register(.login(email: email, password: password))
+    func login(email: String, password: String, atCheckout: Bool) async throws {
+        register(.login(email: email, password: password, atCheckout: atCheckout))
     }
     
-    func login(email: String, oneTimePassword: String) async throws -> Void {
-        register(.login(email: email, oneTimePassword: oneTimePassword))
+    func login(email: String, oneTimePassword: String, atCheckout: Bool) async throws -> Void {
+        register(.login(email: email, oneTimePassword: oneTimePassword, atCheckout: atCheckout))
     }
     
     func restoreLastUser() async throws {
@@ -83,12 +83,12 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         register(.resetPasswordRequest(email: email))
     }
     
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws {
-        register(.resetPassword(resetToken: resetToken, logoutFromAll: logoutFromAll, email: email, password: password, currentPassword: currentPassword))
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws {
+        register(.resetPassword(resetToken: resetToken, logoutFromAll: logoutFromAll, email: email, password: password, currentPassword: currentPassword, atCheckout: atCheckout))
     }
     
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
-        register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool) async throws -> Bool {
+        register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions, atCheckout: atCheckout))
         return false
     }
     
@@ -96,8 +96,8 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         register(.logout)
     }
     
-    func getProfile(filterDeliveryAddresses: Bool) async throws {
-        register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
+    func getProfile(filterDeliveryAddresses: Bool, loginContext: LoginContext?) async throws {
+        register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses, loginContext: loginContext))
     }
     
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws {

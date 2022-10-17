@@ -12,12 +12,21 @@ import OSLog
 @MainActor
 class SocialMediaLoginViewModel: ObservableObject {
     let container: DIContainer
+    let isInCheckout: Bool
     
     @Published var isLoading = false
     @Published var error: Error?
+    
+    private var registeringFromScreen: RegisteringFromScreenType {
+        if container.appState.value.routing.showInitialView {
+            return .startScreen
+        }
+        return isInCheckout ? .billingCheckout : .accountTab
+    }
         
-    init(container: DIContainer) {
+    init(container: DIContainer, isInCheckout: Bool) {
         self.container = container
+        self.isInCheckout = isInCheckout
     }
     
     func updateFinishedPublishedStates(error: Error?) {
@@ -27,12 +36,14 @@ class SocialMediaLoginViewModel: ObservableObject {
         }
     }
     
+    #warning("These need to be tested manually")
+    
     func googleSignInTapped() {
         isLoading = true
         Task {
             var loginError: Error?
             do {
-                try await container.services.memberService.loginWithGoogle(registeringFromScreen: .accountTab)
+                try await container.services.memberService.loginWithGoogle(registeringFromScreen: registeringFromScreen)
                 Logger.member.log("Succesfully logged in with Google")
             } catch {
                 loginError = error
@@ -45,7 +56,7 @@ class SocialMediaLoginViewModel: ObservableObject {
     func loginWithFacebook() async {
         isLoading = true
         do {
-            try await container.services.memberService.loginWithFacebook(registeringFromScreen: .startScreen)
+            try await container.services.memberService.loginWithFacebook(registeringFromScreen: registeringFromScreen)
             self.isLoading = false
         } catch {
             self.container.appState.value.errors.append(error)
@@ -61,7 +72,7 @@ class SocialMediaLoginViewModel: ObservableObject {
             Task {
                 var loginError: Error?
                 do {
-                    try await container.services.memberService.login(appleSignInAuthorisation: authResults, registeringFromScreen: .accountTab)
+                    try await container.services.memberService.login(appleSignInAuthorisation: authResults, registeringFromScreen: registeringFromScreen)
                     Logger.member.log("Succesfully logged in with Apple")
                 } catch {
                     loginError = error

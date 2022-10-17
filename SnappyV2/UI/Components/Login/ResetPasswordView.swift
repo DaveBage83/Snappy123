@@ -177,7 +177,7 @@ struct ResetPasswordView: View {
 #if DEBUG
 struct ResetPasswordView_Previews: PreviewProvider {
     static var previews: some View {
-        ResetPasswordView(viewModel: .init(container: .preview, resetToken: "p6rGf6KLBD", dismissHandler: { _ in }))
+        ResetPasswordView(viewModel: .init(container: .preview, isInCheckout: false, resetToken: "p6rGf6KLBD", dismissHandler: { _ in }))
     }
 }
 #endif

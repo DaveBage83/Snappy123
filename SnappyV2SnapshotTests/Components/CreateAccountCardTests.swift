@@ -21,7 +21,7 @@ class CreateAccountCardTests: XCTestCase {
     }
     
     func makeSUT() -> CreateAccountCard {
-        CreateAccountCard(viewModel: .init(container: .preview))
+        CreateAccountCard(viewModel: .init(container: .preview, isInCheckout: false))
     }
 }
 

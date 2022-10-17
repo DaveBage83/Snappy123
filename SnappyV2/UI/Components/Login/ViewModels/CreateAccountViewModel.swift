@@ -148,7 +148,8 @@ class CreateAccountViewModel: ObservableObject {
                 member: member,
                 password: password,
                 referralCode: nil,
-                marketingOptions: marketingPreferences
+                marketingOptions: marketingPreferences,
+                atCheckout: isPostCheckout || isInCheckout
             )
             
             if alreadyRegistered {

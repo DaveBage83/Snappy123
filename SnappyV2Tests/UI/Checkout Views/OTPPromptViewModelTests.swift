@@ -120,7 +120,7 @@ class OTPPromptViewModelTests: XCTestCase {
         func triggerDismiss() { dismissTriggered = true }
         
         let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpLogin, with: .appsFlyer, params: [:])])
-        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode)]))
+        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode, atCheckout: false)]))
         
         let sut = makeSUT(container: container, dismiss: { triggerDismiss() })
         sut.email = email
@@ -134,7 +134,7 @@ class OTPPromptViewModelTests: XCTestCase {
         mockedEvent.verify()
     }
     
-    func test_givenCorrectCodeAndProfile_whenLoginWithOtpTriggered_thenDismissOtpPromptAndCorrectEvent() async {
+    func test_givenCorrectCodeAndProfile_whenLoginWithOtpTriggeredOutsideOfCheckout_thenDismissOtpPromptAndCorrectEvent() async {
         var dismissTriggered = false
         let email = "someone@domain.com"
         let otpCode = "SOMECODE"
@@ -142,7 +142,7 @@ class OTPPromptViewModelTests: XCTestCase {
         func triggerDismiss() { dismissTriggered = true }
         let profile = MemberProfile.mockedData
         let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpLogin, with: .appsFlyer, params: ["member_id":profile.uuid])])
-        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode)]))
+        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode, atCheckout: false)]))
         container.appState.value.userData.memberProfile = profile
         
         let sut = makeSUT(container: container, dismiss: { triggerDismiss() })
@@ -157,8 +157,31 @@ class OTPPromptViewModelTests: XCTestCase {
         mockedEvent.verify()
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), email: String = "", otpTelephone: String = "", dismiss: @escaping ()->() = {}) -> OTPPromptViewModel {
-        let sut = OTPPromptViewModel(container: container, email: email, otpTelephone: otpTelephone, dismiss: dismiss)
+    func test_givenCorrectCodeAndProfile_whenLoginWithOtpTriggeredDuringCheckout_thenDismissOtpPromptAndCorrectEvent() async {
+        var dismissTriggered = false
+        let email = "someone@domain.com"
+        let otpCode = "SOMECODE"
+        
+        func triggerDismiss() { dismissTriggered = true }
+        let profile = MemberProfile.mockedData
+        let mockedEvent = MockedEventLogger(expected: [.sendEvent(for: .otpLogin, with: .appsFlyer, params: ["member_id":profile.uuid])])
+        let container = DIContainer(appState: AppState(), eventLogger: mockedEvent, services: .mocked(memberService: [.login(email: email, oneTimePassword: otpCode, atCheckout: true)]))
+        container.appState.value.userData.memberProfile = profile
+        
+        let sut = makeSUT(container: container, isInCheckout: true, dismiss: { triggerDismiss() })
+        sut.email = email
+        sut.otpCode = otpCode
+        
+        await sut.loginWithOTP()
+        
+        XCTAssertTrue(dismissTriggered)
+        
+        container.services.verify(as: .member)
+        mockedEvent.verify()
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), email: String = "", otpTelephone: String = "", isInCheckout: Bool = false, dismiss: @escaping ()->() = {}) -> OTPPromptViewModel {
+        let sut = OTPPromptViewModel(container: container, email: email, otpTelephone: otpTelephone, isInCheckout: isInCheckout, dismiss: dismiss)
         
         trackForMemoryLeaks(sut)
         

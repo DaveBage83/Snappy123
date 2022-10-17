@@ -32,6 +32,7 @@ class ResetPasswordViewModel: ObservableObject {
     @Published var dismiss = false
         
     let container: DIContainer
+    let isInCheckout: Bool
     private let resetToken: String
     private let dismissHandler: (Error) -> Void
     private var cancellables = Set<AnyCancellable>()
@@ -46,8 +47,9 @@ class ResetPasswordViewModel: ObservableObject {
         return trimmedConfirmationPassword.isEmpty == false && trimmedPassword.isEmpty == false && trimmedConfirmationPassword != trimmedPassword
     }
     
-    init(container: DIContainer, resetToken: String, dismissHandler: @escaping (Error) -> Void) {
+    init(container: DIContainer, isInCheckout: Bool, resetToken: String, dismissHandler: @escaping (Error) -> Void) {
         self.container = container
+        self.isInCheckout = isInCheckout
         self.resetToken = resetToken
         self.dismissHandler = dismissHandler
         
@@ -112,7 +114,8 @@ class ResetPasswordViewModel: ObservableObject {
                 logoutFromAll: false,
                 email: nil,
                 password: newPassword,
-                currentPassword: nil
+                currentPassword: nil,
+                atCheckout: isInCheckout
             )
             Logger.member.log("Reset password")
             dismiss = true

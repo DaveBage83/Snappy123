@@ -25,6 +25,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     @Published var error: Error?
     
+    private var isRequestingLocation = false
+    
     override init() {
         super.init()
         locationManager.delegate = self
@@ -54,18 +56,26 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.stopUpdatingLocation()
     }
     
-    func requestLocation() {
-        if locationStatus == .denied {
+    func requestLocation() {        
+        switch locationStatus {
+        case .some(.restricted), .some(.denied):
             showDeniedLocationAlert = true
-        } else {
-            locationManager.requestWhenInUseAuthorization()
+        case .some(.authorizedAlways), .some(.authorizedWhenInUse):
             locationManager.requestLocation()
+        default:
+            locationManager.requestWhenInUseAuthorization()
+            isRequestingLocation = true //Attempt to get location after the authorisation status has been changed
         }
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         locationStatus = status
         Logger.locationService.info("Location status: \(self.statusString)")
+        if isRequestingLocation {
+            isRequestingLocation = false
+            locationManager.requestLocation()
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

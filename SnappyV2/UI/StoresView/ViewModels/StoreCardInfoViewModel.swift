@@ -12,6 +12,35 @@ class StoreCardInfoViewModel: ObservableObject {
     var storeDetails: RetailStore
     let isClosed: Bool
     
+    var orderDeliveryMethod: RetailStoreOrderMethod? {
+        storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
+    }
+    
+    var currency: RetailStoreCurrency? {
+        storeDetails.currency
+    }
+    
+    var defaultDeliveryCost: Double? {
+        guard let deliveryOrderMethod = orderDeliveryMethod else { return nil }
+
+        return deliveryOrderMethod.cost
+    }
+    
+//    var fromDeliveryCost: String? {
+//        guard let deliveryMethod = orderDeliveryMethod else { return nil }
+//        
+//        if let lowestTierDeliveryCost = deliveryMethod.lowestTierDeliveryCost {
+//            if let cost = defaultDeliveryCost, lowestTierDeliveryCost > cost, (deliveryMethod.minSpend == nil || deliveryMethod.minSpend == 0)  {
+//                return cost == 0 ? "Free delivery" : "From \(cost.toCurrencyString(using: storeDetails.currency)) delivery"
+//            }
+//            return "From \(lowestTierDeliveryCost.toCurrencyString(using: storeDetails.currency)) delivery"
+//            
+//        } else if let cost = defaultDeliveryCost {
+//            return cost == 0 ? "Free delivery" : cost.toCurrencyString(using: storeDetails.currency)
+//        }
+//        return nil
+//    }
+    
     init(container: DIContainer, storeDetails: RetailStore, isClosed: Bool = false) {
         self.container = container
         self.storeDetails = storeDetails
@@ -25,13 +54,5 @@ class StoreCardInfoViewModel: ObservableObject {
         
         let total = storeDetails.distance
         return formatter.string(from: NSNumber(value: total)) ?? ""
-    }
-    
-    var deliveryChargeString: String {
-        guard let deliveryCharge = storeDetails.orderMethods?["delivery"]?.cost else { return "" }
-        
-        if deliveryCharge == 0.0 { return "Free delivery"}
-        
-        return deliveryCharge.toCurrencyString(using: storeDetails.currency) + " delivery"
     }
 }

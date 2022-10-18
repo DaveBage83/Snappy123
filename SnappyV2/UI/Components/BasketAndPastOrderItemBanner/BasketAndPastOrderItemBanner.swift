@@ -24,10 +24,21 @@ struct BasketAndPastOrderItemBanner: View {
     
     var body: some View {
         HStack {
-            Text(viewModel.banner.text)
-                .foregroundColor(viewModel.banner.type.textColor(colorPalette: colorPalette))
-                .font(.Body2.semiBold())
-            
+            HStack {
+                if let leadingIcon = viewModel.banner.type.leadingIcon {
+                    leadingIcon
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 12)
+                        .foregroundColor(.white)
+                }
+                
+                Text(viewModel.banner.text)
+                    .foregroundColor(viewModel.banner.type.textColor(colorPalette: colorPalette))
+                    .font(.Body2.semiBold())
+            }
+
             Spacer()
             
             if viewModel.showBannerActionButton, let icon = viewModel.banner.type.icon {

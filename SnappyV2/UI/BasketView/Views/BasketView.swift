@@ -11,7 +11,8 @@ struct BasketView: View {
     // MARK: - Typealiases
     typealias CouponStrings = Strings.BasketView.Coupon
     typealias BasketViewStrings = Strings.BasketView
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
+
     // MARK: - Environment
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
@@ -52,6 +53,10 @@ struct BasketView: View {
         
         struct SubItemStack {
             static let spacing: CGFloat = 32
+        }
+        
+        struct DeliveryBanner {
+            static let widthAdjustment: CGFloat = 16
         }
     }
     
@@ -340,7 +345,13 @@ struct BasketView: View {
             // Fees
             if let fees = viewModel.displayableFees {
                 ForEach(fees) { fee in
-                    listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
+                    if fee.text.lowercased() == "delivery" {
+                            listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
+                            .frame(width: mainWindowSize.width - Constants.DeliveryBanner.widthAdjustment)
+                                .withDeliveryOffer(deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), fromBasket: true)
+                    } else {
+                        listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
+                    }
                     
                     Divider()
                 }
@@ -376,6 +387,7 @@ struct BasketView: View {
             Text(amount)
                 .font(.Body2.regular())
         }
+        .padding([.horizontal, .top], text.lowercased() == "delivery" ? 8 : 0)
     }
     
     private func driverTipListEntry(text: String, amount: String) -> some View {

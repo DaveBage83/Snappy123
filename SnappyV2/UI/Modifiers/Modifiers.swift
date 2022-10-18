@@ -175,9 +175,8 @@ struct HighlightedItem: ViewModifier {
     func body(content: Content) -> some View {
         ZStack(alignment: .bottom) {
             content
-                .padding([.top, .horizontal], Constants.itemPadding)
                 .padding(.bottom, bannerHeight) // Adjust by height of banner
-                .padding(.bottom) // Add additional standard bottom padding
+                .padding(.bottom, 5) // Add additional standard bottom padding
                 .background(backgroundColor)
                 .cornerRadius(Constants.cornerRadius)
             VStack(spacing: 0) {
@@ -414,6 +413,138 @@ extension View {
     }
 }
 
+struct DeliveryTierInfo {
+    let orderMethod: RetailStoreOrderMethod?
+    let currency: RetailStoreCurrency?
+}
+
+class DeliveryOfferBannerViewModel: ObservableObject {
+    let container: DIContainer
+    let deliveryTierInfo: DeliveryTierInfo
+
+    @Published var deliveryOrderMethod: RetailStoreOrderMethod?
+    
+    let fromBasket: Bool
+    
+    var bannerType: BannerType {
+        if fromBasket {
+            return hasTiers ? .deliveryOfferWithTiers : .deliveryOffer
+        }
+        
+        return hasTiers ? .deliveryOfferWithTiersMain : .deliveryOfferMain
+    }
+    
+    var freeFulfilmentMessage: String? {
+        guard let text = deliveryTierInfo.orderMethod?.freeFulfilmentMessage, !text.isEmpty else { return nil }
+        return text
+    }
+    
+    var lowestTierDeliveryCost: Double? {
+        guard let deliveryTiers =  deliveryTierInfo.orderMethod?.deliveryTiers else { return nil }
+        
+        // Get the lowest delivery cost in the tier array
+        if let lowestCost = deliveryTiers.min(by: { $0.deliveryFee < $1.deliveryFee })?.deliveryFee {
+            return lowestCost
+        }
+        
+        return nil
+    }
+    
+    var freeFrom: Double? {
+        guard let freeFrom = deliveryTierInfo.orderMethod?.freeFrom, freeFrom > 0 else { return nil }
+        return freeFrom
+    }
+    
+    var deliveryBannerText: String? {
+        guard let currency = deliveryTierInfo.currency else { return nil }
+
+        if let freeFulfilmentMessage, freeFulfilmentMessage.isEmpty == false {
+            return freeFulfilmentMessage
+        } else if let freeFrom = freeFrom, deliveryTierInfo.orderMethod?.deliveryTiers == nil {
+            return "Free delivery from \(freeFrom.toCurrencyString(using: currency))"
+        } else if let freeFrom = freeFrom, let tiers = deliveryTierInfo.orderMethod?.deliveryTiers, tiers.isEmpty {
+            return "Free delivery from \(freeFrom.toCurrencyString(using: currency))"
+        } else if deliveryTierInfo.orderMethod?.deliveryTiers != nil {
+            return deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)
+        }
+        
+        return nil
+    }
+
+    var hasTiers: Bool {
+        guard let tiers =  deliveryTierInfo.orderMethod?.deliveryTiers, tiers.count > 0 else { return false }
+        return true
+    }
+
+    var isDisabled: Bool {
+        if let orderMethod =  deliveryTierInfo.orderMethod, let tiers = orderMethod.deliveryTiers, tiers.isEmpty == false {
+            return false
+        }
+        return true
+    }
+    
+    var showDeliveryBanner: Bool {
+        deliveryBannerText != nil
+    }
+        
+    init(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, fromBasket: Bool) {
+        self.container = container
+        self.deliveryTierInfo = deliveryTierInfo
+        self.fromBasket = fromBasket
+    }
+    
+    func setOrderMethod(_ orderMethod: RetailStoreOrderMethod) {
+        self.deliveryOrderMethod = orderMethod
+    }
+}
+
+struct DeliveryOfferBanner: ViewModifier {
+    @Environment(\.mainWindowSize) var mainWindowSize
+
+    @Environment(\.colorScheme) var colorScheme
+    
+    @StateObject var viewModel: DeliveryOfferBannerViewModel
+            
+    init(viewModel: DeliveryOfferBannerViewModel) {
+        self._viewModel = .init(wrappedValue: viewModel)
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        if viewModel.showDeliveryBanner {
+            content
+            .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
+                if viewModel.isDisabled == false, let orderMethod = viewModel.deliveryTierInfo.orderMethod {
+                    viewModel.setOrderMethod(orderMethod)
+                }
+            })])
+            .disabled(viewModel.isDisabled)
+            .snappyBottomSheet(
+                container: viewModel.container,
+                item: $viewModel.deliveryOrderMethod,
+                title: "Delivery Fees",
+                windowSize: mainWindowSize,
+                content: { orderMethod in
+                    RetailStoreDeliveryTiers(viewModel: .init(
+                        container: viewModel.container,
+                        deliveryOrderMethod: viewModel.deliveryOrderMethod,
+                        currency: viewModel.deliveryTierInfo.currency))
+                })
+        } else {
+            content
+        }
+    }
+}
+
+extension View {
+    func withDeliveryOffer(deliveryTierInfo: DeliveryTierInfo, fromBasket: Bool) -> some View {
+        modifier(DeliveryOfferBanner(viewModel: .init(container: .preview, deliveryTierInfo: deliveryTierInfo, fromBasket: fromBasket)))
+    }
+}
+
 extension View {
     func withInfoButtonAndText(container: DIContainer, text: String) -> some View {
         modifier(WithInfoButtonAndText(container: container, infoText: text))
@@ -437,6 +568,10 @@ enum BannerType: Int {
     case substitutedItem
     case rejectedItem
     case itemQuantityChange
+    case deliveryOfferMain
+    case deliveryOfferWithTiersMain
+    case deliveryOffer
+    case deliveryOfferWithTiers
     
     func bgColor(colorPalette: ColorPalette) -> Color {
         switch self {
@@ -448,15 +583,26 @@ enum BannerType: Int {
             return colorPalette.alertOfferBasket
         case .rejectedItem:
             return colorPalette.primaryRed
+        case .deliveryOfferMain, .deliveryOfferWithTiersMain, .deliveryOffer, .deliveryOfferWithTiers:
+            return colorPalette.alertSuccess
+        }
+    }
+    
+    var leadingIcon: Image? {
+        switch self {
+        case .deliveryOfferMain, .deliveryOfferWithTiersMain:
+            return Image.Icons.Tag.filled
+        default:
+            return nil
         }
     }
 
     func textColor(colorPalette: ColorPalette) -> Color {
         switch self {
-        case .viewSelection, .substitutedItem, .rejectedItem, .itemQuantityChange:
-            return .white
         case .missedOffer:
             return colorPalette.typefacePrimary
+        default:
+            return .white
         }
     }
     
@@ -470,16 +616,20 @@ enum BannerType: Int {
             return colorPalette.primaryRed.withOpacity(.ten)
         case .substitutedItem:
             return colorPalette.alertOfferBasket.withOpacity(.ten)
+        case .deliveryOfferMain, .deliveryOfferWithTiersMain:
+            return .clear
+        case .deliveryOffer, .deliveryOfferWithTiers:
+            return colorPalette.alertSuccess.withOpacity(.twenty)
         }
     }
     
     var icon: Image? {
         switch self {
-        case .viewSelection:
+        case .viewSelection, .deliveryOfferWithTiersMain, .deliveryOfferWithTiers:
             return Image.Icons.Eye.filled
         case .missedOffer:
             return Image.Icons.Plus.medium
-        case .substitutedItem, .rejectedItem, .itemQuantityChange:
+        case .substitutedItem, .rejectedItem, .itemQuantityChange, .deliveryOfferMain, .deliveryOffer:
             return nil
         }
     }

@@ -12,6 +12,8 @@ struct StoreCardInfoView: View {
     @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.mainWindowSize) var mainWindowSize
+
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     
     // MARK: - TypeAliases
@@ -46,6 +48,14 @@ struct StoreCardInfoView: View {
     
     // MARK: - Main view
     var body: some View {
+        mainBody
+            .withDeliveryOffer(deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), fromBasket: false)
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
+            .withLoadingToast(loading: $isLoading)
+    }
+    
+    private var mainBody: some View {
         VStack {
             HStack(alignment: .center) {
                 if minimalLayout == false { // do not show logo when sizeCategory.size font size over 7
@@ -67,19 +77,17 @@ struct StoreCardInfoView: View {
                     .font(.snappyFootnote)
                     .padding(.vertical, Constants.General.minPadding)
                     
-                    Text(viewModel.deliveryChargeString)
-                        .font(.Body2.semiBold())
-                        .foregroundColor(colorPalette.primaryBlue)
+                    if let fromDeliveryCost = viewModel.orderDeliveryMethod?.fromDeliveryCost(currency: viewModel.currency) {
+                        Text(fromDeliveryCost)
+                            .font(.Body2.semiBold())
+                            .foregroundColor(colorPalette.primaryBlue)
+                    }
                 }
                 .multilineTextAlignment(.leading)
-                
             }
             .padding()
             .frame(maxWidth: .infinity)
         }
-        .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
-        .withLoadingToast(loading: $isLoading)
     }
     
     // MARK: - Logo
@@ -150,21 +158,21 @@ struct StoreCardInfoView: View {
 #if DEBUG
 struct StoreCardInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 0.47, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "01:50 - 02:05", status: .open, cost: nil, fulfilmentIn: nil)], ratings: RetailStoreRatings(averageRating: 4, numRatings: 54), currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 0.47, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "01:50 - 02:05", status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: "Free from £10", deliveryTiers: nil, freeFrom: nil, minSpend: nil)], ratings: RetailStoreRatings(averageRating: 4, numRatings: 54), currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewDevice(PreviewDevice(rawValue: "iPod touch (7th generation) (15.5)"))
 
         
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)], ratings: nil, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
         
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil)], ratings: nil, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)], ratings: nil, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
         
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)], ratings: nil, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
     }

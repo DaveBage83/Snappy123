@@ -251,6 +251,14 @@
 "storesview.noslots.title" = "No slots available";
 "storesview.noslotscustom.subtitle" = "No available %@ slots for this store";
 "storesview.searchcustom.nostores" = "No %@ available for %@ right now.";
+"storesview.deliverytiers.custom.minspend" = "%@ minimum spend";
+"storesview.deliverytiers.ordervalue" = "Order Value*";
+"storesview.deliverytiers.delivery" = "Delivery";
+"storesview.deliverytiers.ordervaluecondition" = "*Excluding offers, service charges and delivery fees.";
+"storesview.deliverytiers.free" = "Free delivery";
+"storesview.deliverytiers.custom.deliveryfrom" = "From %@ delivery";
+"storesview.deliverytiers.custom.cost" = "%@ delivery";
+"storesview.deliverytiers.fromfree" = "From free";
 
 // MARK: - Store Info
 

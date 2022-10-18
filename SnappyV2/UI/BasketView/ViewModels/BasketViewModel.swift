@@ -87,6 +87,11 @@ class BasketViewModel: ObservableObject {
     
     @Published var profile: MemberProfile?
         
+    var hasTiers: Bool {
+        guard let tiers = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.deliveryTiers, tiers.count > 0 else { return false }
+        return true
+    }
+    
     var isMemberSignedIn: Bool {
         profile != nil
     }
@@ -95,6 +100,47 @@ class BasketViewModel: ObservableObject {
         return selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.status != .closed && isSlotExpired == false
     }
 
+    var freeFulfilmentMessage: String? {
+        guard let text = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.freeFulfilmentMessage, !text.isEmpty else { return nil }
+        return text
+    }
+    
+    var lowestTierDeliveryCost: Double? {
+        guard let deliveryTiers = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.deliveryTiers else { return nil }
+        
+        // Get the lowest delivery cost in the tier array
+        if let lowestCost = deliveryTiers.min(by: { $0.deliveryFee < $1.deliveryFee })?.deliveryFee {
+            return lowestCost
+        }
+        
+        return nil
+    }
+    
+    var orderDeliveryMethod: RetailStoreOrderMethod? {
+        selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
+    }
+    
+    var currency: RetailStoreCurrency? {
+        selectedStore?.currency
+    }
+    var deliveryBannerText: String? {
+        guard let selectedStore = selectedStore else { return nil }
+        
+        if let freeFulfilmentMessage {
+            return freeFulfilmentMessage
+        } else if let lowestTierDeliveryCost {
+            return "Delivery from \(lowestTierDeliveryCost.toCurrencyString(using: selectedStore.currency))"
+        } else if let freeFrom {
+            return "Free delivery on orders over \(freeFrom.toCurrencyString(using: selectedStore.currency))"
+        }
+        return nil
+    }
+    
+    var freeFrom: Double? {
+        guard let freeFrom = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.freeFrom, freeFrom > 0 else { return nil }
+        return freeFrom
+    }
+    
     private var cancellables = Set<AnyCancellable>()
     private var updatingTipTask: Task<Void, Never>?
     

@@ -102,6 +102,36 @@ extension RetailStoreCurrency {
     
 extension RetailStore {
     
+    static func mockedDataWithDeliveryTiers(orderMethod: RetailStoreOrderMethod) -> RetailStore {
+        RetailStore(
+            id: 1944,
+            storeName: "Premier Nethergate",
+            distance: 0.579,
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+            ],
+            storeProductTypes: [21],
+            orderMethods: [
+                "delivery" : orderMethod,
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "13:15 - 13:20",
+                    status: .open,
+                    cost: 0,
+                    fulfilmentIn: "1 to 6 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
+                )
+            ],
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+            currency: RetailStoreCurrency.mockedGBPData
+        )
+    }
+    
     static let mockedData: [RetailStore] = [
         RetailStore(
             id: 1944,
@@ -119,14 +149,22 @@ extension RetailStore {
                     earliestTime: "13:20 - 14:20",
                     status: .open,
                     cost: 5.0,
-                    fulfilmentIn: "6 to 66 mins"
+                    fulfilmentIn: "6 to 66 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "13:15 - 13:20",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 to 6 mins"
+                    fulfilmentIn: "1 to 6 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -148,7 +186,11 @@ extension RetailStore {
                     earliestTime: "13:45 - 14:00",
                     status: .open,
                     cost: 3.0,
-                    fulfilmentIn: "31 to 46 mins"
+                    fulfilmentIn: "31 to 46 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             ratings: nil,
@@ -170,14 +212,22 @@ extension RetailStore {
                     earliestTime: "13:45 - 14:00",
                     status: .open,
                     cost: 1.0,
-                    fulfilmentIn: "31 to 46 min"
+                    fulfilmentIn: "31 to 46 min",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: nil,
                     status: .closed,
                     cost: 0,
-                    fulfilmentIn: nil
+                    fulfilmentIn: nil,
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             ratings: nil,
@@ -199,7 +249,11 @@ extension RetailStore {
                     earliestTime: "13:45 - 14:00",
                     status: .open,
                     cost: 3.0,
-                    fulfilmentIn: "31 to 46 mins"
+                    fulfilmentIn: "31 to 46 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             ratings: nil,
@@ -224,14 +278,22 @@ extension RetailStore {
                     earliestTime: "13:20 - 14:20",
                     status: .closed,
                     cost: 5.0,
-                    fulfilmentIn: "6 to 66 mins"
+                    fulfilmentIn: "6 to 66 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "13:15 - 13:20",
                     status: .closed,
                     cost: 0,
-                    fulfilmentIn: "1 to 6 mins"
+                    fulfilmentIn: "1 to 6 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -253,7 +315,11 @@ extension RetailStore {
                     earliestTime: "13:45 - 14:00",
                     status: .closed,
                     cost: 3.0,
-                    fulfilmentIn: "31 to 46 mins"
+                    fulfilmentIn: "31 to 46 mins",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             ratings: nil,
@@ -330,14 +396,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -428,14 +502,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -517,14 +599,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -613,14 +703,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .closed,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -711,14 +809,238 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .closed,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
+                )
+            ],
+            deliveryDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            collectionDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            paymentMethods: [
+                PaymentMethod.mockedCashData,
+                PaymentMethod.mockedApplePayData,
+                PaymentMethod.mockedCardsData
+            ],
+            paymentGateways: [
+                PaymentGateway.mockedWorldpayData,
+                PaymentGateway.mockedStripeData,
+                PaymentGateway.mockedRealexData
+            ], allowedMarketingChannels: [
+                AllowedMarketingChannel(id: 123, name: "Facebook")
+            ],
+            timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
+            searchPostcode: "DD1 3JA"
+        )
+    }
+    
+    static var mockedDataWithEmptyDeliveryTiers: RetailStoreDetails {
+        
+        let fulfilmentDay1 = RetailStoreFulfilmentDay(
+            date: "2021-10-12",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+
+        let fulfilmentDay2 = RetailStoreFulfilmentDay(
+            date: "2021-10-13",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+        
+        return RetailStoreDetails(
+            id: 1569,//30,
+            menuGroupId: 1218,//30,
+            storeName: "Family Shopper Lochee",
+            telephone: "01382621132",
+            lat: 56.473358599999997,
+            lng: -3.0111853000000002,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 0,
+            pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+            address1: "163-165 High Street",
+            address2: nil,
+            town: "Dundee",
+            postcode: "DD2 3DB",
+            customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
+            tips: [
+                RetailStoreTip(
+                    enabled: true,
+                    defaultValue: 1.0,
+                    type: "driver",
+                    refundDriverTipsForLateOrders: false,
+                    refundDriverTipsAfterLateByMinutes: 0
+                )
+            ],
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+            ],
+            storeProductTypes: [21, 32],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "11:30 - 11:45",
+                    status: .open,
+                    cost: 3.5,
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: [],
+                    freeFrom: nil,
+                    minSpend: nil
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "11:00 - 11:05",
+                    status: .closed,
+                    cost: 0,
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
+                )
+            ],
+            deliveryDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            collectionDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            paymentMethods: [
+                PaymentMethod.mockedCashData,
+                PaymentMethod.mockedApplePayData,
+                PaymentMethod.mockedCardsData
+            ],
+            paymentGateways: [
+                PaymentGateway.mockedWorldpayData,
+                PaymentGateway.mockedStripeData,
+                PaymentGateway.mockedRealexData
+            ], allowedMarketingChannels: [
+                AllowedMarketingChannel(id: 123, name: "Facebook")
+            ],
+            timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
+            searchPostcode: "DD1 3JA"
+        )
+    }
+    
+    static var mockedDataWithDeliveryTiers: RetailStoreDetails {
+        
+        let fulfilmentDay1 = RetailStoreFulfilmentDay(
+            date: "2021-10-12",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+
+        let fulfilmentDay2 = RetailStoreFulfilmentDay(
+            date: "2021-10-13",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+        
+        return RetailStoreDetails(
+            id: 1569,//30,
+            menuGroupId: 1218,//30,
+            storeName: "Family Shopper Lochee",
+            telephone: "01382621132",
+            lat: 56.473358599999997,
+            lng: -3.0111853000000002,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 0,
+            pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+            address1: "163-165 High Street",
+            address2: nil,
+            town: "Dundee",
+            postcode: "DD2 3DB",
+            customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
+            tips: [
+                RetailStoreTip(
+                    enabled: true,
+                    defaultValue: 1.0,
+                    type: "driver",
+                    refundDriverTipsForLateOrders: false,
+                    refundDriverTipsAfterLateByMinutes: 0
+                )
+            ],
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+            ],
+            storeProductTypes: [21, 32],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "11:30 - 11:45",
+                    status: .open,
+                    cost: 3.5,
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: [
+                        .init(minBasketSpend: 5, deliveryFee: 5),
+                        .init(minBasketSpend: 10, deliveryFee: 3),
+                        .init(minBasketSpend: 15, deliveryFee: 2)
+                    ],
+                    freeFrom: nil,
+                    minSpend: nil
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "11:00 - 11:05",
+                    status: .closed,
+                    cost: 0,
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -809,14 +1131,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -908,14 +1238,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -1009,14 +1347,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -1134,14 +1480,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -1237,14 +1591,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [
@@ -1335,14 +1697,22 @@ extension RetailStoreDetails {
                     earliestTime: "11:30 - 11:45",
                     status: .open,
                     cost: 3.5,
-                    fulfilmentIn: "2 hour(s)"
+                    fulfilmentIn: "2 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
                     earliestTime: "11:00 - 11:05",
                     status: .open,
                     cost: 0,
-                    fulfilmentIn: "1 hour(s)"
+                    fulfilmentIn: "1 hour(s)",
+                    freeFulfilmentMessage: nil,
+                    deliveryTiers: nil,
+                    freeFrom: nil,
+                    minSpend: nil
                 )
             ],
             deliveryDays: [

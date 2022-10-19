@@ -123,23 +123,6 @@ class BasketViewModel: ObservableObject {
     var currency: RetailStoreCurrency? {
         selectedStore?.currency
     }
-    var deliveryBannerText: String? {
-        guard let selectedStore = selectedStore else { return nil }
-        
-        if let freeFulfilmentMessage {
-            return freeFulfilmentMessage
-        } else if let lowestTierDeliveryCost {
-            return "Delivery from \(lowestTierDeliveryCost.toCurrencyString(using: selectedStore.currency))"
-        } else if let freeFrom {
-            return "Free delivery on orders over \(freeFrom.toCurrencyString(using: selectedStore.currency))"
-        }
-        return nil
-    }
-    
-    var freeFrom: Double? {
-        guard let freeFrom = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.freeFrom, freeFrom > 0 else { return nil }
-        return freeFrom
-    }
     
     private var cancellables = Set<AnyCancellable>()
     private var updatingTipTask: Task<Void, Never>?

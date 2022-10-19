@@ -14,7 +14,6 @@ class StoreCardInfoViewModelTests: XCTestCase {
         let sut = makeSUT(storeDetails: storeInit)
         
         XCTAssertEqual(sut.distance, "0")
-        XCTAssertEqual(sut.deliveryChargeString, "")
         XCTAssertEqual(sut.storeDetails.storeName, "Most Basic Store Ever")
     }
     
@@ -25,22 +24,203 @@ class StoreCardInfoViewModelTests: XCTestCase {
         XCTAssertEqual(sut.distance, "3.96")
     }
     
-    func test_givenDeliveryOrderMethodWithNoCharge_thenFreeDeliveryString() {
-        let deliveryMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: 0, fulfilmentIn: nil)
-        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": deliveryMethod], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
-        let sut = makeSUT(storeDetails: storeDetails)
-        
-        XCTAssertEqual(sut.deliveryChargeString, "Free delivery")
+    func test_whenStoreHasOrderDeliveryMethod_thenOrderDeliveryMethodPopulated() {
+        let store = RetailStore.mockedData.first
+        let sut = makeSUT(storeDetails: store!)
+        let expectedMethod = RetailStore.mockedData.first?.orderMethods!["delivery"]
+        let expectedCurrency = RetailStore.mockedData.first?.currency
+        XCTAssertEqual(sut.orderDeliveryMethod, expectedMethod)
+        XCTAssertEqual(sut.currency, expectedCurrency)
     }
     
-    func test_givenDeliveryOrderMethodWithCharge_thenCorrectDeliveryString() {
-        let deliveryMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: 3.5, fulfilmentIn: nil)
-        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": deliveryMethod], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
-        let sut = makeSUT(storeDetails: storeDetails)
-        
-        XCTAssertEqual(sut.deliveryChargeString, "£3.50 delivery")
+    func test_whenNoCurrencyPassedIn_thenFromDeliveryCostIsNil() {
+        let store = RetailStore.mockedData.first
+        let expectedMethod = RetailStore.mockedData.first?.orderMethods!["delivery"]
+        let fromCost = expectedMethod?.fromDeliveryCost(currency: nil)
+        XCTAssertNil(fromCost)
     }
-   
+    
+    // Following tests are all testing the RetailStore extension which returns the min spend string
+    func test_whenLowestDeliveryCostPresentAndCostPresentAndLowestTierDeliveryCostGreaterThanCostAndMindSpendIsNil_givenCurrencyPresent_thenReturnExpectedString() {
+        let tiers = [
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 5)
+        ]
+        
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+        
+        let cost: Double = 3
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: nil)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(cost.toCurrencyString(using: currency)))
+    }
+    
+    func test_whenLowestDeliveryCostPresentAndCostPresentAndLowestTierDeliveryCostGreaterThanCostAndMindSpendIs0_givenCurrencyPresent_thenReturnExpectedString() {
+        let tiers = [
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 5)
+        ]
+        
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+        
+        let cost: Double = 3
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(cost.toCurrencyString(using: currency)))
+    }
+    
+    func test_whenLowestDeliveryCostPresentAndCostIsNilAndLowestTierDeliveryCostGreaterThanCostAndMindSpendIs0_givenCurrencyPresent_thenReturnExpectedString() {
+        let tiers = [
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 3),
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 5)
+        ]
+        
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+                
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0)
+        
+        let lowestCostString = tiers.first?.deliveryFee.toCurrencyString(using: currency)
+        
+        let expectedFromCostString = Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(lowestCostString!)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, expectedFromCostString)
+    }
+    
+    func test_whenLowestDeliveryCostPresentAndCostPresentAndLowestTierDeliveryCostLessThanCostAndMindSpendIs0_givenCurrencyPresent_thenReturnExpectedString() {
+        let tiers = [
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 3),
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 5)
+        ]
+        
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+              
+        let cost: Double = 10
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0)
+        
+        let lowestCostString = tiers.first?.deliveryFee.toCurrencyString(using: currency)
+        
+        let expectedFromCostString = Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(lowestCostString!)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, expectedFromCostString)
+    }
+    
+    func test_whenLowestDeliveryCostPresentAndCostPresentAndLowestTierDeliveryCostGreaterThanCostAndMindSpendIsNotNilAndMindSpendIsNotNil_givenCurrencyPresent_thenReturnExpectedString() {
+        let tiers = [
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 3),
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 5)
+        ]
+        
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+              
+        let cost: Double = 2
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 2)
+        
+        let lowestCostString = tiers.first?.deliveryFee.toCurrencyString(using: currency)
+        
+        let expectedFromCostString = Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(lowestCostString!)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, expectedFromCostString)
+    }
+    
+    func test_whenLowestDeliveryCostNilAndMinSpendPresentAndFreeFromPresentAndFreeFromGreaterThan0AndMinSpendGreaterThanOrEqualToFreeFrom_thenReturnExpectedString() {
+  
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+              
+        let cost: Double = 2
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 20)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiers.fromFree.localized)
+    }
+    
+    func test_whenLowestDeliveryCostNilAndMinSpendNilAndFreeFromPresentAndFreeFromGreaterThan0AndMinSpendGreaterThanOrEqualToFreeFrom_thenReturnExpectedString() {
+  
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+              
+        let cost: Double = 2
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: nil)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiersCustom.cost.localizedFormat(cost.toCurrencyString(using: currency)))
+    }
+    
+    func test_whenLowestDeliveryCostNilAndMinSpendPresentAndFreeFromNilAndFreeFromGreaterThan0AndMinSpendGreaterThanOrEqualToFreeFrom_thenReturnExpectedString() {
+  
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+              
+        let cost: Double = 2
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: 10)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiersCustom.cost.localizedFormat(cost.toCurrencyString(using: currency)))
+    }
+    
+    func test_whenLowestDeliveryCostNilAndMinSpendPresentAndFreeFromPresentAndFreeFromIs0AndMinSpendGreaterThanOrEqualToFreeFrom_thenReturnExpectedString() {
+  
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+              
+        let cost: Double = 2
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 0, minSpend: 10)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiersCustom.cost.localizedFormat(cost.toCurrencyString(using: currency)))
+    }
+    
+    func test_whenLowestDeliveryCostNilAndMinSpendPresentAndFreeFromPresentAndFreeFromIsGreaterThan0AndMinSpendLessThanFreeFrom_thenReturnExpectedString() {
+  
+        let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
+              
+        let cost: Double = 2
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 5)
+        
+        let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
+        
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiersCustom.cost.localizedFormat(cost.toCurrencyString(using: currency)))
+    }
+    
+    func test_whenNoTiersPresent_thenLowestTierDeliveryCostNil() {
+        let cost: Double = 2
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 20)
+        
+        XCTAssertNil(orderMethod.lowestTierDeliveryCost)
+    }
+    
+    
+    func test_whenTiersPresent_thenLowestTierDeliveryCostReturned() {
+        let cost: Double = 2
+        
+        let tiers = [
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 3),
+            DeliveryTier(minBasketSpend: 5, deliveryFee: 5)
+        ]
+        
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: 10, minSpend: 20)
+        
+        XCTAssertEqual(orderMethod.lowestTierDeliveryCost, 3)
+    }
+    
     func makeSUT(storeDetails: RetailStore) -> StoreCardInfoViewModel {
         let sut = StoreCardInfoViewModel(container: .preview, storeDetails: storeDetails)
         

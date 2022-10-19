@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-struct DeliveryTiers {
+struct DeliveryTiers: Equatable {
     let minSpend: Double?
     let deliveryTiers: [DeliveryTier]
 }
@@ -30,6 +30,7 @@ class RetailStoreDeliveryTiersViewModel: ObservableObject {
         return CustomTiersString.minSpend.localizedFormat(minSpend.toCurrencyString())
     }
     
+    #warning("The below will hopefully be replaced when backend amend the response to always return delivery tiers")
     // Because of the way the delivery fee is split between several unlinked values in the API response,
     // we need front end logic to build the tiers coherantly ourselves
     var deliveryTiers: DeliveryTiers? {

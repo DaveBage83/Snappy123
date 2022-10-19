@@ -350,6 +350,7 @@ public enum Strings {
             case minSpend = "storesview.deliverytiers.custom.minspend"
             case deliveryFrom = "storesview.deliverytiers.custom.deliveryfrom"
             case cost = "storesview.deliverytiers.custom.cost"
+            case freeFrom = "storesview.deliverytiers.custom.freefrom"
         }
         
         public enum DeliveryTiers: String, IterableSnappyString {

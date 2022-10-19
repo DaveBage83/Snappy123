@@ -259,6 +259,7 @@
 "storesview.deliverytiers.custom.deliveryfrom" = "From %@ delivery";
 "storesview.deliverytiers.custom.cost" = "%@ delivery";
 "storesview.deliverytiers.fromfree" = "From free";
+"storesview.deliverytiers.custom.freefrom" = "Free delivery from %@";
 
 // MARK: - Store Info
 

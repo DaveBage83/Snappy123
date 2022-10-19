@@ -260,6 +260,7 @@
 		553469A9289291670091DA04 /* MemberDashboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553469A8289291670091DA04 /* MemberDashboardSettingsView.swift */; };
 		553469AB2892C0850091DA04 /* MemberDashboardSettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553469AA2892C0850091DA04 /* MemberDashboardSettingsViewModelTests.swift */; };
 		5534C06C28C1FFC9008E0AAF /* OrderSummaryCardDetailsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5534C06B28C1FFC9008E0AAF /* OrderSummaryCardDetailsButton.swift */; };
+		5534EC7B28FFE9170048EB90 /* DeliveryBannerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5534EC7A28FFE9170048EB90 /* DeliveryBannerViewModelTests.swift */; };
 		553B78CD27D77D2100B955AB /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78CC27D77D2100B955AB /* LoginView.swift */; };
 		553B78D127D8BD0900B955AB /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D027D8BD0900B955AB /* LoginViewModel.swift */; };
 		553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D427DB96C900B955AB /* LoginHomeView.swift */; };
@@ -884,6 +885,7 @@
 		553469A8289291670091DA04 /* MemberDashboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardSettingsView.swift; sourceTree = "<group>"; };
 		553469AA2892C0850091DA04 /* MemberDashboardSettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardSettingsViewModelTests.swift; sourceTree = "<group>"; };
 		5534C06B28C1FFC9008E0AAF /* OrderSummaryCardDetailsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardDetailsButton.swift; sourceTree = "<group>"; };
+		5534EC7A28FFE9170048EB90 /* DeliveryBannerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliveryBannerViewModelTests.swift; sourceTree = "<group>"; };
 		553B78CC27D77D2100B955AB /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		553B78D027D8BD0900B955AB /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		553B78D227DA022300B955AB /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -3005,6 +3007,7 @@
 				AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */,
 				AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */,
 				AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */,
+				5534EC7A28FFE9170048EB90 /* DeliveryBannerViewModelTests.swift */,
 				AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */,
 				AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */,
 				55B508D728FF58A800B70C3A /* RetailStoreDeliveryTiersViewModelTests.swift */,
@@ -3804,6 +3807,7 @@
 				0AB2B5C127AFC3C800BE3FBF /* MockCodableObject.swift in Sources */,
 				0AB2B5C027AFC3C800BE3FBF /* MockCodableIfPresentObject.swift in Sources */,
 				AF55501F2888839A00492141 /* OTPPromptViewModelTests.swift in Sources */,
+				5534EC7B28FFE9170048EB90 /* DeliveryBannerViewModelTests.swift in Sources */,
 				0A86C8F727005112008F16E1 /* TestWebRepository.swift in Sources */,
 				0A7253DC27B08B6800CE5B1F /* CheckoutDBRepositoryTests.swift in Sources */,
 				AF60B48B26DE65CE00764A6D /* OptionControllerTests.swift in Sources */,

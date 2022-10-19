@@ -27,18 +27,7 @@ class DeliveryOfferBannerViewModel: ObservableObject {
         guard let text = deliveryTierInfo.orderMethod?.freeFulfilmentMessage, !text.isEmpty else { return nil }
         return text
     }
-    
-    var lowestTierDeliveryCost: Double? {
-        guard let deliveryTiers =  deliveryTierInfo.orderMethod?.deliveryTiers else { return nil }
-        
-        // Get the lowest delivery cost in the tier array
-        if let lowestCost = deliveryTiers.min(by: { $0.deliveryFee < $1.deliveryFee })?.deliveryFee {
-            return lowestCost
-        }
-        
-        return nil
-    }
-    
+
     var freeFrom: Double? {
         guard let freeFrom = deliveryTierInfo.orderMethod?.freeFrom, freeFrom > 0 else { return nil }
         return freeFrom
@@ -50,10 +39,10 @@ class DeliveryOfferBannerViewModel: ObservableObject {
         if let freeFulfilmentMessage, freeFulfilmentMessage.isEmpty == false {
             return freeFulfilmentMessage
         } else if let freeFrom = freeFrom, deliveryTierInfo.orderMethod?.deliveryTiers == nil {
-            return "Free delivery from \(freeFrom.toCurrencyString(using: currency))"
+            return Strings.StoresView.DeliveryTiersCustom.freeFrom.localizedFormat(freeFrom.toCurrencyString(using: currency))
         } else if let freeFrom = freeFrom, let tiers = deliveryTierInfo.orderMethod?.deliveryTiers, tiers.isEmpty {
-            return "Free delivery from \(freeFrom.toCurrencyString(using: currency))"
-        } else if deliveryTierInfo.orderMethod?.deliveryTiers != nil {
+            return Strings.StoresView.DeliveryTiersCustom.freeFrom.localizedFormat(freeFrom.toCurrencyString(using: currency))
+        } else if deliveryTierInfo.orderMethod?.deliveryTiers != nil, deliveryTierInfo.orderMethod?.deliveryTiers?.isEmpty == false {
             return deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)
         }
         
@@ -61,15 +50,12 @@ class DeliveryOfferBannerViewModel: ObservableObject {
     }
 
     var hasTiers: Bool {
-        guard let tiers =  deliveryTierInfo.orderMethod?.deliveryTiers, tiers.count > 0 else { return false }
+        guard let tiers = deliveryTierInfo.orderMethod?.deliveryTiers, tiers.count > 0 else { return false }
         return true
     }
 
     var isDisabled: Bool {
-        if let orderMethod =  deliveryTierInfo.orderMethod, let tiers = orderMethod.deliveryTiers, tiers.isEmpty == false {
-            return false
-        }
-        return true
+        !hasTiers
     }
     
     var showDeliveryBanner: Bool {

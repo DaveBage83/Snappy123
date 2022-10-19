@@ -72,6 +72,9 @@ struct RootView: View {
         .onDisappear() {
             viewModel.viewRemoved()
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
 }
 

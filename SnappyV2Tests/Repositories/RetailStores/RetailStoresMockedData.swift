@@ -123,8 +123,8 @@ extension RetailStore {
                     fulfilmentIn: "1 to 6 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -152,8 +152,8 @@ extension RetailStore {
                     fulfilmentIn: "6 to 66 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -163,8 +163,8 @@ extension RetailStore {
                     fulfilmentIn: "1 to 6 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -189,8 +189,8 @@ extension RetailStore {
                     fulfilmentIn: "31 to 46 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             ratings: nil,
@@ -215,8 +215,8 @@ extension RetailStore {
                     fulfilmentIn: "31 to 46 min",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -226,8 +226,8 @@ extension RetailStore {
                     fulfilmentIn: nil,
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             ratings: nil,
@@ -252,8 +252,8 @@ extension RetailStore {
                     fulfilmentIn: "31 to 46 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             ratings: nil,
@@ -281,8 +281,8 @@ extension RetailStore {
                     fulfilmentIn: "6 to 66 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -292,8 +292,8 @@ extension RetailStore {
                     fulfilmentIn: "1 to 6 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -318,8 +318,8 @@ extension RetailStore {
                     fulfilmentIn: "31 to 46 mins",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             ratings: nil,
@@ -399,8 +399,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -410,8 +410,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -505,8 +505,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -516,8 +516,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -602,8 +602,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -613,8 +613,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -706,8 +706,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -717,8 +717,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -812,8 +812,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -823,8 +823,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -918,8 +918,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: [],
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -929,8 +929,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -1028,8 +1028,8 @@ extension RetailStoreDetails {
                         .init(minBasketSpend: 10, deliveryFee: 3),
                         .init(minBasketSpend: 15, deliveryFee: 2)
                     ],
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1039,8 +1039,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -1134,8 +1134,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1145,8 +1145,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -1241,8 +1241,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1252,8 +1252,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -1350,8 +1350,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1361,8 +1361,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -1483,8 +1483,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1494,8 +1494,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -1594,8 +1594,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1605,8 +1605,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [
@@ -1700,8 +1700,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "2 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1711,8 +1711,8 @@ extension RetailStoreDetails {
                     fulfilmentIn: "1 hour(s)",
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
-                    freeFrom: nil,
-                    minSpend: nil
+                    freeFrom: 0,
+                    minSpend: 0
                 )
             ],
             deliveryDays: [

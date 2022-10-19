@@ -359,6 +359,7 @@ public enum Strings {
             case orderValueCondition = "storesview.deliverytiers.ordervaluecondition"
             case freeDelivery = "storesview.deliverytiers.free"
             case fromFree = "storesview.deliverytiers.fromfree"
+            case title = "storesview.deliverytiers.title"
         }
     }
     

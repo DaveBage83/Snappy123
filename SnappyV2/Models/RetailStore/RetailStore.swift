@@ -44,8 +44,7 @@ enum RetailStoreOrderMethodStatus: String, Codable {
     case preorder
 }
 
-struct RetailStoreOrderMethod: Codable, Equatable, Hashable, Identifiable {
-    let id = UUID() // Required to display delivery tiers from bottom sheet
+struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
     let name: RetailStoreOrderMethodType
     let earliestTime: String?
     let status: RetailStoreOrderMethodStatus

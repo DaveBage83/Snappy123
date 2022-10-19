@@ -14,6 +14,7 @@ struct BasketAndPastOrderItemBanner: View {
         static let hPadding: CGFloat = 8
         static let plusSize: CGFloat = 12
         static let cornerRadius: CGFloat = 8
+        static let leadingIconHeight: CGFloat = 12
     }
     
     @StateObject var viewModel: BasketAndPastOrderItemBannerViewModel
@@ -30,7 +31,7 @@ struct BasketAndPastOrderItemBanner: View {
                         .renderingMode(.template)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(height: 12)
+                        .frame(height: Constants.leadingIconHeight)
                         .foregroundColor(.white)
                 }
                 

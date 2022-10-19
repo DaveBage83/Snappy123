@@ -49,6 +49,7 @@ struct BasketView: View {
         
         struct ListEntry {
             static let height: CGFloat = 12
+            static let maxPadding: CGFloat = 8
         }
         
         struct SubItemStack {
@@ -348,7 +349,7 @@ struct BasketView: View {
                     if fee.text.lowercased() == "delivery" {
                             listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                             .frame(width: mainWindowSize.width - Constants.DeliveryBanner.widthAdjustment)
-                                .withDeliveryOffer(deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), fromBasket: true)
+                            .withDeliveryOffer(deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: true)
                     } else {
                         listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                     }
@@ -387,7 +388,7 @@ struct BasketView: View {
             Text(amount)
                 .font(.Body2.regular())
         }
-        .padding([.horizontal, .top], text.lowercased() == "delivery" ? 8 : 0)
+        .padding([.horizontal, .top], text.lowercased() == "delivery" ? Constants.ListEntry.maxPadding : 0)
     }
     
     private func driverTipListEntry(text: String, amount: String) -> some View {

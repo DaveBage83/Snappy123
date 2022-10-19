@@ -147,6 +147,7 @@ struct HighlightedItem: ViewModifier {
     struct Constants {
         static let cornerRadius: CGFloat = 8
         static let itemPadding: CGFloat = 8
+        static let bottomPadding: CGFloat = 5
     }
     
     let container: DIContainer
@@ -176,7 +177,7 @@ struct HighlightedItem: ViewModifier {
         ZStack(alignment: .bottom) {
             content
                 .padding(.bottom, bannerHeight) // Adjust by height of banner
-                .padding(.bottom, 5) // Add additional standard bottom padding
+                .padding(.bottom, Constants.bottomPadding) // Add additional standard bottom padding
                 .background(backgroundColor)
                 .cornerRadius(Constants.cornerRadius)
             VStack(spacing: 0) {
@@ -413,7 +414,8 @@ extension View {
     }
 }
 
-struct DeliveryTierInfo {
+struct DeliveryTierInfo: Identifiable, Equatable {
+    let id = UUID()
     let orderMethod: RetailStoreOrderMethod?
     let currency: RetailStoreCurrency?
 }
@@ -444,13 +446,13 @@ struct DeliveryOfferBanner: ViewModifier {
             .disabled(viewModel.isDisabled)
             .snappyBottomSheet(
                 container: viewModel.container,
-                item: $viewModel.deliveryOrderMethod,
-                title: "Delivery Fees",
+                item: $viewModel.selectedDeliveryTierInfo,
+                title: Strings.StoresView.DeliveryTiers.title.localized,
                 windowSize: mainWindowSize,
                 content: { orderMethod in
                     RetailStoreDeliveryTiers(viewModel: .init(
                         container: viewModel.container,
-                        deliveryOrderMethod: viewModel.deliveryOrderMethod,
+                        deliveryOrderMethod: viewModel.selectedDeliveryTierInfo?.orderMethod,
                         currency: viewModel.deliveryTierInfo.currency))
                 })
         } else {
@@ -460,8 +462,8 @@ struct DeliveryOfferBanner: ViewModifier {
 }
 
 extension View {
-    func withDeliveryOffer(deliveryTierInfo: DeliveryTierInfo, fromBasket: Bool) -> some View {
-        modifier(DeliveryOfferBanner(viewModel: .init(container: .preview, deliveryTierInfo: deliveryTierInfo, fromBasket: fromBasket)))
+    func withDeliveryOffer(deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
+        modifier(DeliveryOfferBanner(viewModel: .init(container: .preview, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
     }
 }
 

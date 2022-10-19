@@ -11,7 +11,9 @@ class DeliveryOfferBannerViewModel: ObservableObject {
     let container: DIContainer
     let deliveryTierInfo: DeliveryTierInfo
 
-    @Published var deliveryOrderMethod: RetailStoreOrderMethod?
+    @Published var selectedDeliveryTierInfo: DeliveryTierInfo?
+    
+    let currency: RetailStoreCurrency?
     
     let fromBasket: Bool
     
@@ -38,9 +40,9 @@ class DeliveryOfferBannerViewModel: ObservableObject {
 
         if let freeFulfilmentMessage, freeFulfilmentMessage.isEmpty == false {
             return freeFulfilmentMessage
-        } else if let freeFrom = freeFrom, deliveryTierInfo.orderMethod?.deliveryTiers == nil {
+        } else if let freeFrom = freeFrom, freeFrom != 0, deliveryTierInfo.orderMethod?.deliveryTiers == nil {
             return Strings.StoresView.DeliveryTiersCustom.freeFrom.localizedFormat(freeFrom.toCurrencyString(using: currency))
-        } else if let freeFrom = freeFrom, let tiers = deliveryTierInfo.orderMethod?.deliveryTiers, tiers.isEmpty {
+        } else if let freeFrom = freeFrom, freeFrom != 0, let tiers = deliveryTierInfo.orderMethod?.deliveryTiers, tiers.isEmpty {
             return Strings.StoresView.DeliveryTiersCustom.freeFrom.localizedFormat(freeFrom.toCurrencyString(using: currency))
         } else if deliveryTierInfo.orderMethod?.deliveryTiers != nil, deliveryTierInfo.orderMethod?.deliveryTiers?.isEmpty == false {
             return deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)
@@ -62,13 +64,14 @@ class DeliveryOfferBannerViewModel: ObservableObject {
         deliveryBannerText != nil
     }
         
-    init(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, fromBasket: Bool) {
+    init(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) {
         self.container = container
         self.deliveryTierInfo = deliveryTierInfo
         self.fromBasket = fromBasket
+        self.currency = currency
     }
     
     func setOrderMethod(_ orderMethod: RetailStoreOrderMethod) {
-        self.deliveryOrderMethod = orderMethod
+        self.selectedDeliveryTierInfo = .init(orderMethod: orderMethod, currency: currency)
     }
 }

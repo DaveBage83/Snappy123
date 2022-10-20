@@ -90,7 +90,7 @@ extension RetailStoreOrderMethod {
         // If no tiers, check if there is a minSpend and that freeFrom is present. We also check if minSpend
         // is greater than freeFrom. If it is, return "From free" String
         } else if let minSpend = minSpend, let freeFrom = freeFrom, freeFrom > 0, minSpend >= freeFrom {
-            return Strings.StoresView.DeliveryTiers.fromFree.localized
+            return Strings.StoresView.DeliveryTiers.freeDelivery.localized
         // Otherwise return cost String
         } else if let cost = cost {
             return cost == 0 ? Strings.StoresView.DeliveryTiers.freeDelivery.localized : Strings.StoresView.DeliveryTiersCustom.cost.localizedFormat(cost.toCurrencyString(using: currency))

@@ -258,7 +258,6 @@
 "storesview.deliverytiers.free" = "Free delivery";
 "storesview.deliverytiers.custom.deliveryfrom" = "From %@ delivery";
 "storesview.deliverytiers.custom.cost" = "%@ delivery";
-"storesview.deliverytiers.fromfree" = "From free";
 "storesview.deliverytiers.custom.freefrom" = "Free delivery from %@";
 "storesview.deliverytiers.title" = "Delivery Fees";
 

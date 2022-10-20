@@ -144,7 +144,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)
         
-        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiers.fromFree.localized)
+        XCTAssertEqual(fromDeliveryCostString, Strings.StoresView.DeliveryTiers.freeDelivery.localized)
     }
     
     func test_whenLowestDeliveryCostNilAndMinSpendNilAndFreeFromPresentAndFreeFromGreaterThan0AndMinSpendGreaterThanOrEqualToFreeFrom_thenReturnExpectedString() {

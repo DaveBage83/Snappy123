@@ -51,6 +51,11 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var showTrackOrderButtonOverride: Bool?
     @Published var mapLoading = false
     @Published var showText = false
+//    var showTrackOrderButton: Bool {
+//        order.orderProgress == 5
+//    }
+    
+    let showTrackOrderButton: Bool
     
     var driverLocation: DriverLocation?
     
@@ -62,6 +67,15 @@ class OrderDetailsViewModel: ObservableObject {
         String(order.id)
     }
 
+    var selectedSlot: String? {
+        if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.estimated?.timeString(storeTimeZone: nil) {
+            return "\(date) | \(time)"
+        } else {
+            return Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized
+        }
+    }
+
+    
     var totalToPay: String {
         order.totalToPay?.toCurrencyString(
             using: order.currency
@@ -130,13 +144,13 @@ class OrderDetailsViewModel: ObservableObject {
         guard let driverTip = initialDriverTip, let driverTipRefundTotal = totalDriverTipRefundValue else { return nil }
         return (driverTip - driverTipRefundTotal).toCurrencyString(using: order.currency)
     }
-    
-    var showTrackOrderButton: Bool {
-        if let showTrackOrderButtonOvveride = showTrackOrderButtonOverride, showTrackOrderButtonOvveride == false {
-            return false
-        }
-        return driverLocation?.delivery?.status == 5
-    }
+//
+//    var showTrackOrderButton: Bool {
+//        if let showTrackOrderButtonOvveride = showTrackOrderButtonOverride, showTrackOrderButtonOvveride == false {
+//            return false
+//        }
+//        return driverLocation?.delivery?.status == 5
+//    }
         
     // In order to get total number of items in the order, we need to take the total from each
     // orderLine and add together
@@ -168,9 +182,10 @@ class OrderDetailsViewModel: ObservableObject {
     
     // MARK: - Init
     
-    init(container: DIContainer, order: PlacedOrder) {
+    init(container: DIContainer, order: PlacedOrder, showTrackOrderButton: Bool) {
         self.container = container
         self.order = order
+        self.showTrackOrderButton = showTrackOrderButton
     }
     
     func setDriverLocation() async throws {

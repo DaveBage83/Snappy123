@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import OSLog
 
 @MainActor
 class MemberDashboardOrdersViewModel: ObservableObject {
@@ -19,25 +20,31 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     
     let container: DIContainer // Not private as we access this to init OrderSummaryCardViewModel from MemberDashboardOrdersView
     let categoriseOrders: Bool
-    private var placedOrders: [PlacedOrder]?
+    var showTrackOrderButton = false
+    private var placedOrders: [PlacedOrderSummary]?
+    @Published var selectedOrder: PlacedOrder?
+    @Published var orderIsLoading = false
+    @Published var tappedOrderId: Int?
     
     private var cancellables = Set<AnyCancellable>()
     
     var orderFetchLimit = Constants.fetchLimitIncrement // Total max number of orders fetched from the API
     
     var allOrdersFetched = false // Set to true once all orders have been retrieved from the API
+    @Published var driverLocation: DriverLocation?
 
     // MARK: - Publishers
     
     @Published var maxDisplayedOrders = Constants.orderDisplayIncrement // Max number of orders we display per order category
-    @Published var placedOrdersFetch: Loadable<[PlacedOrder]?> = .notRequested
+    @Published var placedOrdersFetch: Loadable<[PlacedOrderSummary]?> = .notRequested
+
     @Published var initialOrdersLoading = false
     @Published var moreOrdersLoading = false
     private var moreOrdersRequested = false // Flag stops loading animation after first fetch
     
     // Used to display a set of plaeholder order detail cards while loading
-    var placeholderOrder: PlacedOrder {
-        .init(id: 1, businessOrderId: 1, status: "Sent to store", statusText: "", totalPrice: 1, totalDiscounts: 1, totalSurcharge: 1, totalToPay: 1, platform: "", firstOrder: false, createdAt: "", updatedAt: "", store: .init(id: 1, name: "", originalStoreId: 1, storeLogo: nil, address1: "", address2: "", town: "", postcode: "", telephone: "", latitude: 1, longitude: 1), fulfilmentMethod: .init(name: .collection, processingStatus: "", datetime: .init(requestedDate: "", requestedTime: "", estimated: nil, fulfilled: nil), place: .init(type: .name, name: "", subName: ""), address: nil, driverTip: 1, refund: 1, deliveryCost: 1, driverTipRefunds: nil), paymentMethod: .init(name: "", dateTime: ""), orderLines: [], customer: .init(firstname: "", lastname: ""), discount: nil, surcharges: nil, loyaltyPoints: nil, coupon: nil, currency: .init(currencyCode: "", symbol: "", ratio: 1, symbolChar: "", name: ""), totalOrderValue: 1, totalRefunded: 1)
+    var placeholderOrder: PlacedOrderSummary {
+        .init(id: 1, businessOrderId: 1, store: .init(id: 1, name: "Test Store", originalStoreId: nil, storeLogo: nil, address1: "This is a test address", address2: "This is also a test", town: "NiceTown", postcode: "NE101PW", telephone: "12223445556", latitude: 1, longitude: 1), status: "Sent to store", statusText: "Sent to store", fulfilmentMethod: .init(name: .delivery, processingStatus: "In progress", datetime: .init(requestedDate: "date", requestedTime: "time", estimated: nil, fulfilled: nil), place: nil, address: nil, driverTip: nil, refund: nil, deliveryCost: nil, driverTipRefunds: nil), totalPrice: 1)
     }
     
     // MARK: - Computed properties
@@ -60,7 +67,9 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     // add 3 to the maxDisplayedOrders variable. Once all fetched orders have been displayed, we increase the orderFetchLimit by
     // 10 and hit the endpoint again.
     
-    var allOrders: [PlacedOrder] {
+//    var allOrders: [PlacedOrder] {
+    var allOrders: [PlacedOrderSummary] {
+
         guard let placedOrders = placedOrders else { return [] }
 
         let ordersToReturn = placedOrders.count >= maxDisplayedOrders ? maxDisplayedOrders : placedOrders.count
@@ -68,7 +77,9 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         return Array(placedOrders[0..<ordersToReturn])
     }
     
-    var currentOrders: [PlacedOrder] {
+//    var currentOrders: [PlacedOrder] {
+    var currentOrders: [PlacedOrderSummary] {
+
         // If order progress is less than 1, then it is still in progress
         guard let currentOrders = (placedOrders?.filter { $0.orderProgress < 1 }), currentOrders.count > 0 else { return [] }
         
@@ -78,7 +89,9 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         return Array(currentOrders[0..<ordersToReturn])
     }
     
-    var pastOrders: [PlacedOrder] {
+//    var pastOrders: [PlacedOrder] {
+    var pastOrders: [PlacedOrderSummary] {
+
         // If order progress is 1, then it is a past order i.e. completed
         guard let pastOrders = (placedOrders?.filter { $0.orderProgress == 1 }), pastOrders.count > 0 else {
             return []
@@ -149,6 +162,64 @@ class MemberDashboardOrdersViewModel: ObservableObject {
             self.initialOrdersLoading = false
             self.moreOrdersLoading = false
         }
+    }
+    
+    func getPlacedOrder(businessOrderId: Int) async {
+        orderIsLoading = true
+        tappedOrderId = businessOrderId
+        do {
+            // Set order locally (we need to wait until driver location set
+            // before setting the viewModel's selectedOrder property and triggering
+            // the sheet
+            let order = try await container.services.memberService.getPlacedOrder(businessOrderId: businessOrderId)
+            
+            // Get the driver location
+            await self.getDriverLocationIfOrderIncomplete(orderProgress: order.orderProgress, businessOrderId: businessOrderId)
+                        
+            self.selectedOrder = order
+            orderIsLoading = false
+            tappedOrderId = nil
+        } catch {
+            container.appState.value.errors.append(error)
+            orderIsLoading = false
+            tappedOrderId = nil
+        }
+    }
+    
+    func getDriverLocationIfOrderIncomplete(orderProgress: Double, businessOrderId: Int) async {
+        // We only want to get the driver location if orderProgress is not 1 i.e. not complete
+        if orderProgress != 1 {
+            do {
+                try await setDriverLocation(businessOrderId: businessOrderId)
+                // If delivery status is 5 we want to show the track order button
+                self.showTrackOrderButton = driverLocation?.delivery?.status == 5
+            } catch {
+                // We do not present anything on the UI here as user should
+                // still proceed to view the order details. They just will
+                // not see the driver tracking
+                Logger.member.error("Failed to get driver location")
+            }
+        }
+    }
+    
+    func setDriverLocation(businessOrderId: Int) async throws {
+            do {
+                try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: businessOrderId)
+            } catch {
+                container.appState.value.errors.append(error)
+            }
+    }
+    
+    private func isCurrentOrder(businessOrderId: Int) -> Bool {
+        tappedOrderId == businessOrderId
+    }
+    
+    func currentOrderIsLoading(businessOrderId: Int) -> Bool {
+        orderIsLoading && isCurrentOrder(businessOrderId: businessOrderId)
+    }
+    
+    func disableCard(businessOrderId: Int) -> Bool {
+        orderIsLoading && !currentOrderIsLoading(businessOrderId: businessOrderId)
     }
     
     func onAppearSendEvent() {

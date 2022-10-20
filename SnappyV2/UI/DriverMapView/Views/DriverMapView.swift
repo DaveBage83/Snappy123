@@ -140,19 +140,19 @@ struct DriverMapView: View {
                 }
             }
             
-            if let placedOrder = viewModel.placedOrder {
-                OrderSummaryCard(container: viewModel.container, order: placedOrder, basket: nil, includeNavigation: false)
-                    .padding()
-                    .overlay(GeometryReader { geo in
-                        Text("")
-                            .onAppear {
-                                orderCardHeight = geo.size.height + Constants.OrderCard.heightAdjustmentForPadding
-                                if let orderCardVerticalHeightProportion = orderCardVerticalHeightProportion {
-                                    viewModel.setOrderCardVerticalUsage(to: orderCardVerticalHeightProportion)
-                                }
-                            }
-                    })
-            }
+//            if let placedOrder = viewModel.placedOrder {
+//                OrderSummaryCard(container: viewModel.container, order: placedOrder, basket: nil, includeNavigation: false)
+//                    .padding()
+//                    .overlay(GeometryReader { geo in
+//                        Text("")
+//                            .onAppear {
+//                                orderCardHeight = geo.size.height + Constants.OrderCard.heightAdjustmentForPadding
+//                                if let orderCardVerticalHeightProportion = orderCardVerticalHeightProportion {
+//                                    viewModel.setOrderCardVerticalUsage(to: orderCardVerticalHeightProportion)
+//                                }
+//                            }
+//                    })
+//            }
         }
         .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.DriverMap.title.localized, navigationDismissType: dismissType)
     }

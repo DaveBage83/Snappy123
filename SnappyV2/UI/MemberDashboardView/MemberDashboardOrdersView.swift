@@ -58,32 +58,45 @@ struct MemberDashboardOrdersView: View {
                 if viewModel.currentOrdersPresent {
                     header(OrdersStrings.currentOrders.localized)
                         .padding(.top, Constants.Main.padding)
-                    ForEach(viewModel.currentOrders, id: \.id) { order in
-                        OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
-                    }
+                    orderSummaryCards(orders: viewModel.currentOrders)
                 }
 
                 if viewModel.pastOrdersPresent {
                     header(OrdersStrings.pastOrders.localized)
                         .padding(.top, Constants.Main.padding)
-                    
-                    ForEach(viewModel.pastOrders, id: \.id) { order in
-                        OrderSummaryCard(container: viewModel.container, order: order, basket: nil)
-                    }
+                    orderSummaryCards(orders: viewModel.pastOrders)
                 }
             } else {
-                ForEach(viewModel.allOrders, id: \.id) { order in
-                    OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
-                }
+                orderSummaryCards(orders: viewModel.allOrders)
             }
             
             if viewModel.showViewMoreOrdersView {
                 viewMoreOrdersView
             }
         }
+        .sheet(item: $viewModel.selectedOrder, content: { order in
+            OrderDetailsView(viewModel: .init(container: viewModel.container, order: order, showTrackOrderButton: viewModel.showTrackOrderButton))
+        })
         .withLoadingToast(loading: $viewModel.initialOrdersLoading)
         .onAppear {
             viewModel.onAppearSendEvent()
+        }
+    }
+    
+    @ViewBuilder private func orderSummaryCards(orders: [PlacedOrderSummary]) -> some View {
+        ForEach(orders, id: \.id) { order in
+            Button {
+                Task {
+                   await viewModel.getPlacedOrder(businessOrderId: order.businessOrderId)
+                }
+                
+            } label: {
+                ToastableViewContainer(content: {
+                    OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
+                }, viewModel: .init(container: viewModel.container, isModal: false))
+            }
+            .withLoadingView(isLoading: .constant(viewModel.currentOrderIsLoading(businessOrderId: order.businessOrderId)), color: colorPalette.textGrey1)
+            .disabled(viewModel.disableCard(businessOrderId: order.businessOrderId))
         }
     }
 

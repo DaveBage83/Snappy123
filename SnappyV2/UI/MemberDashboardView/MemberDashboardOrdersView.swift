@@ -94,7 +94,7 @@ struct MemberDashboardOrdersView: View {
             } label: {
                 OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
             }
-            .withLoadingView(isLoading: .constant(viewModel.currentOrderIsLoading(businessOrderId: order.businessOrderId)), color: colorPalette.textGrey1)
+            .withLoadingToast(loading: .constant(viewModel.currentOrderIsLoading(businessOrderId: order.businessOrderId)))
             .disabled(viewModel.disableCard(businessOrderId: order.businessOrderId))
         }
     }

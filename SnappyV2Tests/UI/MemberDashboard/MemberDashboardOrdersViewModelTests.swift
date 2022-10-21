@@ -32,7 +32,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, categoriseOrders: false)
         let expectation = expectation(description: "pastOrdersPresent")
         
-        let placedOrders = [PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedData]
     
         // Odd implementation: Need to check for the registering from a thread that has no
         // other properties to test that it has been reached
@@ -66,7 +66,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, categoriseOrders: false)
         let expectation = expectation(description: "pastOrdersPresent")
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete]
         
         // Odd implementation: Need to check for the registering from a thread that has no
         // other properties to test that it has been reached
@@ -100,7 +100,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, categoriseOrders: false)
         let expectation = expectation(description: "pastOrdersPresent")
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData]
         
         // Odd implementation: Need to check for the registering from a thread that has no
         // other properties to test that it has been reached
@@ -112,8 +112,8 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
                 mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
             {
                 expectation.fulfill()
-                XCTAssertEqual(sut.pastOrders, [PlacedOrder.mockedDataStatusComplete])
-                XCTAssertEqual(sut.currentOrders, [PlacedOrder.mockedData])
+                XCTAssertEqual(sut.pastOrders, [PlacedOrderSummary.mockedDataStatusComplete])
+                XCTAssertEqual(sut.currentOrders, [PlacedOrderSummary.mockedData])
                 XCTAssertEqual(sut.allOrders, placedOrders)
                 XCTAssertTrue(sut.pastOrdersPresent)
                 XCTAssertTrue(sut.currentOrdersPresent)
@@ -134,7 +134,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     func test_whenGetMoreOrdersTapped_givenThatLessThan10AreDisplayed_thenJustAdd3ToMaxDisplayOrders() {
         let sut = makeSUT()
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData,  PlacedOrder.mockedData,  PlacedOrder.mockedData,  PlacedOrder.mockedData,  PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData]
         
         let cancelbag = CancelBag()
         let expectation = expectation(description: "getMoreOrdersTapped")
@@ -158,7 +158,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     func test_whenMaxDisplayedOrdersIsGreaterThanPlacedOrdersCount_thenIncreaseFetchLimitBy10() {
         let sut = makeSUT()
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData]
         
         let cancelbag = CancelBag()
         let expectation = expectation(description: "getMoreOrdersTapped")
@@ -196,7 +196,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     func test_whenPlacedOrdersIsLessThanOrEqualToMaxDisplayed_thenAllOrdersFetchedIsTrue() {
         let sut = makeSUT()
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData]
         
         let cancelbag = CancelBag()
         let expectation = expectation(description: "getMoreOrdersTapped")

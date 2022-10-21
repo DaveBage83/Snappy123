@@ -187,10 +187,8 @@ protocol MemberServiceProtocol {
     func saveNewCard(token: String) async throws
     func deleteCard(id: String) async throws
     
-//    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrderSummary]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
 
-//    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     func getPlacedOrder(businessOrderId: Int) async throws -> PlacedOrder
 
     func getDriverSessionSettings() async throws -> DriverSessionSettings
@@ -883,7 +881,6 @@ struct UserService: MemberServiceProtocol {
     }
     
     // Does not throw - error returned via the LoadableSubject
-//    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrderSummary]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
 
         let cancelBag = CancelBag()
@@ -1264,10 +1261,7 @@ struct StubUserService: MemberServiceProtocol {
     
     func deleteCard(id: String) async throws { }
     
-//    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrderSummary]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
-
-//    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async { }
 
     func getPlacedOrder(businessOrderId: Int) async throws -> PlacedOrder {
         .init(id: 123, businessOrderId: 1, status: "", statusText: "", totalPrice: 1, totalDiscounts: nil, totalSurcharge: nil, totalToPay: nil, platform: "", firstOrder: false, createdAt: "", updatedAt: "", store: .init(id: 1, name: "", originalStoreId: nil, storeLogo: nil, address1: "", address2: nil, town: "", postcode: "", telephone: nil, latitude: 1, longitude: 1), fulfilmentMethod: .init(name: .delivery, processingStatus: "", datetime: .init(requestedDate: nil, requestedTime: nil, estimated: nil, fulfilled: nil), place: nil, address: nil, driverTip: nil, refund: nil, deliveryCost: nil, driverTipRefunds: nil), paymentMethod: .init(name: "", dateTime: ""), orderLines: [], customer: .init(firstname: "", lastname: ""), discount: nil, surcharges: nil, loyaltyPoints: nil, coupon: nil, currency: .init(currencyCode: "", symbol: "", ratio: 1, symbolChar: "", name: ""), totalOrderValue: 1, totalRefunded: 1)

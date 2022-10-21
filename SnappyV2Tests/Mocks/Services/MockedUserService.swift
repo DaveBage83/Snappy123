@@ -133,12 +133,13 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         register(.deleteCard(id: id))
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrderSummary]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
     }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async {
+    func getPlacedOrder(businessOrderId: Int) async -> PlacedOrder {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
+        return PlacedOrder.mockedData
     }
     
     func getDriverSessionSettings() async throws -> DriverSessionSettings {

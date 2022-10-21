@@ -53,6 +53,10 @@ class DriverMapViewModel: ObservableObject {
     var placedOrder: PlacedOrder? {
         mapParameters.placedOrder
     }
+    
+    var placedOrderSummary: PlacedOrderSummary? {
+        placedOrder?.mapToPlacedOrderSummary()
+    }
 
     private var storeContactNumber: String? {
         var rawTelephone: String?

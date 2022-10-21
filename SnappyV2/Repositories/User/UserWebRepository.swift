@@ -63,7 +63,6 @@ protocol UserWebRepositoryProtocol: WebRepository {
         status: String?,
         page: Int?,
         limit: Int?
-//    ) -> AnyPublisher<[PlacedOrder]?, Error>
     ) -> AnyPublisher<[PlacedOrderSummary]?, Error>
 
     func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error>
@@ -605,7 +604,6 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         status: String?,
         page: Int?,
         limit: Int?
-//    ) -> AnyPublisher<[PlacedOrder]?, Error> {
     ) -> AnyPublisher<[PlacedOrderSummary]?, Error> {
 
         // required parameters

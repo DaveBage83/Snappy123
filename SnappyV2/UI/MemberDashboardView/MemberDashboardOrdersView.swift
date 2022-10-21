@@ -75,7 +75,9 @@ struct MemberDashboardOrdersView: View {
             }
         }
         .sheet(item: $viewModel.selectedOrder, content: { order in
-            OrderDetailsView(viewModel: .init(container: viewModel.container, order: order, showTrackOrderButton: viewModel.showTrackOrderButton))
+            ToastableViewContainer(content: {
+                OrderDetailsView(viewModel: .init(container: viewModel.container, order: order, showTrackOrderButton: viewModel.showTrackOrderButton))
+            }, viewModel: .init(container: viewModel.container, isModal: false))
         })
         .withLoadingToast(loading: $viewModel.initialOrdersLoading)
         .onAppear {
@@ -87,13 +89,10 @@ struct MemberDashboardOrdersView: View {
         ForEach(orders, id: \.id) { order in
             Button {
                 Task {
-                   await viewModel.getPlacedOrder(businessOrderId: order.businessOrderId)
+                    await viewModel.getPlacedOrder(businessOrderId: order.businessOrderId)
                 }
-                
             } label: {
-                ToastableViewContainer(content: {
-                    OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
-                }, viewModel: .init(container: viewModel.container, isModal: false))
+                OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
             }
             .withLoadingView(isLoading: .constant(viewModel.currentOrderIsLoading(businessOrderId: order.businessOrderId)), color: colorPalette.textGrey1)
             .disabled(viewModel.disableCard(businessOrderId: order.businessOrderId))

@@ -67,7 +67,6 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     // add 3 to the maxDisplayedOrders variable. Once all fetched orders have been displayed, we increase the orderFetchLimit by
     // 10 and hit the endpoint again.
     
-//    var allOrders: [PlacedOrder] {
     var allOrders: [PlacedOrderSummary] {
 
         guard let placedOrders = placedOrders else { return [] }
@@ -77,7 +76,6 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         return Array(placedOrders[0..<ordersToReturn])
     }
     
-//    var currentOrders: [PlacedOrder] {
     var currentOrders: [PlacedOrderSummary] {
 
         // If order progress is less than 1, then it is still in progress
@@ -89,7 +87,6 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         return Array(currentOrders[0..<ordersToReturn])
     }
     
-//    var pastOrders: [PlacedOrder] {
     var pastOrders: [PlacedOrderSummary] {
 
         // If order progress is 1, then it is a past order i.e. completed

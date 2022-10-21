@@ -51,10 +51,7 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var showTrackOrderButtonOverride: Bool?
     @Published var mapLoading = false
     @Published var showText = false
-//    var showTrackOrderButton: Bool {
-//        order.orderProgress == 5
-//    }
-    
+
     let showTrackOrderButton: Bool
     
     var driverLocation: DriverLocation?
@@ -144,13 +141,6 @@ class OrderDetailsViewModel: ObservableObject {
         guard let driverTip = initialDriverTip, let driverTipRefundTotal = totalDriverTipRefundValue else { return nil }
         return (driverTip - driverTipRefundTotal).toCurrencyString(using: order.currency)
     }
-//
-//    var showTrackOrderButton: Bool {
-//        if let showTrackOrderButtonOvveride = showTrackOrderButtonOverride, showTrackOrderButtonOvveride == false {
-//            return false
-//        }
-//        return driverLocation?.delivery?.status == 5
-//    }
         
     // In order to get total number of items in the order, we need to take the total from each
     // orderLine and add together

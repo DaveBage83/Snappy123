@@ -1008,6 +1008,28 @@ extension CardDeleteResponse {
     static let mockedData = CardDeleteResponse(success: true)
 }
 
+extension PlacedOrderSummary {
+    static let mockedData = PlacedOrderSummary(
+        id: 1963404,
+        businessOrderId: 2106,
+        store: PlacedOrderStore.mockedData,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        totalPrice: 11.25)
+}
+
+extension PlacedOrderSummary {
+    static let mockedDataStatusComplete = PlacedOrderSummary(
+        id: 1963404,
+        businessOrderId: 2106,
+        store: PlacedOrderStore.mockedData,
+        status: "delivered",
+        statusText: "delivered",
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        totalPrice: 11.25)
+}
+
 extension PlacedOrder {
     
     static let mockedData = PlacedOrder(

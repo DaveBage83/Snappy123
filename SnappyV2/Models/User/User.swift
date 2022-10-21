@@ -158,6 +158,7 @@ struct PlacedOrderSummary: Codable, Equatable {
 }
 
 extension PlacedOrder {
+    /// Maps a full PlacedOrder object to the more concise PlacedOrderSummary
     func mapToPlacedOrderSummary() -> PlacedOrderSummary {
         .init(
             id: id,

@@ -173,7 +173,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
             // Get the driver location
             await self.getDriverLocationIfOrderIncomplete(orderProgress: order.orderProgress, businessOrderId: businessOrderId)
                         
-            self.selectedOrder = order
+            selectedOrder = order
             orderIsLoading = false
             tappedOrderId = nil
         } catch {
@@ -183,7 +183,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         }
     }
     
-    func getDriverLocationIfOrderIncomplete(orderProgress: Double, businessOrderId: Int) async {
+    private func getDriverLocationIfOrderIncomplete(orderProgress: Double, businessOrderId: Int) async {
         // We only want to get the driver location if orderProgress is not 1 i.e. not complete
         if orderProgress != 1 {
             do {

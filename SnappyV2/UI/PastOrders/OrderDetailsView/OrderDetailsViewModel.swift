@@ -48,11 +48,11 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var showDetailsView = false
     @Published var showDriverMap = false
     @Published var showMapError = false
-    @Published var showTrackOrderButtonOverride: Bool?
+    @Published var showTrackOrderButtonOverride = false
     @Published var mapLoading = false
     @Published var showText = false
 
-    let showTrackOrderButton: Bool
+    private let showTrackOrderButton: Bool
     
     var driverLocation: DriverLocation?
     
@@ -64,6 +64,10 @@ class OrderDetailsViewModel: ObservableObject {
         String(order.id)
     }
 
+    var displayTrackOrderButton: Bool {
+        showTrackOrderButton && showTrackOrderButtonOverride == false
+    }
+    
     var selectedSlot: String? {
         if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.estimated?.timeString(storeTimeZone: nil) {
             return "\(date) | \(time)"
@@ -72,7 +76,6 @@ class OrderDetailsViewModel: ObservableObject {
         }
     }
 
-    
     var totalToPay: String {
         order.totalToPay?.toCurrencyString(
             using: order.currency

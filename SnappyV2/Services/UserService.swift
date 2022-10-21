@@ -908,8 +908,7 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
-    // Does not throw - error returned via the LoadableSubject
-    func getPlacedOrder(businessOrderId: Int) async throws  -> PlacedOrder {
+    func getPlacedOrder(businessOrderId: Int) async throws -> PlacedOrder {
         guard appState.value.userData.memberProfile != nil else {
             throw UserServiceError.memberRequiredToBeSignedIn
         }
@@ -924,9 +923,7 @@ struct UserService: MemberServiceProtocol {
         } catch {
             // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
             // error over subsequent internal errors
-            do {
-                let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
-            } catch {}
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
             throw error
         }
     }

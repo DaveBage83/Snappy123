@@ -11,6 +11,9 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, MemberServiceProtocol {
+    
+    var getPlacedOrderResult = PlacedOrder.mockedData
+    
     enum Action: Equatable {
         case login(email: String, password: String, atCheckout: Bool)
         case login(email: String, oneTimePassword: String, atCheckout: Bool)
@@ -139,9 +142,9 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     
     func getPlacedOrder(businessOrderId: Int) async -> PlacedOrder {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
-        return PlacedOrder.mockedData
+        return getPlacedOrderResult
     }
-    
+
     func getDriverSessionSettings() async throws -> DriverSessionSettings {
         register(.getDriverSessionSettings)
         return DriverSessionSettings.mockedData

@@ -75,7 +75,7 @@ struct OrderDetailsView: View {
                     
                     orderTotalizerView
                     
-                    if viewModel.showTrackOrderButton {
+                    if viewModel.displayTrackOrderButton {
                         SnappyButton(
                             container: viewModel.container,
                             type: .primary,

@@ -349,7 +349,7 @@ struct BasketView: View {
                     if fee.text.lowercased() == "delivery" {
                             listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                             .frame(width: mainWindowSize.width - Constants.DeliveryBanner.widthAdjustment)
-                            .withDeliveryOffer(deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: true)
+                            .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: true)
                     } else {
                         listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                     }

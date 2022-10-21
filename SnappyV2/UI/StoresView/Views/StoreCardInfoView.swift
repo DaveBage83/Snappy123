@@ -49,7 +49,7 @@ struct StoreCardInfoView: View {
     // MARK: - Main view
     var body: some View {
         mainBody
-            .withDeliveryOffer(deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: false)
+            .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: false)
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .withLoadingToast(loading: $isLoading)

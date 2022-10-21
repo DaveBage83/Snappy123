@@ -462,8 +462,8 @@ struct DeliveryOfferBanner: ViewModifier {
 }
 
 extension View {
-    func withDeliveryOffer(deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
-        modifier(DeliveryOfferBanner(viewModel: .init(container: .preview, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
+    func withDeliveryOffer(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
+        modifier(DeliveryOfferBanner(viewModel: .init(container: container, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
     }
 }
 

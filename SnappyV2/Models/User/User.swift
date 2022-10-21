@@ -157,20 +157,6 @@ struct PlacedOrderSummary: Codable, Equatable {
     let totalPrice: Double
 }
 
-extension PlacedOrder {
-    /// Maps a full PlacedOrder object to the more concise PlacedOrderSummary
-    func mapToPlacedOrderSummary() -> PlacedOrderSummary {
-        .init(
-            id: id,
-            businessOrderId: businessOrderId,
-            store: store,
-            status: status,
-            statusText: statusText,
-            fulfilmentMethod: fulfilmentMethod,
-            totalPrice: totalPrice)
-    }
-}
-
 struct PlacedOrderStore: Codable, Equatable {
     let id: Int
     let name: String

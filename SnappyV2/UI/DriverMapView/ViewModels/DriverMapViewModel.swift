@@ -55,7 +55,10 @@ class DriverMapViewModel: ObservableObject {
     }
     
     var placedOrderSummary: PlacedOrderSummary? {
-        placedOrder?.mapToPlacedOrderSummary()
+        if let placedOrder {
+            return mapToPlacedOrderSummary(placedOrder)
+        }
+        return nil
     }
 
     private var storeContactNumber: String? {
@@ -68,6 +71,17 @@ class DriverMapViewModel: ObservableObject {
         // strip non digit characters
         guard let rawTelephone = rawTelephone else { return nil }
         return rawTelephone.toTelephoneString()
+    }
+    
+    private func mapToPlacedOrderSummary(_ placedOrder: PlacedOrder) -> PlacedOrderSummary {
+        .init(
+            id: placedOrder.id,
+            businessOrderId: placedOrder.businessOrderId,
+            store: placedOrder.store,
+            status: placedOrder.status,
+            statusText: placedOrder.statusText,
+            fulfilmentMethod: placedOrder.fulfilmentMethod,
+            totalPrice: placedOrder.totalPrice)
     }
     
     init(container: DIContainer, mapParameters: DriverLocationMapParameters, dismissDriverMapHandler: @escaping () -> Void) {

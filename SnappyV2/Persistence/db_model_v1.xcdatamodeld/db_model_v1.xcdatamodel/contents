@@ -229,6 +229,11 @@
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="postcode" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="DeliveryTier" representedClassName="DeliveryTierMO" syncable="YES" codeGenerationType="class">
+        <attribute name="deliveryFee" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="minBasketSpend" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="orderMethod" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreOrderMethod" inverseName="deliveryTiers" inverseEntity="RetailStoreOrderMethod"/>
+    </entity>
     <entity name="FoundAddress" representedClassName="FoundAddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -568,9 +573,13 @@
     <entity name="RetailStoreOrderMethod" representedClassName="RetailStoreOrderMethodMO" syncable="YES" codeGenerationType="class">
         <attribute name="cost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="earliestTime" optional="YES" attributeType="String"/>
+        <attribute name="freeFrom" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="NO"/>
+        <attribute name="freeFulfilmentMessage" optional="YES" attributeType="String"/>
         <attribute name="fulfilmentIn" optional="YES" attributeType="String"/>
+        <attribute name="minSpend" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="status" optional="YES" attributeType="String"/>
+        <relationship name="deliveryTiers" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="DeliveryTier" inverseName="orderMethod" inverseEntity="DeliveryTier"/>
         <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="orderMethods" inverseEntity="RetailStore"/>
         <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="orderMethods" inverseEntity="RetailStoreDetails"/>
     </entity>

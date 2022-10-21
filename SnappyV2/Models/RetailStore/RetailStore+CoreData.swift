@@ -27,6 +27,7 @@ extension PaymentMethodGatewayMO: ManagedEntity { }
 extension RetailStoreTipMO: ManagedEntity { }
 extension AllowedMarketingChannelMO: ManagedEntity { }
 extension RetailStoreCustomerMO: ManagedEntity { }
+extension DeliveryTierMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -229,7 +230,6 @@ extension RetailStore {
         
         return store
     }
-    
 }
 
 extension RetailStoreOrderMethod {
@@ -256,12 +256,27 @@ extension RetailStoreOrderMethod {
             status = .open
         }
         
+        var deliveryTiers = [DeliveryTier]()
+        
+        if
+            let storedDeliveryTiers = managedObject.deliveryTiers,
+            let deliveryTiersArray = storedDeliveryTiers.array as? [DeliveryTierMO]
+        {
+            deliveryTiersArray.forEach { tier in
+                deliveryTiers.append(.init(minBasketSpend: tier.minBasketSpend, deliveryFee: tier.deliveryFee))
+            }
+        }
+        
         self.init(
             name: name,
             earliestTime: managedObject.earliestTime,
             status: status,
             cost: managedObject.cost?.doubleValue,
-            fulfilmentIn: managedObject.fulfilmentIn
+            fulfilmentIn: managedObject.fulfilmentIn,
+            freeFulfilmentMessage: managedObject.freeFulfilmentMessage,
+            deliveryTiers: deliveryTiers.isEmpty ? nil : deliveryTiers,
+            freeFrom: managedObject.freeFrom?.doubleValue,
+            minSpend: managedObject.minSpend?.doubleValue
         )
     }
     
@@ -278,10 +293,41 @@ extension RetailStoreOrderMethod {
             orderMethod.cost = NSNumber(value: cost)
         }
         orderMethod.fulfilmentIn = fulfilmentIn
+        orderMethod.freeFulfilmentMessage = freeFulfilmentMessage
+        
+        if let freeFrom = freeFrom {
+            orderMethod.freeFrom = NSNumber(value: freeFrom)
+        }
+        
+        if
+            let deliveryTiers = deliveryTiers,
+            deliveryTiers.count > 0
+        {
+            orderMethod.deliveryTiers = NSOrderedSet(array: deliveryTiers.compactMap({ tier -> DeliveryTierMO? in
+                return tier.store(in: context)
+            }))
+        }
+        
+        if let minSpend = minSpend {
+            orderMethod.minSpend = NSNumber(value: minSpend)
+        }
         
         return orderMethod
     }
-    
+}
+
+extension DeliveryTier {
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> DeliveryTierMO? {
+        
+        guard let tier = DeliveryTierMO.insertNew(in: context)
+            else { return nil }
+
+        tier.deliveryFee = deliveryFee
+        tier.minBasketSpend = minBasketSpend
+        
+        return tier
+    }
 }
 
 extension RetailStoreProductType {

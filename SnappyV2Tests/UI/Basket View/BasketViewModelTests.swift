@@ -845,7 +845,47 @@ class BasketViewModelTests: XCTestCase {
         sut.selectedStore = RetailStoreDetails.mockedDataWithClosedCollectionStatus
         XCTAssertFalse(sut.showCheckoutButton)
     }
-
+    
+    func test_whenSelectedStoreDeliveryTiersPresent_thenDeliveryTiersPresentTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedDataWithDeliveryTiers
+        XCTAssertTrue(sut.hasTiers)
+    }
+    
+    func test_whenNoSelectedStore_thenDeliveryTiersPresentFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        XCTAssertFalse(sut.hasTiers)
+    }
+    
+    func test_whenSelectedStoreDeliveryTiersEmpty_thenDeliveryTiersPresentFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedDataWithEmptyDeliveryTiers
+        XCTAssertFalse(sut.hasTiers)
+    }
+    
+    func test_whenSelectedStoreDeliveryTiersNotPresent_thenDeliveryTiersPresentFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedData
+        XCTAssertFalse(sut.hasTiers)
+    }
+    
+    func test_whenSelectedStoreCurrencyPresent_thenCurrencyPopulated() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedData
+        XCTAssertEqual(sut.currency, RetailStoreCurrency.mockedGBPData)
+    }
+    
+    func test_whenNoSelectedStore_thenCurrencyNil() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        XCTAssertNil(sut.currency)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), runMemoryLeakTracking: Bool = true) -> BasketViewModel {
         let sut = BasketViewModel(container: container)
         

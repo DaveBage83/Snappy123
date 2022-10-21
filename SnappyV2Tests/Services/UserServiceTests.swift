@@ -2627,7 +2627,7 @@ final class GetPastOrdersTests: UserServiceTests {
     // MARK: - func getPastOrders(pastOrders:dateFrom:dateTo:status:page:limit:)
     
     func test_givenNoParams_whenCallingGetPastOrders_thenSuccessful() async {
-        let placedOrders = [PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedData]
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
@@ -2641,7 +2641,7 @@ final class GetPastOrdersTests: UserServiceTests {
         mockedWebRepo.getPastOrdersResponse = .success(placedOrders)
 
         let exp = expectation(description: #function)
-        let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
+        let orders = BindingWithPublisher(value: Loadable<[PlacedOrderSummary]?>.notRequested)
         
         orders.updatesRecorder
             .sink { updates in
@@ -2661,7 +2661,7 @@ final class GetPastOrdersTests: UserServiceTests {
     }
     
     func test_givenParams_whenCallingGetPastOrders_thenSuccessful() async {
-        let placedOrders = [PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedData]
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
@@ -2681,7 +2681,7 @@ final class GetPastOrdersTests: UserServiceTests {
         mockedWebRepo.getPastOrdersResponse = .success(placedOrders)
 
         let exp = expectation(description: #function)
-        let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
+        let orders = BindingWithPublisher(value: Loadable<[PlacedOrderSummary]?>.notRequested)
 
         orders.updatesRecorder
             .sink { updates in
@@ -2717,7 +2717,7 @@ final class GetPastOrdersTests: UserServiceTests {
         mockedWebRepo.getPastOrdersResponse = .failure(networkError)
         
         let exp = expectation(description: #function)
-        let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
+        let orders = BindingWithPublisher(value: Loadable<[PlacedOrderSummary]?>.notRequested)
 
         orders.updatesRecorder
             .sink { updates in
@@ -2757,26 +2757,14 @@ final class GetPlacedOrderTests: UserServiceTests {
 
         mockedWebRepo.getPlacedOrderDetailsResponse = .success(placedOrder)
         
-        let exp = expectation(description: #function)
-        let order = BindingWithPublisher(value: Loadable<PlacedOrder>.notRequested)
-        
-        order.updatesRecorder
-            .sink { updates in
-                XCTAssertEqual(updates, [
-                    .notRequested,
-                    .isLoading(last: nil, cancelBag: CancelBag()),
-                    .loaded(placedOrder)
-                ])
-                self.mockedWebRepo.verify()
-                // should still check no db operation
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-        
-        await sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            let result = try await sut.getPlacedOrder(businessOrderId: 123)
+            XCTAssertEqual(result, placedOrder)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+        } catch {
+            XCTFail("Failed to get order: \(error)")
+        }
     }
     
     func test_whenNetworkError_thenReturnError() async {
@@ -2792,27 +2780,15 @@ final class GetPlacedOrderTests: UserServiceTests {
         // Configuring responses from repositories
 
         mockedWebRepo.getPlacedOrderDetailsResponse = .failure(networkError)
-        
-        let exp = expectation(description: #function)
-        let order = BindingWithPublisher(value: Loadable<PlacedOrder>.notRequested)
 
-        order.updatesRecorder
-            .sink { updates in
-                XCTAssertEqual(updates, [
-                    .notRequested,
-                    .isLoading(last: nil, cancelBag: CancelBag()),
-                    .failed(networkError)
-                ])
-                self.mockedWebRepo.verify()
-                // should still check no db operation
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-        
-        await sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            let _ = try await sut.getPlacedOrder(businessOrderId: 123)
+            XCTFail("Unintentionally passed getPlacedOrder async func")
+        } catch {
+            XCTAssertEqual(error as NSError, networkError)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+        }
     }
 }
 

@@ -63,7 +63,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
         status: String?,
         page: Int?,
         limit: Int?
-    ) -> AnyPublisher<[PlacedOrder]?, Error>
+    ) -> AnyPublisher<[PlacedOrderSummary]?, Error>
+
     func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error>
     func getDriverSessionSettings(withKnownV1SessionToken: String?) async throws -> DriverSessionSettings
     func requestMobileVerificationCode() async throws -> RequestMobileVerificationCodeResult
@@ -603,7 +604,8 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         status: String?,
         page: Int?,
         limit: Int?
-    ) -> AnyPublisher<[PlacedOrder]?, Error> {
+    ) -> AnyPublisher<[PlacedOrderSummary]?, Error> {
+
         // required parameters
         var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id

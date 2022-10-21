@@ -57,12 +57,7 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         container.appState.value.userData.searchResult = .loaded(RetailStoresSearch.mockedData)
         
-        do {
-            try await sut.repeatOrderTapped()
-            
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
+        await sut.repeatOrderTapped()
         
         container.services.verify(as: .retailStore)
     }
@@ -75,11 +70,7 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         container.appState.value.userData.searchResult = .loaded(RetailStoresSearch.mockedData)
         
-        do {
-            try await sut.repeatOrderTapped()
-        } catch {
-            XCTFail("Error thrown when setDeliveryAddress should silently fail")
-        }
+        await sut.repeatOrderTapped()
         
         container.services.verify(as: .basket)
     }
@@ -177,16 +168,9 @@ class OrderDetailsViewModelTests: XCTestCase {
         let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
         sut.driverLocation = DriverLocation(orderId: 123, pusher: nil, store: nil, delivery: OrderDeliveryLocationAndStatus(latitude: 1, longitude: 1, status: 5), driver: nil)
         sut.showTrackOrderButtonOverride = false
-        XCTAssertFalse(sut.showTrackOrderButton)
+        XCTAssertFalse(sut.displayTrackOrderButton)
     }
-    
-    func test_whenDriverStatusIs5AndShowTrackOrderButtonOverrideIsFalse_thenShowTrackOrderButtonIsTrue() {
-        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
-        sut.driverLocation = DriverLocation(orderId: 123, pusher: nil, store: nil, delivery: OrderDeliveryLocationAndStatus(latitude: 1, longitude: 1, status: 5), driver: nil)
-        
-        XCTAssertTrue(sut.showTrackOrderButton)
-    }
-    
+
     func test_whenSetDriverLocationTriggered_thenDriverLocationCalled() async {
         let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
         let expectedDriverLocation = DriverLocation.mockedDataEnRoute
@@ -208,9 +192,8 @@ class OrderDetailsViewModelTests: XCTestCase {
     }
     
     func test_whenDisplayDriverMapTriggered_thenDriverMapDisplayed() async {
-        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData, showTrackOrderButton: true)
         sut.driverLocation = DriverLocation.mockedDataEnRoute
-        
         await sut.displayDriverMap()
         XCTAssertTrue(sut.showDriverMap)
     }
@@ -220,7 +203,8 @@ class OrderDetailsViewModelTests: XCTestCase {
         sut.driverMapDismissAction()
         
         XCTAssertFalse(sut.showDriverMap)
-        XCTAssertEqual(sut.showTrackOrderButtonOverride, false)
+        XCTAssertFalse(sut.showTrackOrderButtonOverride)
+        XCTAssertFalse(sut.displayTrackOrderButton)
 	}
 
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
@@ -269,8 +253,18 @@ class OrderDetailsViewModelTests: XCTestCase {
         XCTAssertNil(sut.finalDriverTip)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {
-        let sut = OrderDetailsViewModel(container: container, order: placedOrder)
+    func test_whenSlotSelected_thenSelectedSlotCorrectlyFormatted() {
+        let sut = makeSUT(placedOrder: .mockedData)
+        XCTAssertEqual(sut.selectedSlot, "20-Sep | 3:00 pm")
+    }
+    
+    func test_whenNoSlotSelected_thenSelectedSlotReturnsCorrectString() {
+        let sut = makeSUT(placedOrder: .mockedDataNoSlot)
+        XCTAssertEqual(sut.selectedSlot, Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized)
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder, showTrackOrderButton: Bool = false) -> OrderDetailsViewModel {
+        let sut = OrderDetailsViewModel(container: container, order: placedOrder, showTrackOrderButton: showTrackOrderButton)
         
         trackForMemoryLeaks(sut)
         return sut

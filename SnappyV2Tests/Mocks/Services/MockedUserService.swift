@@ -11,6 +11,9 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, MemberServiceProtocol {
+    
+    var getPlacedOrderResult = PlacedOrder.mockedData
+    
     enum Action: Equatable {
         case login(email: String, password: String, atCheckout: Bool)
         case login(email: String, oneTimePassword: String, atCheckout: Bool)
@@ -133,14 +136,15 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         register(.deleteCard(id: id))
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrderSummary]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
     }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async {
+    func getPlacedOrder(businessOrderId: Int) async -> PlacedOrder {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
+        return getPlacedOrderResult
     }
-    
+
     func getDriverSessionSettings() async throws -> DriverSessionSettings {
         register(.getDriverSessionSettings)
         return DriverSessionSettings.mockedData

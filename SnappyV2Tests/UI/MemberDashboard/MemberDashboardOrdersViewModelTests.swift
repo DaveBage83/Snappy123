@@ -32,7 +32,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, categoriseOrders: false)
         let expectation = expectation(description: "pastOrdersPresent")
         
-        let placedOrders = [PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedData]
     
         // Odd implementation: Need to check for the registering from a thread that has no
         // other properties to test that it has been reached
@@ -66,7 +66,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, categoriseOrders: false)
         let expectation = expectation(description: "pastOrdersPresent")
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete]
         
         // Odd implementation: Need to check for the registering from a thread that has no
         // other properties to test that it has been reached
@@ -100,7 +100,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, categoriseOrders: false)
         let expectation = expectation(description: "pastOrdersPresent")
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData]
         
         // Odd implementation: Need to check for the registering from a thread that has no
         // other properties to test that it has been reached
@@ -112,8 +112,8 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
                 mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
             {
                 expectation.fulfill()
-                XCTAssertEqual(sut.pastOrders, [PlacedOrder.mockedDataStatusComplete])
-                XCTAssertEqual(sut.currentOrders, [PlacedOrder.mockedData])
+                XCTAssertEqual(sut.pastOrders, [PlacedOrderSummary.mockedDataStatusComplete])
+                XCTAssertEqual(sut.currentOrders, [PlacedOrderSummary.mockedData])
                 XCTAssertEqual(sut.allOrders, placedOrders)
                 XCTAssertTrue(sut.pastOrdersPresent)
                 XCTAssertTrue(sut.currentOrdersPresent)
@@ -134,7 +134,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     func test_whenGetMoreOrdersTapped_givenThatLessThan10AreDisplayed_thenJustAdd3ToMaxDisplayOrders() {
         let sut = makeSUT()
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData,  PlacedOrder.mockedData,  PlacedOrder.mockedData,  PlacedOrder.mockedData,  PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData,  PlacedOrderSummary.mockedData]
         
         let cancelbag = CancelBag()
         let expectation = expectation(description: "getMoreOrdersTapped")
@@ -158,7 +158,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     func test_whenMaxDisplayedOrdersIsGreaterThanPlacedOrdersCount_thenIncreaseFetchLimitBy10() {
         let sut = makeSUT()
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData, PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData, PlacedOrderSummary.mockedData]
         
         let cancelbag = CancelBag()
         let expectation = expectation(description: "getMoreOrdersTapped")
@@ -196,7 +196,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     func test_whenPlacedOrdersIsLessThanOrEqualToMaxDisplayed_thenAllOrdersFetchedIsTrue() {
         let sut = makeSUT()
         
-        let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData]
+        let placedOrders = [PlacedOrderSummary.mockedDataStatusComplete, PlacedOrderSummary.mockedData]
         
         let cancelbag = CancelBag()
         let expectation = expectation(description: "getMoreOrdersTapped")
@@ -226,10 +226,108 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), categoriseOrders: Bool = false) -> MemberDashboardOrdersViewModel {
+    func test_whenGetPlacedOrderCalled_givenOrderProgressIs1_thenOrderRetrievedButDriverLocationNotSet() async {
+                
+        var userService = MockedUserService(expected: [.getPlacedOrder(businessOrderId: 123), .getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: Optional(10))])
+        let returnedOrder = PlacedOrder.mockedDataStatusComplete
+        userService.getPlacedOrderResult = returnedOrder
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: userService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container, disableMemoryTest: true)
+        
+        await sut.getPlacedOrder(businessOrderId: 123)
+        
+        XCTAssertEqual(sut.selectedOrder, returnedOrder)
+        services.verify(as: .member)
+    }
+    
+    func test_whenGetPlacedOrderCalled_givenOrderProgressIsNot1AndDriverEnRoute_thenOrderRetrievedButDriverLocationSetAndTrackOrderButtonShown() async {
+                
+        let userService = MockedUserService(expected: [.getPlacedOrder(businessOrderId: 123), .getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: Optional(10))])
+        let checkoutService = MockedCheckoutService(expected: [.getDriverLocation(businessOrderId: 123)])
+        let returnedOrder = PlacedOrder.mockedData
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: userService,
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container, disableMemoryTest: true)
+        
+        await sut.getPlacedOrder(businessOrderId: 123)
+        
+        XCTAssertEqual(sut.selectedOrder, returnedOrder)
+        services.verify(as: .member)
+        services.verify(as: .checkout)
+        XCTAssertTrue(sut.showTrackOrderButton)
+    }
+    
+    func test_whenGetPlacedOrderCalled_givenOrderProgressIsNot1AndDriverNotEnRoute_thenOrderRetrievedButDriverLocationSetAndTrackOrderButtonShown() async {
+                
+        let userService = MockedUserService(expected: [.getPlacedOrder(businessOrderId: 123), .getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: Optional(10))])
+        let checkoutService = MockedCheckoutService(expected: [.getDriverLocation(businessOrderId: 123)])
+        checkoutService.driverLocationResult = .mockedDataDelivered
+        let returnedOrder = PlacedOrder.mockedData
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: userService,
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container, disableMemoryTest: true)
+        
+        await sut.getPlacedOrder(businessOrderId: 123)
+        
+        XCTAssertEqual(sut.selectedOrder, returnedOrder)
+        services.verify(as: .member)
+        services.verify(as: .checkout)
+        XCTAssertFalse(sut.showTrackOrderButton)
+    }
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), categoriseOrders: Bool = false, disableMemoryTest: Bool = false) -> MemberDashboardOrdersViewModel {
         let sut = MemberDashboardOrdersViewModel(container: container, categoriseOrders: categoriseOrders)
         
-        trackForMemoryLeaks(sut)
+        #warning("Check again when upgrading xcode - may not be necessary")
+        if disableMemoryTest == false {
+            trackForMemoryLeaks(sut)
+        }
+        
         return sut
     }
 }

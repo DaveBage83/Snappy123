@@ -79,7 +79,7 @@ struct OrderSummaryCard: View {
     let includeNavigation: Bool
     let includeAddress: Bool
     
-    init(container: DIContainer, order: PlacedOrder?, basket: Basket?, includeNavigation: Bool = true, includeAddress: Bool = true) {
+    init(container: DIContainer, order: PlacedOrderSummary?, basket: Basket?, includeNavigation: Bool = true, includeAddress: Bool = true) {
         self._viewModel = .init(wrappedValue: .init(container: container, order: order, basket: basket))
         self.includeNavigation = includeNavigation
         self.includeAddress = includeAddress
@@ -163,9 +163,12 @@ struct OrderSummaryCard: View {
             orderTotal
             Spacer()
             if includeNavigation {
-                if let order = viewModel.order {
-                    OrderSummaryCardDetailsButton(viewModel: .init(container: viewModel.container, order: order), orderSummaryCardViewModel: viewModel)
-                }
+                Image.Icons.Chevrons.Right.heavy
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.Chevron.height * scale)
+                    .foregroundColor(colorPalette.primaryBlue)
             }
         }
     }
@@ -229,19 +232,9 @@ struct OrderSummaryCard: View {
 #if DEBUG
 struct OrderSummaryCard_Previews: PreviewProvider {
     static var previews: some View {
-        OrderSummaryCard(container: .preview, order:  PlacedOrder(
-            id: 1963404,
-            businessOrderId: 2106,
-            status: "Store Accepted / Picking",
-            statusText: "store_accepted_picking",
-            totalPrice: 11.25,
-            totalDiscounts: 0,
-            totalSurcharge: 0.58999999999999997,
-            totalToPay: 13.09,
-            platform: AppV2Constants.Client.platform,
-            firstOrder: true,
-            createdAt: "2022-02-23 10:35:10",
-            updatedAt: "2022-02-23 10:35:10",
+        OrderSummaryCard(container: .preview, order: .init(
+            id: 123,
+            businessOrderId: 123,
             store: PlacedOrderStore(
                 id: 910,
                 name: "Master Testtt",
@@ -259,6 +252,8 @@ struct OrderSummaryCard_Previews: PreviewProvider {
                 latitude: 56.4087526,
                 longitude: -5.4875930999999998
             ),
+            status: "Test",
+            statusText: "Test",
             fulfilmentMethod: PlacedOrderFulfilmentMethod(
                 name: RetailStoreOrderMethodType.delivery,
                 processingStatus: "Store Accepted / Picking",
@@ -275,94 +270,8 @@ struct OrderSummaryCard_Previews: PreviewProvider {
                 deliveryCost: 1,
                 driverTipRefunds: nil
             ),
-            paymentMethod: PlacedOrderPaymentMethod(
-                name: "realex",
-                dateTime: "2022-02-18 "
-            ),
-            orderLines: [PlacedOrderLine(
-                id: 12136536,
-                substitutesOrderLineId: nil,
-                quantity: 12,
-                rewardPoints: nil,
-                pricePaid: 10,
-                discount: 0,
-                substitutionAllowed: nil,
-                customerInstructions: nil,
-                rejectionReason: nil,
-                item: PastOrderLineItem(
-                    id: 3206126,
-                    name: "Max basket quantity 10",
-                    images: [
-                        [
-                            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
-                            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,
-                            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
-                        ]
-                    ],
-                    price: 10,
-                    size: nil,
-                    options: nil
-                ), refundAmount: 0,
-                storeNote: nil
-            ), PlacedOrderLine(
-                id: 12136526,
-                substitutesOrderLineId: nil,
-                quantity: 12,
-                rewardPoints: nil,
-                pricePaid: 10,
-                discount: 0,
-                substitutionAllowed: nil,
-                customerInstructions: nil,
-                rejectionReason: nil,
-                item: PastOrderLineItem(
-                    id: 3206126,
-                    name: "Max basket quantity 10",
-                    images: [
-                        [
-                            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
-                            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,
-                            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
-                        ]
-                    ],
-                    price: 10,
-                    size: nil,
-                    options: nil
-                ), refundAmount: 0,
-                storeNote: nil
-            )],
-            customer: PlacedOrderCustomer(
-                firstname: "Kevin",
-                lastname: "Palser"
-            ),
-            discount: [PlacedOrderDiscount(
-                name: "Multi Buy Example",
-                amount: 0.4,
-                type: "nforn",
-                lines: [12136536]
-            )],
-            surcharges: [PlacedOrderSurcharge(
-                name: "Service Charge",
-                amount: 0.09
-            )],
-            loyaltyPoints: PlacedOrderLoyaltyPoints(
-                type: "refer",
-                name: "Friend Reward Discount",
-                deductCost: 0
-            ),
-            coupon: PlacedOrderCoupon(
-                title: "Test % Coupon",
-                couponDeduct: 1.83,
-                type: "percentage",
-                freeDelivery: false,
-                value: 1.83,
-                iterableCampaignId: 0,
-                percentage: 10,
-                registeredMemberRequirement: false
-            ),
-            currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
-            totalOrderValue: 20,
-            totalRefunded: 0
-        ), basket: nil)
+            totalPrice: 1),
+                         basket: nil)
     }
 }
 #endif

@@ -110,7 +110,7 @@ struct UserMarketingOptionsUpdateResponse: Codable, Equatable {
     let sms: UserMarketingOptionState?
 }
 
-struct PlacedOrder: Codable, Equatable {
+struct PlacedOrder: Codable, Equatable, Identifiable {
     let id: Int // draft order ID
     let businessOrderId: Int
     let status: String // Displayable localised text
@@ -144,6 +144,17 @@ struct PlacedOrder: Codable, Equatable {
     let totalRefunded: Double
     
     // missing currency info https://snappyshopper.atlassian.net/browse/BGB-210
+}
+
+// Concise model used to display order summary cards
+struct PlacedOrderSummary: Codable, Equatable {
+    let id: Int
+    let businessOrderId: Int
+    let store: PlacedOrderStore
+    let status: String // Displayable localised text
+    let statusText: String // Enumations for actions
+    let fulfilmentMethod: PlacedOrderFulfilmentMethod
+    let totalPrice: Double
 }
 
 struct PlacedOrderStore: Codable, Equatable {
@@ -366,6 +377,16 @@ enum OrderStatus: String {
         case .rejected:
             return .error
         }
+    }
+}
+
+extension PlacedOrderSummary {
+    var orderStatus: OrderStatus {
+        OrderStatus(rawValue: self.statusText) ?? .unknown
+    }
+    
+    var orderProgress: Double {
+        orderStatus.progress
     }
 }
 

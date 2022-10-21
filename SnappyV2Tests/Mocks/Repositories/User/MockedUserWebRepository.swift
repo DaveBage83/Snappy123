@@ -64,7 +64,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var getSavedCardsResponse: Result<[MemberCardDetails], Error> = .failure(MockError.valueNotSet)
     var saveNewCardResponse: Result<MemberCardDetails, Error> = .failure(MockError.valueNotSet)
     var deleteCardResponse: Result<CardDeleteResponse, Error> = .failure(MockError.valueNotSet)
-    var getPastOrdersResponse: Result<[PlacedOrder]?, Error> = .failure(MockError.valueNotSet)
+    var getPastOrdersResponse: Result<[PlacedOrderSummary]?, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderDetailsResponse: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
     var getDriverSessionSettingsResponse: Result<DriverSessionSettings, Error> = .failure(MockError.valueNotSet)
     var requestMobileVerificationCodeResponse: Result<RequestMobileVerificationCodeResult, Error> = .failure(MockError.valueNotSet)
@@ -200,7 +200,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return try await deleteCardResponse.publish().singleOutput()
     }
     
-    func getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) -> AnyPublisher<[PlacedOrder]?, Error> {
+    func getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) -> AnyPublisher<[PlacedOrderSummary]?, Error> {
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
         return getPastOrdersResponse.publish()
     }

@@ -134,6 +134,7 @@ public enum Strings {
         case businessProfileAlertMessage = "initialview.businessprofilealertmessage"
         case memberProfileAlertTitle = "initialview.memberprofilealerttitle"
         case memberProfileAlertMessage = "initialview.memberprofilealertmessage"
+        case restoring = "initialview.restoring"
     }
     
     public enum CheckoutView {

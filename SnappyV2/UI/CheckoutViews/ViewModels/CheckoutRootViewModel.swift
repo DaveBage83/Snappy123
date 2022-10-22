@@ -382,7 +382,7 @@ class CheckoutRootViewModel: ObservableObject {
         // Setup
         setupBindToProfile(with: appState)
         setupSelectedChannel()
-        setupProgressState()
+        setupProgressStateAndTrigerEvents()
         setupTempTodayTimeSlot(with: appState)
         setupAutoAssignASAPTimeSlot()
         setupBasket(with: appState)
@@ -458,14 +458,25 @@ class CheckoutRootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setupProgressState() {
+    private func setupProgressStateAndTrigerEvents() {
         $checkoutState
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] state in
                 guard let self = self else { return }
                 self.progressState = state.progress
+                self.sendCheckoutReachedStateEvent(for: state)
             }
             .store(in: &cancellables)
+    }
+    
+    private func sendCheckoutReachedStateEvent(for state: CheckoutState) {
+        switch state {
+        case .details:
+            container.eventLogger.sendEvent(for: .viewScreen(.in, .customerDetails), with: .firebaseAnalytics, params: [:])
+        default:
+            break
+        }
     }
     
     // MARK: - Profile binding

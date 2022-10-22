@@ -37,6 +37,7 @@ enum AppEventScreen: Equatable {
     case accountSignIn
     case registerFromAccountSignIn
     case resetPassword
+    case customerDetails // currently only at checkout
     
     var toAppsFlyerScreenReference: String? {
         switch self {
@@ -51,6 +52,7 @@ enum AppEventScreen: Equatable {
         case .accountSignIn:                return "account_sign_in"
         case .registerFromAccountSignIn:    return "register_from_account_sign_in"
         case .resetPassword:                return "reset_password"
+        default:                            return nil
         }
     }
     
@@ -63,6 +65,7 @@ enum AppEventScreen: Equatable {
         } else {
             switch self {
             case .resetPassword:                return "view_password_reset_at_checkout"
+            case .customerDetails:              return "view_customer_details"
             default:                            return nil
             }
         }

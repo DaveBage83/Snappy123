@@ -271,7 +271,7 @@ class BasketViewModel: ObservableObject {
             .sink { [weak self] basket in
                 guard let self = self else { return }
                 self.basket = basket
-                if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false {
+                if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false && self.showMentionMeLoading == false {
                     if let cachedRefereeResult = appState.value.staticCacheData.mentionMeRefereeResult {
                         self.updateMentionMeUI(with: cachedRefereeResult)
                     } else {

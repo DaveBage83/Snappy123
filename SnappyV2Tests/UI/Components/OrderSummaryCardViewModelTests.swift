@@ -11,7 +11,7 @@ import XCTest
 class OrderSummaryCardViewModelTests: XCTestCase {
     
     func test_whenPlacedOrderPresent_thenPopulatePropertiesWithTheseValues() {
-        let order = PlacedOrder.mockedData
+        let order = PlacedOrderSummary.mockedData
         let sut = makeSUT(order: order, basket: nil)
         
         XCTAssertEqual(sut.fulfilmentType, .delivery)
@@ -35,7 +35,7 @@ class OrderSummaryCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.status, "Sent to Store")
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), order: PlacedOrder?, basket: Basket?) -> OrderSummaryCardViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), order: PlacedOrderSummary?, basket: Basket?) -> OrderSummaryCardViewModel {
         let sut = OrderSummaryCardViewModel(container: container, order: order, basket: basket)
         
         trackForMemoryLeaks(sut)

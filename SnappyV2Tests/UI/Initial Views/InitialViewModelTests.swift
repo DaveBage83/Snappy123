@@ -33,6 +33,29 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isLoading)
     }
     
+    // Last location successfully set
+    func test_givenNoPreviousLocation_whenUserSearchesLocation_thenLocationDataSet() async {
+        let sut = makeSUT()
+        sut.locationManager.setTestLocationStatus(status: .authorizedAlways)
+        
+        await sut.searchViaLocationTapped()
+        XCTAssertEqual(sut.locationManager.testLocation, sut.locationManager.lastLocation) //Pre-set co-ordinate data matches
+    }
+    
+    // Location denied alert shown
+    func test_givenNoAccessToLocationData_whenUserSearchesLocation_thenLocationDeniedAlertShown() async {
+        let sut = makeSUT()
+        sut.locationManager.setTestLocationStatus(status: .denied)
+        
+        await sut.searchViaLocationTapped()
+        XCTAssertTrue(sut.locationManager.showDeniedLocationAlert)
+    }
+    
+    // Location unknown alert shown
+    func givenDetectedLocationIsUnknown_whenUserSearchesLocation_thenLocationUnknownAlertShown() {
+        
+    }
+        
     func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
         let sut = makeSUT()
         sut.searchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(country: "", latitude: 0, longitude: 0, postcode: "")))

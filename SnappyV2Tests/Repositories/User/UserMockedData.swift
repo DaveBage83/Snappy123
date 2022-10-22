@@ -1008,6 +1008,28 @@ extension CardDeleteResponse {
     static let mockedData = CardDeleteResponse(success: true)
 }
 
+extension PlacedOrderSummary {
+    static let mockedData = PlacedOrderSummary(
+        id: 1963404,
+        businessOrderId: 2106,
+        store: PlacedOrderStore.mockedData,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        totalPrice: 11.25)
+}
+
+extension PlacedOrderSummary {
+    static let mockedDataStatusComplete = PlacedOrderSummary(
+        id: 1963404,
+        businessOrderId: 2106,
+        store: PlacedOrderStore.mockedData,
+        status: "delivered",
+        statusText: "delivered",
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        totalPrice: 11.25)
+}
+
 extension PlacedOrder {
     
     static let mockedData = PlacedOrder(
@@ -1025,6 +1047,33 @@ extension PlacedOrder {
         updatedAt: "2022-02-23 10:35:10",
         store: PlacedOrderStore.mockedData,
         fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData,
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
+    )
+    
+    static let mockedDataNoSlot = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: AppV2Constants.Client.platform,
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataNoSlot,
         paymentMethod: PlacedOrderPaymentMethod.mockedData,
         orderLines: PlacedOrderLine.mockedArrayData,
         customer: PlacedOrderCustomer.mockedData,
@@ -1393,6 +1442,18 @@ extension PlacedOrderFulfilmentMethod {
         driverTipRefunds: nil
     )
     
+    static let mockedDataNoSlot = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedDataNoSlot,
+        place: nil,
+        address: Address.mockedRepeatOrderAddress,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+    
     static let mockedDataWithDriverTipRefunds = PlacedOrderFulfilmentMethod(
         name: RetailStoreOrderMethodType.delivery,
         processingStatus: "Store Accepted / Picking",
@@ -1474,6 +1535,18 @@ extension PlacedOrderFulfilmentMethodDateTime {
             requestedDate: "2022-02-18",
             requestedTime: "17:40 - 17:55",
             estimated: date,
+            fulfilled: nil
+        )
+    }()
+    
+    static let mockedDataNoSlot: PlacedOrderFulfilmentMethodDateTime = {
+        // Note: Date() would fail the XCTAssertEqual, set to a
+        // specific date.
+        let date = Date(timeIntervalSince1970: 1632146400) // Monday, 20 September 2021 15:00:00
+        return PlacedOrderFulfilmentMethodDateTime(
+            requestedDate: "2022-02-18",
+            requestedTime: "17:40 - 17:55",
+            estimated: nil,
             fulfilled: nil
         )
     }()

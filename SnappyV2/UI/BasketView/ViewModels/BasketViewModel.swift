@@ -90,6 +90,11 @@ class BasketViewModel: ObservableObject {
     
     @Published var profile: MemberProfile?
         
+    var hasTiers: Bool {
+        guard let tiers = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.deliveryTiers, tiers.count > 0 else { return false }
+        return true
+    }
+    
     var isMemberSignedIn: Bool {
         profile != nil
     }
@@ -98,6 +103,30 @@ class BasketViewModel: ObservableObject {
         return selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.status != .closed && isSlotExpired == false
     }
 
+    var freeFulfilmentMessage: String? {
+        guard let text = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.freeFulfilmentMessage, !text.isEmpty else { return nil }
+        return text
+    }
+    
+    var lowestTierDeliveryCost: Double? {
+        guard let deliveryTiers = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.deliveryTiers else { return nil }
+        
+        // Get the lowest delivery cost in the tier array
+        if let lowestCost = deliveryTiers.min(by: { $0.deliveryFee < $1.deliveryFee })?.deliveryFee {
+            return lowestCost
+        }
+        
+        return nil
+    }
+    
+    var orderDeliveryMethod: RetailStoreOrderMethod? {
+        selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
+    }
+    
+    var currency: RetailStoreCurrency? {
+        selectedStore?.currency
+    }
+    
     private var cancellables = Set<AnyCancellable>()
     private var updatingTipTask: Task<Void, Never>?
     

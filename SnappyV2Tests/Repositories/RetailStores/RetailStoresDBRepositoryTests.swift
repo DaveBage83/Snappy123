@@ -57,7 +57,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
         
     }
     

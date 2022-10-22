@@ -50,7 +50,53 @@ struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
     let status: RetailStoreOrderMethodStatus
     let cost: Double?
     let fulfilmentIn: String?
+    let freeFulfilmentMessage: String?
+    let deliveryTiers: [DeliveryTier]?
+    let freeFrom: Double?
+    let minSpend: Double?
     // workingHours - todo, differs from spolight
+}
+
+struct DeliveryTier: Codable, Equatable, Hashable {
+    let minBasketSpend: Double
+    let deliveryFee: Double
+}
+
+extension RetailStoreOrderMethod {
+    var lowestTierDeliveryCost: Double? {
+        guard let deliveryTiers = self.deliveryTiers else { return nil }
+        
+        // Get the lowest delivery cost in the tier array
+        if let lowestCost = deliveryTiers.min(by: { $0.deliveryFee < $1.deliveryFee })?.deliveryFee {
+            return lowestCost
+        }
+        
+        return nil
+    }
+    
+    #warning("Backend plan to change API response to always return delivery tiers. If this happens we can remove the below")
+    func fromDeliveryCost(currency: RetailStoreCurrency?) -> String? {
+        guard let currency = currency else { return nil }
+        // Check if there are tiers and extract lowest value one
+        if let lowestTierDeliveryCost = lowestTierDeliveryCost {
+            // Is there a default cost? If so, is it lower than the lowest tier cost? And is there no minSpend?
+            if let cost = cost, lowestTierDeliveryCost > cost, (minSpend == nil || minSpend == 0)  {
+                // If so, we return the cost value (or a "Free delivery" String if 0)
+                return cost == 0 ? Strings.StoresView.DeliveryTiers.freeDelivery.localized : Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(cost.toCurrencyString(using: currency))
+            }
+            // Otherwise, return the lowest cost tier value
+            return Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(lowestTierDeliveryCost.toCurrencyString(using: currency))
+            
+        // If no tiers, check if there is a minSpend and that freeFrom is present. We also check if minSpend
+        // is greater than freeFrom. If it is, return "From free" String
+        } else if let minSpend = minSpend, let freeFrom = freeFrom, freeFrom > 0, minSpend >= freeFrom {
+            return Strings.StoresView.DeliveryTiers.freeDelivery.localized
+        // Otherwise return cost String
+        } else if let cost = cost {
+            return cost == 0 ? Strings.StoresView.DeliveryTiers.freeDelivery.localized : Strings.StoresView.DeliveryTiersCustom.cost.localizedFormat(cost.toCurrencyString(using: currency))
+        }
+        return nil
+    }
 }
 
 struct FulfilmentLocation: Codable, Equatable {

@@ -65,6 +65,13 @@ final class DriverMapViewModel: ObservableObject {
     var placedOrder: PlacedOrder? {
         mapParameters?.placedOrder
     }
+    
+    var placedOrderSummary: PlacedOrderSummary? {
+        if let placedOrder {
+            return mapToPlacedOrderSummary(placedOrder)
+        }
+        return nil
+    }
 
     private var storeContactNumber: String? {
         var rawTelephone: String?
@@ -76,6 +83,17 @@ final class DriverMapViewModel: ObservableObject {
         // strip non digit characters
         guard let rawTelephone = rawTelephone else { return nil }
         return rawTelephone.toTelephoneString()
+    }
+    
+    private func mapToPlacedOrderSummary(_ placedOrder: PlacedOrder) -> PlacedOrderSummary {
+        .init(
+            id: placedOrder.id,
+            businessOrderId: placedOrder.businessOrderId,
+            store: placedOrder.store,
+            status: placedOrder.status,
+            statusText: placedOrder.statusText,
+            fulfilmentMethod: placedOrder.fulfilmentMethod,
+            totalPrice: placedOrder.totalPrice)
     }
     
     init(container: DIContainer, dismissDriverMapHandler: @escaping () -> Void) {
@@ -393,11 +411,11 @@ final class DriverMapViewModel: ObservableObject {
                 // - "movement.count + 1" because there is an extra final point represented by longitude and longitude
                 let frequencyBetweenMapUpdates = (AppV2Constants.Driver.locationSendInterval * 0.98) / TimeInterval(movement.count + 1) / TimeInterval(AppV2Constants.Driver.animationRenderPoints)
                 
-                // start from position 1 because position 0 is already displayed immediately above
                 locationIndex = 0
                 pinMovementCount = 0
                 
                 let context: [String: Any] = [
+                    // append the final movement to the list
                     "movement": movement + [DriverLocationPusherMovementUpdate(lg: longitude, lt: latitude)]
                 ]
                 

@@ -140,7 +140,7 @@ struct DriverMapView: View {
                 }
             }
             
-            if let placedOrder = viewModel.placedOrder {
+            if let placedOrder = viewModel.placedOrderSummary {
                 OrderSummaryCard(container: viewModel.container, order: placedOrder, basket: nil, includeNavigation: false)
                     .padding()
                     .overlay(GeometryReader { geo in

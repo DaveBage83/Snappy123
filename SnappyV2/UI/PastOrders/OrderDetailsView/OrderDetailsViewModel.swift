@@ -48,9 +48,11 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var showDetailsView = false
     @Published var showDriverMap = false
     @Published var showMapError = false
-    @Published var showTrackOrderButtonOverride: Bool?
+    @Published var showTrackOrderButtonOverride = false
     @Published var mapLoading = false
     @Published var showText = false
+
+    private let showTrackOrderButton: Bool
     
     var driverLocation: DriverLocation?
     
@@ -60,6 +62,18 @@ class OrderDetailsViewModel: ObservableObject {
     
     var orderNumber: String {
         String(order.id)
+    }
+
+    var displayTrackOrderButton: Bool {
+        showTrackOrderButton && showTrackOrderButtonOverride == false
+    }
+    
+    var selectedSlot: String? {
+        if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.estimated?.timeString(storeTimeZone: nil) {
+            return "\(date) | \(time)"
+        } else {
+            return Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized
+        }
     }
 
     var totalToPay: String {
@@ -130,13 +144,6 @@ class OrderDetailsViewModel: ObservableObject {
         guard let driverTip = initialDriverTip, let driverTipRefundTotal = totalDriverTipRefundValue else { return nil }
         return (driverTip - driverTipRefundTotal).toCurrencyString(using: order.currency)
     }
-    
-    var showTrackOrderButton: Bool {
-        if let showTrackOrderButtonOvveride = showTrackOrderButtonOverride, showTrackOrderButtonOvveride == false {
-            return false
-        }
-        return driverLocation?.delivery?.status == 5
-    }
         
     // In order to get total number of items in the order, we need to take the total from each
     // orderLine and add together
@@ -168,9 +175,10 @@ class OrderDetailsViewModel: ObservableObject {
     
     // MARK: - Init
     
-    init(container: DIContainer, order: PlacedOrder) {
+    init(container: DIContainer, order: PlacedOrder, showTrackOrderButton: Bool) {
         self.container = container
         self.order = order
+        self.showTrackOrderButton = showTrackOrderButton
     }
     
     func setDriverLocation() async throws {
@@ -301,14 +309,12 @@ class OrderDetailsViewModel: ObservableObject {
     
     func getDriverLocationIfOrderIncomplete(orderProgress: Double) async {
         if orderProgress != 1 {
-            Task {
-                do {
-                    try await setDriverLocation()
-                    showDetailsView = true
-                } catch {
-                    // If we get error on driver location we still want to show the details view
-                    showDetailsView = true
-                }
+            do {
+                try await setDriverLocation()
+                showDetailsView = true
+            } catch {
+                // If we get error on driver location we still want to show the details view
+                showDetailsView = true
             }
         } else {
             showDetailsView = true

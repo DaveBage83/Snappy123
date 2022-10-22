@@ -88,7 +88,28 @@ class DriverMapViewModelTests: XCTestCase {
         XCTAssertEqual(test, 1)
     }
     
+    func test_whenMapToPlacedOrderSummaryCalledOnPlacedOrder_thenPlacedOrderMappedCorrectly() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.routing.displayedDriverLocation = DriverLocationMapParameters.mockedWithPlacedOrderData
+        let sut = makeSUT(container: container, dismissMapAction: {})
+        
+        let expectedPlacedOrderSummary = PlacedOrderSummary(
+            id: 1963404,
+            businessOrderId: 2106,
+            store: PlacedOrderStore.mockedData,
+            status: "Store Accepted / Picking",
+            statusText: "store_accepted_picking",
+            fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+            totalPrice: 11.25)
+        
+        sut.viewShown()
+        
+        XCTAssertEqual(sut.placedOrderSummary, expectedPlacedOrderSummary)
+    }
+    
+
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dismissMapAction: @escaping () -> Void) -> DriverMapViewModel {
+
         DriverMapViewModel(
             container: container
         ) {

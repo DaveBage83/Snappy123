@@ -35,13 +35,12 @@ class OrderSummaryCardViewModel: ObservableObject {
     
     var storeWithAddress1: String?
     
-    var order: PlacedOrder?
+    var order: PlacedOrderSummary?
     
     @Published var showDetailsView = false
     
     // MARK: - Init
-    
-    init(container: DIContainer, order: PlacedOrder?, basket: Basket?) {
+    init(container: DIContainer, order: PlacedOrderSummary?, basket: Basket?) {
         self.container = container
         self.order = order
         
@@ -52,7 +51,8 @@ class OrderSummaryCardViewModel: ObservableObject {
         }
     }
     
-    private func setOrderProperties(order: PlacedOrder) {
+    private func setOrderProperties(order: PlacedOrderSummary) {
+
         self.fulfilmentType = order.fulfilmentMethod.name
         self.statusType = order.orderStatus.statusType
         self.orderTotal = order.totalPrice.toCurrencyString(

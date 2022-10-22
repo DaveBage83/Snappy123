@@ -345,6 +345,21 @@ public enum Strings {
         public enum NoSlotsCustom: String, IterableSnappyStringCustomisable {
             case subtitle = "storesview.noslotscustom.subtitle"
         }
+
+        public enum DeliveryTiersCustom: String, IterableSnappyStringCustomisable {
+            case minSpend = "storesview.deliverytiers.custom.minspend"
+            case deliveryFrom = "storesview.deliverytiers.custom.deliveryfrom"
+            case cost = "storesview.deliverytiers.custom.cost"
+            case freeFrom = "storesview.deliverytiers.custom.freefrom"
+        }
+        
+        public enum DeliveryTiers: String, IterableSnappyString {
+            case orderValue = "storesview.deliverytiers.ordervalue"
+            case delivery = "storesview.deliverytiers.delivery"
+            case orderValueCondition = "storesview.deliverytiers.ordervaluecondition"
+            case freeDelivery = "storesview.deliverytiers.free"
+            case title = "storesview.deliverytiers.title"
+        }
     }
     
     public enum StoreInfo {

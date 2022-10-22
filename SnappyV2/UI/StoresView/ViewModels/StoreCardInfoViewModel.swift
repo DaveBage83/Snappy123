@@ -12,6 +12,20 @@ class StoreCardInfoViewModel: ObservableObject {
     var storeDetails: RetailStore
     let isClosed: Bool
     
+    var orderDeliveryMethod: RetailStoreOrderMethod? {
+        storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
+    }
+    
+    var currency: RetailStoreCurrency? {
+        storeDetails.currency
+    }
+    
+    var defaultDeliveryCost: Double? {
+        guard let deliveryOrderMethod = orderDeliveryMethod else { return nil }
+
+        return deliveryOrderMethod.cost
+    }
+    
     init(container: DIContainer, storeDetails: RetailStore, isClosed: Bool = false) {
         self.container = container
         self.storeDetails = storeDetails
@@ -25,13 +39,5 @@ class StoreCardInfoViewModel: ObservableObject {
         
         let total = storeDetails.distance
         return formatter.string(from: NSNumber(value: total)) ?? ""
-    }
-    
-    var deliveryChargeString: String {
-        guard let deliveryCharge = storeDetails.orderMethods?["delivery"]?.cost else { return "" }
-        
-        if deliveryCharge == 0.0 { return "Free delivery"}
-        
-        return deliveryCharge.toCurrencyString(using: storeDetails.currency) + " delivery"
     }
 }

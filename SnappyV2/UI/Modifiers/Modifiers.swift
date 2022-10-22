@@ -147,6 +147,7 @@ struct HighlightedItem: ViewModifier {
     struct Constants {
         static let cornerRadius: CGFloat = 8
         static let itemPadding: CGFloat = 8
+        static let bottomPadding: CGFloat = 5
     }
     
     let container: DIContainer
@@ -175,9 +176,8 @@ struct HighlightedItem: ViewModifier {
     func body(content: Content) -> some View {
         ZStack(alignment: .bottom) {
             content
-                .padding([.top, .horizontal], Constants.itemPadding)
                 .padding(.bottom, bannerHeight) // Adjust by height of banner
-                .padding(.bottom) // Add additional standard bottom padding
+                .padding(.bottom, Constants.bottomPadding) // Add additional standard bottom padding
                 .background(backgroundColor)
                 .cornerRadius(Constants.cornerRadius)
             VStack(spacing: 0) {
@@ -414,6 +414,59 @@ extension View {
     }
 }
 
+struct DeliveryTierInfo: Identifiable, Equatable {
+    let id = UUID()
+    let orderMethod: RetailStoreOrderMethod?
+    let currency: RetailStoreCurrency?
+}
+
+struct DeliveryOfferBanner: ViewModifier {
+    @Environment(\.mainWindowSize) var mainWindowSize
+
+    @Environment(\.colorScheme) var colorScheme
+    
+    @StateObject var viewModel: DeliveryOfferBannerViewModel
+            
+    init(viewModel: DeliveryOfferBannerViewModel) {
+        self._viewModel = .init(wrappedValue: viewModel)
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        if viewModel.showDeliveryBanner {
+            content
+            .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
+                if viewModel.isDisabled == false, let orderMethod = viewModel.deliveryTierInfo.orderMethod {
+                    viewModel.setOrderMethod(orderMethod)
+                }
+            })])
+            .disabled(viewModel.isDisabled)
+            .snappyBottomSheet(
+                container: viewModel.container,
+                item: $viewModel.selectedDeliveryTierInfo,
+                title: Strings.StoresView.DeliveryTiers.title.localized,
+                windowSize: mainWindowSize,
+                content: { orderMethod in
+                    RetailStoreDeliveryTiers(viewModel: .init(
+                        container: viewModel.container,
+                        deliveryOrderMethod: viewModel.selectedDeliveryTierInfo?.orderMethod,
+                        currency: viewModel.deliveryTierInfo.currency))
+                })
+        } else {
+            content
+        }
+    }
+}
+
+extension View {
+    func withDeliveryOffer(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
+        modifier(DeliveryOfferBanner(viewModel: .init(container: container, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
+    }
+}
+
 extension View {
     func withInfoButtonAndText(container: DIContainer, text: String) -> some View {
         modifier(WithInfoButtonAndText(container: container, infoText: text))
@@ -437,6 +490,10 @@ enum BannerType: Int {
     case substitutedItem
     case rejectedItem
     case itemQuantityChange
+    case deliveryOfferMain
+    case deliveryOfferWithTiersMain
+    case deliveryOffer
+    case deliveryOfferWithTiers
     
     func bgColor(colorPalette: ColorPalette) -> Color {
         switch self {
@@ -448,15 +505,26 @@ enum BannerType: Int {
             return colorPalette.alertOfferBasket
         case .rejectedItem:
             return colorPalette.primaryRed
+        case .deliveryOfferMain, .deliveryOfferWithTiersMain, .deliveryOffer, .deliveryOfferWithTiers:
+            return colorPalette.alertSuccess
+        }
+    }
+    
+    var leadingIcon: Image? {
+        switch self {
+        case .deliveryOfferMain, .deliveryOfferWithTiersMain:
+            return Image.Icons.Tag.filled
+        default:
+            return nil
         }
     }
 
     func textColor(colorPalette: ColorPalette) -> Color {
         switch self {
-        case .viewSelection, .substitutedItem, .rejectedItem, .itemQuantityChange:
-            return .white
         case .missedOffer:
             return colorPalette.typefacePrimary
+        default:
+            return .white
         }
     }
     
@@ -470,16 +538,20 @@ enum BannerType: Int {
             return colorPalette.primaryRed.withOpacity(.ten)
         case .substitutedItem:
             return colorPalette.alertOfferBasket.withOpacity(.ten)
+        case .deliveryOfferMain, .deliveryOfferWithTiersMain:
+            return .clear
+        case .deliveryOffer, .deliveryOfferWithTiers:
+            return colorPalette.alertSuccess.withOpacity(.twenty)
         }
     }
     
     var icon: Image? {
         switch self {
-        case .viewSelection:
+        case .viewSelection, .deliveryOfferWithTiersMain, .deliveryOfferWithTiers:
             return Image.Icons.Eye.filled
         case .missedOffer:
             return Image.Icons.Plus.medium
-        case .substitutedItem, .rejectedItem, .itemQuantityChange:
+        case .substitutedItem, .rejectedItem, .itemQuantityChange, .deliveryOfferMain, .deliveryOffer:
             return nil
         }
     }

@@ -61,7 +61,6 @@ struct MemberDashboardView: View {
                 }
             }
             .background(colorPalette.backgroundMain)
-            .edgesIgnoringSafeArea(.bottom)
         } else {
             NavigationView {
                 VStack(spacing: 0) {
@@ -69,7 +68,6 @@ struct MemberDashboardView: View {
                     mainContent
                 }
                 .background(colorPalette.backgroundMain)
-                .edgesIgnoringSafeArea(.bottom)
             }
         }
     }

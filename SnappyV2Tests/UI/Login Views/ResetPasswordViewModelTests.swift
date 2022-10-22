@@ -235,16 +235,6 @@ final class ResetPasswordViewModelTests: XCTestCase {
         XCTAssertFalse(sut.dismiss, file: #file, line: #line)
     }
     
-    func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "reset_password"])])
-        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
-        let sut = makeSUT(container: container)
-
-        sut.onAppearSendEvent()
-
-        eventLogger.verify()
-    }
-    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, dismissHandler: @escaping (Error?) -> Void = { _ in }) -> ResetPasswordViewModel {
         let sut = ResetPasswordViewModel(container: container, isInCheckout: isInCheckout, resetToken: "p6rGf6KLBD", dismissHandler: dismissHandler)
         trackForMemoryLeaks(sut)

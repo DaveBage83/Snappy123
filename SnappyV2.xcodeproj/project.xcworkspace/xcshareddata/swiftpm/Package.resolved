@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "7e80c25b51c2ffa238879b07fbfc5baa54bb3050",
-        "version" : "9.6.0"
+        "revision" : "5c4893c55f9d6114e2bb7c691d7ffd81208ac713",
+        "version" : "10.0.0"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "c1cfde8067668027b23a42c29d11c246152fe046",
-        "version" : "9.6.0"
+        "revision" : "e3dd02f390cae79a7073b46dfb0cb6b60c48401b",
+        "version" : "10.0.0"
       }
     },
     {
@@ -159,7 +159,7 @@
       "location" : "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package",
       "state" : {
         "branch" : "main",
-        "revision" : "d214d6ea043b9cd37847c0d09a078d1e3ba66fe7"
+        "revision" : "0d782f810db9259edee0bbb4c3436ffc25b4a655"
       }
     },
     {
@@ -266,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "3441e8f9be290edcc7be57c93a1c128c1a787c2a",
-        "version" : "7.27.1"
+        "revision" : "dc00a3673e3d313e41326bd53802f757defd0eee",
+        "version" : "7.28.0"
       }
     },
     {

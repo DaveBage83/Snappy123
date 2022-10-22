@@ -217,7 +217,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_orders_list"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .pastOrdersList), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         

@@ -304,7 +304,7 @@ class PushNotificationsHandlerTests: XCTestCase {
         let exp = XCTestExpectation(description: #function)
         sut.userNotificationCenter(UNUserNotificationCenter.current(), didReceive: response) {
             XCTAssertNil(appState.value.pushNotifications.displayableNotification)
-            XCTAssertTrue(appState.value.pushNotifications.driverMapOpenNotification?.isEqual(to: userInfo) ?? false)
+            XCTAssertTrue(appState.value.pushNotifications.driverMapOpenNotification?.data.isEqual(to: userInfo) ?? false)
             exp.fulfill()
         }
         wait(for: [exp], timeout: 2.0)
@@ -357,7 +357,7 @@ class PushNotificationsHandlerTests: XCTestCase {
         let exp = XCTestExpectation(description: #function)
         sut.userNotificationCenter(UNUserNotificationCenter.current(), didReceive: response) {
             XCTAssertNotNil(appState.value.pushNotifications.displayableNotification)
-            XCTAssertTrue(appState.value.pushNotifications.driverNotification?.isEqual(to: userInfo) ?? false)
+            XCTAssertTrue(appState.value.pushNotifications.driverNotification?.data.isEqual(to: userInfo) ?? false)
             XCTAssertNil(appState.value.pushNotifications.driverMapNotification)
             exp.fulfill()
         }
@@ -385,7 +385,7 @@ class PushNotificationsHandlerTests: XCTestCase {
         sut.userNotificationCenter(UNUserNotificationCenter.current(), didReceive: response) {
             XCTAssertNil(appState.value.pushNotifications.displayableNotification)
             XCTAssertNil(appState.value.pushNotifications.driverNotification)
-            XCTAssertTrue(appState.value.pushNotifications.driverMapNotification?.isEqual(to: userInfo) ?? false)
+            XCTAssertTrue(appState.value.pushNotifications.driverMapNotification?.data.isEqual(to: userInfo) ?? false)
             
             exp.fulfill()
         }

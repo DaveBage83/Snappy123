@@ -125,9 +125,6 @@ struct ResetPasswordView: View {
                 presentation.wrappedValue.dismiss()
             }
         })
-        .onAppear {
-            viewModel.onAppearSendEvent()
-        }
     }
     
     @ViewBuilder private var confirmationNotMatchingWarning: some View {

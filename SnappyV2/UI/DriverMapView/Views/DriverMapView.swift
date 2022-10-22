@@ -154,7 +154,19 @@ struct DriverMapView: View {
                     })
             }
         }
-        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.DriverMap.title.localized, navigationDismissType: dismissType)
+        .dismissableNavBar(
+            presentation: presentation,
+            color: colorPalette.primaryBlue,
+            title: Strings.DriverMap.title.localized,
+            navigationDismissType: dismissType
+        ) {
+            viewModel.dismissMap()
+        }.onAppear() {
+            viewModel.viewShown()
+        }
+        .onDisappear() {
+            viewModel.viewRemoved()
+        }
     }
     
     // MARK: - Title view
@@ -229,37 +241,6 @@ struct DriverMapView_Previews: PreviewProvider {
         DriverMapView(
             viewModel: .init(
                 container: .preview,
-                mapParameters: DriverLocationMapParameters(
-                    businessOrderId: 0,
-                    driverLocation: DriverLocation(
-                        orderId: 1966430,
-                        pusher: PusherConfiguration(
-                            clusterServer: "eu",
-                            appKey: "dd1506734a87e7be40d9"
-                        ),
-                        store: StoreLocation(
-                            latitude: 56.4087526,
-                            longitude: -5.487593
-                        ),
-                        delivery: OrderDeliveryLocationAndStatus(
-                            latitude: 56.410598,
-                            longitude: -5.47583,
-                            status: 5
-                        ),
-                        driver: DeliveryDriverLocationAndName(
-                            name: "Test",
-                            latitude: 56.497526,
-                            longitude: -5.47783
-                        )
-                    ),
-                    lastDeliveryOrder: LastDeliveryOrderOnDevice(
-                        businessOrderId: 12345,
-                        storeName: "Master Test",
-                        storeContactNumber: "01381 12345456",
-                        deliveryPostcode: "PA34 4AG"
-                    ),
-                    placedOrder: nil
-                ),
                 dismissDriverMapHandler: {}
             )
         )

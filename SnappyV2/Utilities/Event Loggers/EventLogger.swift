@@ -20,7 +20,56 @@ enum EventLoggerError: Swift.Error {
     case invalidParameters([String])
 }
 
-enum AppEvent: String {
+enum AppEventInCheckout: Equatable {
+    case `in`
+    case outside
+}
+
+enum AppEventScreen: Equatable {
+    case pastOrderDetail
+    case rootAccount
+    case deliveryAddressList
+    case pastOrdersList
+    case editMemberProfile
+    case initialStoreSearch
+    case driverLocationMap
+    case storeListSelection
+    case accountSignIn
+    case registerFromAccountSignIn
+    case resetPassword
+    
+    var toAppsFlyerScreenReference: String? {
+        switch self {
+        case .pastOrderDetail:              return "past_order_detail"
+        case .rootAccount:                  return "root_account"
+        case .deliveryAddressList:          return "delivery_address_list"
+        case .pastOrdersList:               return "past_orders_list"
+        case .editMemberProfile:            return "edit_member_profile"
+        case .initialStoreSearch:           return "initial_store_search"
+        case .driverLocationMap:            return "driver_location_map"
+        case .storeListSelection:           return "store_list_selection"
+        case .accountSignIn:                return "account_sign_in"
+        case .registerFromAccountSignIn:    return "register_from_account_sign_in"
+        case .resetPassword:                return "reset_password"
+        }
+    }
+    
+    func toFirebaseEventName(when: AppEventInCheckout) -> String? {
+        if when == .outside {
+            switch self {
+            case .resetPassword:                return "view_password_reset"
+            default:                            return nil
+            }
+        } else {
+            switch self {
+            case .resetPassword:                return "view_password_reset_at_checkout"
+            default:                            return nil
+            }
+        }
+    }
+}
+
+enum AppEvent: Equatable {
     case firstOpened
     case sessionStarted
     case selectStore
@@ -45,14 +94,13 @@ enum AppEvent: String {
     
     case viewItemDetail
     case paymentFailure
-	case login
-    case loginAtCheckout
+	case login(AppEventInCheckout)
 	case couponReject
 	case viewCart
 	case removeFromBasket
 	case updateCart
 	case addBillingInfo
-    case viewScreen
+    case viewScreen(AppEventInCheckout?, AppEventScreen)
     case mentionMeError
     case mentionMeOfferView
     case mentionMeRefereeView
@@ -68,6 +116,7 @@ enum AppEvent: String {
     case couponRejectedAtBasketView
     case checkoutAsGuestChosen
     case checkoutAsNewMemberChosen
+    case passwordResetPresented
     
     var toAppsFlyerString: String? {
         switch self {
@@ -138,8 +187,8 @@ enum AppEvent: String {
         case .initiatedCheckout:                return AnalyticsEventBeginCheckout
         case .checkoutAsGuestChosen:            return "continue_as_guest_pressed"
         case .checkoutAsNewMemberChosen:        return "continue_as_new_member_pressed"
-        case .login:                            return AnalyticsEventLogin
-        case .loginAtCheckout:                  return "login_during_checkout"
+        case let .login(checkout):              return checkout == .in ? "login_during_checkout" : AnalyticsEventLogin
+        case let .viewScreen(checkout, screen): return screen.toFirebaseEventName(when: checkout ?? .outside)
         default:                                return nil
         }
     }
@@ -332,7 +381,7 @@ class EventLogger: EventLoggerProtocol {
     
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String: Any] = [:]) {
         
-        let sendParams = type != .iterable ? addDefaultParameters(to: params) : params
+        var sendParams = type != .iterable ? addDefaultParameters(to: params) : params
         
         switch type {
         case .appsFlyer:
@@ -340,12 +389,19 @@ class EventLogger: EventLoggerProtocol {
                 let name = event.toAppsFlyerString,
                 AppV2Constants.EventsLogging.appsFlyerSettings.key != nil
             else { return }
+            switch event {
+            case let .viewScreen(_, screen):
+                if let screenReference = screen.toAppsFlyerScreenReference {
+                    sendParams["screen_reference"] = screenReference
+                }
+            default: break
+            }
             AppsFlyerLib.shared().logEvent(
                 name: name,
                 values: sendParams,
                 completionHandler: { (response: [String : Any]?, error: Error?) in
                     if let error = error {
-                        Logger.eventLogger.error("Error sending AppsFlyer event: \(event.rawValue) Error: \(error.localizedDescription)")
+                        Logger.eventLogger.error("Error sending AppsFlyer event: \(name) Error: \(error.localizedDescription)")
                     }
                 }
             )

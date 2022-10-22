@@ -239,7 +239,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
     }
     
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "edit_member_profile"])
+        container.eventLogger.sendEvent(for: .viewScreen(.outside, .editMemberProfile), with: .appsFlyer, params: [:])
     }
     
     func filterPhoneNumber(newValue: String) {

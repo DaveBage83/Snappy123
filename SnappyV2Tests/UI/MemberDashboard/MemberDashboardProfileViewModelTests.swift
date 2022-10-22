@@ -106,7 +106,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
     }
 
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "edit_member_profile"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .editMemberProfile), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         

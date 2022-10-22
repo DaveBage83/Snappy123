@@ -33,6 +33,14 @@ struct DisplayablePushNotification: Equatable, Identifiable {
     let telephone: String?
 }
 
+struct RawNotification: Equatable, Identifiable {
+    let id = UUID() // to avoid confussion with similar incoming notifications
+    let data: [AnyHashable: Any]
+    static func == (lhs: RawNotification, rhs: RawNotification) -> Bool {
+        lhs.id == rhs.id && lhs.data.isEqual(to: rhs.data)
+    }
+}
+
 // The PushNotification struct is intended for:
 // (1) storing notifications until the app can process them after the initial restore step
 // (2) to encapsulate for passing on to the Iterable SDK methods

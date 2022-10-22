@@ -140,10 +140,10 @@ class LoginViewModel: ObservableObject {
     }
     
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "account_sign_in"])
+        container.eventLogger.sendEvent(for: .viewScreen(isInCheckout ? .in : .outside, .accountSignIn), with: .appsFlyer, params: [:])
     }
     
     func onCreateAccountAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "register_from_account_sign_in"])
+        container.eventLogger.sendEvent(for: .viewScreen(isInCheckout ? .in : .outside, .registerFromAccountSignIn), with: .appsFlyer, params: [:])
     }
 }

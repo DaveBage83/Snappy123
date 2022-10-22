@@ -205,7 +205,7 @@ class InitialViewModelTests: XCTestCase {
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "initial_store_search"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .initialStoreSearch), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
@@ -219,7 +219,7 @@ class InitialViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
-        let driverNotification: [AnyHashable: Any] = ["test": true]
+        let driverNotification = RawNotification(data: ["test": true])
         
         var cancellables = Set<AnyCancellable>()
         let expectation = expectation(description: #function)
@@ -237,7 +237,7 @@ class InitialViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 2.0)
         
-        XCTAssertTrue(driverNotification.isEqual(to: sut.driverPushNotification))
+        XCTAssertTrue(driverNotification.data.isEqual(to: sut.driverPushNotification))
     }
     
     func test_registerForNotificationsHandler_ignoreUnknownAndReturnRegistered() async {

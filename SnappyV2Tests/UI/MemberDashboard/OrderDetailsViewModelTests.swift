@@ -224,7 +224,7 @@ class OrderDetailsViewModelTests: XCTestCase {
 	}
 
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_order_detail"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(nil, .pastOrderDetail), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let placedOrder = PlacedOrder.mockedData
         let sut = makeSUT(container: container, placedOrder: placedOrder)

@@ -70,7 +70,10 @@ final class ForgotPasswordViewModelTests: XCTestCase {
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "reset_password"])])
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .viewScreen(.outside, .resetPassword), with: .appsFlyer, params: [:]),
+            .sendEvent(for: .viewScreen(.outside, .resetPassword), with: .firebaseAnalytics, params: [:])
+        ])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
@@ -79,8 +82,8 @@ final class ForgotPasswordViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dismissHandler: @escaping (String?) -> Void = { _ in }) -> ForgotPasswordViewModel {
-        let sut = ForgotPasswordViewModel(container: container, dismissHandler: dismissHandler)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, dismissHandler: @escaping (String?) -> Void = { _ in }) -> ForgotPasswordViewModel {
+        let sut = ForgotPasswordViewModel(container: container, isInCheckout: isInCheckout, dismissHandler: dismissHandler)
         
         return sut
     }

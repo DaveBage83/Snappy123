@@ -107,7 +107,7 @@ struct ForgotPasswordView: View {
 #if DEBUG
 struct ForgotPasswordView_Previews: PreviewProvider {
     static var previews: some View {
-        ForgotPasswordView(viewModel: .init(container: .preview, dismissHandler: { _ in }))
+        ForgotPasswordView(viewModel: .init(container: .preview, isInCheckout: false, dismissHandler: { _ in }))
     }
 }
 #endif

@@ -101,12 +101,12 @@ struct OrderDetailsView: View {
                 NavigationLink("", isActive: $viewModel.showDriverMap) {
                     if let driverLocation = viewModel.driverLocation {
                         DriverMapView(viewModel: .init(
-                            container: viewModel.container,
-                            mapParameters: DriverLocationMapParameters(
-                                businessOrderId: viewModel.order.businessOrderId,
-                                driverLocation: driverLocation,
-                                lastDeliveryOrder: nil,
-                                placedOrder: viewModel.order),
+                            container: viewModel.container/*,
+//                            mapParameters: DriverLocationMapParameters(
+//                                businessOrderId: viewModel.order.businessOrderId,
+//                                driverLocation: driverLocation,
+//                                lastDeliveryOrder: nil,
+//                                placedOrder: viewModel.order)*/,
                             dismissDriverMapHandler: {
                                 viewModel.driverMapDismissAction()
                             }))

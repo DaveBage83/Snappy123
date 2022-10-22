@@ -14,11 +14,12 @@ import MapKit
 import PusherSwift
 
 @MainActor
-class DriverMapViewModel: ObservableObject {
+final class DriverMapViewModel: ObservableObject {
 
     let container: DIContainer
-    private let mapParameters: DriverLocationMapParameters
     private let dismissDriverMapHandler: () -> Void
+    
+    private(set) var showing = false
     
     @Published var driverName: String?
     @Published var mapRegion: MKCoordinateRegion = MKCoordinateRegion()
@@ -29,21 +30,32 @@ class DriverMapViewModel: ObservableObject {
     @Published var completedDeliveryAlertMessage = ""
     @Published var orderStatus: Int?
     
+    private var mapParameters: DriverLocationMapParameters?
     private var pusher: Pusher?
     private var pusherCallbackId: String?
     
     // values uses for managing the map markers
     private let driverLocationId: UUID = UUID()
     private let deliveryLocationId: UUID = UUID()
+    
+    // position of driver to be rendered to the map
     private var driversCurrentDisplayPosition: CLLocationCoordinate2D?
+    
+    // previous position used as their orgin for the current animation
+    // between two points and to also determine the drivers bearing
     private var driversLastDisplayPosition: CLLocationCoordinate2D?
+    
+    // customer's chosen delivery location
     private var destinationDisplayPosition: CLLocationCoordinate2D?
+    
+    // used to display the driver pin icon to face the correct direction
     private var currentBearing: Double = 0
     private var orderCardVerticalUsageProportion: Double = 0
 
     // used when multiple points are returned
+    private var pinMovementCount = 1
+    private var locationIndex = 1
     private var animateDriverLocationTimer: Timer?
-    private var smoothDriverPinMovementTimer: Timer?
     
     // used to manually fetch the position or order state in case there
     // is a problem with the Pusher service
@@ -51,14 +63,14 @@ class DriverMapViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     var placedOrder: PlacedOrder? {
-        mapParameters.placedOrder
+        mapParameters?.placedOrder
     }
 
     private var storeContactNumber: String? {
         var rawTelephone: String?
-        if let telephone = mapParameters.placedOrder?.store.telephone {
+        if let telephone = mapParameters?.placedOrder?.store.telephone {
             rawTelephone = telephone
-        } else if let telephone = mapParameters.lastDeliveryOrder?.storeContactNumber {
+        } else if let telephone = mapParameters?.lastDeliveryOrder?.storeContactNumber {
             rawTelephone = telephone
         }
         // strip non digit characters
@@ -66,24 +78,9 @@ class DriverMapViewModel: ObservableObject {
         return rawTelephone.toTelephoneString()
     }
     
-    init(container: DIContainer, mapParameters: DriverLocationMapParameters, dismissDriverMapHandler: @escaping () -> Void) {
+    init(container: DIContainer, dismissDriverMapHandler: @escaping () -> Void) {
         self.container = container
-        self.mapParameters = mapParameters
         self.dismissDriverMapHandler = dismissDriverMapHandler
-        
-        driverName = mapParameters.driverLocation.driver?.name
-        orderStatus = mapParameters.driverLocation.delivery?.status
-        
-        setupMap()
-        setupPusher()
-        setupRefresh()
-        setupPushNotificationBinding(with: container.appState)
-        
-        container.eventLogger.sendEvent(
-            for: .viewScreen,
-            with: .appsFlyer,
-            params: ["screen_reference": "driver_location_map"]
-        )
     }
     
     // Struct used to represent points on the map
@@ -128,6 +125,52 @@ class DriverMapViewModel: ObservableObject {
         // 9: returning to store (probably to give to other driver)
         // 10: delivered to store (continuation of 9)
         let s: Int?
+    }
+    
+    // methods called by the timers
+    
+    @objc private func animateMovement(timer: Timer) {
+        
+        guard
+            let context = timer.userInfo as? [String: Any],
+            let movement = context["movement"] as? [DriverMapViewModel.DriverLocationPusherMovementUpdate]
+        else { return }
+        
+        if pinMovementCount == AppV2Constants.Driver.animationRenderPoints {
+            
+            driversLastDisplayPosition = CLLocationCoordinate2D(latitude: movement[locationIndex].lt, longitude: movement[locationIndex].lg)
+            
+            locationIndex += 1
+            pinMovementCount = 0
+            
+            if locationIndex == movement.count {
+                // last point to move region in case it has come to close to
+                // the edge of the displayed map
+                calculateDisplayRegion()
+                timer.invalidate()
+                
+                // indicates that the timer finished processing all the points before
+                // a new batch was received
+                animateDriverLocationTimer = nil
+                return
+            }
+        }
+        
+        if let driversLastDisplayPosition = driversLastDisplayPosition {
+            // move the pin % along based on pinMovementCount
+            let displayPointBearing = self.calculateIntermediatePointAndBearing(
+                point1: driversLastDisplayPosition,
+                point2: CLLocationCoordinate2D(latitude: movement[locationIndex].lt, longitude: movement[locationIndex].lg),
+                percentage: (Double(pinMovementCount) / Double(AppV2Constants.Driver.animationRenderPoints))
+            )
+            
+            driversCurrentDisplayPosition = displayPointBearing.0
+            currentBearing = displayPointBearing.1
+            
+            updateDriverMarker()
+        }
+        
+        pinMovementCount += 1
     }
     
     func calculateIntermediatePointAndBearing(point1: CLLocationCoordinate2D, point2: CLLocationCoordinate2D, percentage: Double) -> (CLLocationCoordinate2D, Double) {
@@ -182,70 +225,51 @@ class DriverMapViewModel: ObservableObject {
         )
     }
     
-    private func updateDriverMarker(overDuration: TimeInterval = 0) {
+    private func clearActiveResources() {
+        if
+            let pusher = pusher,
+            pusherCallbackId != nil
+        {
+            pusher.unbindAll()
+            pusher.unsubscribeAll()
+            pusher.disconnect()
+            pusherCallbackId = nil
+        }
+        
+        animateDriverLocationTimer?.invalidate()
+        animateDriverLocationTimer = nil
+        
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+    }
+    
+    private func updateDriverMarker() {
         if let driversCurrentDisplayPosition = driversCurrentDisplayPosition {
             
-            if
-                overDuration > 0.5,
-                let driversLastDisplayPosition = driversLastDisplayPosition
-            {
-                var pinMovementCount = 1
-                
-                self.smoothDriverPinMovementTimer = Timer.scheduledTimer(
-                    withTimeInterval: overDuration / TimeInterval(AppV2Constants.Driver.animationRenderPoints),
-                    repeats: true
-                ) { [weak self] timer in
-                    guard let self = self else { return }
-                    
-                    if pinMovementCount < AppV2Constants.Driver.animationRenderPoints {
-                        // move the pin % along based on pinMovementCount
-                        let displayPointBearing = self.calculateIntermediatePointAndBearing(
-                            point1: driversLastDisplayPosition,
-                            point2: driversCurrentDisplayPosition,
-                            percentage: (Double(pinMovementCount) / Double(AppV2Constants.Driver.animationRenderPoints))
-                        )
-                        
-                        self.driversCurrentDisplayPosition = displayPointBearing.0
-                        self.currentBearing = displayPointBearing.1
-                        
-                        self.updateDriverMarker()
-                    } else {
-                        // finish the animation
-                        timer.invalidate()
-                        self.smoothDriverPinMovementTimer = nil
-                        // move to the final position
-                        self.driversCurrentDisplayPosition = driversCurrentDisplayPosition
-                        self.updateDriverMarker()
-                    }
-                    
-                    pinMovementCount += 1
-                }
-                
-            } else {
-                
-                let newDriverLocation = DriverMapLocation(
-                    id: driverLocationId,
-                    type: .driver,
-                    name: mapParameters.driverLocation.driver?.name,
-                    coordinate: driversCurrentDisplayPosition,
-                    bearing: currentBearing
-                )
-                
+            let newDriverLocation = DriverMapLocation(
+                id: driverLocationId,
+                type: .driver,
+                name: mapParameters?.driverLocation.driver?.name,
+                coordinate: driversCurrentDisplayPosition,
+                bearing: currentBearing
+            )
+            
+            DispatchQueue.main.async(execute: { [weak self] in
+                guard let self = self else { return }
                 // replace the current driver location if found otherwise insert it
-                if let index = locations.firstIndex(where: { location in
-                    location.id == driverLocationId
+                if let index = self.locations.firstIndex(where: { location in
+                    location.id == self.driverLocationId
                 }) {
-                    locations[index] = newDriverLocation
+                    self.locations[index] = newDriverLocation
                 } else {
-                    locations.append(newDriverLocation)
+                    self.locations.append(newDriverLocation)
                 }
+            })
 
-                driversLastDisplayPosition = driversCurrentDisplayPosition
-            }
         }
     }
     
-    private func calculateDisplayRegion() -> MKCoordinateRegion {
+    private func calculateDisplayRegion() {
         
         var coordinates: [CLLocationCoordinate2D] = []
         if let driversCurrentDisplayPosition = driversCurrentDisplayPosition {
@@ -276,28 +300,26 @@ class DriverMapViewModel: ObservableObject {
             }
         }
         
-        return returnRegion ?? MKCoordinateRegion()
-    }
-    
-    private func stopPusher() {
-        if
-            let pusher = pusher,
-            pusherCallbackId != nil
-        {
-            pusher.unbindAll()
-            pusher.unsubscribeAll()
-            pusher.disconnect()
-            pusherCallbackId = nil
+        if let returnRegion = returnRegion {
+            // Given that the class uses @MainActor this should not be required but a separate thread is needed to overcome:
+            // "Publishing changes from within view updates is not allowed, this will cause undefined behavior."
+            DispatchQueue.main.async(execute: { [weak self] in
+                guard let self = self else { return }
+                self.mapRegion = returnRegion
+            })
         }
     }
 
     private func setupMap() {
+        guard let mapParameters = mapParameters else { return }
         
         // starting driver location before the Pusher starts
         driversCurrentDisplayPosition = CLLocationCoordinate2D(
             latitude: mapParameters.driverLocation.driver?.latitude ?? 0,
             longitude: mapParameters.driverLocation.driver?.longitude ?? 0
         )
+        
+        driversLastDisplayPosition = driversCurrentDisplayPosition
         
         // the source of the desitination varies depending on whether
         // the app was opened for foreground transition or because
@@ -335,13 +357,95 @@ class DriverMapViewModel: ObservableObject {
             ]
         }
         
-        mapRegion = calculateDisplayRegion()
-        
+        calculateDisplayRegion()
         updateDriverMarker()
+    }
+        
+    private func processPusherDriverLocationUpdate(update: DriverLocationPusherUpdate) {
+        
+        if
+            let longitude = update.lg,
+            let latitude = update.lt
+        {
+            if animateDriverLocationTimer != nil {
+                // still finishing off animation from the previous update so peform some
+                // of the tidy up points that would have been missed:
+                
+                // reposition map in case driver icon moved out of window
+                calculateDisplayRegion()
+                
+                // avoid any jitter by displaying from a previous driversLastDisplayPosition
+                // start point which will most likely have already been animated away from
+                driversLastDisplayPosition = driversCurrentDisplayPosition
+            }
+            
+            animateDriverLocationTimer?.invalidate()
+            animateDriverLocationTimer = nil
+            
+            if
+                let movement = update.mov,
+                movement.isEmpty == false
+            {
+                
+                // Based on the frequency that the driver is sending data divide the time to render the points.
+                // Notes:
+                // - "* 0.98" stops a stutter where new incoming points might catch up
+                // - "movement.count + 1" because there is an extra final point represented by longitude and longitude
+                let frequencyBetweenMapUpdates = (AppV2Constants.Driver.locationSendInterval * 0.98) / TimeInterval(movement.count + 1) / TimeInterval(AppV2Constants.Driver.animationRenderPoints)
+                
+                // start from position 1 because position 0 is already displayed immediately above
+                locationIndex = 0
+                pinMovementCount = 0
+                
+                let context: [String: Any] = [
+                    "movement": movement + [DriverLocationPusherMovementUpdate(lg: longitude, lt: latitude)]
+                ]
+                
+                animateDriverLocationTimer = Timer(
+                    timeInterval: frequencyBetweenMapUpdates,
+                    target: self,
+                    selector: #selector(self.animateMovement),
+                    userInfo: context,
+                    repeats: true
+                )
+                
+                // Use .common as it allows our timers to fire even when the UI is being used.
+                // https://www.hackingwithswift.com/articles/117/the-ultimate-guide-to-timer
+                if let animateDriverLocationTimer = animateDriverLocationTimer {
+                    RunLoop.current.add(animateDriverLocationTimer, forMode: .common)
+                }
+
+            } else {
+
+                self.driversCurrentDisplayPosition = CLLocationCoordinate2D(
+                    latitude: latitude,
+                    longitude: longitude
+                )
+
+                updateDriverMarker()
+                calculateDisplayRegion()
+
+            }
+        }
+        
+        if let status = update.s {
+            Task {
+                do {
+                    try await self.processDriverOrderDeliverStatus(status: status)
+                } catch {
+                    Logger.driverMap.error("Processing state error: \(error.localizedDescription)")
+                }
+            }
+            // reset the refresh timer because of this resent data
+            setupRefresh()
+        }
     }
 
     private func setupPusher() {
-        guard let pusherConfiguration = mapParameters.driverLocation.pusher else {
+        guard
+            let mapParameters = mapParameters,
+            let pusherConfiguration = mapParameters.driverLocation.pusher
+        else {
             return
         }
         
@@ -370,90 +474,7 @@ class DriverMapViewModel: ObservableObject {
                 
                     let driverLocation = try JSONDecoder().decode(DriverLocationPusherUpdate.self, from: jsonData)
                     
-                    if
-                        let longitude = driverLocation.lg,
-                        let latitude = driverLocation.lt
-                    {
-                        self.animateDriverLocationTimer?.invalidate()
-                        self.animateDriverLocationTimer = nil
-                        self.smoothDriverPinMovementTimer?.invalidate()
-                        self.smoothDriverPinMovementTimer = nil
-                        
-                        if
-                            let movement = driverLocation.mov,
-                            movement.isEmpty == false
-                        {
-                            
-                            // Based on the frequency that the driver is sending data divide the time to render the points.
-                            // Notes:
-                            // - "* 0.98" stops a stutter where new incoming points might catch up
-                            // - "movement.count + 1" because there is an extra final point represented by longitude and longitude
-                            let frequencyBetweenMapUpdates = (AppV2Constants.Driver.locationSendInterval * 0.98) / TimeInterval(movement.count + 1)
-                            
-                            self.driversCurrentDisplayPosition = CLLocationCoordinate2D(
-                                latitude: movement[0].lt,
-                                longitude: movement[0].lg
-                            )
-                            self.updateDriverMarker(overDuration: frequencyBetweenMapUpdates)
-
-                            // start from position 1 because position 0 is already displayed immediately above
-                            var locationIndex = 1
-
-                            self.animateDriverLocationTimer = Timer.scheduledTimer(
-                                withTimeInterval: frequencyBetweenMapUpdates,
-                                repeats: true
-                            ) { timer in
-
-                                if locationIndex < movement.count {
-
-                                    self.driversCurrentDisplayPosition = CLLocationCoordinate2D(
-                                        latitude: movement[locationIndex].lt,
-                                        longitude: movement[locationIndex].lg
-                                    )
-                                    self.updateDriverMarker(overDuration: frequencyBetweenMapUpdates)
-
-                                } else if locationIndex == movement.count {
-
-                                    self.driversCurrentDisplayPosition = CLLocationCoordinate2D(
-                                        latitude: latitude,
-                                        longitude: longitude
-                                    )
-                                    self.updateDriverMarker(overDuration: frequencyBetweenMapUpdates)
-
-                                    // last point to move region in case it has come to close to
-                                    // the edge of the displayed map
-                                    self.mapRegion = self.calculateDisplayRegion()
-                                    timer.invalidate()
-
-                                }
-
-                                locationIndex += 1
-                            }
-
-                        } else {
-
-                            self.driversCurrentDisplayPosition = CLLocationCoordinate2D(
-                                latitude: latitude,
-                                longitude: longitude
-                            )
-
-                            self.updateDriverMarker()
-                            self.mapRegion = self.calculateDisplayRegion()
-
-                        }
-                    }
-
-                    if let status = driverLocation.s {
-                        Task {
-                            do {
-                                try await self.processDriverOrderDeliverStatus(status: status)
-                            } catch {
-                                Logger.driverMap.error("Processing state error: \(error.localizedDescription)")
-                            }
-                        }
-                        // reset the refresh timer because of this resent data
-                        self.setupRefresh()
-                    }
+                    self.processPusherDriverLocationUpdate(update: driverLocation)
 
                 } catch {
                     Logger.driverMap.error("Pusher event callback JSON response string: \"\(jsonString)\" decoding error: \(error.localizedDescription)")
@@ -467,9 +488,7 @@ class DriverMapViewModel: ObservableObject {
     private func processDriverOrderDeliverStatus(status: Int) async throws {
         if status == 2 || status == 3 {
             // stop fetching new information
-            stopPusher()
-            refreshTimer?.invalidate()
-            refreshTimer = nil
+            clearActiveResources()
             // show the appropriate alert
             canCallStore = UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone && storeContactNumber != nil
             if status == 2 {
@@ -481,42 +500,44 @@ class DriverMapViewModel: ObservableObject {
             }
             showCompletedAlert = true
             // stop the automatic checking if it is the last delivery order case
-            if mapParameters.lastDeliveryOrder != nil {
+            if mapParameters?.lastDeliveryOrder != nil {
                 try await container.services.checkoutService.clearLastDeliveryOrderOnDevice()
             }
         }
     }
     
     private func getDriverLocationAndStatus() async {
-        do {
-            let driverLocation = try await container.services.checkoutService.getDriverLocation(businessOrderId: mapParameters.businessOrderId)
-            
-            if
-                let driverLatitude = driverLocation.driver?.latitude,
-                let driverLongitude = driverLocation.driver?.longitude
-            {
-                driversCurrentDisplayPosition = CLLocationCoordinate2D(
-                    latitude: driverLatitude,
-                    longitude: driverLongitude
-                )
-
-                updateDriverMarker()
-                mapRegion = self.calculateDisplayRegion()
+        if let businessOrderId = mapParameters?.businessOrderId {
+            do {
+                let driverLocation = try await container.services.checkoutService.getDriverLocation(businessOrderId: businessOrderId)
+                
+                if
+                    let driverLatitude = driverLocation.driver?.latitude,
+                    let driverLongitude = driverLocation.driver?.longitude
+                {
+                    driversCurrentDisplayPosition = CLLocationCoordinate2D(
+                        latitude: driverLatitude,
+                        longitude: driverLongitude
+                    )
+                    
+                    updateDriverMarker()
+                    calculateDisplayRegion()
+                }
+                
+                if let status = driverLocation.delivery?.status {
+                    try await processDriverOrderDeliverStatus(status: status)
+                }
+                
+            } catch {
+                Logger.driverMap.error("Fetching driver location or processing state error: \(error.localizedDescription)")
             }
-            
-            if let status = driverLocation.delivery?.status {
-                try await processDriverOrderDeliverStatus(status: status)
-            }
-            
-        } catch {
-            Logger.driverMap.error("Fetching driver location or processing state error: \(error.localizedDescription)")
         }
     }
     
     private func setupRefresh() {
         refreshTimer?.invalidate()
-        refreshTimer = Timer.scheduledTimer(
-            withTimeInterval: AppV2Constants.Driver.refreshInterval,
+        refreshTimer = Timer(
+            timeInterval: AppV2Constants.Driver.refreshInterval,
             repeats: true,
             block: { [weak self] (timer) in
                 guard let self = self else { return }
@@ -525,6 +546,12 @@ class DriverMapViewModel: ObservableObject {
                 }
             }
         )
+        
+        // Use .common as it allows our timers to fire even when the UI is being used.
+        // https://www.hackingwithswift.com/articles/117/the-ultimate-guide-to-timer
+        if let refreshTimer = refreshTimer {
+            RunLoop.current.add(refreshTimer, forMode: .common)
+        }
     }
     
     private func setupPushNotificationBinding(with appState: Store<AppState>) {
@@ -541,11 +568,16 @@ class DriverMapViewModel: ObservableObject {
     
     func setOrderCardVerticalUsage(to proportion: Double) {
         orderCardVerticalUsageProportion = proportion
-        mapRegion = calculateDisplayRegion()
+        calculateDisplayRegion()
+    }
+    
+    private func closeView() {
+        clearActiveResources()
+        dismissDriverMapHandler()
     }
     
     func dismissMap() {
-        dismissDriverMapHandler()
+        closeView()
     }
     
     func callStoreAndDismissMap() {
@@ -557,13 +589,40 @@ class DriverMapViewModel: ObservableObject {
                 Logger.driverMap.info("Calling store success: \(success)")
             })
         }
-        dismissDriverMapHandler()
+        closeView()
+    }
+    
+    func viewShown() {
+        showing = true
+        setupPushNotificationBinding(with: container.appState)
+        
+        if let displayedDriverLocation = container.appState.value.routing.displayedDriverLocation {
+            mapParameters = displayedDriverLocation
+            driverName = displayedDriverLocation.driverLocation.driver?.name
+            orderStatus = displayedDriverLocation.driverLocation.delivery?.status
+            setupMap()
+            setupPusher()
+            setupRefresh()
+        }
+        
+        // uncomment when needing to development testing when no live driver server data
+        // testPushUpdatesHandling()
+        
+        container.eventLogger.sendEvent(
+            for: .viewScreen(.outside, .driverLocationMap),
+            with: .appsFlyer,
+            params: [:]
+        )
+    }
+    
+    func viewRemoved() {
+        showing = false
     }
     
     deinit {
-        // Cannot use the stopPusher method in deinit because of the error:
-        // "Call to main actor-isolated instance method 'stopPusher()' in a synchronous nonisolated context"
-        // self.stopPusher()
+        // Cannot use the clearActiveResources method in deinit because of the error:
+        // "Call to main actor-isolated instance method 'clearActiveResources()' in a synchronous nonisolated context"
+        // self.clearActiveResources()
         if
             let pusher = pusher,
             pusherCallbackId != nil
@@ -576,12 +635,101 @@ class DriverMapViewModel: ObservableObject {
         
         animateDriverLocationTimer?.invalidate()
         animateDriverLocationTimer = nil
-        
-        smoothDriverPinMovementTimer?.invalidate()
-        smoothDriverPinMovementTimer = nil
-        
+
         refreshTimer?.invalidate()
         refreshTimer = nil
     }
+    
+    // Keep the following - it is particularly useful for testing without real driver movement
+    // from the server
+    
+//    let testPusherData: [DriverLocationPusherUpdate] = [
+//        DriverLocationPusherUpdate(lg: -122.03556217, lt: 37.3345628, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03432425000003, lt: 37.334676379999976),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03455441999999, lt: 37.33464561000002),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03478726999995, lt: 37.334619459999985),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03503469999995, lt: 37.334603159999986),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03529395000005, lt: 37.334585639999986)
+//        ], s: 5),
+//        DriverLocationPusherUpdate(lg: -122.03753997000004, lt: 37.334536520000015, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03583307999997, lt: 37.3345597),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03611285999996, lt: 37.33454847),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03638578000005, lt: 37.334542179999985),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03666775000006, lt: 37.334542349999985),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03695223, lt: 37.334538489999986),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03724626000005, lt: 37.33453874000001)
+//        ], s: 5),
+//        DriverLocationPusherUpdate(lg: -122.0397398, lt: 37.334476219999985, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03783265999998, lt: 37.33452613000001),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03813826999995, lt: 37.33451917000002),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03845141000006, lt: 37.334512840000016),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03875937000002, lt: 37.33450379000002),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03908048000005, lt: 37.33449629000002),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.03941089000003, lt: 37.33448791)
+//        ], s: 5),
+//        DriverLocationPusherUpdate(lg: -122.04187567000004, lt: 37.33444603999999, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04007348000005, lt: 37.33447068000002),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04041596999994, lt: 37.33446519000001),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04077831, lt: 37.33445839999999),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04113765, lt: 37.33445282999998),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04149923999996, lt: 37.334449899999996)
+//        ], s: 5),
+//        DriverLocationPusherUpdate(lg: -122.04681002000002, lt: 37.334362349999985, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04496062999999, lt: 37.334447630000014),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04534100000005, lt: 37.334442439999975),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04571727000003, lt: 37.33443657000001),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04607568000003, lt: 37.33441707999999),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04644120999998, lt: 37.33439469999999)
+//        ], s: 5),
+//        DriverLocationPusherUpdate(lg: -122.04921637999996, lt: 37.333906040000016, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04716524000006, lt: 37.334317970000015),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04751058, lt: 37.334269849999984),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04784191000003, lt: 37.33420970999998),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04818682999999, lt: 37.334142869999994),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04853007000001, lt: 37.33406324000002),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04886543000005, lt: 37.33398776)
+//        ], s: 5),
+//        DriverLocationPusherUpdate(lg: -122.05174034, lt: 37.33336510999999, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04956958999995, lt: 37.333828799999985),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.04992665999995, lt: 37.333754449999994),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05028305999997, lt: 37.33367998),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05063995999998, lt: 37.333606930000016),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05100548999992, lt: 37.33352458),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05137546999995, lt: 37.333448890000014)
+//        ], s: 5),
+//        DriverLocationPusherUpdate(lg: -122.05391527000003, lt: 37.33290405999999, mov: [
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05209672999995, lt: 37.333287869999985),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05246948000004, lt: 37.333211010000014),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05283635, lt: 37.33313410999998),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.05318780999998, lt: 37.333056320000004),
+//            SnappyV2.DriverMapViewModel.DriverLocationPusherMovementUpdate(lg: -122.0535463, lt: 37.332981049999994)
+//        ], s: 3)
+//    ]
+//
+//    private var testCount: Int = 0
+//
+//    @objc private func animateTestPoints(timer: Timer) {
+//        if testCount < testPusherData.count {
+//            processPusherDriverLocationUpdate(update: testPusherData[testCount])
+//            testCount += 1
+//        } else {
+//            timer.invalidate()
+//            testCount = 0
+//        }
+//    }
+//
+//    private func testPushUpdatesHandling() {
+//        let testAnimationTimer = Timer(
+//            timeInterval: AppV2Constants.Driver.locationSendInterval,
+//            target: self,
+//            selector: #selector(animateTestPoints),
+//            userInfo: nil,
+//            repeats: true
+//        )
+//
+//        // Use .common as it allows our timers to fire even when the UI is being used.
+//        // https://www.hackingwithswift.com/articles/117/the-ultimate-guide-to-timer
+//        RunLoop.current.add(testAnimationTimer, forMode: .common)
+//    }
 
 }

@@ -153,7 +153,7 @@ class MemberDashboardViewModel: ObservableObject {
         
         self._profile = .init(initialValue: appState.value.userData.memberProfile)
         self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)
-        self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification ?? [:])
+        self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification?.data ?? [:])
         
         setupBindToProfile(with: appState)
         setupDriverNotification(with: appState)
@@ -208,7 +208,7 @@ class MemberDashboardViewModel: ObservableObject {
                     let self = self,
                     let driverNotification = driverNotification
                 else { return }
-                self.driverPushNotification = driverNotification
+                self.driverPushNotification = driverNotification.data
             }.store(in: &cancellables)
     }
     
@@ -340,11 +340,11 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "root_account"])
+        container.eventLogger.sendEvent(for: .viewScreen(.outside, .rootAccount), with: .appsFlyer, params: [:])
     }
     
     func onAppearAddressViewSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "delivery_address_list"])
+        container.eventLogger.sendEvent(for: .viewScreen(.outside, .deliveryAddressList), with: .appsFlyer, params: [:])
     }
     
     private func getNotificationsEnabledStatusHandler() async -> NotificationsEnabledStatus {

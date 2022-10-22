@@ -152,6 +152,6 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     }
     
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_orders_list"])
+        container.eventLogger.sendEvent(for: .viewScreen(.outside, .pastOrdersList), with: .appsFlyer, params: [:])
     }
 }

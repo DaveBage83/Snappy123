@@ -334,6 +334,6 @@ class StoresViewModel: ObservableObject {
     }
     
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "store_list_selection"])
+        container.eventLogger.sendEvent(for: .viewScreen(.outside, .storeListSelection), with: .appsFlyer, params: [:])
     }
 }

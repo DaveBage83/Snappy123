@@ -121,6 +121,9 @@ enum AppEvent: Equatable {
     case checkoutAsNewMemberChosen
     case passwordResetPresented
     case cannotDeliverToAddress
+    case payByCardSelected
+    case payByApplePaySelected
+    case payByCashSelected
     
     var toAppsFlyerString: String? {
         switch self {
@@ -194,6 +197,9 @@ enum AppEvent: Equatable {
         case let .login(checkout):              return checkout == .in ? "login_during_checkout" : AnalyticsEventLogin
         case let .viewScreen(checkout, screen): return screen.toFirebaseEventName(when: checkout ?? .outside)
         case .cannotDeliverToAddress:           return "cannot_deliver_to_location_warning"
+        case .payByCardSelected:                return "pay_by_card_pay_pressed"
+        case .payByApplePaySelected:            return "pay_by_apple_pay_pressed"
+        case .payByCashSelected:                return "pay_by_cash_pressed"
         default:                                return nil
         }
     }

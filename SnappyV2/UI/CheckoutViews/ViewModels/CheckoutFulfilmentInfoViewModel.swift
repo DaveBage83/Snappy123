@@ -275,6 +275,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     func payByCardTapped() {
+        container.eventLogger.sendEvent(for: .payByCardSelected, with: .firebaseAnalytics, params: [:])
         if let unwrappedPaymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue || $0.name == PaymentGatewayType.realex.rawValue }) {
             if unwrappedPaymentGateway.name == PaymentGatewayType.checkoutcom.rawValue {
                 setCheckoutState(.card)
@@ -310,7 +311,11 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     func payByCashTapped() async {
-        guard hasConfirmedCashPayment else { showConfirmCashPaymentAlert = true; return }
+        guard hasConfirmedCashPayment else {
+            container.eventLogger.sendEvent(for: .payByCashSelected, with: .firebaseAnalytics, params: [:])
+            showConfirmCashPaymentAlert = true
+            return
+        }
         
         processingPayByCash = true
         
@@ -376,7 +381,7 @@ extension CheckoutFulfilmentInfoViewModel {
 // MARK: - Apple Pay
 extension CheckoutFulfilmentInfoViewModel {
     func payByAppleTapped() async {
-        
+        container.eventLogger.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])
         let draftOrderDetailsRequest = createDraftOrderRequest()
         
         var paymentGateway: PaymentGateway?

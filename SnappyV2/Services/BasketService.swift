@@ -511,9 +511,19 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.setDeliveryAddress(basketToken: basketToken, address: to)
-            
-            try await storeBasketAndUpdateAppState(fetchedBasket: basket)
+            do {
+                let basket = try await webRepository.setDeliveryAddress(basketToken: basketToken, address: to)
+                try await storeBasketAndUpdateAppState(fetchedBasket: basket)
+            } catch {
+                #warning("400 seems too generic - backend team might change the error code")
+                if
+                    let error = error as? APIErrorResult,
+                    error.errorCode == 400
+                {
+                    eventLogger.sendEvent(for: .cannotDeliverToAddress, with: .firebaseAnalytics, params: [:])
+                }
+                throw error
+            }
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }

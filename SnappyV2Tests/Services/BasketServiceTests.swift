@@ -2166,6 +2166,48 @@ final class SetDeliveryAddressTests: BasketServiceTests {
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
     }
+    
+    func test_failureDeliveryAddress_whenSelectedStoreAndFulfilmentLocationWithBasket_triggerEventAndThrowError() async {
+        
+        let cannotDeliverToAddressAPIError = APIErrorResult(errorCode: 400, errorText: "Can not deliver to this address", errorDisplay: "Can not deliver to this address")
+        let deliveryAddress = BasketAddressRequest.mockedDeliveryData
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        appState.value.userData.basket = basket
+        
+        mockedWebRepo.actions = .init(expected: [
+            .setDeliveryAddress(
+                basketToken: basket.basketToken,
+                address: deliveryAddress
+            )
+        ])
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .cannotDeliverToAddress, with: .firebaseAnalytics, params: [:])
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.setDeliveryAddressResponse = .failure(cannotDeliverToAddressAPIError)
+        
+        do {
+            try await sut.setDeliveryAddress(to: deliveryAddress)
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            if let error = error as? APIErrorResult {
+                XCTAssertEqual(error, cannotDeliverToAddressAPIError, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        mockedWebRepo.verify()
+        mockedDBRepo.verify()
+        mockedEventLogger.verify()
+    }
 }
 
 // MARK: - func setBillingAddress(to:)

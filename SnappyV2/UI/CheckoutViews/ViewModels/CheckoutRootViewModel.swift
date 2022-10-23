@@ -464,8 +464,8 @@ class CheckoutRootViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] state in
                 guard let self = self else { return }
-                self.progressState = state.progress
                 self.sendCheckoutReachedStateEvent(for: state)
+                self.progressState = state.progress
             }
             .store(in: &cancellables)
     }

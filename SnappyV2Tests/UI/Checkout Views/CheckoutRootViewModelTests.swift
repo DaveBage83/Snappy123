@@ -239,8 +239,9 @@ class CheckoutRootViewModelTests: XCTestCase {
     }
     
     // On init, if user IS logged in then state is .details, progress .details (user taken straight to details screen)
-    func test_whenInit_givenMemberProfileIsNOTNil_thenCheckoutStateIsDetailsAndProgressIsDetails() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+    func test_whenInit_givenMemberProfileIsNOTNil_thenCheckoutStateIsDetailsAndProgressIsDetailsAndEventSent() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.in, .customerDetails), with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
         let sut = makeSUT(container: container)
@@ -248,7 +249,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         let expectation = expectation(description: "progressStateSetToDetails")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$checkoutState
+        sut.$progressState
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -260,6 +261,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.checkoutState, .details)
         XCTAssertEqual(sut.progressState, .details)
+        eventLogger.verify()
     }
     
     // When state is .initial, if back button is pressed we dismiss the navigation stack

@@ -272,7 +272,7 @@ final class DriverMapViewModel: ObservableObject {
                 bearing: currentBearing
             )
             
-            DispatchQueue.main.async(execute: { [weak self] in
+            guaranteeMainThread { [weak self] in
                 guard let self = self else { return }
                 // replace the current driver location if found otherwise insert it
                 if let index = self.locations.firstIndex(where: { location in
@@ -282,7 +282,7 @@ final class DriverMapViewModel: ObservableObject {
                 } else {
                     self.locations.append(newDriverLocation)
                 }
-            })
+            }
 
         }
     }
@@ -321,10 +321,10 @@ final class DriverMapViewModel: ObservableObject {
         if let returnRegion = returnRegion {
             // Given that the class uses @MainActor this should not be required but a separate thread is needed to overcome:
             // "Publishing changes from within view updates is not allowed, this will cause undefined behavior."
-            DispatchQueue.main.async(execute: { [weak self] in
+            guaranteeMainThread { [weak self] in
                 guard let self = self else { return }
                 self.mapRegion = returnRegion
-            })
+            }
         }
     }
 

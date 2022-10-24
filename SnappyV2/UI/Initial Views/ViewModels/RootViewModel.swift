@@ -117,7 +117,6 @@ class RootViewModel: ObservableObject {
             .map(\.pushNotifications.driverMapOpenNotification)
             .filter { $0 != nil }
             .removeDuplicates()
-            .print()
             .receive(on: RunLoop.main)
             .asyncMap { [weak self] _ in
                 guard

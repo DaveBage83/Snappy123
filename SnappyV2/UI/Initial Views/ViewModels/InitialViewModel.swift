@@ -97,7 +97,7 @@ class InitialViewModel: ObservableObject {
         let appState = container.appState
         
         self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)
-        self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification ?? [:])
+        self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification?.data ?? [:])
         self._businessProfileIsLoaded = .init(initialValue: appState.value.businessData.businessProfile != nil)
         
         // Set initial isUserSignedIn flag to current appState value
@@ -392,7 +392,7 @@ class InitialViewModel: ObservableObject {
     }
     
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "initial_store_search"])
+        container.eventLogger.sendEvent(for: .viewScreen(.outside, .initialStoreSearch), with: .appsFlyer, params: [:])
     }
     
     @Published var appIsInForeground: Bool
@@ -419,7 +419,7 @@ class InitialViewModel: ObservableObject {
                     let self = self,
                     let driverNotification = driverNotification
                 else { return }
-                self.driverPushNotification = driverNotification
+                self.driverPushNotification = driverNotification.data
             }.store(in: &cancellables)
     }
     

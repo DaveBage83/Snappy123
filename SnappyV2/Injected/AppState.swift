@@ -48,6 +48,7 @@ extension AppState {
         var selectedTab: Tab = .stores
         var urlToOpen: URL?
         var showVerifyMobileView = false
+        var displayedDriverLocation: DriverLocationMapParameters?
     }
 }
 
@@ -125,23 +126,9 @@ extension AppState {
     struct PushNotifications: Equatable {
         var showPushNotificationsEnablePromptView: Bool = false
         var displayableNotification: DisplayablePushNotification?
-        var driverNotification: [AnyHashable: Any]?
-        var driverMapNotification: [AnyHashable: Any]?
-        var driverMapOpenNotification: [AnyHashable: Any]?
-        // required to cope with the Any in driverNotification
-        static func == (lhs: AppState.PushNotifications, rhs: AppState.PushNotifications) -> Bool {
-            var driverNotificationEqual = false
-            if
-                let lhsDriverNotification = lhs.driverNotification,
-                let rhsDriverNotification = rhs.driverNotification,
-                lhsDriverNotification.isEqual(to: rhsDriverNotification)
-            {
-                driverNotificationEqual = true
-            } else {
-                driverNotificationEqual = lhs.driverNotification == nil && rhs.driverNotification == nil
-            }
-            return lhs.showPushNotificationsEnablePromptView == rhs.showPushNotificationsEnablePromptView && lhs.displayableNotification == rhs.displayableNotification && driverNotificationEqual
-        }
+        var driverNotification: RawNotification?
+        var driverMapNotification: RawNotification?
+        var driverMapOpenNotification: RawNotification?
     }
 }
 

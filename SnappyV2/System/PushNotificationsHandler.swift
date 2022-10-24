@@ -170,7 +170,7 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
                 // trigger a check with the server that will result in the map view
                 // being opened
                 if appState.value.userData.memberProfile?.type != .driver && appState.value.openViews.driverLocationMap == false {
-                    appState.value.pushNotifications.driverMapOpenNotification = userInfo
+                    appState.value.pushNotifications.driverMapOpenNotification = RawNotification(data: userInfo)
                 }
                 
             } else if userInfo["driverUpdate"] as? Bool ?? false {
@@ -178,12 +178,12 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
                 if appState.value.openViews.driverInterface {
                     // if the driver interface is showing then trigger a refresh but continue
                     // to display the message
-                    appState.value.pushNotifications.driverNotification = userInfo
+                    appState.value.pushNotifications.driverNotification = RawNotification(data: userInfo)
                     displayGenericMessage = true
                     
                 } else if appState.value.openViews.driverLocationMap {
                     // if the driver map is showing then force a refresh (no message shown)
-                    appState.value.pushNotifications.driverMapNotification = userInfo
+                    appState.value.pushNotifications.driverMapNotification = RawNotification(data: userInfo)
                 }
                 
             } else if userInfo["storeReview"] as? Bool ?? false {

@@ -101,7 +101,7 @@ class LoginViewModelTests: XCTestCase {
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "account_sign_in"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .accountSignIn), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
@@ -111,7 +111,7 @@ class LoginViewModelTests: XCTestCase {
     }
     
     func test_whenOnCreateAccountAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "register_from_account_sign_in"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .registerFromAccountSignIn), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         

@@ -229,11 +229,12 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         container.services.verify(as: .retailStore)
     }
     
-    func test_givenSelectedStoreWithCheckoutComPaymentGateway_whenPayByCardTapped_thenNavigateToPaymentHandlingIsCorrect() {
+    func test_givenSelectedStoreWithCheckoutComPaymentGateway_whenPayByCardTapped_thenNavigateToPaymentHandlingIsCorrectAndSendEvent() {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         var appState = AppState(userData: AppState.UserData())
         appState.userData.selectedStore = .loaded(selectedStore)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByCardSelected, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
@@ -243,13 +244,15 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         XCTAssertEqual(checkoutState, .card)
         XCTAssertFalse(sut.handleGlobalPayment)
+        eventLogger.verify()
     }
     
-    func test_givenSelectedStoreWithWorldpayPaymentGateway_whenPayByCardTapped_thenNavigateToPaymentHandlingIsCorrect() {
+    func test_givenSelectedStoreWithWorldpayPaymentGateway_whenPayByCardTapped_thenNavigateToPaymentHandlingIsCorrectAndSendEvent() {
         let selectedStore = RetailStoreDetails.mockedData
         var appState = AppState(userData: AppState.UserData())
         appState.userData.selectedStore = .loaded(selectedStore)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByCardSelected, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
@@ -259,9 +262,10 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         XCTAssertNil(checkoutState)
         XCTAssertTrue(sut.handleGlobalPayment)
+        eventLogger.verify()
     }
     
-    func test_givenStoreWithApplePayGateway_whenPayByAppleTapped_thenNavigateToPaymentSuccessIsCorrect() async {
+    func test_givenStoreWithApplePayGateway_whenPayByAppleTapped_thenNavigateToPaymentSuccessIsCorrectAndSendevent() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
         let timeZone = selectedStore.storeTimeZone
@@ -285,7 +289,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
@@ -295,9 +300,10 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         XCTAssertEqual(checkoutState, .paymentSuccess)
         container.services.verify(as: .checkout)
+        eventLogger.verify()
     }
     
-    func test_givenStoreWithoutApplePayGateway_whenPayByAppleTapped_thenDefaultToBusinessProfilePaymentGatewayAndNavigateToPaymentSuccessIsCorrect() async {
+    func test_givenStoreWithoutApplePayGateway_whenPayByAppleTapped_thenDefaultToBusinessProfilePaymentGatewayAndNavigateToPaymentSuccessIsCorrectAndSendEvent() async {
         let selectedStore = RetailStoreDetails.mockedData
         let businessProfile = BusinessProfile.mockedDataFromAPI
         let basket = Basket.mockedDataTomorrowSlot
@@ -323,7 +329,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
@@ -334,9 +341,10 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertEqual(checkoutState, .paymentSuccess)
         
         container.services.verify(as: .checkout)
+        eventLogger.verify()
     }
     
-    func test_givenStoreWithApplePayGateway_whenPayByAppleTappedAndReturnsNoBusinessOrderId_thenNavigateToPaymentHandlingIsCorrect() async {
+    func test_givenStoreWithApplePayGateway_whenPayByAppleTappedAndReturnsNoBusinessOrderId_thenNavigateToPaymentHandlingIsCorrectAndSendEvent() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
         let timeZone = selectedStore.storeTimeZone
@@ -345,7 +353,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: timeZone) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: timeZone) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: timeZone) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: "", publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String)]))
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked(checkoutService: [.processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: "", publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String)]))
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
@@ -354,6 +363,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         await sut.payByAppleTapped()
         
         container.services.verify(as: .checkout)
+        eventLogger.verify()
     }
     
     func test_givenStoreSupportsCheckoutCom_thenShowPayByCardIsTrue() {
@@ -451,7 +461,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showPayByCash)
     }
     
-    func test_givenTempTodayTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() async {
+    func test_givenTempTodayTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggersAndDoNotSendEvent() async {
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -460,7 +470,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let tempTodayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: slotStartTime, endTime: slotEndTime, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 5, fulfilmentIn: ""))
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
+        let eventLogger = MockedEventLogger()
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
@@ -472,9 +483,34 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertFalse(sut.processingPayByCash)
         XCTAssertEqual(checkoutState, .paymentSuccess)
         container.services.verify(as: .checkout)
+        eventLogger.verify()
     }
     
-    func test_givenBasketTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() async {
+    func test_givenTempTodayTimeSlot_whenPayByCashNotTapped_thenDoNotCreateDraftOrderTriggersAndDoSendEvent() async {
+        let today = Date().startOfDay
+        let slotStartTime = today.addingTimeInterval(60*30)
+        let slotEndTime = today.addingTimeInterval(60*60)
+        let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
+        let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        let tempTodayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: slotStartTime, endTime: slotEndTime, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 5, fulfilmentIn: ""))
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil, memberProfile: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByCashSelected, with: .firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
+        var checkoutState: CheckoutRootViewModel.CheckoutState?
+        let sut = makeSUT(container: container, checkoutState: { state in
+            checkoutState = state
+        })
+        
+        await sut.payByCashTapped()
+        
+        XCTAssertFalse(sut.processingPayByCash)
+        XCTAssertNil(checkoutState)
+        container.services.verify(as: .checkout)
+        eventLogger.verify()
+    }
+    
+    func test_givenBasketTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggersAndDoNotSendEvent() async {
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -483,7 +519,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
+        let eventLogger = MockedEventLogger()
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
@@ -495,6 +532,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertFalse(sut.processingPayByCash)
         XCTAssertEqual(checkoutState, .paymentSuccess)
         container.services.verify(as: .checkout)
+        eventLogger.verify()
     }
     
     func test_givenBusinessOrderId_whenHandleGlobalPaymentResultCalled_thenOutcomeSuccessful() {

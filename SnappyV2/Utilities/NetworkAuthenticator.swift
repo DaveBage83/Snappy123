@@ -320,6 +320,11 @@ class NetworkAuthenticator {
     private func requestURL<T: Decodable>(_ url: URL, connectionTimeout: TimeInterval, parameters: [String: Any]?, includeAccessToken: Bool = false) -> AnyPublisher<T, Error> {
 
         let config = URLSessionConfiguration.default
+        // total time allowed for the request - can includes pauses
+        config.timeoutIntervalForResource = connectionTimeout + 2
+        // maxiumum time allowed with no data being returned
+        config.timeoutIntervalForRequest = connectionTimeout
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

@@ -106,10 +106,13 @@ struct LoginHomeView: View {
         }
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showForgotPassword, sheetContent: NavigationView {
             ForgotPasswordView(
-                viewModel: .init(container: viewModel.container,
-                dismissHandler: { email in
-                    viewModel.forgotPasswordDismissed(sendingEmail: email)
-                })
+                viewModel: .init(
+                    container: viewModel.container,
+                    isInCheckout: viewModel.isInCheckout,
+                    dismissHandler: { email in
+                        viewModel.forgotPasswordDismissed(sendingEmail: email)
+                    }
+                )
             )
         })
     }

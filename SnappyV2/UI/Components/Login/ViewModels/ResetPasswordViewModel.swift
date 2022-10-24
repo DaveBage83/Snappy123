@@ -134,8 +134,4 @@ class ResetPasswordViewModel: ObservableObject {
         
         self.isLoading = false
     }
-    
-    func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "reset_password"])
-    }
 }

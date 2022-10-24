@@ -15,11 +15,13 @@ final class ForgotPasswordViewModel: ObservableObject {
     @Published var isLoading = false
         
     let container: DIContainer
+    let isInCheckout: Bool
     let dismissHandler: (String?) -> Void
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, dismissHandler: @escaping (String?) -> Void) {
+    init(container: DIContainer, isInCheckout: Bool, dismissHandler: @escaping (String?) -> Void) {
         self.container = container
+        self.isInCheckout = isInCheckout
         self.dismissHandler = dismissHandler
     }
     
@@ -46,6 +48,7 @@ final class ForgotPasswordViewModel: ObservableObject {
     }
     
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "reset_password"])
+        container.eventLogger.sendEvent(for: .viewScreen(isInCheckout ? .in : .outside, .resetPassword), with: .appsFlyer, params: [:])
+        container.eventLogger.sendEvent(for: .viewScreen(isInCheckout ? .in : .outside, .resetPassword), with: .firebaseAnalytics, params: [:])
     }
 }

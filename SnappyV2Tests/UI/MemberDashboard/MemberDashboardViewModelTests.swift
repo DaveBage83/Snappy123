@@ -298,7 +298,7 @@ class MemberDashboardViewModelTests: XCTestCase {
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "root_account"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .rootAccount), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
@@ -308,7 +308,7 @@ class MemberDashboardViewModelTests: XCTestCase {
     }
     
     func test_whenOnAppearAddressViewSendEvenTriggered_thenCorrectAppsFlyerEventCalled() {
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "delivery_address_list"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .deliveryAddressList), with: .appsFlyer, params: [:])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         

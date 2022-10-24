@@ -675,20 +675,21 @@ struct UserService: MemberServiceProtocol {
     }
     
     private func sendLoginEvent(loginContext: LoginContext) {
-        eventLogger.sendEvent(for: .login, with: .appsFlyer, params: [:])
-
-        let appEvent: AppEvent
+        
+        let inCheckout: AppEventInCheckout
         let method: LoginType
         switch loginContext {
         case let .atCheckout(loginType):
-            appEvent = .loginAtCheckout
+            inCheckout = .in
             method = loginType
         case let .outsideCheckout(loginType):
-            appEvent = .login
+            inCheckout = .outside
             method = loginType
         }
         
-        eventLogger.sendEvent(for: appEvent, with: .firebaseAnalytics, params: [AnalyticsParameterMethod: method.rawValue])
+        eventLogger.sendEvent(for: .login(inCheckout), with: .appsFlyer, params: [:])
+        
+        eventLogger.sendEvent(for: .login(inCheckout), with: .firebaseAnalytics, params: [AnalyticsParameterMethod: method.rawValue])
     }
     
     func getProfile(filterDeliveryAddresses: Bool, loginContext: LoginContext?) async throws {

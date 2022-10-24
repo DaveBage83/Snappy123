@@ -341,7 +341,7 @@ class OrderDetailsViewModel: ObservableObject {
 	}
 
     func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_order_detail"])
+        container.eventLogger.sendEvent(for: .viewScreen(nil, .pastOrderDetail), with: .appsFlyer, params: [:])
     }
 }
 

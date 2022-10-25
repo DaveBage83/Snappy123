@@ -426,31 +426,28 @@ struct DeliveryOfferBanner: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject var viewModel: DeliveryOfferBannerViewModel
-            
-    let container: DIContainer
-    
-    init(container: DIContainer, viewModel: DeliveryOfferBannerViewModel) {
+                
+    init(viewModel: DeliveryOfferBannerViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
-        self.container = container
     }
 
     func body(content: Content) -> some View {
         if viewModel.showDeliveryBanner {
             content
-            .highlightedItem(container: container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
+                .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
                 if viewModel.isDisabled == false, let orderMethod = viewModel.deliveryTierInfo.orderMethod {
                     viewModel.setOrderMethod(orderMethod)
                 }
             })])
             .disabled(viewModel.isDisabled)
             .snappyBottomSheet(
-                container: container,
+                container: viewModel.container,
                 item: $viewModel.selectedDeliveryTierInfo,
                 title: Strings.StoresView.DeliveryTiers.title.localized,
                 windowSize: mainWindowSize,
                 content: { orderMethod in
                     RetailStoreDeliveryTiers(viewModel: .init(
-                        container: container,
+                        container: viewModel.container,
                         deliveryOrderMethod: viewModel.selectedDeliveryTierInfo?.orderMethod,
                         currency: viewModel.deliveryTierInfo.currency))
                 })
@@ -462,7 +459,7 @@ struct DeliveryOfferBanner: ViewModifier {
 
 extension View {
     func withDeliveryOffer(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
-        modifier(DeliveryOfferBanner(container: container, viewModel: .init(deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
+        modifier(DeliveryOfferBanner(viewModel: .init(container: container, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
     }
 }
 

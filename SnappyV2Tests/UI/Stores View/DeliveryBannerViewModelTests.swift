@@ -366,7 +366,7 @@ class DeliveryBannerViewModelTests: XCTestCase {
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), runMemoryLeakTracking: Bool = true, deliveryTierInfo: DeliveryTierInfo, fromBasket: Bool) -> DeliveryOfferBannerViewModel {
         
         let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "Great British Pound")
-        
+
         let sut = DeliveryOfferBannerViewModel(container: container, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)
         
         // Tasks, in Xcode 14, trigger memory leaks, so they are stored and cancelled on deinit

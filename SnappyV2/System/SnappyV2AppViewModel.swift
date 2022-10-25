@@ -31,12 +31,20 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var urlToOpen: URL?
     @Published var showPushNotificationsEnablePromptView: Bool
     @Published var showVerifyMobileNumberView: Bool
+    @Published var showDriverMap: Bool = false
     
     private var pushNotificationsQueue: [DisplayablePushNotification] = []
     
     private var cancellables = Set<AnyCancellable>()
     
     private var previouslyEnteredForeground = false
+    
+    lazy var driverMapViewModel: DriverMapViewModel = {
+        DriverMapViewModel(container: container) { [weak self] in
+            guard let self = self else { return }
+            self.dismissDriverMap()
+        }
+    }()
     
     init(container: DIContainer, systemEventsHandler: SystemEventsHandlerProtocol) {
         
@@ -289,6 +297,11 @@ class SnappyV2AppViewModel: ObservableObject {
         container.appState.value.retailStoreReview = nil
         storeReview = nil
         container.appState.value.successToastStrings.append(Strings.StoreReview.StaticText.submittedMessage.localized)
+    }
+    
+    func dismissDriverMap() {
+        container.appState.value.pushNotifications.driverMapOpenNotification = nil
+        showDriverMap = false
     }
     
     func urlToOpenAttempted() {

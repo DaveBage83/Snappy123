@@ -474,6 +474,8 @@ class CheckoutRootViewModel: ObservableObject {
         switch state {
         case .details:
             container.eventLogger.sendEvent(for: .viewScreen(.in, .customerDetails), with: .firebaseAnalytics, params: [:])
+        case .paymentSelection:
+            container.eventLogger.sendEvent(for: .viewScreen(.in, .paymentOptions), with: .firebaseAnalytics, params: [:])
         default:
             break
         }

@@ -48,6 +48,7 @@ struct SnappyV2StudyApp: View {
     @State private var closePushNotificationView: ((DisplayablePushNotification?)->())? = nil
     @State private var closeRetailStoreReviewView: (()->())? = nil
     @State private var closeVerifyMobileNumberView: (()->())? = nil
+    @State private var closeDriverMapView: (()->())? = nil
     
     init(viewModel: SnappyV2AppViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
@@ -211,6 +212,42 @@ struct SnappyV2StudyApp: View {
         }
     }
     
+    private func showDriverMapView() {
+        if let closeDriverMapView = closeDriverMapView {
+            closeDriverMapView()
+        }
+        
+        guard let rootViewController = UIApplication.topViewController() else { return }
+        
+        let popup = UIHostingController(
+            rootView: ToastableViewContainer(
+                content: {
+                    DriverMapView(
+                        viewModel: viewModel.driverMapViewModel,
+                        isModal: true
+                    )
+                },
+                viewModel: .init(container: viewModel.container, isModal: true)
+            )
+        )
+        
+        popup.modalPresentationStyle = .overCurrentContext
+        popup.modalTransitionStyle = .crossDissolve
+        popup.view.backgroundColor = .clear
+        
+        rootViewController.present(
+            popup,
+            animated: true,
+            completion: { }
+        )
+        
+        closeDriverMapView = {
+            popup.dismiss(animated: true) {
+                closeDriverMapView = nil
+            }
+        }
+    }
+    
     var body: some View {
         ZStack {
             Group {
@@ -288,6 +325,11 @@ struct SnappyV2StudyApp: View {
         .onChange(of: viewModel.showVerifyMobileNumberView) { showPrompt in
             if showPrompt {
                 showVerifyMobileNumberView()
+            }
+        }
+        .onChange(of: viewModel.showDriverMap) { showDriverMap in
+            if showDriverMap {
+                showDriverMapView()
             }
         }
         .onChange(of: scenePhase) { newPhase in

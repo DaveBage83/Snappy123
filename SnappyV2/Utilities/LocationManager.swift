@@ -15,8 +15,10 @@ class LocationManager: NSObject, ObservableObject {
         case noLocationFound
     }
     
-    private let locationManager = CLLocationManager()
-    private var locationStatus: CLAuthorizationStatus?
+    let locationManager = CLLocationManager()
+    var locationStatus: CLAuthorizationStatus?
+    var isRequestingLocation = false
+
     @Published var lastLocation: CLLocation?
     
     @Published var showDeniedLocationAlert: Bool = false
@@ -24,12 +26,6 @@ class LocationManager: NSObject, ObservableObject {
     @Published var showUnknownErrorAlert: Bool = false
     
     @Published var error: Error?
-    
-    private var isRequestingLocation = false
-    
-    //Testing options
-    var testLocationAuthStatus: CLAuthorizationStatus?
-    var testLocation = CLLocation(latitude: CLLocationDegrees(60.15340293), longitude: CLLocationDegrees(-1.14356283)) //Lerwick, Shetland
     
     override init() {
         super.init()
@@ -61,30 +57,15 @@ class LocationManager: NSObject, ObservableObject {
     }
     
     func requestLocation() {
-        let statusToCheck: CLAuthorizationStatus?
-        if let testLocationAuthStatus {
-            statusToCheck = testLocationAuthStatus
-        } else {
-            statusToCheck = locationStatus
-        }
-        
-        switch statusToCheck {
+        switch locationStatus {
         case .some(.restricted), .some(.denied):
             showDeniedLocationAlert = true
         case .some(.authorizedAlways), .some(.authorizedWhenInUse):
-            if testLocationAuthStatus != nil {
-                self.locationManager(locationManager, didUpdateLocations: [testLocation])
-            } else {
                 locationManager.requestLocation()
-            }
         default:
             locationManager.requestWhenInUseAuthorization()
             isRequestingLocation = true //Attempt to get location after the authorisation status has been changed
         }
-    }
-
-    func setTestLocationStatus(status: CLAuthorizationStatus) {
-        self.testLocationAuthStatus = status
     }
     
 }

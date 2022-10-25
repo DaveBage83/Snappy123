@@ -33,7 +33,7 @@ class InitialViewModel: ObservableObject {
     
     let container: DIContainer
     
-    var locationManager = LocationManager()
+    var locationManager: LocationManager
     
     @Published var postcode: String
     
@@ -79,7 +79,14 @@ class InitialViewModel: ObservableObject {
     
     private let dateGenerator: () -> Date
     
-    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested, globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested, dateGenerator: @escaping () -> Date = Date.init) {
+    init(container: DIContainer,
+         search: Loadable<RetailStoresSearch> = .notRequested,
+         details: Loadable<RetailStoreDetails> = .notRequested,
+         slots: Loadable<RetailStoreTimeSlots> = .notRequested,
+         menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested,
+         globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested,
+         dateGenerator: @escaping () -> Date = Date.init,
+         locationManager: LocationManager = LocationManager()) {
         
         #if DEBUG
         self.postcode = "PA34 4AG"
@@ -99,7 +106,7 @@ class InitialViewModel: ObservableObject {
         self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)
         self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification?.data ?? [:])
         self._businessProfileIsLoaded = .init(initialValue: appState.value.businessData.businessProfile != nil)
-        
+        self.locationManager = locationManager
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
 

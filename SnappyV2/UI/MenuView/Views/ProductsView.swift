@@ -85,7 +85,9 @@ struct ProductsView: View {
             if #available(iOS 15.0, *) {
                 mainContent
                     .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: Strings.ProductsView.ProductCard.title.localized, windowSize: mainWindowSize) { item in
-                        bottomSheet(selectedItem: item)
+                        ToastableViewContainer(content: {
+                            bottomSheet(selectedItem: item)
+                        }, viewModel: .init(container: viewModel.container, isModal: true))
                     }
             } else {
                 mainContent

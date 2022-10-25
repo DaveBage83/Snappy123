@@ -427,31 +427,30 @@ struct DeliveryOfferBanner: ViewModifier {
     
     @StateObject var viewModel: DeliveryOfferBannerViewModel
             
-    init(viewModel: DeliveryOfferBannerViewModel) {
+    let container: DIContainer
+    
+    init(container: DIContainer, viewModel: DeliveryOfferBannerViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
+        self.container = container
     }
-    
-    private var colorPalette: ColorPalette {
-        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
-    }
-    
+
     func body(content: Content) -> some View {
         if viewModel.showDeliveryBanner {
             content
-            .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
+            .highlightedItem(container: container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
                 if viewModel.isDisabled == false, let orderMethod = viewModel.deliveryTierInfo.orderMethod {
                     viewModel.setOrderMethod(orderMethod)
                 }
             })])
             .disabled(viewModel.isDisabled)
             .snappyBottomSheet(
-                container: viewModel.container,
+                container: container,
                 item: $viewModel.selectedDeliveryTierInfo,
                 title: Strings.StoresView.DeliveryTiers.title.localized,
                 windowSize: mainWindowSize,
                 content: { orderMethod in
                     RetailStoreDeliveryTiers(viewModel: .init(
-                        container: viewModel.container,
+                        container: container,
                         deliveryOrderMethod: viewModel.selectedDeliveryTierInfo?.orderMethod,
                         currency: viewModel.deliveryTierInfo.currency))
                 })
@@ -463,7 +462,7 @@ struct DeliveryOfferBanner: ViewModifier {
 
 extension View {
     func withDeliveryOffer(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
-        modifier(DeliveryOfferBanner(viewModel: .init(container: container, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
+        modifier(DeliveryOfferBanner(container: container, viewModel: .init(deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
     }
 }
 

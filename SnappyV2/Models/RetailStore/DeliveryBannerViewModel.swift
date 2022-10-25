@@ -8,7 +8,6 @@
 import Foundation
 
 class DeliveryOfferBannerViewModel: ObservableObject {
-    let container: DIContainer
     let deliveryTierInfo: DeliveryTierInfo
 
     @Published var selectedDeliveryTierInfo: DeliveryTierInfo?
@@ -64,8 +63,7 @@ class DeliveryOfferBannerViewModel: ObservableObject {
         deliveryBannerText != nil
     }
         
-    init(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) {
-        self.container = container
+    init(deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) {
         self.deliveryTierInfo = deliveryTierInfo
         self.fromBasket = fromBasket
         self.currency = currency

@@ -286,13 +286,11 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
         }
     }
     
-    @ViewBuilder func body(content: Content) -> some View {
-        ToastableViewContainer(content: {
-            content
-                .onChange(of: item) { _ in
-                    present()
-                }
-        }, viewModel: .init(container: container, isModal: true))
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: item) { _ in
+                present()
+            }
     }
 }
 

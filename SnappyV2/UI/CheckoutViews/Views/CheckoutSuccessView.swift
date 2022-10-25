@@ -114,7 +114,9 @@ struct CheckoutSuccessView: View {
         }
         .background(colorPalette.backgroundMain)
         .snappyBottomSheet(container: viewModel.container, item: $viewModel.triggerBottomSheet, title: nil, windowSize: mainWindowSize, content: {_ in
-            mentionMe
+            ToastableViewContainer(content: {
+                mentionMe
+            }, viewModel: .init(container: viewModel.container, isModal: true))
         })
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
                      sheetContent: MentionMeWebView(

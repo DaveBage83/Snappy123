@@ -426,19 +426,15 @@ struct DeliveryOfferBanner: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject var viewModel: DeliveryOfferBannerViewModel
-            
+                
     init(viewModel: DeliveryOfferBannerViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
     }
-    
-    private var colorPalette: ColorPalette {
-        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
-    }
-    
+
     func body(content: Content) -> some View {
         if viewModel.showDeliveryBanner {
             content
-            .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
+                .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
                 if viewModel.isDisabled == false, let orderMethod = viewModel.deliveryTierInfo.orderMethod {
                     viewModel.setOrderMethod(orderMethod)
                 }

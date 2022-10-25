@@ -65,10 +65,10 @@ class DeliveryOfferBannerViewModel: ObservableObject {
     }
         
     init(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) {
-        self.container = container
         self.deliveryTierInfo = deliveryTierInfo
         self.fromBasket = fromBasket
         self.currency = currency
+        self.container = container
     }
     
     func setOrderMethod(_ orderMethod: RetailStoreOrderMethod) {

@@ -48,9 +48,11 @@ struct BasketListItemView: View {
         VStack {
             if viewModel.bannerDetails.isEmpty == false {
                 listItem
+                    .padding([.horizontal, .top], Constants.Main.missedPromosPadding)
                     .highlightedItem(container: viewModel.container, banners: viewModel.bannerDetails)
             } else {
                 listItem
+                    .padding(.horizontal, Constants.Main.missedPromosPadding)
             }
         }
         .sheet(item: $viewModel.complexItemShown) { item in
@@ -98,7 +100,6 @@ struct BasketListItemView: View {
             }
             
         }
-        .padding([.top, .horizontal], viewModel.hasMissedPromotions ? Constants.Main.missedPromosPadding : 0)
         .cornerRadius(Constants.Main.cornerRadius, corners: [.topLeft, .topRight])
     }
     

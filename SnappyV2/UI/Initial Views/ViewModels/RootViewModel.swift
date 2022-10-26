@@ -15,14 +15,6 @@ class RootViewModel: ObservableObject {
     @Published var selectedTab: Tab
     @Published var basketTotal: String?
     @Published var showAddItemToBasketToast: Bool
-    @Published var displayDriverMap: Bool = false
-    
-    lazy var driverMapViewModel: DriverMapViewModel = {
-        DriverMapViewModel(container: container) { [weak self] in
-            guard let self = self else { return }
-            self.dismissDriverMap()
-        }
-    }()
     
     private var showing = false
     private var cancellables = Set<AnyCancellable>()
@@ -36,10 +28,7 @@ class RootViewModel: ObservableObject {
         setupBindToSelectedTab(with: appState)
         setupBasketTotal(with: appState)
         setupShowToast(with: appState)
-        setupForegroundLastOrderDriverEnRouteCheck(with: appState)
-        setupPushNotificationLastOrderDriverEnRouteCheck(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
-        setupDisplayedDriverLocationCheck(with: appState)
     }
     
     private func setupShowToast(with appState: Store<AppState>) {
@@ -85,64 +74,6 @@ class RootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setupForegroundLastOrderDriverEnRouteCheck(with appState: Store<AppState>) {
-        appState
-            .map(\.system.isInForeground)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .asyncMap { [weak self] isInForeground in
-                guard
-                    let self = self,
-                    isInForeground && self.showing && appState.value.openViews.driverLocationMap == false
-                else { return }
-                // check if the last delivery order is in progress when returning from the background
-                try await self.getLastDeliveryOrderDriverLocation()
-            }
-            .sink { _ in }
-            .store(in: &cancellables)
-        
-        $displayDriverMap
-            .sink { [weak self] in
-                guard let self = self else { return }
-                appState.value.openViews.driverLocationMap = $0
-                if $0 == false {
-                    self.container.appState.value.routing.displayedDriverLocation = nil
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func setupPushNotificationLastOrderDriverEnRouteCheck(with appState: Store<AppState>) {
-        appState
-            .map(\.pushNotifications.driverMapOpenNotification)
-            .filter { $0 != nil }
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .asyncMap { [weak self] _ in
-                guard
-                    let self = self,
-                    self.showing && appState.value.openViews.driverLocationMap == false
-                else { return }
-                try await self.getLastDeliveryOrderDriverLocation()
-            }
-            .sink { _ in }
-            .store(in: &cancellables)
-    }
-    
-    private func setupDisplayedDriverLocationCheck(with appState: Store<AppState>) {
-        appState
-            .map(\.routing.displayedDriverLocation)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] displayedDriverLocationParams in
-                guard
-                    let self = self,
-                    displayedDriverLocationParams != nil && self.driverMapViewModel.showing == false
-                else { return }
-                self.displayDriverMap = true
-            }
-            .store(in: &cancellables)
-    }
-    
     private func setupResetPaswordDeepLinkNavigation(with appState: Store<AppState>) {
         appState
             .map(\.passwordResetCode)
@@ -158,26 +89,8 @@ class RootViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
     
-    private func getLastDeliveryOrderDriverLocation() async throws {
-        if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
-            container.appState.value.routing.displayedDriverLocation = driverMapParameters
-        }
-    }
-    
-    func dismissDriverMap() {
-        container.appState.value.pushNotifications.driverMapOpenNotification = nil
-        displayDriverMap = false
-    }
-    
     func viewShown() {
         showing = true
-        // check if the last delivery order is in progress when first returning to this view
-        Task {
-            // Useful approach for testing without having to place an order.
-            //try await container.services.checkoutService.addTestLastDeliveryOrderDriverLocation()
-            
-            try await getLastDeliveryOrderDriverLocation()
-        }
     }
 
     func viewRemoved() {

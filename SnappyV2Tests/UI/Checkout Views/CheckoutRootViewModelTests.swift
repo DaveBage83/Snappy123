@@ -341,18 +341,19 @@ class CheckoutRootViewModelTests: XCTestCase {
     
     func test_whenCheckoutStateIsLogin_thenProgressStateIsNotStarted() {
         let sut = makeSUT()
-        sut.checkoutState = .login
         
         let expectation = expectation(description: "progressSetToNotStarted")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$checkoutState
+        sut.$progressState
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.checkoutState = .login
         
         wait(for: [expectation], timeout: 2)
         XCTAssertEqual(sut.progressState, .notStarted)
@@ -364,7 +365,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         let expectation = expectation(description: "progressSetToNotStarted")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$checkoutState
+        sut.$progressState
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -376,73 +377,86 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.progressState, .notStarted)
     }
     
-    func test_whenCheckoutStateIsDetails_thenProgressStateIsDetails() {
-        let sut = makeSUT()
-        sut.checkoutState = .details
+    func test_whenCheckoutStateIsDetails_thenProgressStateIsDetailsAndEventSent() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.in, .customerDetails), with: .firebaseAnalytics, params: [:])])
+        let sut = makeSUT(container: DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked()))
         
         let expectation = expectation(description: "progressSetToDetails")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$checkoutState
+        sut.$progressState
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.checkoutState = .details
+        
         wait(for: [expectation], timeout: 2)
         XCTAssertEqual(sut.progressState, .details)
+        eventLogger.verify()
     }
     
-    func test_whenCheckoutStateIsPaymentSelection_thenProgressStateIsPayment() {
-        let sut = makeSUT()
-        sut.checkoutState = .paymentSelection
+    func test_whenCheckoutStateIsPaymentSelection_thenProgressStateIsPaymentAndEventSent() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.in, .paymentOptions), with: .firebaseAnalytics, params: [:])])
+        let sut = makeSUT(container: DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked()))
+        
         let expectation = expectation(description: "progressSetToPayment")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$checkoutState
+        sut.$progressState
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.checkoutState = .paymentSelection
+        
         wait(for: [expectation], timeout: 2)
         XCTAssertEqual(sut.progressState, .payment)
+        eventLogger.verify()
     }
     
     func test_whenCheckoutStateIsCard_thenProgressStateIsPayment() {
         let sut = makeSUT()
-        sut.checkoutState = .card
         
         let expectation = expectation(description: "progressSetToPayment")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$checkoutState
+        sut.$progressState
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.checkoutState = .card
+        
         wait(for: [expectation], timeout: 2)
         XCTAssertEqual(sut.progressState, .payment)
     }
     
     func test_whenCheckoutStateIsPaymentSuccess_thenProgressStateIsCompleteSuccess() {
         let sut = makeSUT()
-        sut.checkoutState = .paymentSuccess
         
         let expectation = expectation(description: "progressSetToCompleteSuccess")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$checkoutState
+        sut.$progressState
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.checkoutState = .paymentSuccess
+        
         wait(for: [expectation], timeout: 2)
         XCTAssertEqual(sut.progressState, .completeSuccess)
     }

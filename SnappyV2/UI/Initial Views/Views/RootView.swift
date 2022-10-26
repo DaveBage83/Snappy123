@@ -55,14 +55,6 @@ struct RootView: View {
         .navigationViewStyle(.stack)
         .environment(\.tabViewHeight, tabViewHeight)
         .edgesIgnoringSafeArea(.bottom)
-        .snappySheet(
-            container: viewModel.container,
-            isPresented: $viewModel.displayDriverMap,
-            sheetContent: DriverMapView(
-                viewModel: viewModel.driverMapViewModel,
-                isModal: true
-            )
-        )
         .onAppear() {
             viewModel.viewShown()
         }

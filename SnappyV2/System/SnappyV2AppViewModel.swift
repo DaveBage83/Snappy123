@@ -31,6 +31,7 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var urlToOpen: URL?
     @Published var showPushNotificationsEnablePromptView: Bool
     @Published var showVerifyMobileNumberView: Bool
+    @Published var driverMapParameters: DriverLocationMapParameters?
     
     private var pushNotificationsQueue: [DisplayablePushNotification] = []
     
@@ -75,6 +76,8 @@ class SnappyV2AppViewModel: ObservableObject {
         setupShowPushNotificationsEnablePrompt(with: container.appState)
         setupURLToOpen(with: container.appState)
         setupShowVerifyMobileNumberView(with: container.appState)
+        setupPushNotificationLastOrderDriverEnRouteCheck(with: container.appState)
+        setupDisplayedDriverLocationCheck(with: container.appState)
         #endif
         
         setUpInitialView()
@@ -111,11 +114,10 @@ class SnappyV2AppViewModel: ObservableObject {
     }
     
     private func setupNotificationView() {
-        // no attempt to remove duplicates because similar incoming
-        // notifications may be receieved
         container.appState
             .map(\.pushNotifications.displayableNotification)
             .filter { $0 != nil }
+            .removeDuplicates()
             .sink { [weak self] displayableNotification in
                 guard
                     let self = self,
@@ -180,9 +182,56 @@ class SnappyV2AppViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupPushNotificationLastOrderDriverEnRouteCheck(with appState: Store<AppState>) {
+        appState
+            .map(\.pushNotifications.driverMapOpenNotification)
+            .filter { $0 != nil }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .asyncMap { [weak self] _ in
+                guard
+                    let self = self,
+                    appState.value.openViews.driverLocationMap == false
+                else { return }
+                try await self.getLastDeliveryOrderDriverLocation()
+            }
+            .sink { _ in }
+            .store(in: &cancellables)
+    }
+    
+    private func setupDisplayedDriverLocationCheck(with appState: Store<AppState>) {
+        appState
+            .map(\.routing.displayedDriverLocation)
+            .filter { $0 != nil }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] displayedDriverLocationParams in
+                guard
+                    let self = self,
+                    appState.value.openViews.driverLocationMap == false
+                else { return }
+                self.driverMapParameters = displayedDriverLocationParams
+            }
+            .store(in: &cancellables)
+        
+        $driverMapParameters
+            .sink { [weak self] in
+                guard let self = self else { return }
+                if $0 == nil {
+                    self.container.appState.value.routing.displayedDriverLocation = nil
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func getLastDeliveryOrderDriverLocation() async throws {
+        if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
+            container.appState.value.routing.displayedDriverLocation = driverMapParameters
+        }
+    }
+    
     private func setupSystemSceneState() {
         $isActive
-            .sink { [weak self] appIsActive in
+            .asyncMap { [weak self] appIsActive in
                 guard let self = self else { return }
                 if appIsActive {
                     self.container.eventLogger.initialiseLoggers(container: self.container)
@@ -192,11 +241,17 @@ class SnappyV2AppViewModel: ObservableObject {
                     #else
                     self.onetimeAfterActiveSetup()
                     #endif
+                    // Useful approach for testing without having to place an order.
+                    // try await self.container.services.checkoutService.addTestLastDeliveryOrderDriverLocation()
+                    
+                    // check if the last delivery order is in progress when returning from the background
+                    try await self.getLastDeliveryOrderDriverLocation()
                 } else {
                     // If the app is not active, we stop monitoring connectivity changes
                     self.networkMonitor.stopMonitoring()
                 }
             }
+            .sink { _ in }
             .store(in: &cancellables)
     }
     
@@ -289,6 +344,11 @@ class SnappyV2AppViewModel: ObservableObject {
         container.appState.value.retailStoreReview = nil
         storeReview = nil
         container.appState.value.successToastStrings.append(Strings.StoreReview.StaticText.submittedMessage.localized)
+    }
+    
+    func dismissDriverMap() {
+        container.appState.value.pushNotifications.driverMapOpenNotification = nil
+        driverMapParameters = nil
     }
     
     func urlToOpenAttempted() {

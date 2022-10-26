@@ -241,6 +241,32 @@ struct DriverMapView_Previews: PreviewProvider {
         DriverMapView(
             viewModel: .init(
                 container: .preview,
+                mapParameters: DriverLocationMapParameters(
+                    businessOrderId: 4290187,
+                    driverLocation: DriverLocation(
+                        orderId: 5978136,
+                        pusher: PusherConfiguration(
+                            clusterServer: "eu",
+                            appKey: "dd1506734a87e7be40d9"
+                        ),
+                        store: StoreLocation(
+                            latitude: 56.4087526,
+                            longitude: -5.4875930999999998
+                        ),
+                        delivery: OrderDeliveryLocationAndStatus(
+                            latitude: 37.3302,
+                            longitude: -122.0232,
+                            status: 5
+                        ),
+                        driver: DeliveryDriverLocationAndName(
+                            name: "Kevin Driver",
+                            latitude: 37.331002310000002,
+                            longitude: -122.03077622000001
+                        )
+                    ),
+                    lastDeliveryOrder: nil,
+                    placedOrder: nil
+                ),
                 dismissDriverMapHandler: {}
             )
         )

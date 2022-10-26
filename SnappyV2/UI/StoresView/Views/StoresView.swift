@@ -167,7 +167,7 @@ struct StoresView: View {
         SnappyTextFieldWithButton(
             container: viewModel.container,
             text: $viewModel.postcodeSearchString,
-            hasError: .constant(viewModel.invalidPostcodeError),
+            hasError: $viewModel.invalidPostcodeError,
             isLoading: .constant(viewModel.storesSearchIsLoading),
             showInvalidFieldWarning: .constant(false),
             autoCaps: .allCharacters,

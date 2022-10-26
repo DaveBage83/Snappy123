@@ -23,7 +23,7 @@ struct InitialView: View {
     typealias ViewStrings = Strings.InitialView
     
     // MARK: - Food item enum -> used for food item images
-        
+    
     private enum FoodItem {
         case tomato
         case orange
@@ -146,12 +146,12 @@ struct InitialView: View {
     // MARK: - State objects / properties
     
     @StateObject var viewModel: InitialViewModel
-
+    
     @State var isRotated = false // Controls when to rotate food items for animation
     @State var foodItemScale: CGFloat = 0.0 // Controls scale of food item animation
     
     // MARK: - Computed variables
-
+    
     // Postcode search bar height needs to be relative to screen height
     private var postcodeSearchBarViewHeight: CGFloat {
         mainWindowSize.height / 15
@@ -181,37 +181,46 @@ struct InitialView: View {
                 navigationLinks
                 backgroundView
                 
-                if viewModel.businessProfileIsLoaded {
+                VStack {
                     
-                    VStack {
+                    Image.Branding.Logo.white
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.Logo.width)
+                        .padding(.bottom, logoBottomPadding)
+                    
+                    if sizeCategory.size < Constants.General.minimalDisplayThreshold || sizeClass != .compact {
+                        Text(ViewStrings.tagline.localized)
+                            .font(.heading2)
+                            .foregroundColor(.white)
+                            .padding(.bottom, Constants.Tagline.bottomPadding)
                         
-                        Image.Branding.Logo.white
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.Logo.width)
-                            .padding(.bottom, logoBottomPadding)
+                        Text(ViewStrings.subTagline.localized)
+                            .font(.Body1.regular())
+                            .foregroundColor(.white)
+                            .padding(.bottom, postcodeSearchBarViewHeight / Constants.SubTagline.paddingDenominator)
                         
-                        if sizeCategory.size < Constants.General.minimalDisplayThreshold || sizeClass != .compact {
-                            Text(ViewStrings.tagline.localized)
-                                .font(.heading2)
+                        if viewModel.isRestoring {
+                            Text(Strings.InitialView.restoring.localized)
+                                .font(.Body1.semiBold())
                                 .foregroundColor(.white)
-                                .padding(.bottom, Constants.Tagline.bottomPadding)
-                            
-                            Text(ViewStrings.subTagline.localized)
-                                .font(.Body1.regular())
-                                .foregroundColor(.white)
-                                .padding(.bottom, postcodeSearchBarViewHeight / Constants.SubTagline.paddingDenominator)
+                        } else if viewModel.businessProfileIsLoading {
+                            Text("x") // Will not be visible as clear colour but ensures correct spacing for this view
+                                .font(.Body1.semiBold())
+                                .foregroundColor(.clear)
                         }
                         
-                        postcodeSearchBarView()
+                        if viewModel.isRestoring || viewModel.businessProfileIsLoading {
+                            LoadingDotsView()
+                        }
                     }
                     
-                    .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
-                    .withLoadingToast(loading: $viewModel.isRestoring)
-                } else {
-                    
-                    Text("").withLoadingToast(loading: $viewModel.businessProfileIsLoading)
+                    if viewModel.isRestoring == false, viewModel.businessProfileIsLoaded {
+                        postcodeSearchBarView()
+                    }
                 }
+                
+                .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -228,7 +237,7 @@ struct InitialView: View {
                     AccountButton(container: viewModel.container) {
                         viewModel.navigateToUserArea()
                     }
-                    .opacity(viewModel.businessProfileIsLoaded ? 1 : 0)
+                    .opacity(viewModel.showAccountButton ? 1 : 0)
                     .disabled(!viewModel.businessProfileIsLoaded)
                 }
             }
@@ -256,17 +265,17 @@ struct InitialView: View {
                                 .cancel(Text(Strings.General.cancel.localized), action: {
                                     viewModel.dismissLocationAlertTapped()
                                 })
-                        )
+                    )
                 case .errorLoadingBusinessProfile:
                     return Alert(
                         title:Text(Strings.InitialView.businessProfileAlertTitle.localized),
                         message: Text(Strings.InitialView.businessProfileAlertMessage.localized + "\n----\n" + (viewModel.businessProfileLoadingError?.localizedDescription ?? "")),
                         dismissButton: .default(Text(Strings.General.retry.localized), action: {
-                                Task {
-                                    await viewModel.loadBusinessProfile()
-                                }
-                            })
-                        )
+                            Task {
+                                await viewModel.loadBusinessProfile()
+                            }
+                        })
+                    )
                 }
             }
             .fullScreenCover(
@@ -343,6 +352,7 @@ struct InitialView: View {
     private func postcodeSearchBarView() -> some View {
         HStack {
             Spacer()
+
             VStack(spacing: Constants.PostcodeSearch.vSpacing) {
                 TextField(ViewStrings.postcodeSearch.localized, text: $viewModel.postcode)
                     .frame(height: postcodeSearchBarViewHeight)

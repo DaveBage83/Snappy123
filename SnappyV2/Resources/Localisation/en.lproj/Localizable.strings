@@ -117,6 +117,7 @@
 "initialview.businessprofilealertmessage" = "There was a problem connecting to our server. Please check your internet connection and try again.";
 "initialview.memberprofilealerttitle" = "Unable to fetch your member profile.";
 "initialview.memberprofilealertmessage" = "There was a problem connecting to our server. Please check your internet connection and try again.";
+"initialview.restoring" = "Just getting you back to where you left off...";
 
 // MARK: - CheckoutView
 

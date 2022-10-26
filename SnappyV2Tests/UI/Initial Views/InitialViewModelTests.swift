@@ -438,7 +438,28 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.viewState, .memberDashboard)
     }
-
+    
+    func test_whenIsRestoringIsTrueAndBusinessProfileLoadedIsTrue_thenShowAccountButtonFalse() {
+        let sut = makeSUT()
+        sut.isRestoring = true
+        sut.businessProfileIsLoaded = true
+        XCTAssertFalse(sut.showAccountButton)
+    }
+    
+    func test_whenIsRestoringIsFalseAndBusinessProfileLoadedIsFalse_thenShowAccountButtonFalse() {
+        let sut = makeSUT()
+        sut.isRestoring = false
+        sut.businessProfileIsLoaded = false
+        XCTAssertFalse(sut.showAccountButton)
+    }
+    
+    func test_whenIsRestoringIsFalseAndBusinessProfileLoadedIsTrue_thenShowAccountButtonTrue() {
+        let sut = makeSUT()
+        sut.isRestoring = false
+        sut.businessProfileIsLoaded = true
+        XCTAssertTrue(sut.showAccountButton)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> InitialViewModel {
         return InitialViewModel(container: container, dateGenerator: dateGenerator)
     }

@@ -57,7 +57,11 @@ class InitialViewModel: ObservableObject {
     }
     
     var showDriverStartShift: Bool {
-        container.appState.value.userData.memberProfile?.type == .driver && businessProfileIsLoaded
+        container.appState.value.userData.memberProfile?.type == .driver && businessProfileIsLoaded && isRestoring == false
+    }
+    
+    var showAccountButton: Bool {
+        businessProfileIsLoaded && isRestoring == false
     }
         
     @Published var driverDependencies: DriverDependencyInjectionContainer?
@@ -78,7 +82,7 @@ class InitialViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     private let dateGenerator: () -> Date
-    
+
     init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested, globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested, dateGenerator: @escaping () -> Date = Date.init) {
         
         #if DEBUG
@@ -115,9 +119,9 @@ class InitialViewModel: ObservableObject {
         setupDriverNotification(with: appState)
         setupBusinessProfileIsLoaded(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
-        setupShowDeniedLocationAlert()
+        setupShowDeniedLocationAlert()        
     }
-    
+
     private func restorePreviousState(with appState: Store<AppState>) async {
         isRestoring = true
         
@@ -329,6 +333,7 @@ class InitialViewModel: ObservableObject {
             try await container.services.businessProfileService.getProfile()
             businessProfileIsLoading = false
             showFirstView = true
+            isRestoring = true
             await restoreLastUser()
             await restorePreviousState(with: container.appState)
             

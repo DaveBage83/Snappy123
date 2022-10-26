@@ -309,6 +309,7 @@
 		556A31BD27908DC600794E3F /* SpecialOfferPillViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */; };
 		556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */; };
 		5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5584934728328B5A00F84AC1 /* DayChipTests.swift */; };
+		558579FF2908869C0017855B /* LoadingDotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558579FE2908869C0017855B /* LoadingDotsView.swift */; };
 		558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3D27A409CC0003756C /* ImageWebRepository.swift */; };
 		558CEC4027A40CEA0003756C /* ImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3F27A40CEA0003756C /* ImageService.swift */; };
 		558CEC4227A40F520003756C /* RemoteImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC4127A40F520003756C /* RemoteImageView.swift */; };
@@ -936,6 +937,7 @@
 		556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialOfferPillViewTests.swift; sourceTree = "<group>"; };
 		556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBannerViewTests.swift; sourceTree = "<group>"; };
 		5584934728328B5A00F84AC1 /* DayChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChipTests.swift; sourceTree = "<group>"; };
+		558579FE2908869C0017855B /* LoadingDotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingDotsView.swift; sourceTree = "<group>"; };
 		558CEC3D27A409CC0003756C /* ImageWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWebRepository.swift; sourceTree = "<group>"; };
 		558CEC3F27A40CEA0003756C /* ImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageService.swift; sourceTree = "<group>"; };
 		558CEC4127A40F520003756C /* RemoteImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageView.swift; sourceTree = "<group>"; };
@@ -3065,6 +3067,7 @@
 				559E5DE128E47AED0040FE98 /* CardOnBackgroundImageViewContainer.swift */,
 				554BDD7828E4A77F006E34DB /* SettingsButton.swift */,
 				5566B0BC28F5CDA600114BBE /* ToastableViewContainer.swift */,
+				558579FE2908869C0017855B /* LoadingDotsView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3532,6 +3535,7 @@
 				AF5D8CDC26C58E2E003C9C21 /* StoreCardInfoViewModel.swift in Sources */,
 				AFFAC2292702008A00DFE9A8 /* StoresViewModel.swift in Sources */,
 				0ADDC723276B3E2300D5EB24 /* UserWebRepository.swift in Sources */,
+				558579FF2908869C0017855B /* LoadingDotsView.swift in Sources */,
 				AFF1DE6E28B664620026FFA2 /* PaymentCardEntryView.swift in Sources */,
 				0AFCE701285B676100BC8325 /* Utility.swift in Sources */,
 				558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */,

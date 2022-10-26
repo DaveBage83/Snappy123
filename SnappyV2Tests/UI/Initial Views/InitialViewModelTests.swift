@@ -445,6 +445,27 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .memberDashboard)
     }
 
+    func test_whenIsRestoringIsTrueAndBusinessProfileLoadedIsTrue_thenShowAccountButtonFalse() {
+        let sut = makeSUT()
+        sut.isRestoring = true
+        sut.businessProfileIsLoaded = true
+        XCTAssertFalse(sut.showAccountButton)
+    }
+    
+    func test_whenIsRestoringIsFalseAndBusinessProfileLoadedIsFalse_thenShowAccountButtonFalse() {
+        let sut = makeSUT()
+        sut.isRestoring = false
+        sut.businessProfileIsLoaded = false
+        XCTAssertFalse(sut.showAccountButton)
+    }
+    
+    func test_whenIsRestoringIsFalseAndBusinessProfileLoadedIsTrue_thenShowAccountButtonTrue() {
+        let sut = makeSUT()
+        sut.isRestoring = false
+        sut.businessProfileIsLoaded = true
+        XCTAssertTrue(sut.showAccountButton)
+    }
+    
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),
@@ -455,4 +476,5 @@ class InitialViewModelTests: XCTestCase {
         let mockedLocationManager = MockedLocationManager(locationAuthStatus: locationAuthorisationStatus, setLocation: testLocation)
         return InitialViewModel(container: container, dateGenerator: dateGenerator, locationManager: mockedLocationManager)
     }
+    
 }

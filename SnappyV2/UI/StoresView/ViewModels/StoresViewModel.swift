@@ -86,6 +86,7 @@ class StoresViewModel: ObservableObject {
         setupRetailStoreTypes()
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
         setupOrderMethodStatusSections()
+        setupPostcodeError()
     }
     
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
@@ -94,6 +95,17 @@ class StoresViewModel: ObservableObject {
             .removeDuplicates()
 //            .receive(on: RunLoop.main) // iOS 16 purple warnings, but tests fail if on main thread
             .assignWeak(to: \.storeSearchResult, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupPostcodeError() {
+        $postcodeSearchString
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.invalidPostcodeError = false
+            }
             .store(in: &cancellables)
     }
     

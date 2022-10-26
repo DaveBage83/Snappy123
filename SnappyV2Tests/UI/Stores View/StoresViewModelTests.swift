@@ -833,6 +833,21 @@ class StoresViewModelTests: XCTestCase {
         container.services.verify(as: .retailStore)
         container.services.verify(as: .basket)
     }
+    
+    func test_whenPostcodeErrorPresent_whenPostcodeTextChanged_thenErrorResetToFalse() {
+        let sut = makeSUT()
+        var cancellables = Set<AnyCancellable>()
+        sut.invalidPostcodeError = true
+        sut.postcodeSearchString = "TES"
+        
+        sut.$postcodeSearchString
+            .dropFirst()
+            .first()
+            .sink { _ in
+                XCTAssertFalse(sut.invalidPostcodeError)
+            }
+            .store(in: &cancellables)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> StoresViewModel {
         let sut = StoresViewModel(container: container)

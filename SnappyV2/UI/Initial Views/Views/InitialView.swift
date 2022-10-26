@@ -237,7 +237,7 @@ struct InitialView: View {
                     AccountButton(container: viewModel.container) {
                         viewModel.navigateToUserArea()
                     }
-                    .opacity(viewModel.businessProfileIsLoaded ? 1 : 0)
+                    .opacity(viewModel.showAccountButton ? 1 : 0)
                     .disabled(!viewModel.businessProfileIsLoaded)
                 }
             }

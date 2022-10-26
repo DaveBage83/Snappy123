@@ -57,7 +57,11 @@ class InitialViewModel: ObservableObject {
     }
     
     var showDriverStartShift: Bool {
-        container.appState.value.userData.memberProfile?.type == .driver && businessProfileIsLoaded
+        container.appState.value.userData.memberProfile?.type == .driver && businessProfileIsLoaded && isRestoring == false
+    }
+    
+    var showAccountButton: Bool {
+        businessProfileIsLoaded && isRestoring == false
     }
         
     @Published var driverDependencies: DriverDependencyInjectionContainer?

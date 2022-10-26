@@ -101,11 +101,8 @@ class StoresViewModel: ObservableObject {
     private func setupPostcodeError() {
         $postcodeSearchString
             .dropFirst()
-            .map { postcode in
-                postcode.isEmpty
-            }
             .receive(on: RunLoop.main)
-            .sink { [weak self] empty in
+            .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.invalidPostcodeError = false
             }

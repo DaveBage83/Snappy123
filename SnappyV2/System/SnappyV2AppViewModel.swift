@@ -186,7 +186,6 @@ class SnappyV2AppViewModel: ObservableObject {
         appState
             .map(\.pushNotifications.driverMapOpenNotification)
             .filter { $0 != nil }
-            .print()
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .asyncMap { [weak self] _ in

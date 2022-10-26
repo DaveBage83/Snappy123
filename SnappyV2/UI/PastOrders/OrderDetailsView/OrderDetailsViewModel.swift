@@ -298,7 +298,7 @@ class OrderDetailsViewModel: ObservableObject {
         }
     }
     
-    func setDriverLocation() async throws {
+    private func setDriverLocation() async throws {
         do {
             try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: order.businessOrderId)
         } catch {

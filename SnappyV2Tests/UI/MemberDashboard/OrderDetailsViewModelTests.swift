@@ -170,36 +170,6 @@ class OrderDetailsViewModelTests: XCTestCase {
         sut.showTrackOrderButtonOverride = false
         XCTAssertFalse(sut.displayTrackOrderButton)
     }
-
-    func test_whenSetDriverLocationTriggered_thenDriverLocationCalled() async {
-        let driverLocation = DriverLocation.mockedDataEnRoute
-        let checkoutService = MockedCheckoutService(expected: [])
-        checkoutService.driverLocationResult = .success(driverLocation)
-        
-        let services = DIContainer.Services(
-            businessProfileService: MockedBusinessProfileService(expected: []),
-            retailStoreService: MockedRetailStoreService(expected: []),
-            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
-            basketService: MockedBasketService(expected: []),
-            memberService: MockedUserService(expected: []),
-            checkoutService: checkoutService,
-            addressService: MockedAddressService(expected: []),
-            utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
-            notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
-        )
-        
-        let sut = makeSUT(container: DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services), placedOrder: PlacedOrder.mockedData)
-                          
-        do {
-            try await sut.setDriverLocation()
-            XCTAssertEqual(sut.driverLocation, driverLocation)
-            
-        } catch {
-            XCTFail("Failed to set driver location: \(error)")
-        }
-    }
     
     func test_whenOrderProgressIs1AndGetDriverLocationIfOrderCompleteCalled_thenShowDetailsViewIsTrue() async {
         let sut = makeSUT(placedOrder: PlacedOrder.mockedDataStatusComplete)

@@ -8,6 +8,7 @@
 import XCTest
 import Combine
 import AppsFlyerLib
+import CoreLocation
 @testable import SnappyV2
 
 @MainActor
@@ -834,8 +835,37 @@ class StoresViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> StoresViewModel {
-        let sut = StoresViewModel(container: container)
+    func test_whenUserTapsLocationSearch_thenLocationManagerRetrievesUpdatedLocation() async {
+        let testLocation = CLLocation(latitude: CLLocationDegrees(60.15340293), longitude: CLLocationDegrees(-1.14356283)) //Lerwick, Shetland
+        let sut = makeSUT(locationAuthorisationStatus: .authorizedWhenInUse, testLocation: testLocation)
+        
+        await sut.searchViaLocationTapped()
+        
+        XCTAssertEqual(sut.locationManager.lastLocation, testLocation)
+    }
+    
+    func test_givenNoAccessToLocationData_whenUserSearchesLocation_thenLocationDeniedAlertShown() async {
+        let sut = makeSUT(locationAuthorisationStatus: .denied)
+        
+        await sut.searchViaLocationTapped()
+        XCTAssertTrue(sut.locationManager.showDeniedLocationAlert)
+    }
+    
+    func test_givenDetectedLocationIsUnknownAndUserIsAuthorised_whenUserSearchesLocation_thenLocationUnknownAlertShown() async {
+        let sut = makeSUT(locationAuthorisationStatus: .authorizedAlways, testLocation: nil)
+        await sut.searchViaLocationTapped()
+        
+        XCTAssertTrue(sut.locationManager.showLocationUnknownAlert)
+    }
+    
+    /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
+     and manually passing in the location/authorisation data required for testing. */
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),
+                 locationAuthorisationStatus: CLAuthorizationStatus = .notDetermined,
+                 testLocation: CLLocation? = nil) -> StoresViewModel {
+        
+        let mockedLocationManager = MockedLocationManager(locationAuthStatus: locationAuthorisationStatus, setLocation: testLocation)
+        let sut = StoresViewModel(container: container, locationManager: mockedLocationManager)
         
         trackForMemoryLeaks(sut)
         

@@ -36,7 +36,7 @@ class StoresViewModel: ObservableObject {
     @Published var showFulfilmentSlotSelection = false
     @Published var storeIsLoading = false
     private(set) var selectedStoreID: Int?
-    private var locationManager = LocationManager()
+    let locationManager: LocationManager
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -70,11 +70,13 @@ class StoresViewModel: ObservableObject {
 
     var isDeliverySelected: Bool { selectedOrderMethod == .delivery }
     
-    init(container: DIContainer) {
+    init(container: DIContainer,
+         locationManager: LocationManager = LocationManager()) {
         self.container = container
         let appState = container.appState
         
         self.postcodeSearchString = appState.value.userData.searchResult.value?.fulfilmentLocation.postcode ?? ""
+        self.locationManager = locationManager
         
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)

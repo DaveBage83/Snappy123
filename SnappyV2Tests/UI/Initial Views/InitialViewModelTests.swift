@@ -36,9 +36,9 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isLoading)
     }
     
-    func test_givenNoPreviousLocation_whenUserSearchesLocation_thenLocationDataSet() async {
+    func test_givenNoPreviousLocation_whenUserSearchesLocation_thenLocationDataIsReturned() async {
         
-        let testLocation = CLLocation(latitude: CLLocationDegrees(60.15340293), longitude: CLLocationDegrees(-1.14356283)) // Same location used within the mocked location manager
+        let testLocation = CLLocation(latitude: CLLocationDegrees(60.15340293), longitude: CLLocationDegrees(-1.14356283)) //Lerwick, Shetland
         let sut = makeSUT(locationAuthorisationStatus: .authorizedAlways, testLocation: testLocation)
                 
         await sut.searchViaLocationTapped()
@@ -48,7 +48,7 @@ class InitialViewModelTests: XCTestCase {
         
     // Location denied alert shown
     func test_givenNoAccessToLocationData_whenUserSearchesLocation_thenLocationDeniedAlertShown() async {
-        let sut = makeSUT(locationAuthorisationStatus: .denied) //need a way to set the authorisation status for the location manager
+        let sut = makeSUT(locationAuthorisationStatus: .denied)
         
         await sut.searchViaLocationTapped()
         XCTAssertTrue(sut.locationManager.showDeniedLocationAlert)
@@ -445,7 +445,7 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .memberDashboard)
     }
 
-    /*Location manager is difficult to mock via protocols, so I am using a partial mock by subclassing the real locationManager
+    /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),
                  dateGenerator: @escaping () -> Date = Date.init,

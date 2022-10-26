@@ -245,7 +245,19 @@ extension DriverLocationMapParameters {
     
     static let mockedWithLastOrderData = DriverLocationMapParameters(
         businessOrderId: 4290187,
-        driverLocation: DriverLocation.mockedDataEnRoute,
+        driverLocation:  DriverLocation(
+            orderId: 5978136,
+            pusher: PusherConfiguration(
+                clusterServer: "eu",
+                appKey: "dd1506734a87e7be40d9"
+            ),
+            store: StoreLocation(
+                latitude: 56.4087526,
+                longitude: -5.4875930999999998
+            ),
+            delivery: OrderDeliveryLocationAndStatus.mockedDataEnRoute,
+            driver: DeliveryDriverLocationAndName.mockedData
+        ),
         lastDeliveryOrder: LastDeliveryOrderOnDevice.mockedData,
         placedOrder: nil
     )

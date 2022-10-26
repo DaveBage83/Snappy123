@@ -46,7 +46,6 @@ class OrderDetailsViewModel: ObservableObject {
     let order: PlacedOrder
     @Published var repeatOrderRequested = false
     @Published var showDetailsView = false
-    @Published var showDriverMap = false
     @Published var showMapError = false
     @Published var showTrackOrderButtonOverride = false
     @Published var mapLoading = false
@@ -181,14 +180,6 @@ class OrderDetailsViewModel: ObservableObject {
         self.showTrackOrderButton = showTrackOrderButton
     }
     
-    func setDriverLocation() async throws {
-            do {
-                try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: order.businessOrderId)
-            } catch {
-                self.showMapError = true
-            }
-    }
-    
     // MARK: - Repeat order methods
     
     private func searchStore(address: Address) async throws {
@@ -307,6 +298,14 @@ class OrderDetailsViewModel: ObservableObject {
         }
     }
     
+    func setDriverLocation() async throws {
+        do {
+            try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: order.businessOrderId)
+        } catch {
+            self.showMapError = true
+        }
+    }
+    
     func getDriverLocationIfOrderIncomplete(orderProgress: Double) async {
         if orderProgress != 1 {
             do {
@@ -326,19 +325,22 @@ class OrderDetailsViewModel: ObservableObject {
             mapLoading = true
             try await setDriverLocation()
             mapLoading = false
-            if showTrackOrderButton {
-                showDriverMap = true
+            if
+                let driverLocation = driverLocation,
+                showTrackOrderButton
+            {
+                container.appState.value.routing.displayedDriverLocation = DriverLocationMapParameters(
+                    businessOrderId: order.businessOrderId,
+                    driverLocation: driverLocation,
+                    lastDeliveryOrder: nil,
+                    placedOrder: order
+                )
             }
         } catch {
             mapLoading = false
             showMapError = true
         }
     }
-    
-    func driverMapDismissAction() {
-        showTrackOrderButtonOverride = false
-        showDriverMap = false
-	}
 
     func onAppearSendEvent() {
         container.eventLogger.sendEvent(for: .viewScreen(nil, .pastOrderDetail), with: .appsFlyer, params: [:])

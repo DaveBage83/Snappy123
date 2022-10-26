@@ -15,9 +15,7 @@ import MapKit
 class DriverMapViewModelTests: XCTestCase {
 
     func test_when2CoordinatesProvided_calculateIntermediatePointAndBearingReturnsMidpointAndBearing() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        container.appState.value.routing.displayedDriverLocation = DriverLocationMapParameters.mockedWithPlacedOrderData
-        let sut = makeSUT(container: container, dismissMapAction: {})
+        let sut = makeSUT()
         
         let point1 = CLLocationCoordinate2D(latitude: 51.230780, longitude: -0.781580)
         let point2 = CLLocationCoordinate2D(latitude: 50.697130, longitude: -3.235880)
@@ -32,41 +30,17 @@ class DriverMapViewModelTests: XCTestCase {
     }
     
     func test_whenOrderCardVerticalUsageSet_thenMapRegionAdjusted() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        container.appState.value.routing.displayedDriverLocation = DriverLocationMapParameters.mockedWithPlacedOrderData
-        let sut = makeSUT(container: container, dismissMapAction: {})
+        let sut = makeSUT(mapParameters: DriverLocationMapParameters.mockedWithPlacedOrderData)
         sut.setOrderCardVerticalUsage(to: 0.2)
-        
-        var cancellables = Set<AnyCancellable>()
-        let expectation = expectation(description: #function)
-        
-        sut.$mapRegion
-            .filter { $0.center.longitude != 0 }
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        XCTAssertFalse(sut.showing)
-        
-        sut.viewShown()
-        
-        XCTAssertTrue(sut.showing)
-        
-        wait(for: [expectation], timeout: 2.0)
-        
+
         XCTAssertEqual(sut.mapRegion.center.latitude, 37.330440693)
         XCTAssertEqual(sut.mapRegion.center.longitude, -122.02698811)
     }
     
     func test_whenDismissMapTriggered_thenDismissDriverMapHandlerTriggered() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        container.appState.value.routing.displayedDriverLocation = DriverLocationMapParameters.mockedWithPlacedOrderData
-
         var test = 0
         
-        let sut = makeSUT(container: container) {
+        let sut = makeSUT() {
             test = 1
         }
         
@@ -76,7 +50,6 @@ class DriverMapViewModelTests: XCTestCase {
     
     func test_whenCallStoreAndDismissMapCalled_thenDismissHandlerTriggered() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        container.appState.value.routing.displayedDriverLocation = DriverLocationMapParameters.mockedWithPlacedOrderData
         
         var test = 0
         
@@ -89,9 +62,7 @@ class DriverMapViewModelTests: XCTestCase {
     }
     
     func test_whenMapToPlacedOrderSummaryCalledOnPlacedOrder_thenPlacedOrderMappedCorrectly() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        container.appState.value.routing.displayedDriverLocation = DriverLocationMapParameters.mockedWithPlacedOrderData
-        let sut = makeSUT(container: container, dismissMapAction: {})
+        let sut = makeSUT(mapParameters: DriverLocationMapParameters.mockedWithPlacedOrderData)
         
         let expectedPlacedOrderSummary = PlacedOrderSummary(
             id: 1963404,
@@ -102,16 +73,35 @@ class DriverMapViewModelTests: XCTestCase {
             fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
             totalPrice: 11.25)
         
-        sut.viewShown()
-        
         XCTAssertEqual(sut.placedOrderSummary, expectedPlacedOrderSummary)
     }
     
+    func test_whenViewShown_thenSetAppStateAndSendEvent() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(.outside, .driverLocationMap), with: .appsFlyer, params: [:])])
+        let sut = makeSUT(container: DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked()))
+        
+        XCTAssertFalse(sut.container.appState.value.openViews.driverLocationMap)
+        
+        sut.viewShown()
+        
+        XCTAssertTrue(sut.container.appState.value.openViews.driverLocationMap)
+        eventLogger.verify()
+    }
+    
+    func test_whenViewRemoved_thenSetAppState() {
+        let sut = makeSUT()
+        sut.container.appState.value.openViews.driverLocationMap = true
+        
+        sut.viewRemoved()
+        
+        XCTAssertFalse(sut.container.appState.value.openViews.driverLocationMap)
+    }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dismissMapAction: @escaping () -> Void) -> DriverMapViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), mapParameters: DriverLocationMapParameters = DriverLocationMapParameters.mockedWithLastOrderData, dismissMapAction: @escaping () -> Void = {}) -> DriverMapViewModel {
 
         DriverMapViewModel(
-            container: container
+            container: container,
+            mapParameters: mapParameters
         ) {
             dismissMapAction()
         }

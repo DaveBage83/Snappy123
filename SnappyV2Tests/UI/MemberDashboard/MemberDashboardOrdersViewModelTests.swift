@@ -260,6 +260,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
                 
         let userService = MockedUserService(expected: [.getPlacedOrder(businessOrderId: 123), .getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: Optional(10))])
         let checkoutService = MockedCheckoutService(expected: [.getDriverLocation(businessOrderId: 123)])
+        checkoutService.driverLocationResult = .success(.mockedDataEnRoute)
         let returnedOrder = PlacedOrder.mockedData
         
         let services = DIContainer.Services(
@@ -292,7 +293,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
                 
         let userService = MockedUserService(expected: [.getPlacedOrder(businessOrderId: 123), .getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: Optional(10))])
         let checkoutService = MockedCheckoutService(expected: [.getDriverLocation(businessOrderId: 123)])
-        checkoutService.driverLocationResult = .mockedDataDelivered
+        checkoutService.driverLocationResult = .success(.mockedDataDelivered)
         let returnedOrder = PlacedOrder.mockedData
         
         let services = DIContainer.Services(

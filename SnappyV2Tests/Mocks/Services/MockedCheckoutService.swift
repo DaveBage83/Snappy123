@@ -14,7 +14,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     var processNewCardPaymentOrderResult: (Int?, CheckoutCom3DSURLs?) = (nil, nil)
     var processSavedCardPaymentOrderResult: (Int?, CheckoutCom3DSURLs?) = (nil, nil)
     var processApplePaymentOrderResult: Int?
-    var driverLocationResult: DriverLocation = .mockedDataEnRoute
+    var driverLocationResult: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
     
     enum Action: Equatable {
         case createDraftOrder(
@@ -210,7 +210,12 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         register(
             .getDriverLocation(businessOrderId: businessOrderId)
         )
-        return driverLocationResult
+        switch driverLocationResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
     func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters? {

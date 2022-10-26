@@ -212,18 +212,27 @@ struct SnappyV2StudyApp: View {
         }
     }
     
-    private func showDriverMapView() {
+    private func showDriverMapView(_ driverMapParameters: DriverLocationMapParameters) {
         if let closeDriverMapView = closeDriverMapView {
             closeDriverMapView()
         }
         
         guard let rootViewController = UIApplication.topViewController() else { return }
         
+        let driverMapViewModel = DriverMapViewModel(
+            container: viewModel.container,
+            mapParameters: driverMapParameters,
+            dismissDriverMapHandler: {
+                viewModel.dismissDriverMap()
+                closeDriverMapView?()
+            }
+        )
+        
         let popup = UIHostingController(
             rootView: ToastableViewContainer(
                 content: {
                     DriverMapView(
-                        viewModel: viewModel.driverMapViewModel,
+                        viewModel: driverMapViewModel,
                         isModal: true
                     )
                 },
@@ -231,14 +240,16 @@ struct SnappyV2StudyApp: View {
             )
         )
         
-        popup.modalPresentationStyle = .overCurrentContext
+        popup.modalPresentationStyle = .automatic
         popup.modalTransitionStyle = .crossDissolve
         popup.view.backgroundColor = .clear
         
         rootViewController.present(
             popup,
             animated: true,
-            completion: { }
+            completion: {
+                driverMapViewModel.viewShown()
+            }
         )
         
         closeDriverMapView = {
@@ -278,27 +289,6 @@ struct SnappyV2StudyApp: View {
             // (2) when there might be a process before a parent view would be known and/or
             // the number of locations is so numerous that it significantly complicates the
             // app. E.g. Push notification enable prompt
-            
-//            if viewModel.showPushNotificationsEnablePromptView {
-//                PushNotificationsEnablePromptView(
-//                    viewModel: .init(
-//                        container: viewModel.container,
-//                        dismissPushNotificationViewHandler: {
-//                            viewModel.dismissEnableNotificationsPromptView()
-//                        }
-//                    )
-//                )
-//            } else if let pushNotification = viewModel.pushNotification {
-//                PushNotificationView(
-//                    viewModel: .init(
-//                        container: viewModel.container,
-//                        notification: pushNotification,
-//                        dismissPushNotificationViewHandler: {
-//                            viewModel.dismissNotificationView()
-//                        }
-//                    )
-//                )
-//            }
         }
         .onChange(of: viewModel.storeReview) { storeReview in
             if let storeReview = storeReview {
@@ -327,9 +317,9 @@ struct SnappyV2StudyApp: View {
                 showVerifyMobileNumberView()
             }
         }
-        .onChange(of: viewModel.showDriverMap) { showDriverMap in
-            if showDriverMap {
-                showDriverMapView()
+        .onChange(of: viewModel.driverMapParameters) { driverMapParameters in
+            if let driverMapParameters = driverMapParameters {
+                showDriverMapView(driverMapParameters)
             }
         }
         .onChange(of: scenePhase) { newPhase in

@@ -17,9 +17,8 @@ import PusherSwift
 final class DriverMapViewModel: ObservableObject {
 
     let container: DIContainer
+    private let mapParameters: DriverLocationMapParameters
     private let dismissDriverMapHandler: () -> Void
-    
-    private(set) var showing = false
     
     @Published var driverName: String?
     @Published var mapRegion: MKCoordinateRegion = MKCoordinateRegion()
@@ -30,7 +29,6 @@ final class DriverMapViewModel: ObservableObject {
     @Published var completedDeliveryAlertMessage = ""
     @Published var orderStatus: Int?
     
-    private var mapParameters: DriverLocationMapParameters?
     private var pusher: Pusher?
     private var pusherCallbackId: String?
     
@@ -63,7 +61,7 @@ final class DriverMapViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     var placedOrder: PlacedOrder? {
-        mapParameters?.placedOrder
+        mapParameters.placedOrder
     }
     
     var placedOrderSummary: PlacedOrderSummary? {
@@ -75,9 +73,9 @@ final class DriverMapViewModel: ObservableObject {
 
     private var storeContactNumber: String? {
         var rawTelephone: String?
-        if let telephone = mapParameters?.placedOrder?.store.telephone {
+        if let telephone = mapParameters.placedOrder?.store.telephone {
             rawTelephone = telephone
-        } else if let telephone = mapParameters?.lastDeliveryOrder?.storeContactNumber {
+        } else if let telephone = mapParameters.lastDeliveryOrder?.storeContactNumber {
             rawTelephone = telephone
         }
         // strip non digit characters
@@ -96,9 +94,17 @@ final class DriverMapViewModel: ObservableObject {
             totalPrice: placedOrder.totalPrice)
     }
     
-    init(container: DIContainer, dismissDriverMapHandler: @escaping () -> Void) {
+    init(container: DIContainer, mapParameters: DriverLocationMapParameters, dismissDriverMapHandler: @escaping () -> Void) {
         self.container = container
+        self.mapParameters = mapParameters
         self.dismissDriverMapHandler = dismissDriverMapHandler
+        
+        setupPushNotificationBinding(with: container.appState)
+        driverName = mapParameters.driverLocation.driver?.name
+        orderStatus = mapParameters.driverLocation.delivery?.status
+        setupMap()
+        setupPusher()
+        setupRefresh()
     }
     
     // Struct used to represent points on the map
@@ -267,7 +273,7 @@ final class DriverMapViewModel: ObservableObject {
             let newDriverLocation = DriverMapLocation(
                 id: driverLocationId,
                 type: .driver,
-                name: mapParameters?.driverLocation.driver?.name,
+                name: mapParameters.driverLocation.driver?.name,
                 coordinate: driversCurrentDisplayPosition,
                 bearing: currentBearing
             )
@@ -329,8 +335,6 @@ final class DriverMapViewModel: ObservableObject {
     }
 
     private func setupMap() {
-        guard let mapParameters = mapParameters else { return }
-        
         // starting driver location before the Pusher starts
         driversCurrentDisplayPosition = CLLocationCoordinate2D(
             latitude: mapParameters.driverLocation.driver?.latitude ?? 0,
@@ -460,10 +464,7 @@ final class DriverMapViewModel: ObservableObject {
     }
 
     private func setupPusher() {
-        guard
-            let mapParameters = mapParameters,
-            let pusherConfiguration = mapParameters.driverLocation.pusher
-        else {
+        guard let pusherConfiguration = mapParameters.driverLocation.pusher else {
             return
         }
         
@@ -518,37 +519,35 @@ final class DriverMapViewModel: ObservableObject {
             }
             showCompletedAlert = true
             // stop the automatic checking if it is the last delivery order case
-            if mapParameters?.lastDeliveryOrder != nil {
+            if mapParameters.lastDeliveryOrder != nil {
                 try await container.services.checkoutService.clearLastDeliveryOrderOnDevice()
             }
         }
     }
     
     private func getDriverLocationAndStatus() async {
-        if let businessOrderId = mapParameters?.businessOrderId {
-            do {
-                let driverLocation = try await container.services.checkoutService.getDriverLocation(businessOrderId: businessOrderId)
+        do {
+            let driverLocation = try await container.services.checkoutService.getDriverLocation(businessOrderId: mapParameters.businessOrderId)
+            
+            if
+                let driverLatitude = driverLocation.driver?.latitude,
+                let driverLongitude = driverLocation.driver?.longitude
+            {
+                driversCurrentDisplayPosition = CLLocationCoordinate2D(
+                    latitude: driverLatitude,
+                    longitude: driverLongitude
+                )
                 
-                if
-                    let driverLatitude = driverLocation.driver?.latitude,
-                    let driverLongitude = driverLocation.driver?.longitude
-                {
-                    driversCurrentDisplayPosition = CLLocationCoordinate2D(
-                        latitude: driverLatitude,
-                        longitude: driverLongitude
-                    )
-                    
-                    updateDriverMarker()
-                    calculateDisplayRegion()
-                }
-                
-                if let status = driverLocation.delivery?.status {
-                    try await processDriverOrderDeliverStatus(status: status)
-                }
-                
-            } catch {
-                Logger.driverMap.error("Fetching driver location or processing state error: \(error.localizedDescription)")
+                updateDriverMarker()
+                calculateDisplayRegion()
             }
+            
+            if let status = driverLocation.delivery?.status {
+                try await processDriverOrderDeliverStatus(status: status)
+            }
+            
+        } catch {
+            Logger.driverMap.error("Fetching driver location or processing state error: \(error.localizedDescription)")
         }
     }
     
@@ -611,17 +610,7 @@ final class DriverMapViewModel: ObservableObject {
     }
     
     func viewShown() {
-        showing = true
-        setupPushNotificationBinding(with: container.appState)
-        
-        if let displayedDriverLocation = container.appState.value.routing.displayedDriverLocation {
-            mapParameters = displayedDriverLocation
-            driverName = displayedDriverLocation.driverLocation.driver?.name
-            orderStatus = displayedDriverLocation.driverLocation.delivery?.status
-            setupMap()
-            setupPusher()
-            setupRefresh()
-        }
+        container.appState.value.openViews.driverLocationMap = true
         
         // uncomment when needing to development testing when no live driver server data
         // testPushUpdatesHandling()
@@ -634,7 +623,7 @@ final class DriverMapViewModel: ObservableObject {
     }
     
     func viewRemoved() {
-        showing = false
+        container.appState.value.openViews.driverLocationMap = false
     }
     
     deinit {

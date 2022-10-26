@@ -172,11 +172,29 @@ class OrderDetailsViewModelTests: XCTestCase {
     }
 
     func test_whenSetDriverLocationTriggered_thenDriverLocationCalled() async {
-        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
-        let expectedDriverLocation = DriverLocation.mockedDataEnRoute
+        let driverLocation = DriverLocation.mockedDataEnRoute
+        let checkoutService = MockedCheckoutService(expected: [])
+        checkoutService.driverLocationResult = .success(driverLocation)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let sut = makeSUT(container: DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services), placedOrder: PlacedOrder.mockedData)
+                          
         do {
             try await sut.setDriverLocation()
-            XCTAssertEqual(sut.driverLocation, expectedDriverLocation)
+            XCTAssertEqual(sut.driverLocation, driverLocation)
             
         } catch {
             XCTFail("Failed to set driver location: \(error)")
@@ -191,21 +209,124 @@ class OrderDetailsViewModelTests: XCTestCase {
         XCTAssertNil(sut.driverLocation)
     }
     
-    func test_whenDisplayDriverMapTriggered_thenDriverMapDisplayed() async {
-        let sut = makeSUT(placedOrder: PlacedOrder.mockedData, showTrackOrderButton: true)
-        sut.driverLocation = DriverLocation.mockedDataEnRoute
+    func test_whenDisplayDriverMapTriggered_thenDisplayedDriverLocationAppStateSetAfterGettingDriverLocation() async {
+        let order = PlacedOrder.mockedData
+        let driverLocation = DriverLocation.mockedDataEnRoute
+        let checkoutService = MockedCheckoutService(expected: [.getDriverLocation(businessOrderId: order.businessOrderId)])
+        checkoutService.driverLocationResult = .success(driverLocation)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let sut = makeSUT(
+            container: DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services),
+            placedOrder: order,
+            showTrackOrderButton: true
+        )
+        
+        let expectedDisplayedDriverLocation = DriverLocationMapParameters(
+            businessOrderId: order.businessOrderId,
+            driverLocation: driverLocation,
+            lastDeliveryOrder: nil,
+            placedOrder: order
+        )
+        
+        var mapLoadingWasTrue = false
+
+        let expectation = expectation(description: "mapLoading")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$mapLoading
+            .receive(on: RunLoop.main)
+            .sink { loading in
+                if loading {
+                    mapLoadingWasTrue = true
+                } else if mapLoadingWasTrue {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
         await sut.displayDriverMap()
-        XCTAssertTrue(sut.showDriverMap)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        sut.container.services.verify(as: .checkout)
+        XCTAssertEqual(sut.container.appState.value.routing.displayedDriverLocation, expectedDisplayedDriverLocation)
+        XCTAssertFalse(sut.mapLoading)
     }
     
-    func test_whenDriverMapDismissHandlerCalled_thenShowTrackOrderButtonOverrideAndShowDriverMapIsFalse() {
-        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
-        sut.driverMapDismissAction()
+    func test_whenDisplayDriverMapTriggeredWithErrorGettingDriverLocation_thenSetError() async {
+        let order = PlacedOrder.mockedData
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let checkoutService = MockedCheckoutService(expected: [.getDriverLocation(businessOrderId: order.businessOrderId)])
+        checkoutService.driverLocationResult = .failure(networkError)
         
-        XCTAssertFalse(sut.showDriverMap)
-        XCTAssertFalse(sut.showTrackOrderButtonOverride)
-        XCTAssertFalse(sut.displayTrackOrderButton)
-	}
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let sut = makeSUT(
+            container: DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services),
+            placedOrder: order,
+            showTrackOrderButton: true
+        )
+        
+        var mapLoadingWasTrue = false
+
+        let mapLoadingExpectation = expectation(description: "mapLoading")
+        let showMapErrorExpectation = expectation(description: "showMapError")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$mapLoading
+            .receive(on: RunLoop.main)
+            .sink { loading in
+                if loading {
+                    mapLoadingWasTrue = true
+                } else if mapLoadingWasTrue {
+                    mapLoadingExpectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        sut.$showMapError
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                showMapErrorExpectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        await sut.displayDriverMap()
+        
+        wait(for: [mapLoadingExpectation, showMapErrorExpectation], timeout: 2)
+        
+        sut.container.services.verify(as: .checkout)
+        XCTAssertNil(sut.container.appState.value.routing.displayedDriverLocation)
+        XCTAssertFalse(sut.mapLoading)
+        XCTAssertTrue(sut.showMapError)
+    }
 
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen(nil, .pastOrderDetail), with: .appsFlyer, params: [:])])

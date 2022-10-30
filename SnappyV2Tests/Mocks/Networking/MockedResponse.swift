@@ -23,7 +23,8 @@ extension RequestMocking.MockedResponse {
         case failedMockCreation
     }
     
-    init<T>(apiCall: APICall, baseURL: String,
+    init<T>(apiCall: APICall,
+            baseURL: String,
             result: Result<T, Swift.Error>,
             httpCode: HTTPCode = 200,
             headers: [String: String] = ["Content-Type": "application/json"],
@@ -45,6 +46,28 @@ extension RequestMocking.MockedResponse {
         case let .failure(error):
             self.result = .failure(error)
         }
+        self.httpCode = httpCode
+        self.headers = headers
+        self.loadingTime = loadingTime
+        customResponse = nil
+    }
+    
+    init(
+        apiCall: APICall,
+        baseURL: String,
+        apiErrorResult: APIErrorResult,
+        httpCode: HTTPCode = 200,
+        headers: [String: String] = ["Content-Type": "application/json"],
+        dateEncoding: JSONEncoder.DateEncodingStrategy = AppV2Constants.API.defaultTimeEncodingStrategy,
+        loadingTime: TimeInterval = 0.1
+    ) throws {
+        guard let url = try apiCall.urlRequest(baseURL: baseURL, forDebug: true).url
+            else { throw Error.failedMockCreation }
+        self.url = url
+        
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.dateEncodingStrategy = dateEncoding
+        self.result = .success(try jsonEncoder.encode(apiErrorResult))
         self.httpCode = httpCode
         self.headers = headers
         self.loadingTime = loadingTime

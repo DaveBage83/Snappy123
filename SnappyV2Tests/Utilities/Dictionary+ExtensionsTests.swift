@@ -1,5 +1,5 @@
 //
-//  Dictionary+Extensions.swift
+//  Dictionary+ExtensionsTests.swift
 //  SnappyV2Tests
 //
 //  Created by Kevin Palser on 20/02/2022.

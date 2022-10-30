@@ -16,9 +16,21 @@ struct AppEnvironment {
 
 extension AppEnvironment {
     static func bootstrap() -> AppEnvironment {
+        
+        var apiErrorEventHandler: (([String : Any]) -> Void)?
+        
         let appState = Store<AppState>(AppState())
-        let authenticator = configuredAuthenticator()
-        let networkHandler = configuredNetworkHandler(authenticator: authenticator)
+        let authenticator = configuredAuthenticator(
+            apiErrorEventHandler: { parameters in
+                apiErrorEventHandler?(parameters)
+            }
+        )
+        let networkHandler = configuredNetworkHandler(
+            authenticator: authenticator,
+            apiErrorEventHandler: { parameters in
+                apiErrorEventHandler?(parameters)
+            }
+        )
         let userDefaults = configuredUserDefaults()
         let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
         let dbRepositories = configuredDBRepositories(appState: appState) // Why is appState required?
@@ -28,6 +40,10 @@ extension AppEnvironment {
             appState: appState,
             webRepository: webRepositories.eventLogger
         )
+        apiErrorEventHandler = { parameters in
+            eventLogger.sendEvent(for: .apiError, with: .appsFlyer, params: parameters)
+            eventLogger.sendEvent(for: .apiError, with: .firebaseAnalytics, params: parameters)
+        }
         
         let services = configuredServices(
             appState: appState,
@@ -60,12 +76,12 @@ extension AppEnvironment {
         )
     }
     
-    private static func configuredAuthenticator() -> NetworkAuthenticator {
-        return NetworkAuthenticator.shared
+    private static func configuredAuthenticator(apiErrorEventHandler: @escaping ([String : Any]) -> Void) -> NetworkAuthenticator {
+        return NetworkAuthenticator(apiErrorEventHandler: apiErrorEventHandler)
     }
     
-    private static func configuredNetworkHandler(authenticator: NetworkAuthenticator) -> NetworkHandler {
-        return NetworkHandler(authenticator: authenticator, debugTrace: AppV2Constants.API.debugTrace)
+    private static func configuredNetworkHandler(authenticator: NetworkAuthenticator, apiErrorEventHandler: @escaping ([String : Any]) -> Void) -> NetworkHandler {
+        return NetworkHandler(authenticator: authenticator, debugTrace: AppV2Constants.API.debugTrace, apiErrorEventHandler: apiErrorEventHandler)
     }
     
     private static func configuredUserDefaults() -> UserDefaults {

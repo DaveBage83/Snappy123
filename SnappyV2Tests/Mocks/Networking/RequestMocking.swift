@@ -13,7 +13,8 @@ extension NetworkHandler {
         return NetworkHandler(
             authenticator: NetworkAuthenticator.shared,
             urlSessionConfiguration: URLSessionConfiguration.mockedResponsesOnly,
-            debugTrace: AppV2Constants.API.debugTrace
+            debugTrace: AppV2Constants.API.debugTrace,
+            apiErrorEventHandler: { _ in }
         )
     }
 }

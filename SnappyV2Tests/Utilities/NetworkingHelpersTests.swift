@@ -1,5 +1,5 @@
 //
-//  NetworkingHelpers.swift
+//  NetworkingHelpersTests.swift
 //  SnappyV2Tests
 //
 //  Created by Kevin Palser on 21/02/2022.

@@ -7,11 +7,14 @@
 
 import XCTest
 import Combine
+import CoreLocation
+
 @testable import SnappyV2
 
 // 3rd parties
 import KeychainAccess
 import DriverInterface
+
 
 @MainActor
 class InitialViewModelTests: XCTestCase {
@@ -33,27 +36,30 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isLoading)
     }
     
-    // Last location successfully set
-    func test_givenNoPreviousLocation_whenUserSearchesLocation_thenLocationDataSet() async {
-        let sut = makeSUT()
-        sut.locationManager.setTestLocationStatus(status: .authorizedAlways)
+    func test_givenNoPreviousLocation_whenUserSearchesLocation_thenLocationDataIsReturned() async {
         
+        let testLocation = CLLocation(latitude: CLLocationDegrees(60.15340293), longitude: CLLocationDegrees(-1.14356283)) //Lerwick, Shetland
+        let sut = makeSUT(locationAuthorisationStatus: .authorizedAlways, testLocation: testLocation)
+                
         await sut.searchViaLocationTapped()
-        XCTAssertEqual(sut.locationManager.testLocation, sut.locationManager.lastLocation) //Pre-set co-ordinate data matches
+        
+        XCTAssertEqual(testLocation, sut.locationManager.lastLocation)
     }
-    
+        
     // Location denied alert shown
     func test_givenNoAccessToLocationData_whenUserSearchesLocation_thenLocationDeniedAlertShown() async {
-        let sut = makeSUT()
-        sut.locationManager.setTestLocationStatus(status: .denied)
+        let sut = makeSUT(locationAuthorisationStatus: .denied)
         
         await sut.searchViaLocationTapped()
         XCTAssertTrue(sut.locationManager.showDeniedLocationAlert)
     }
     
     // Location unknown alert shown
-    func givenDetectedLocationIsUnknown_whenUserSearchesLocation_thenLocationUnknownAlertShown() {
+    func test_givenDetectedLocationIsUnknownAndUserIsAuthorised_whenUserSearchesLocation_thenLocationUnknownAlertShown() async {
+        let sut = makeSUT(locationAuthorisationStatus: .authorizedAlways, testLocation: nil)
+        await sut.searchViaLocationTapped()
         
+        XCTAssertTrue(sut.locationManager.showLocationUnknownAlert)
     }
         
     func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
@@ -438,7 +444,7 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.viewState, .memberDashboard)
     }
-    
+
     func test_whenIsRestoringIsTrueAndBusinessProfileLoadedIsTrue_thenShowAccountButtonFalse() {
         let sut = makeSUT()
         sut.isRestoring = true
@@ -460,7 +466,15 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showAccountButton)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> InitialViewModel {
-        return InitialViewModel(container: container, dateGenerator: dateGenerator)
+    /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
+     and manually passing in the location/authorisation data required for testing. */
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),
+                 dateGenerator: @escaping () -> Date = Date.init,
+                 locationAuthorisationStatus: CLAuthorizationStatus = .notDetermined,
+                 testLocation: CLLocation? = nil) -> InitialViewModel {
+        
+        let mockedLocationManager = MockedLocationManager(locationAuthStatus: locationAuthorisationStatus, setLocation: testLocation)
+        return InitialViewModel(container: container, dateGenerator: dateGenerator, locationManager: mockedLocationManager)
     }
+    
 }

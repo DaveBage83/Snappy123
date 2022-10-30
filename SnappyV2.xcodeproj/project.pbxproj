@@ -216,6 +216,7 @@
 		0AFE042528B921220036CCC9 /* NotificationContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFE042428B921220036CCC9 /* NotificationContentView.swift */; };
 		0AFE042728B9215B0036CCC9 /* NotificationContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFE042628B9215B0036CCC9 /* NotificationContentViewModel.swift */; };
 		0AFE042C28B92E7A0036CCC9 /* Logger+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDA2CE927DE0B2C00CE26B8 /* Logger+Extensions.swift */; };
+		221BEE602907E38400A660CD /* MockedLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221BEE5F2907E38400A660CD /* MockedLocationManager.swift */; };
 		229248F829003C1000AB26D4 /* LocationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229248F729003C1000AB26D4 /* LocationManagerTests.swift */; };
 		550ACC1827E0FC8C00B477F3 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */; };
 		550C91822899855000654C47 /* SnappyLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550C91812899855000654C47 /* SnappyLogo.swift */; };
@@ -844,6 +845,7 @@
 		0AFE041C28B912670036CCC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AFE042428B921220036CCC9 /* NotificationContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationContentView.swift; sourceTree = "<group>"; };
 		0AFE042628B9215B0036CCC9 /* NotificationContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationContentViewModel.swift; sourceTree = "<group>"; };
+		221BEE5F2907E38400A660CD /* MockedLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedLocationManager.swift; sourceTree = "<group>"; };
 		229248F729003C1000AB26D4 /* LocationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManagerTests.swift; sourceTree = "<group>"; };
 		550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		550C91812899855000654C47 /* SnappyLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyLogo.swift; sourceTree = "<group>"; };
@@ -1470,6 +1472,7 @@
 			isa = PBXGroup;
 			children = (
 				0A7E3108280838370008A647 /* MockedEventLogger.swift */,
+				221BEE5F2907E38400A660CD /* MockedLocationManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -3860,6 +3863,7 @@
 				0A3853EC28E7592000435B94 /* EventLoggerMockedData.swift in Sources */,
 				55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */,
 				0A4FA2D327A68A8300054ACA /* BasketServiceTests.swift in Sources */,
+				221BEE602907E38400A660CD /* MockedLocationManager.swift in Sources */,
 				0AA856EE27D036E600038072 /* BusinessProfileServiceTests.swift in Sources */,
 				0A0A920C28E4150100B8491A /* ResetPasswordViewModelTests.swift in Sources */,
 				AF82E6072808A97C0020ADBE /* NotificationServiceTests.swift in Sources */,

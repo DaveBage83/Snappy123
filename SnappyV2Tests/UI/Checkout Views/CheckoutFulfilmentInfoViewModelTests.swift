@@ -676,6 +676,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let firebaseParams: [String: Any] = [
             "order_id": 45565,
             "gateway": "globalpayments",
+            "payment_type": "card",
             "error": GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]).localizedDescription
         ]
         

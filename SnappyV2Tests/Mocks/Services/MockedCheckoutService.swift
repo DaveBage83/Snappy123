@@ -11,12 +11,14 @@ import Combine
 
 class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     
+    var currentDraftOrderIdResult: Int?
     var processNewCardPaymentOrderResult: (Int?, CheckoutCom3DSURLs?) = (nil, nil)
     var processSavedCardPaymentOrderResult: (Int?, CheckoutCom3DSURLs?) = (nil, nil)
-    var processApplePaymentOrderResult: Int?
+    var processApplePaymentOrderResult: Result<Int?, Error> = .failure(MockError.valueNotSet)
     var driverLocationResult: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
     
     enum Action: Equatable {
+        case currentDraftOrderId
         case createDraftOrder(
             fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
             paymentGateway: PaymentGatewayType,
@@ -41,6 +43,8 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         static func == (lhs: MockedCheckoutService.Action, rhs: MockedCheckoutService.Action) -> Bool {
             switch (lhs, rhs) {
 
+            case (.currentDraftOrderId, .currentDraftOrderId):
+                return true
             case (
                 let .createDraftOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions),
                 let .createDraftOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions)):
@@ -109,6 +113,11 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
+    }
+    
+    var currentDraftOrderId: Int? {
+        register(.currentDraftOrderId)
+        return currentDraftOrderIdResult
     }
     
     func createDraftOrder(
@@ -181,7 +190,12 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         register(
             .processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, paymentGatewayMode: paymentGatewayMode, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
         )
-        return processApplePaymentOrderResult
+        switch processApplePaymentOrderResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
     func processNewCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails, saveCardPaymentHandler: ((String) async throws -> ())?) async throws ->  (Int?, CheckoutCom3DSURLs?) {

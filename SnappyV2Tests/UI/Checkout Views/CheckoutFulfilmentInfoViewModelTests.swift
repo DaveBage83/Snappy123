@@ -275,7 +275,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: timeZone) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
         let checkoutService = MockedCheckoutService(expected: [.processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: "", publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String)])
-        checkoutService.processApplePaymentOrderResult = 439
+        checkoutService.processApplePaymentOrderResult = .success(439)
         let services = DIContainer.Services(
             businessProfileService: MockedBusinessProfileService(expected: []),
             retailStoreService: MockedRetailStoreService(expected: []),
@@ -315,7 +315,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: timeZone) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
         let checkoutService = MockedCheckoutService(expected: [.processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: "", publicKey: businessProfile.paymentGateways[0].fields?["publicKey"] as! String, merchantId: businessProfile.paymentGateways[0].fields?["applePayMerchantId"] as! String)])
-        checkoutService.processApplePaymentOrderResult = 439
+        checkoutService.processApplePaymentOrderResult = .success(439)
         let services = DIContainer.Services(
             businessProfileService: MockedBusinessProfileService(expected: []),
             retailStoreService: MockedRetailStoreService(expected: []),
@@ -353,14 +353,119 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: timeZone) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: timeZone) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: timeZone) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
-        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked(checkoutService: [.processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: "", publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String)]))
+        
+        let appsFlyerParams: [String : Any] = [
+            "price": 23.3,
+            "error": "Apple pay failed - BusinessOrderId not returned",
+            "order_id": 45565,
+            "payment_type": "apple_pay",
+            "payment_method": "checkoutcom",
+            "quantity": 1
+        ]
+        let firebaseParams: [String : Any] = [
+            "error": "Apple pay failed - BusinessOrderId not returned",
+            "order_id": 45565,
+            "payment_type": "apple_pay",
+            "gateway": "checkoutcom"
+        ]
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:]),
+            .sendEvent(for: .paymentFailure, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .paymentFailure, with: .firebaseAnalytics, params: firebaseParams)
+        ])
+        
+        let checkoutService = MockedCheckoutService(expected: [
+            .processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: "", publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String),
+            .currentDraftOrderId,
+            .currentDraftOrderId
+        ])
+        checkoutService.currentDraftOrderIdResult = 45565
+        checkoutService.processApplePaymentOrderResult = .success(nil)
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
         var checkoutState: CheckoutRootViewModel.CheckoutState?
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
         })
-        
         await sut.payByAppleTapped()
+        
+        XCTAssertNil(checkoutState)
+        
+        container.services.verify(as: .checkout)
+        eventLogger.verify()
+    }
+    
+    func test_givenStoreWithApplePayGateway_whenPayByAppleTappedAndThrowsError_thenNavigateToPaymentHandlingIsCorrectAndSendEvent() async {
+        let thrownError = APIErrorResult(errorCode: 409, errorText: "Payment processing error", errorDisplay: "error")
+        let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
+        let basket = Basket.mockedDataTomorrowSlot
+        let timeZone = selectedStore.storeTimeZone
+        let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData, staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())
+        let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: timeZone) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: timeZone) ?? "")"
+        let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: timeZone) ?? "", requestedTime: requestedTime)
+        let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
+        
+        let appsFlyerParams: [String : Any] = [
+            "price": 23.3,
+            "error": thrownError.errorDisplay,
+            "order_id": 45565,
+            "payment_type": "apple_pay",
+            "payment_method": "checkoutcom",
+            "quantity": 1
+        ]
+        let firebaseParams: [String : Any] = [
+            "error": thrownError.errorDisplay,
+            "order_id": 45565,
+            "payment_type": "apple_pay",
+            "gateway": "checkoutcom"
+        ]
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:]),
+            .sendEvent(for: .paymentFailure, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .paymentFailure, with: .firebaseAnalytics, params: firebaseParams)
+        ])
+        
+        let checkoutService = MockedCheckoutService(expected: [
+            .processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: "", publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String),
+            .currentDraftOrderId,
+            .currentDraftOrderId
+        ])
+        checkoutService.currentDraftOrderIdResult = 45565
+        checkoutService.processApplePaymentOrderResult = .failure(thrownError)
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
+        var checkoutState: CheckoutRootViewModel.CheckoutState?
+        let sut = makeSUT(container: container, checkoutState: { state in
+            checkoutState = state
+        })
+        await sut.payByAppleTapped()
+        
+        XCTAssertNil(checkoutState)
         
         container.services.verify(as: .checkout)
         eventLogger.verify()
@@ -550,27 +655,57 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     }
     
     func test_givenBusinessOrderIdAsNilAndError_whenHandleGlobalPaymentResultCalled_thenOutcomeUnsuccessful() {
-        var checkoutState: CheckoutRootViewModel.CheckoutState?
+        
         let basket = Basket.mockedData
         let member = MemberProfile.mockedData
-        var params: [String: Any] = [:]
         var totalItemQuantity: Int = 0
         for item in basket.items {
             totalItemQuantity += item.quantity
         }
-        params["quantity"] = totalItemQuantity
-        params["price"] = basket.orderTotal
-        params["payment_method"] = PaymentGatewayType.realex.rawValue
-        params["member_id"] = member.uuid
-        params["error"] = GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]).localizedDescription
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)])
+        
+        let appsFlyerParams: [String: Any] = [
+            "order_id": 45565,
+            "quantity": totalItemQuantity,
+            "price": basket.orderTotal,
+            "payment_method": "globalpayments",
+            "payment_type": "card",
+            "member_id": member.uuid,
+            "error": GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]).localizedDescription
+        ]
+        
+        let firebaseParams: [String: Any] = [
+            "order_id": 45565,
+            "gateway": "globalpayments",
+            "error": GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]).localizedDescription
+        ]
+        
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .paymentFailure, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .paymentFailure, with: .firebaseAnalytics, params: firebaseParams)
+        ])
         var appState = AppState()
         appState.userData.basket = basket
         appState.userData.memberProfile = member
-        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
-        let sut = makeSUT(container: container, checkoutState: { state in
-            checkoutState = state
-        })
+        
+        let checkoutService = MockedCheckoutService(expected: [])
+        checkoutService.currentDraftOrderIdResult = 45565
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
+        let sut = makeSUT(container: container, checkoutState: { _ in })
         
         sut.handleGlobalPaymentResult(businessOrderId: nil, error: GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]))
         

@@ -253,6 +253,48 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         }
     }
     
+    private func sendPaymentCardError(gateway: PaymentGatewayType, applePay: Bool, description: String) {
+        
+        var gatewayDescription: String
+        switch gateway {
+        case .realex:
+            gatewayDescription = "globalpayments"
+        default:
+            gatewayDescription = gateway.rawValue
+        }
+        
+        var appsFlyerParams: [String: Any] = [
+            "order_id": self.container.services.checkoutService.currentDraftOrderId ?? 0,
+            "payment_method": gatewayDescription,
+            "error": description,
+            "payment_type": applePay ? "apple_pay" : "card"
+        ]
+        
+        if let basket = self.basket {
+            var totalItemQuantity: Int = 0
+            for item in basket.items {
+                totalItemQuantity += item.quantity
+            }
+            appsFlyerParams["quantity"] = totalItemQuantity
+            appsFlyerParams["price"] = basket.orderTotal
+        }
+        
+        if let uuid = self.container.appState.value.userData.memberProfile?.uuid {
+            appsFlyerParams["member_id"] = uuid
+        }
+        
+        self.container.eventLogger.sendEvent(for: .paymentFailure, with: .appsFlyer, params: appsFlyerParams)
+        
+        var firebaseParams: [String: Any] = [
+            "order_id": self.container.services.checkoutService.currentDraftOrderId ?? 0,
+            "gateway": gatewayDescription,
+            "error": description,
+            "payment_type": applePay ? "apple_pay" : "card"
+        ]
+        
+        self.container.eventLogger.sendEvent(for: .paymentFailure, with: .firebaseAnalytics, params: firebaseParams)
+    }
+    
     private func setError(_ err: Error) {
         container.appState.value.errors.append(err)
     }
@@ -352,25 +394,11 @@ extension CheckoutFulfilmentInfoViewModel {
                 Logger.checkout.info("Payment succeeded - Business Order ID: \(businessOrderId)")
                 self.setCheckoutState(.paymentSuccess)
             } else if let error = error {
-                var params: [String: Any] = [:]
-                
-                if let basket = self.basket {
-                    var totalItemQuantity: Int = 0
-                    for item in basket.items {
-                        totalItemQuantity += item.quantity
-                    }
-                    
-                    params["quantity"] = totalItemQuantity
-                    params["price"] = basket.orderTotal
-                    params["payment_method"] = PaymentGatewayType.realex.rawValue
-                    params["error"] = error.localizedDescription
-                }
-                
-                if let uuid = self.container.appState.value.userData.memberProfile?.uuid {
-                    params["member_id"] = uuid
-                }
-                
-                self.container.eventLogger.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)
+                self.sendPaymentCardError(
+                    gateway: .realex,
+                    applePay: false,
+                    description: error.localizedDescription
+                )
                 Logger.checkout.error("Payment failed - Error: \(error.localizedDescription)")
                 self.setError(GenericError.somethingWrong)
             }
@@ -404,17 +432,31 @@ extension CheckoutFulfilmentInfoViewModel {
                 guard let _ = businessOrderId else {
                     Logger.checkout.error("Apple pay failed - BusinessOrderId not returned")
                     self.setError(GenericError.somethingWrong)
-
+                    sendPaymentCardError(
+                        gateway: .checkoutcom,
+                        applePay: true,
+                        description: "Apple pay failed - BusinessOrderId not returned"
+                    )
                     return
                 }
                 setCheckoutState(.paymentSuccess)
             } catch {
                 Logger.checkout.error("Apple pay failed - Error: \(error.localizedDescription)")
                 self.setError(error)
+                sendPaymentCardError(
+                    gateway: .checkoutcom,
+                    applePay: true,
+                    description: error.localizedDescription
+                )
             }
         } else {
             Logger.checkout.error("Apple pay failed - Missing publicKey or merchantId")
-            self.setError(GenericError.somethingWrong)
+            setError(GenericError.somethingWrong)
+            sendPaymentCardError(
+                gateway: .checkoutcom,
+                applePay: true,
+                description: "Missing publicKey or merchantId"
+            )
         }
     }
 }

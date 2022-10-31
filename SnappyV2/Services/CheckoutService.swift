@@ -66,6 +66,8 @@ extension CheckoutServiceError: LocalizedError {
 
 protocol CheckoutServiceProtocol: AnyObject {
     
+    var currentDraftOrderId: Int? { get }
+    
     // Create a draft order based on the current basket. If the order can be created immediately
     // i.e, no payment step for cash and loyalty paid orders, then the businessOrderId will be
     // returned. DraftOrderPaymentMethods is the saved payment cards - currently limited to Stripe.
@@ -203,6 +205,10 @@ final class CheckoutService: CheckoutServiceProtocol {
         self.checkoutComClient = checkoutComClient
     }
 
+    var currentDraftOrderId: Int? {
+        return draftOrderId
+    }
+    
     // Protocol Functions
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
@@ -814,12 +820,13 @@ extension CheckoutService {
         self.checkoutcomPaymentId = paymentId
     }
     
-    var exposeDraftOrderId: Int? { draftOrderId }
     var exposeCheckoutcomPaymentId: String? { checkoutcomPaymentId }
 }
 #endif
 
 final class StubCheckoutService: CheckoutServiceProtocol {
+
+    var currentDraftOrderId: Int? = nil
 
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,

@@ -1705,7 +1705,7 @@ final class VerifyCheckoutcomPaymentTests: CheckoutServiceTests {
             XCTFail("Unexpected error: \(error.localizedDescription)")
         }
         
-        XCTAssertNil(sut.exposeDraftOrderId)
+        XCTAssertNil(sut.currentDraftOrderId)
         XCTAssertNil(sut.exposeCheckoutcomPaymentId)
         mockedWebRepo.verify()
         mockedEventLogger.verify()

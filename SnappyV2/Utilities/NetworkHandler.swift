@@ -28,11 +28,18 @@ struct NetworkHandler {
     private let authenticator: NetworkAuthenticator
     private let urlSessionConfiguration: URLSessionConfiguration
     let debugTrace: Bool
+    private let apiErrorEventHandler: ([String : Any]) -> Void
         
-    init(authenticator: NetworkAuthenticator, urlSessionConfiguration: URLSessionConfiguration = .default, debugTrace: Bool = false) {
+    init(
+        authenticator: NetworkAuthenticator,
+        urlSessionConfiguration: URLSessionConfiguration = .default,
+        debugTrace: Bool = false,
+        apiErrorEventHandler: @escaping ([String : Any]) -> Void)
+    {
         self.authenticator = authenticator
         self.urlSessionConfiguration = urlSessionConfiguration
         self.debugTrace = debugTrace
+        self.apiErrorEventHandler = apiErrorEventHandler
     }
 
     func request<T: Decodable>(for request: URLRequest, dateDecoding: JSONDecoder.DateDecodingStrategy = AppV2Constants.API.defaultTimeDecodingStrategy) -> AnyPublisher<T, Error> {
@@ -48,7 +55,17 @@ struct NetworkHandler {
                     // flatMap over the CurrentValueSubject to kick off a network call whenever we receive a token
                     
                     return createDataPublisher(for: request, accessToken: accessToken)
-                        .mapError({ $0 as Error })
+                        .mapError {
+                            // raw network error
+                            apiErrorEventHandler(
+                                [
+                                    "url" : request.url?.absoluteString ?? "unknown",
+                                    "error": $0.localizedDescription,
+                                    "request_params": EventLogger.createParamsArrayString(httpBody: request.httpBody)
+                                ]
+                            )
+                            return $0 as Error
+                        }
                         .flatMap({ result -> AnyPublisher<T, Error> in
                             
                             if debugTrace {
@@ -57,6 +74,7 @@ struct NetworkHandler {
                             
                             if let errorPublisher: AnyPublisher<T, Error> = self.checkResultStatus(
                                 for: result,
+                                from: request,
                                 token: token,
                                 subject: tokenSubject,
                                 connectionTimeout: request.timeoutInterval,
@@ -73,6 +91,13 @@ struct NetworkHandler {
                                         .setFailureType(to: Error.self)
                                         .eraseToAnyPublisher()
                                 } else {
+                                    apiErrorEventHandler(
+                                        [
+                                            "url" : request.url?.absoluteString ?? "unknown",
+                                            "error": "unable to decode Data",
+                                            "request_params": EventLogger.createParamsArrayString(httpBody: request.httpBody)
+                                        ]
+                                    )
                                     return Fail(outputType: T.self, failure: NetworkHandlerError.couldNotDecodeToData)
                                         .eraseToAnyPublisher()
                                 }
@@ -85,7 +110,7 @@ struct NetworkHandler {
                                 
                                 // The standard localizedDescription is too vague:
                                 // https://stackoverflow.com/questions/46959625/the-data-couldn-t-be-read-because-it-is-missing-error-when-decoding-json-in-sw/53231548
-                                let jsonError: Error!
+                                let jsonError: Error
                                 
                                 do {
                                     let model = try decoder.decode(T.self, from: result.data)
@@ -110,6 +135,15 @@ struct NetworkHandler {
                                 if debugTrace {
                                     print(jsonError.localizedDescription)
                                 }
+                                
+                                apiErrorEventHandler(
+                                    [
+                                        "url" : request.url?.absoluteString ?? "unknown",
+                                        "error": "unable to decode JSON",
+                                        "response": jsonError.localizedDescription,
+                                        "request_params": EventLogger.createParamsArrayString(httpBody: request.httpBody)
+                                    ]
+                                )
                                      
                                 return Fail(outputType: T.self, failure: jsonError)
                                     .eraseToAnyPublisher()
@@ -150,7 +184,17 @@ struct NetworkHandler {
                     // flatMap over the CurrentValueSubject to kick off a network call whenever we receive a token
                     
                     return createDataPublisher(for: request, accessToken: accessToken)
-                        .mapError({ $0 as Error })
+                        .mapError {
+                            // raw network error
+                            apiErrorEventHandler(
+                                [
+                                    "url" : request.url?.absoluteString ?? "unknown",
+                                    "error": $0.localizedDescription,
+                                    "request_params": EventLogger.createParamsArrayString(httpBody: request.httpBody)
+                                ]
+                            )
+                            return $0 as Error
+                        }
                         .flatMap({ result -> AnyPublisher<Data, Error> in
                             
                             if debugTrace {
@@ -159,6 +203,7 @@ struct NetworkHandler {
                             
                             if let errorPublisher: AnyPublisher<Data, Error> = self.checkResultStatus(
                                 for: result,
+                                from: request,
                                 token: token,
                                 subject: tokenSubject,
                                 connectionTimeout: request.timeoutInterval,
@@ -220,7 +265,13 @@ struct NetworkHandler {
         return URLSession(configuration: config).dataTaskPublisher(for: request)
     }
     
-    private func checkResultStatus<T>(for result: URLSession.DataTaskPublisher.Output, token: NetworkAuthenticator.Token, subject: CurrentValueSubject<(NetworkAuthenticator.Token, Int?), Error>, connectionTimeout: TimeInterval, cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void) -> AnyPublisher<T, Error>? {
+    private func checkResultStatus<T>(
+        for result: URLSession.DataTaskPublisher.Output,
+        from request: URLRequest,
+        token: NetworkAuthenticator.Token, subject: CurrentValueSubject<(NetworkAuthenticator.Token, Int?), Error>,
+        connectionTimeout: TimeInterval,
+        cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void
+    ) -> AnyPublisher<T, Error>? {
         
         if debugTrace {
             //print("RESULT: " + url.absoluteString)
@@ -266,6 +317,15 @@ struct NetworkHandler {
                 let decoder = JSONDecoder()
                 
                 if let apiError = try? decoder.decode(APIErrorResult.self, from: result.data) {
+                    
+                    apiErrorEventHandler(
+                        [
+                            "url" : result.response.url?.absoluteString ?? "unknown",
+                            "error": apiError.errorDisplay,
+                            "request_params": EventLogger.createParamsArrayString(httpBody: request.httpBody)
+                        ]
+                    )
+                    
                     return Fail(outputType: T.self, failure: apiError)
                         .eraseToAnyPublisher()
                 }

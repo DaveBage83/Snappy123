@@ -202,6 +202,12 @@ enum AppEvent: Equatable {
         case .payByCardSelected:                return "pay_by_card_pay_pressed"
         case .payByApplePaySelected:            return "pay_by_apple_pay_pressed"
         case .payByCashSelected:                return "pay_by_cash_pressed"
+        case .paymentFailure:                   return "card_payment_failed"
+        case .mentionMeError:                   return "mentionme_error"
+        case .mentionMeOfferView:               return "mentionme_offer_view"
+        case .mentionMeRefereeView:             return "mentionme_referee_view"
+        case .mentionMeDashboardView:           return "mentionme_dashboard_view"
+        case .apiError:                         return "api_error"
         default:                                return nil
         }
     }
@@ -526,6 +532,25 @@ class EventLogger: EventLoggerProtocol {
             items.append(item)
         }
         return items
+    }
+    
+    /// Helper function for building the string that contains the request for API failure events
+    static func createParamsArrayString(httpBody data: Data?) -> String {
+        guard let data = data else { return "" }
+        do {
+            if let parameters = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                return parameters.map {
+                    if ["password", "username", "emailAddress", "mobileContactNumber"].contains($0.0.lowercased()) {
+                        // As per instructions from Chris Rollin some identifying fields should
+                        // not be recorded on 3rd party systems
+                        return $0.0 + ":*censored*"
+                    } else {
+                        return $0.0 + ":" + String(describing: $0.1)
+                    }
+                }.joined(separator: ";")
+            }
+        } catch { }
+        return ""
     }
 }
 

@@ -312,6 +312,40 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         }
     }
     
+    private func sendPaymentCardError(gateway: String, applePay: Bool, description: String) {
+        
+        var appsFlyerParams: [String: Any] = [
+            "order_id": self.container.services.checkoutService.currentDraftOrderId ?? 0,
+            "payment_method": gateway,
+            "error": description,
+            "payment_type": applePay ? "apple_pay" : "card"
+        ]
+        
+        if let basket = self.basket {
+            var totalItemQuantity: Int = 0
+            for item in basket.items {
+                totalItemQuantity += item.quantity
+            }
+            appsFlyerParams["quantity"] = totalItemQuantity
+            appsFlyerParams["price"] = basket.orderTotal
+        }
+        
+        if let uuid = self.container.appState.value.userData.memberProfile?.uuid {
+            appsFlyerParams["member_id"] = uuid
+        }
+        
+        self.container.eventLogger.sendEvent(for: .paymentFailure, with: .appsFlyer, params: appsFlyerParams)
+        
+        var firebaseParams: [String: Any] = [
+            "order_id": self.container.services.checkoutService.currentDraftOrderId ?? 0,
+            "gateway": gateway,
+            "error": description,
+            "payment_type": applePay ? "apple_pay" : "card"
+        ]
+        
+        self.container.eventLogger.sendEvent(for: .paymentFailure, with: .firebaseAnalytics, params: firebaseParams)
+    }
+    
     private func setError(_ err: Error) {
         container.appState.value.errors.append(err)
     }
@@ -404,16 +438,19 @@ extension CheckoutPaymentHandlingViewModel {
                     return
                 } else {
                     Logger.checkout.error("Card payment failed - processCardPaymentOrder result empty")
-                    self.setError(CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty)
+                    setError(CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty)
+                    sendPaymentCardError(gateway: gateway.name, applePay: false, description: "processCardPaymentOrder result empty")
                 }
                 
             } else {
                 Logger.checkout.error("Card payment failed - Missing publicKey")
-                self.setError(CheckoutPaymentHandlingViewModelError.missingPublicKey)
+                setError(CheckoutPaymentHandlingViewModelError.missingPublicKey)
+                sendPaymentCardError(gateway: gateway.name, applePay: false, description: "Missing publicKey")
             }
         } else {
             Logger.checkout.error("Card payment failed - Missing draftOrderFulfilmentDetails")
-            self.setError(CheckoutPaymentHandlingViewModelError.missingDraftOrderFulfilmentDetails)
+            setError(CheckoutPaymentHandlingViewModelError.missingDraftOrderFulfilmentDetails)
+            sendPaymentCardError(gateway: gateway.name, applePay: false, description: "Missing draftOrderFulfilmentDetails")
         }
     }
     
@@ -427,7 +464,8 @@ extension CheckoutPaymentHandlingViewModel {
             paymentOutcome = .successful
         } catch {
             Logger.checkout.error("Card payment failed - verification failed")
-            self.setError(CheckoutPaymentHandlingViewModelError.verificationFailed)
+            setError(CheckoutPaymentHandlingViewModelError.verificationFailed)
+            sendPaymentCardError(gateway: PaymentGatewayType.checkoutcom.rawValue, applePay: false, description: "verification failed: " + error.localizedDescription)
         }
     }
     
@@ -435,7 +473,8 @@ extension CheckoutPaymentHandlingViewModel {
     func threeDSFail() {
         threeDSWebViewURLs = nil
         Logger.checkout.error("Card payment failed - 3DS verification failed")
-        self.setError(CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed)
+        setError(CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed)
+        sendPaymentCardError(gateway: PaymentGatewayType.checkoutcom.rawValue, applePay: false, description: "3DS verification failed")
     }
     
     func onAppearTrigger() async {

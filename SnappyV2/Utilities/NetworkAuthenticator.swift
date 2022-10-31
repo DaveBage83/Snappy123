@@ -11,7 +11,8 @@ import Combine
 // 3rd party
 import KeychainAccess
 
-struct APIErrorResult: Decodable, Error, Equatable {
+// The APIErrorResult is Codable instead of Decodable to facilitate testing
+struct APIErrorResult: Codable, Error, Equatable {
 
     var errorCode: Int
     var errorText: String
@@ -129,6 +130,8 @@ class NetworkAuthenticator {
     private let accessTokenKey = "accessToken"
     private let refreshTokenKey = "refreshToken"
     
+    private let apiErrorEventHandler: ([String : Any]) -> Void
+    
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
     private var currentToken: Token
@@ -148,7 +151,8 @@ class NetworkAuthenticator {
         authenticateURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.authenticationURL)!,
         signOutURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.signOutURL)!,
         accessToken: String? = nil,
-        refreshToken: String? = nil
+        refreshToken: String? = nil,
+        apiErrorEventHandler: @escaping ([String : Any]) -> Void = { _ in }
     ) {
         
         self.authenticationURL = authenticateURL
@@ -171,6 +175,8 @@ class NetworkAuthenticator {
                 refreshToken: keychain[refreshTokenKey]
             )
         }
+        
+        self.apiErrorEventHandler = apiErrorEventHandler
     }
     
     func refreshToken<S: Subject>(
@@ -205,6 +211,7 @@ class NetworkAuthenticator {
             cancellableValue = publisher
                 .sink(receiveCompletion: { [weak self] completion in
                     guard let self = self else {
+                        // Note: No point attempting event sending if self is unavailable
                         subject.send(completion: Subscribers.Completion<S.Failure>.failure(NetworkAuthenticatorError.unknown as! S.Failure))
                         return
                     }
@@ -226,6 +233,14 @@ class NetworkAuthenticator {
                             )
                             
                         } else {
+                            
+                            self.apiErrorEventHandler(
+                                [
+                                    "url" : self.authenticationURL.absoluteString,
+                                    "error": error.localizedDescription
+                                ]
+                            )
+                            
                             subject.send(completion: Subscribers.Completion<S.Failure>.failure(error as! S.Failure))
                         }
                     } else {
@@ -273,6 +288,7 @@ class NetworkAuthenticator {
         
         return publisher.flatMap({ [weak self] authenticationResult -> AnyPublisher<Bool, Error> in
             guard let self = self else {
+                // Note: No point attempting event sending if self is unavailable
                 return Fail<Bool, Error>(error: NetworkAuthenticatorError.selfError).eraseToAnyPublisher()
             }
             self.setAccessToken(to: authenticationResult)
@@ -370,9 +386,23 @@ class NetworkAuthenticator {
         }
 
         return URLSession(configuration: config).dataTaskPublisher(for: request)
-            .mapError({ $0 as Error })
-            .tryMap({ result in
-
+            .mapError { [weak self] error in
+                // raw network error
+                self?.apiErrorEventHandler(
+                    [
+                        "url" : request.url?.absoluteString ?? "unknown",
+                        "error": error.localizedDescription,
+                        "request_params": EventLogger.createParamsArrayString(httpBody: request.httpBody)
+                    ]
+                )
+                return error as Error
+            }
+            .tryMap({ [weak self] result in
+                guard let self = self else {
+                    // Note: No point attempting event sending if self is unavailable
+                    throw NetworkAuthenticatorError.selfError
+                }
+                
                 if self.debugTrace {
                     print("RESULT: " + url.absoluteString)
                     if
@@ -390,12 +420,60 @@ class NetworkAuthenticator {
                     let urlResponse = result.response as? HTTPURLResponse,
                     (200...299).contains(urlResponse.statusCode)
                 else {
-                    let apiError = try decoder.decode(APIErrorResult.self, from: result.data)
-                    throw apiError
+                    do {
+                        let apiError = try decoder.decode(APIErrorResult.self, from: result.data)
+                        self.apiErrorEventHandler(
+                            [
+                                "url" : self.authenticationURL.absoluteString,
+                                "error": apiError.errorDisplay
+                            ]
+                        )
+                        throw apiError
+                    } catch {
+                        self.apiErrorEventHandler(
+                            [
+                                "url" : self.authenticationURL.absoluteString,
+                                "error": error.localizedDescription
+                            ]
+                        )
+                        throw error
+                    }
                 }
-
-                return try decoder.decode(T.self, from: result.data)
-
+                
+                // The standard localizedDescription is too vague:
+                // https://stackoverflow.com/questions/46959625/the-data-couldn-t-be-read-because-it-is-missing-error-when-decoding-json-in-sw/53231548
+                let jsonError: Error
+                
+                do {
+                    return try decoder.decode(T.self, from: result.data)
+                } catch let DecodingError.dataCorrupted(context) {
+                    jsonError = APIError.jsonDecoding(context.debugDescription)
+                } catch let DecodingError.keyNotFound(key, context) {
+                    let description = "Key '\(key)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
+                    jsonError = APIError.jsonDecoding(description)
+                } catch let DecodingError.valueNotFound(value, context) {
+                    let description = "Value '\(value)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
+                    jsonError = APIError.jsonDecoding(description)
+                } catch let DecodingError.typeMismatch(type, context)  {
+                    let description = "Type '\(type)' mismatch: \(context.debugDescription) codingPath: \(context.codingPath)"
+                    jsonError = APIError.jsonDecoding(description)
+                } catch {
+                    jsonError = APIError.jsonDecoding(error.localizedDescription)
+                }
+                     
+                if self.debugTrace {
+                    print(jsonError.localizedDescription)
+                }
+                
+                self.apiErrorEventHandler(
+                    [
+                        "url" : request.url?.absoluteString ?? "unknown",
+                        "error": "unable to decode JSON",
+                        "response": jsonError.localizedDescription
+                    ]
+                )
+                     
+                throw jsonError
             }).eraseToAnyPublisher()
     }
     

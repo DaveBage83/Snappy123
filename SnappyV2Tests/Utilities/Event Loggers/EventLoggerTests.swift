@@ -34,7 +34,7 @@ class EventLoggerTests: XCTestCase {
         let sut = makeSUT()
         let result = sut.exposeAddDefaultParameters(to: givenParameters)
         
-        XCTAssertTrue(result.isEqual(to: expectedParameters))
+        XCTAssertTrue(result.isEqual(to: expectedParameters), file: #file, line: #line)
     }
     
     func test_withSelectedStore_includesStoreInfo() {
@@ -62,7 +62,7 @@ class EventLoggerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let result = sut.exposeAddDefaultParameters(to: givenParameters)
         
-        XCTAssertTrue(result.isEqual(to: expectedParameters))
+        XCTAssertTrue(result.isEqual(to: expectedParameters), file: #file, line: #line)
     }
     
     func test_whenSetCustomerID_thenCuidIsSetInAppsFlyerLib() {
@@ -71,7 +71,7 @@ class EventLoggerTests: XCTestCase {
         
         sut.setCustomerID(profileUUID: uuid)
         
-        XCTAssertEqual(AppsFlyerLib.shared().customerUserID, uuid)
+        XCTAssertEqual(AppsFlyerLib.shared().customerUserID, uuid, file: #file, line: #line)
     }
     
     func test_givenAppsFlyerCuidSet_whenClearCustomerIDTriggered_thenAppsFlyerCuidIsNil() {
@@ -81,7 +81,7 @@ class EventLoggerTests: XCTestCase {
         
         sut.clearCustomerID()
         
-        XCTAssertNil(AppsFlyerLib.shared().customerUserID)
+        XCTAssertNil(AppsFlyerLib.shared().customerUserID, file: #file, line: #line)
     }
     
     func test_getFirebaseItemsArray_givenBasketItemsArray_returnFirebaseItemsArray() {
@@ -114,7 +114,52 @@ class EventLoggerTests: XCTestCase {
         //    }
         //}
         
-        XCTAssertTrue(firebaseItemsArray.first!.isEqual(to: item))
+        XCTAssertTrue(firebaseItemsArray.first!.isEqual(to: item), file: #file, line: #line)
+    }
+    
+    func test_createParamsArrayString_givenSomeJSON_returnCensoredString() {
+        
+        let parameters: [String: Any] = [
+            "password": "password123",
+            "username": "username",
+            "emailAddress": "test@test.com",
+            "mobileContactNumber": "07956212272",
+            "example1": 1,
+            "example2": "2"
+        ]
+        
+        // cannot test against a fixed result string because disctionaries loose
+        // the insertion order
+        let expectedValues = [
+            "password:*censored*",
+            "username:*censored*",
+            "emailAddress:test@test.com",
+            "mobileContactNumber:07956212272",
+            "example1:1",
+            "example2:2"
+        ]
+        
+        do {
+            let data = try requestBodyFrom(parameters: parameters)
+            // no "sut" instance because of the static function being tested
+            let paramsString = EventLogger.createParamsArrayString(httpBody: data)
+            for value in expectedValues {
+                XCTAssertTrue(paramsString.contains(value), file: #file, line: #line)
+            }
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_createParamsArrayString_givenBodyThatCannotBeConverted_returnEmptyString() {
+        
+        // no "sut" instance because of the static function being tested
+        
+        let paramsStringFromNil = EventLogger.createParamsArrayString(httpBody: nil)
+        XCTAssertEqual(paramsStringFromNil, "", file: #file, line: #line)
+        
+        let paramsStringFromNotJSON = EventLogger.createParamsArrayString(httpBody: Data("not JSON".utf8))
+        XCTAssertEqual(paramsStringFromNotJSON, "", file: #file, line: #line)
     }
     
     func makeSUT(webRepository: EventLoggerWebRepositoryProtocol = MockedEventLoggerWebRepository(), appState: AppState = AppState()) -> EventLogger {

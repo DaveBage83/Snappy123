@@ -203,6 +203,10 @@ enum AppEvent: Equatable {
         case .payByApplePaySelected:            return "pay_by_apple_pay_pressed"
         case .payByCashSelected:                return "pay_by_cash_pressed"
         case .paymentFailure:                   return "card_payment_failed"
+        case .mentionMeError:                   return "mentionme_error"
+        case .mentionMeOfferView:               return "mentionme_offer_view"
+        case .mentionMeRefereeView:             return "mentionme_referee_view"
+        case .mentionMeDashboardView:           return "mentionme_dashboard_view"
         case .apiError:                         return "api_error"
         default:                                return nil
         }

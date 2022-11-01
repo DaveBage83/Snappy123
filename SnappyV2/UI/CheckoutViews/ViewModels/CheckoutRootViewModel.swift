@@ -230,6 +230,10 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
     @Published var allowedMarketingChannelText = Strings.CheckoutDetails.WhereDidYouHear.placeholder.localized
     @Published var selectedChannel: AllowedMarketingChannel?
+    var hideSelectedChannel: Bool {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.bool(forKey: userConfirmedSelectedChannelKey) 
+    }
     
     // Retail Membership
     private var fetchedRetailMembershipResult: CheckRetailMembershipIdResult?
@@ -288,7 +292,9 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Allowed marketing
     var allowedMarketingChannels: [AllowedMarketingChannel]? {
-        if let channels = container.appState.value.userData.selectedStore.value?.allowedMarketingChannels, channels.count > 0 {
+        //Filter the marketing channels so we only get entries which begin with an "ios" string
+        if let channels = container.appState.value.userData.selectedStore.value?.allowedMarketingChannels.filter({$0.name.lowercased().starts(with: "ios")}),
+            channels.count > 0 {
             return channels
         }
         return nil
@@ -367,6 +373,8 @@ class CheckoutRootViewModel: ObservableObject {
     var retailMembershipIdInstructions: String {
         return selectedStore?.retailCustomer?.membershipIdPromptText ?? ""
     }
+    
+    var userConfirmedSelectedChannelKey = "userConfirmedSelectedChannel"
     
     // MARK: - Init
     init(container: DIContainer) {
@@ -681,8 +689,15 @@ class CheckoutRootViewModel: ObservableObject {
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
-        selectedChannelHasWarning = selectedChannel == nil
         
+        let userDefaults = UserDefaults.standard
+        if !userDefaults.bool(forKey: userConfirmedSelectedChannelKey) {
+            //Only check for selected channel if user has never confirmed it in the past
+            selectedChannelHasWarning = (selectedChannel == nil)
+        } else {
+            selectedChannelHasWarning = false
+        }
+                
         postcodeHasWarning = editAddressFieldErrors.contains(.postcode)
         addressLine1HasWarning = editAddressFieldErrors.contains(.addressLine1)
         cityHasWarning = editAddressFieldErrors.contains(.city)
@@ -692,7 +707,16 @@ class CheckoutRootViewModel: ObservableObject {
             return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
         }
         
+        //should editAddressFieldErrors.isEmpty be removed from the below?
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
+    }
+    
+    func setUserConfirmedSelectedChannel() {
+        let userDefaults = UserDefaults.standard
+        if !userDefaults.bool(forKey: userConfirmedSelectedChannelKey) {
+            print("User has set channel to \(self.selectedChannel?.name)")
+            userDefaults.set(true, forKey: userConfirmedSelectedChannelKey)
+        }
     }
     
     func setError(_ err: Error) {
@@ -783,6 +807,12 @@ class CheckoutRootViewModel: ObservableObject {
                 
                 isSubmitting = false
                 checkoutState = .paymentSelection
+                
+                let userDefaults = UserDefaults.standard
+                if !userDefaults.bool(forKey: userConfirmedSelectedChannelKey) {
+                    userDefaults.set(true, forKey: userConfirmedSelectedChannelKey)
+                }
+                
             } catch {
                 isSubmitting = false
                 #warning("Ideally we would set field errors here and scroll the the relevant section. However, with the API error codes unintuitive, this is not currently possible")

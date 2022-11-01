@@ -46,11 +46,7 @@ class ProductsViewModel: ObservableObject {
     @Published var missedOfferMenus = [MissedOfferMenu]()
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
-    @Published var selectedItem: RetailStoreMenuItem? {
-        didSet {
-            print("*** ITEM SET")
-        }
-    }
+    @Published var selectedItem: RetailStoreMenuItem?
     
     // Search variables
     @Published var searchText: String

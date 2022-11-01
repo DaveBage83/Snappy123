@@ -388,7 +388,7 @@
 "checkoutdetails.changefulfilmentmethod.expired" = "This slot has now expired";
 "checkoutdetails.changefulfilmentmethod.noslot" = "No slot selected";
 "checkoutdetails.changefulfilmentmethod.custom.slottime" = "%@ on %@";
-"checkoutdetails.deliverynote.title" = "Add A Delivery Note To Your Order";
+"checkoutdetails.deliverynote.title" = "Add A Note To Your Order";
 "checkoutdetails.addressdisplaycard.unnamed" = "Unnamed address";
 "checkoutdetails.addressdisplaycard.default" = "(Default)";
 "checkoutdetails.checkoutprogress.details" = "Your details";

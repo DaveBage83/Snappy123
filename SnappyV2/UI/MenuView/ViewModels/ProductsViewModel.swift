@@ -46,7 +46,11 @@ class ProductsViewModel: ObservableObject {
     @Published var missedOfferMenus = [MissedOfferMenu]()
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
-    @Published var selectedItem: RetailStoreMenuItem?
+    @Published var selectedItem: RetailStoreMenuItem? {
+        didSet {
+            print("*** ITEM SET")
+        }
+    }
     
     // Search variables
     @Published var searchText: String
@@ -670,7 +674,10 @@ class ProductsViewModel: ObservableObject {
         selectedItem = nil
     }
     
-    func selectItem(_ item: RetailStoreMenuItem) {
+    func selectItem(_ item: RetailStoreMenuItem, logSearchEvent: Bool = false) {
         selectedItem = item
+        if logSearchEvent {
+            logItemIteraction(with: item)
+        }
     }
 }

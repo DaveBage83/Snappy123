@@ -104,7 +104,7 @@ class NetworkHandlerTests: XCTestCase {
             if let logParameters {
                 // cannot compare logParameters to another disctionary because there
                 // is no guarantee on the order in request_params
-                XCTAssertEqual(logParameters["url"] as? String, "https://test.com/es_US/test.json", file: #file, line: #line)
+                XCTAssertEqual(logParameters["url"] as? String, "https://test.com/en_US/test.json", file: #file, line: #line)
                 XCTAssertEqual(logParameters["error"] as? String, "The operation couldn’t be completed. (NSURLErrorDomain error 1.)", file: #file, line: #line)
                 XCTAssertTrue((logParameters["request_params"] as? String ?? "").contains("postcode:PA344AG"), file: #file, line: #line)
                 XCTAssertTrue((logParameters["request_params"] as? String ?? "").contains("email:test@test.com"), file: #file, line: #line)
@@ -141,7 +141,7 @@ class NetworkHandlerTests: XCTestCase {
             if let logParameters {
                 // cannot compare logParameters to another disctionary because there
                 // is no guarantee on the order in request_params
-                XCTAssertEqual(logParameters["url"] as? String, "https://test.com/es_US/test.json", file: #file, line: #line)
+                XCTAssertEqual(logParameters["url"] as? String, "https://test.com/en_US/test.json", file: #file, line: #line)
                 XCTAssertEqual(logParameters["error"] as? String, apiError.errorDisplay, file: #file, line: #line)
                 XCTAssertTrue((logParameters["request_params"] as? String ?? "").contains("postcode:PA344AG"), file: #file, line: #line)
                 XCTAssertTrue((logParameters["request_params"] as? String ?? "").contains("email:test@test.com"), file: #file, line: #line)

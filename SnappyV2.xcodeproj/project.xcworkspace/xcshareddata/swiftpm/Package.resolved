@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/facebook/facebook-ios-sdk",
       "state" : {
-        "revision" : "fdc9136e0d56387dcd25391f22d971534e99d089",
-        "version" : "15.0.0"
+        "revision" : "7fd8a930a5b2c940a22efafe0e214ed0df671312",
+        "version" : "15.1.0"
       }
     },
     {
@@ -311,8 +311,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/iterable/swift-sdk",
       "state" : {
-        "revision" : "8d984cf6c2ea7edb1c97a3585fa632af6be43de0",
-        "version" : "6.4.7"
+        "revision" : "cfa877613092ebbd56c96eb5e63b2b22f89fb62c",
+        "version" : "6.4.8"
       }
     },
     {

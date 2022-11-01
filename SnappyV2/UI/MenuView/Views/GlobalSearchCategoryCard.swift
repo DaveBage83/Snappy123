@@ -16,6 +16,8 @@ struct GlobalSearchCategoryCard: View {
         static let itemImageHeight: CGFloat = 80
         static let cardWidth: CGFloat = 120
         static let spacing: CGFloat = 8
+        static let lineLimit: Int = 3
+        static let minFontScale: CGFloat = 0.6
     }
     
     // MARK: - Properties
@@ -43,6 +45,8 @@ struct GlobalSearchCategoryCard: View {
             
             Text(category.name)
                 .font(.heading4())
+                .lineLimit(Constants.lineLimit)
+                .minimumScaleFactor(Constants.minFontScale)
                 .foregroundColor(colorPalette.primaryBlue)
         }
         .padding(Constants.spacing)

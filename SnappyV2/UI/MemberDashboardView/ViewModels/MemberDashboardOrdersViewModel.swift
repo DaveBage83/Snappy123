@@ -58,7 +58,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     }
     
     var showViewMoreOrdersView: Bool {
-        initialOrdersLoading == false
+        initialOrdersLoading == false && noOrdersToFetch == false
     }
     
     // While the /member/orders endpoint accepts a limit parameter, as we are sorting the results into current and past orders
@@ -99,6 +99,14 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         
         return Array(pastOrders[0..<ordersToReturn])
     }
+    
+    private var noOrdersToFetch: Bool {
+        placedOrders?.count == 0
+    }
+    
+    var showPlaceFirstOrderView: Bool {
+        noOrdersToFetch
+    }
 
     init(container: DIContainer, categoriseOrders: Bool = false) {
         self.container = container
@@ -115,7 +123,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
                 guard let self = self, let orders = orders.value else { return }
                     self.placedOrders = orders
                 
-                if let placedOrders = self.placedOrders {
+                if let placedOrders = self.placedOrders, placedOrders.count > 0 {
                     // Once we have fetched the orders, if the total number is equal to or less than the maxDisplayed
                     // orders, then we have retrieved all orders and we set the allOrdersFetched variable to true
                     // to prevent the API being hit any more and the remove the view more orders button
@@ -123,6 +131,10 @@ class MemberDashboardOrdersViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func placeFirstOrderButtonTapped() {
+        container.appState.value.routing.selectedTab = .stores
     }
     
     func getMoreOrdersTapped() {

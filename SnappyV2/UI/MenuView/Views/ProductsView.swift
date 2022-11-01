@@ -444,7 +444,7 @@ struct ProductsView: View {
                                         menuItem: item,
                                         associatedSearchTerm: viewModel.associatedSearchTerm,
                                         productSelected: { item in
-                                            viewModel.logItemIteraction(with: item)
+                                            viewModel.selectItem(item, logSearchEvent: true)
                                         }
                                     ),
                                     productsViewModel: viewModel

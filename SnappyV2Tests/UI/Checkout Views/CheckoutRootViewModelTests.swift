@@ -308,13 +308,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.progressState = .completeSuccess
         XCTAssertEqual(sut.currentProgress, 2)
     }
-    
-    func test_whenFulfilmentIsDelivery_thenIsDeliveryIsTrue() {
-        let sut = makeSUT()
-        sut.container.appState.value.userData.basket = Basket.mockedData
-        XCTAssertTrue(sut.showDeliveryNote)
-    }
-    
+
     func test_whenMemberProfileIsNil_thenUserSignedInIsFalse() {
         let sut = makeSUT()
         sut.container.appState.value.userData.memberProfile = nil
@@ -325,12 +319,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         let sut = makeSUT()
         sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
         XCTAssertFalse(sut.showMarketingPrefs)
-    }
-    
-    func test_whenFulfilmentIsNotDelivery_thenIsDeliveryIsFalse() {
-        let sut = makeSUT()
-        sut.container.appState.value.userData.basket = Basket.mockedDataCollection
-        XCTAssertFalse(sut.showDeliveryNote)
     }
     
     func test_whenCheckoutStateIsInitial_thenProgressStateIsNotStarted() {

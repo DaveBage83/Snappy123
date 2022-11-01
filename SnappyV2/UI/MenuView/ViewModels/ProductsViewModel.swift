@@ -670,7 +670,10 @@ class ProductsViewModel: ObservableObject {
         selectedItem = nil
     }
     
-    func selectItem(_ item: RetailStoreMenuItem) {
+    func selectItem(_ item: RetailStoreMenuItem, logSearchEvent: Bool = false) {
         selectedItem = item
+        if logSearchEvent {
+            logItemIteraction(with: item)
+        }
     }
 }

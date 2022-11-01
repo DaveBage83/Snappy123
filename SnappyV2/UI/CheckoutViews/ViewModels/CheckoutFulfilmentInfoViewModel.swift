@@ -28,7 +28,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     var deliveryLocation: Location?
     @Published var basket: Basket?
     @Published var postcode = ""
-    @Published var instructions = ""
+    var instructions: String?
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
     private let memberSignedIn: Bool
@@ -114,7 +114,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, checkoutState: @escaping (CheckoutRootViewModel.CheckoutState) -> Void, dateGenerator: @escaping () -> Date = Date.init) {
+    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, instructions: String? = nil, checkoutState: @escaping (CheckoutRootViewModel.CheckoutState) -> Void, dateGenerator: @escaping () -> Date = Date.init) {
         self.container = container
         self.dateGenerator = dateGenerator
         self.setCheckoutState = checkoutState
@@ -125,6 +125,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
         self.memberSignedIn = appState.value.userData.memberProfile == nil
+        self.instructions = instructions
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         

@@ -28,6 +28,10 @@ struct MemberDashboardOrdersView: View {
         struct LoadingView {
             static let height: CGFloat = 200
         }
+        
+        struct FirstOrderView {
+            static let spacing: CGFloat = 16
+        }
     }
     
     @StateObject var viewModel: MemberDashboardOrdersViewModel
@@ -72,6 +76,28 @@ struct MemberDashboardOrdersView: View {
             
             if viewModel.showViewMoreOrdersView {
                 viewMoreOrdersView
+            } else if viewModel.showPlaceFirstOrderView {
+                VStack(spacing: Constants.FirstOrderView.spacing) {
+                    Text(Strings.MemberDashboard.Orders.firstOrderTitle.localized)
+                        .font(.heading3())
+                        .foregroundColor(colorPalette.primaryBlue)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .primary,
+                        size: .large,
+                        title: Strings.MemberDashboard.Orders.firstOrderButton.localized,
+                        largeTextTitle: nil,
+                        icon: nil,
+                        isEnabled: .constant(true),
+                        isLoading: .constant(false),
+                        clearBackground: false) {
+                            viewModel.placeFirstOrderButtonTapped()
+                        }
+                }
+                
+                Spacer()
             }
         }
         .sheet(item: $viewModel.selectedOrder, content: { order in

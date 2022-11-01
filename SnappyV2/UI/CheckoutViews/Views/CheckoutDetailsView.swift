@@ -86,9 +86,7 @@ struct CheckoutDetailsView: View {
                     deliverySlotInfo
                         .id(CheckoutRootViewModel.DetailsFormElements.timeSlot)
                     
-                    if viewModel.showDeliveryNote{
-                        addDeliveryNote
-                    }
+                    addDeliveryNote
                     
                     if viewModel.showMarketingPrefs {
                         marketingPreferences

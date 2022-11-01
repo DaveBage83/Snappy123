@@ -151,11 +151,7 @@ class CheckoutRootViewModel: ObservableObject {
         }
         return Double(progressState.rawValue)
     }
-    
-    var showDeliveryNote: Bool {
-        fulfilmentType?.type == .delivery
-    }
-    
+
     var showMarketingPrefs: Bool {
         memberProfile != nil
     }

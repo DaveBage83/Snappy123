@@ -46,7 +46,6 @@ class InitialViewModel: ObservableObject {
     @Published var driverSettingsLoading = false
     
     @Published var businessProfileLoadingError: Error?
-    //@Published var error: Error?
     
     var isMemberSignedIn: Bool {
         container.appState.value.userData.memberProfile != nil

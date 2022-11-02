@@ -65,6 +65,7 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                     facebook: businessProfile.facebook,
                     tikTok: businessProfile.tikTok,
                     paymentGateways: businessProfile.paymentGateways,
+                    postcodeRules: businessProfile.postcodeRules,
                     marketingText: nil,
                     fetchLocaleCode: localeCode,
                     fetchTimestamp: nil,

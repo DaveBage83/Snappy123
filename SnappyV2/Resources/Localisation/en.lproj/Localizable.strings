@@ -96,6 +96,7 @@
 
 "general.search.searchpostcode" = "Search postcode";
 "general.search.search" = "Search";
+"general.search.customisable.postcodeformaterror" = "\"%@\" does not match a recognised postcode format.";
 
 // MARK: - RootView
 

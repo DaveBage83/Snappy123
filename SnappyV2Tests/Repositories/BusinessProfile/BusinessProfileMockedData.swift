@@ -28,6 +28,7 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        postcodeRules: PostcodeRule.mockedDataArray,
         marketingText: MarketingTexts.mockedData,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
@@ -52,6 +53,7 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        postcodeRules: PostcodeRule.mockedDataArray,
         marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
@@ -76,6 +78,7 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        postcodeRules: PostcodeRule.mockedDataArray,
         marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
@@ -100,6 +103,7 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        postcodeRules: PostcodeRule.mockedDataArray,
         marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
@@ -210,7 +214,7 @@ extension BusinessProfile {
             count += paymentGateway.recordsCount
         }
         
-        return count + tipLimitLevels.count + (colors != nil ? 30 : 0)
+        return count + tipLimitLevels.count + (postcodeRules?.count ?? 0) + (colors != nil ? 30 : 0)
     }
 }
 
@@ -239,11 +243,30 @@ extension TikTokSetting {
 
 extension MarketingTexts {
     
-    static let mockedData =  MarketingTexts(
+    static let mockedData = MarketingTexts(
         iosRemoteNotificationIntro: "MOCK TEXT: We’ll keep you in the loop. Tell us what notifications you’d like to see",
         remoteNotificationOrdersOnlyButton: "MOCK TEXT: My order updates only",
         remoteNotificationIncludingMarketingButton: "MOCK TEXT: Order updates, offers & more",
         remoteNotificationNoneButton: "MOCK TEXT: I don't mind missing out"
     )
+    
+}
+
+extension PostcodeRule {
+    
+    static let mockedDataForGB = PostcodeRule(
+        countryCode: "GB",
+        regex: "^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$"
+    )
+    
+    static let mockedDataForIE = PostcodeRule(
+        countryCode: "IE",
+        regex: "(?:^[AaC-Fc-fHhKkNnPpRrTtV-Yv-y][0-9]{2}|[Dd]6[Ww])[ -]?[0-9AaC-Fc-fHhKkNnPpRrTtV-Yv-y]{4}$"
+    )
+    
+    static let mockedDataArray: [PostcodeRule] = [
+        .mockedDataForGB,
+        .mockedDataForIE
+    ]
     
 }

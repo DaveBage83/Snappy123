@@ -15,6 +15,7 @@ enum RetailStoresServiceError: Swift.Error, Equatable {
     case invalidParameters([String])
     case fulfilmentLocationRequired
     case cannotUseWhenFoundStores
+    case postcodeFormatNotRecognised(String)
 }
 
 extension RetailStoresServiceError: LocalizedError {
@@ -26,6 +27,8 @@ extension RetailStoresServiceError: LocalizedError {
             return "Fulfilment location required from search."
         case .cannotUseWhenFoundStores:
             return "Service layer operation should only be called when no store candidates."
+        case let .postcodeFormatNotRecognised(postcode):
+            return Strings.General.Search.Customisable.postcodeFormatError.localizedFormat(postcode)
         }
     }
 }
@@ -110,6 +113,15 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 
     // convenience functions to avoid passing clearCache, cache handling will be needed in future
     func searchRetailStores(postcode: String) -> Future<Void, Error> {
+        if
+            let businessProfile = appState.value.businessData.businessProfile,
+            let postcodeRules = businessProfile.postcodeRules,
+            postcode.isPostcode(rules: postcodeRules) == false
+        {
+            return Future() { promise in
+                promise(.failure(RetailStoresServiceError.postcodeFormatNotRecognised(postcode)))
+            }
+        }
         return searchRetailStores(postcode: postcode, clearCache: true)
     }
     

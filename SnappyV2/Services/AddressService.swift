@@ -8,10 +8,11 @@
 import Combine
 import Foundation
 
-enum AddressServiceError: Swift.Error {
+enum AddressServiceError: Swift.Error, Equatable {
     case unableToPersistResult
     case invalidParameters([String])
     case noAddressesFound
+    case postcodeFormatNotRecognised(String)
 }
 
 extension AddressServiceError: LocalizedError {
@@ -23,6 +24,8 @@ extension AddressServiceError: LocalizedError {
             return "Parameters Error: \(parameters.joined(separator: ", "))"
         case .noAddressesFound:
             return Strings.AddressService.noAddressesFound.localized
+        case let .postcodeFormatNotRecognised(postcode):
+            return Strings.General.Search.Customisable.postcodeFormatError.localizedFormat(postcode)
         }
     }
 }
@@ -44,18 +47,28 @@ struct AddressService: AddressServiceProtocol {
 
     let webRepository: AddressWebRepositoryProtocol
     let dbRepository: AddressDBRepositoryProtocol
+    // Used purely to harness the PostcodeRules if available in the
+    // loaded business profile
+    let appState: Store<AppState>
     
     let eventLogger: EventLoggerProtocol
     
     private var cancelBag = CancelBag()
     
-    init(webRepository: AddressWebRepositoryProtocol, dbRepository: AddressDBRepositoryProtocol, eventLogger: EventLoggerProtocol) {
+    init(webRepository: AddressWebRepositoryProtocol, dbRepository: AddressDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
+        self.appState = appState
         self.eventLogger = eventLogger
     }
     
     func findAddresses(addresses: LoadableSubject<[FoundAddress]?>, postcode: String, countryCode: String) {
+        
+        guard checkPostcodeFormat(for: postcode, countryCode: countryCode) else {
+            addresses.wrappedValue = .failed(AddressServiceError.postcodeFormatNotRecognised(postcode))
+            return
+        }
+        
         let cancelBag = CancelBag()
         addresses.wrappedValue.setIsLoading(cancelBag: cancelBag)
         
@@ -111,6 +124,11 @@ struct AddressService: AddressServiceProtocol {
     
     // A duplicate of the above method but using async. We will phase out the above combined method
     func findAddressesAsync(postcode: String, countryCode: String) async throws -> [FoundAddress]? {
+        
+        guard checkPostcodeFormat(for: postcode, countryCode: countryCode) else {
+            throw AddressServiceError.postcodeFormatNotRecognised(postcode)
+        }
+        
         do {
             let cachedAddressSearch = try await dbRepository
                 .findAddressesFetch(
@@ -191,6 +209,20 @@ struct AddressService: AddressServiceProtocol {
             .eraseToAnyPublisher()
             .sinkToLoadable { countries.wrappedValue = $0 }
             .store(in: cancelBag)
+    }
+    
+    private func checkPostcodeFormat(for postcode: String, countryCode: String) -> Bool {
+        let lowercasedCountryCode = countryCode.lowercased()
+        if
+            let businessProfile = appState.value.businessData.businessProfile,
+            let postcodeRules = businessProfile.postcodeRules
+        {
+            return postcode.isPostcode(rules: postcodeRules.filter {
+                // GB is UK for this comparision
+                $0.countryCode.lowercased() == lowercasedCountryCode || (lowercasedCountryCode == "uk" && $0.countryCode.lowercased() == "gb")
+            })
+        }
+        return true
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

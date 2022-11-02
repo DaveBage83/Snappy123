@@ -98,6 +98,10 @@ public enum Strings {
         public enum Search: String, IterableSnappyString {
             case searchPostcode = "general.search.searchpostcode"
             case search = "general.search.search"
+            
+            public enum Customisable: String, IterableSnappyStringCustomisable {
+                case postcodeFormatError = "general.search.customisable.postcodeformaterror"
+            }
         }
         
         public enum DriverInterface: String, IterableSnappyString {

@@ -1020,7 +1020,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         //Clear the user defaults and confirm it correctly returns false when nothing returned
         let userDefaults = UserDefaults.standard
-        userDefaults.removeObject(forKey: sut.userConfirmedSelectedChannelKey)
+        userDefaults.userConfirmedSelectedChannel = false
         XCTAssertEqual(sut.hideSelectedChannel, false)
         
         sut.firstname = "test"
@@ -1041,7 +1041,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         
         //3 entries in the mocked data with varieties of 'ios' string at the start of the channel name
-        XCTAssertEqual(3, sut.allowedMarketingChannels?.count)
+        XCTAssertEqual(4, sut.allowedMarketingChannels?.count)
     }
     
     func test_whenGoToPaymentTapped_givenFulfimentIsDeliveryAndContactOrAddressInfoIsMissing_thenShowFieldErrorsAlertIsTrueAndIsSubmittingIsFalse() async {

@@ -708,16 +708,14 @@ class CheckoutRootViewModel: ObservableObject {
     func setupSelectedChannelVisiblity() {
         UserDefaults.standard
             .publisher(for: \.userConfirmedSelectedChannel)
-            .handleEvents(receiveOutput: { [weak self] channelVisibilityStatus in
+            .sink { [weak self] channelVisibilityStatus in
                 guard let self = self else { return }
-                print("Setting hideSelectedChannel status to \(channelVisibilityStatus)")
                 self.hideSelectedChannel = channelVisibilityStatus
-            })
-            .sink { _ in }
+            }
             .store(in: &cancellables)
     }
     
-    func setUserConfirmedSelectedChannel() {
+    func setUserConfirmedSelectedChannel() async {
         let userDefaults = UserDefaults.standard
         if !userDefaults.bool(forKey: userConfirmedSelectedChannelKey) {
             userDefaults.userConfirmedSelectedChannel = true
@@ -812,6 +810,8 @@ class CheckoutRootViewModel: ObservableObject {
                 
                 isSubmitting = false
                 checkoutState = .paymentSelection
+                
+                await setUserConfirmedSelectedChannel()
                 
                 let userDefaults = UserDefaults.standard
                 if !userDefaults.bool(forKey: userConfirmedSelectedChannelKey) {

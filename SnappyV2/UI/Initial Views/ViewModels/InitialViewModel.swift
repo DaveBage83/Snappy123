@@ -46,7 +46,7 @@ class InitialViewModel: ObservableObject {
     @Published var driverSettingsLoading = false
     
     @Published var businessProfileLoadingError: Error?
-    @Published var error: Error?
+    //@Published var error: Error?
     
     var isMemberSignedIn: Bool {
         container.appState.value.userData.memberProfile != nil
@@ -310,6 +310,10 @@ class InitialViewModel: ObservableObject {
     
     @Published var locationIsLoading: Bool = false
     
+    private func setError(_ error: Error) {
+        self.container.appState.value.errors.append(error)
+    }
+    
     private func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
@@ -322,7 +326,7 @@ class InitialViewModel: ObservableObject {
         do {
             try await container.services.memberService.restoreLastUser()
         } catch {
-            self.error = error
+            setError(error)
         }
     }
 
@@ -553,7 +557,7 @@ class InitialViewModel: ObservableObject {
             startDriverInterface(with: sessionSettings)
             driverSettingsLoading = false
         } catch {
-            self.error = error
+            setError(error)
             driverSettingsLoading = false
             Logger.initial.error("Failed to fetch driver settings: \(error.localizedDescription)")
         }
@@ -573,7 +577,7 @@ class InitialViewModel: ObservableObject {
             
             self.container.appState.value.routing.showInitialView = false
         } catch {
-            self.error = error
+            setError(error)
             Logger.initial.error("Failed to search for stores: \(error.localizedDescription)")
         }
             

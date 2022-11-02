@@ -10,6 +10,7 @@ import CoreData
 
 extension BusinessProfileMO: ManagedEntity { }
 extension TipLimitLevelMO: ManagedEntity { }
+extension PostcodeRuleMO: ManagedEntity { }
 
 extension BusinessProfile {
     
@@ -53,6 +54,16 @@ extension BusinessProfile {
                 })
         }
         
+        var postcodeRules: [PostcodeRule]?
+        if let postcodeRulesArray = managedObject.postcodeRules?.array as? [PostcodeRuleMO] {
+            postcodeRules = postcodeRulesArray
+                .reduce(nil, { (rulesArray, record) -> [PostcodeRule]? in
+                    var array = rulesArray ?? []
+                    array.append(PostcodeRule(managedObject: record))
+                    return array
+                })
+        }
+        
         // if any of the texts is set then initialise the MarketingTexts struct
         var marketingText: MarketingTexts?
         if
@@ -87,6 +98,7 @@ extension BusinessProfile {
             ),
             tikTok: TikTokSetting(pixelId: managedObject.tikTokPixelId ?? ""),
             paymentGateways: paymentGateways ?? [],
+            postcodeRules: postcodeRules,
             marketingText: marketingText,
             fetchLocaleCode: managedObject.fetchLocaleCode,
             fetchTimestamp: managedObject.timestamp,
@@ -124,6 +136,11 @@ extension BusinessProfile {
         profile.paymentGateways = NSOrderedSet(array: paymentGateways.compactMap({ paymentGateways -> PaymentGatewayMO? in
             return paymentGateways.store(in: context)
         }))
+        if let postcodeRules = postcodeRules {
+            profile.postcodeRules = NSOrderedSet(array: postcodeRules.compactMap({ postcodeRules -> PostcodeRuleMO? in
+                return postcodeRules.store(in: context)
+            }))
+        }
         
         // Facebook object
         profile.facebookPixelId = facebook.pixelId
@@ -172,5 +189,29 @@ extension TipLimitLevel {
         tipLevel.type = type
         
         return tipLevel
+    }
+}
+
+extension PostcodeRule {
+    
+    init(managedObject: PostcodeRuleMO) {
+        
+        self.init(
+            countryCode: managedObject.countryCode ?? "",
+            regex: managedObject.regex ?? ""
+        )
+        
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> PostcodeRuleMO? {
+        
+        guard let postcodeRule = PostcodeRuleMO.insertNew(in: context)
+            else { return nil }
+
+        postcodeRule.countryCode = countryCode
+        postcodeRule.regex = regex
+        
+        return postcodeRule
     }
 }

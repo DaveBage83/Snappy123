@@ -24,6 +24,11 @@ struct TikTokSetting: Codable, Equatable {
     let pixelId: String
 }
 
+struct PostcodeRule: Codable, Equatable {
+    let countryCode: String
+    let regex: String
+}
+
 struct MarketingTexts: Codable, Equatable {
     let iosRemoteNotificationIntro: String?
     let remoteNotificationOrdersOnlyButton: String?
@@ -46,6 +51,7 @@ struct BusinessProfile: Codable, Equatable {
     let facebook: FacebookSetting
     let tikTok: TikTokSetting
     let paymentGateways: [PaymentGateway]
+    let postcodeRules: [PostcodeRule]?
     let marketingText: MarketingTexts?
     
     // Populated for checking cached results not from

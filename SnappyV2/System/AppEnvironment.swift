@@ -241,11 +241,11 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         
-        // the address service does not need the appState because it does
-        // not have any external dependencies for API requests
         let addressService = AddressService(
             webRepository: webRepositories.addressRepository,
-            dbRepository: dbRepositories.addressRepository, eventLogger: eventLogger
+            dbRepository: dbRepositories.addressRepository,
+            appState: appState,
+            eventLogger: eventLogger
         )
         
         let utilityService = UtilityService(

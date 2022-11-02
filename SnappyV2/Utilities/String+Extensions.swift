@@ -65,6 +65,27 @@ extension String {
     }
 }
 
+extension String {
+    func isPostcode(rules: [PostcodeRule]) -> Bool {
+        // when given no rules allow a match
+        guard rules.count > 0 else { return true }
+        let trimmedString = self.trimmingCharacters(in: CharacterSet.whitespaces)
+        for rule in rules {
+            if #available(iOS 16.0, *) {
+                if (try? Regex(rule.regex).wholeMatch(in: trimmedString)) != nil {
+                    return true
+                }
+            } else {
+                let wholeRange = trimmedString.startIndex..<trimmedString.endIndex
+                if trimmedString.range(of: rule.regex, options: .regularExpression) == wholeRange {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+}
+
 // Adapted from https://stackoverflow.com/questions/34454532/how-add-separator-to-string-at-every-n-characters-in-swift
 // Allows us to divide card string into batches of 4
 extension String {

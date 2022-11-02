@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21279" systemVersion="21G115" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22A380" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -185,6 +185,7 @@
         <attribute name="useDeliveryFirms" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="colors" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BusinessProfileColors" inverseName="businessProfile" inverseEntity="BusinessProfileColors"/>
         <relationship name="paymentGateways" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PaymentGateway" inverseName="businessProfile" inverseEntity="PaymentGateway"/>
+        <relationship name="postcodeRules" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PostcodeRule" inverseName="businessProfile" inverseEntity="PostcodeRule"/>
         <relationship name="tipLimitLevels" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TipLimitLevel" inverseName="profile" inverseEntity="TipLimitLevel"/>
     </entity>
     <entity name="BusinessProfileColor" representedClassName="BusinessProfileColorMO" syncable="YES" codeGenerationType="class">
@@ -381,6 +382,11 @@
     <entity name="PaymentMethodSettingsEnabledMethod" representedClassName="PaymentMethodSettingsEnabledMethodMO" syncable="YES" codeGenerationType="class">
         <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
         <relationship name="method" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PaymentMethod" inverseName="enabledForMethods" inverseEntity="PaymentMethod"/>
+    </entity>
+    <entity name="PostcodeRule" representedClassName="PostcodeRuleMO" syncable="YES" codeGenerationType="class">
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="regex" optional="YES" attributeType="String"/>
+        <relationship name="businessProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfile" inverseName="postcodeRules" inverseEntity="BusinessProfile"/>
     </entity>
     <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
         <attribute name="currencyCode" optional="YES" attributeType="String"/>

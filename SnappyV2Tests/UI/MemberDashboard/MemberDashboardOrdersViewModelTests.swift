@@ -321,6 +321,55 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         services.verify(as: .checkout)
         XCTAssertFalse(sut.showTrackOrderButton)
     }
+    
+    func test_whenNoOrdersToFetch_thenShowPlaceFirstOrderViewIsTrue() {
+        let sut = makeSUT()
+        
+        let placedOrders: [PlacedOrderSummary] = []
+        
+        let cancelbag = CancelBag()
+        let expectation = expectation(description: "getMoreOrdersTapped")
+        
+        sut.placedOrdersFetch = .loaded(placedOrders)
+        
+        sut.$placedOrdersFetch
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { order in
+                expectation.fulfill()
+            }
+            .store(in: cancelbag)
+
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.showPlaceFirstOrderView)
+    }
+    
+    func test_whenPlaceFirstOrderPressed_thenTabInAppStateSetToStore() {
+        let sut = makeSUT()
+        
+        let placedOrders: [PlacedOrderSummary] = []
+        
+        let cancelbag = CancelBag()
+        let expectation = expectation(description: "getMoreOrdersTapped")
+        
+        sut.placedOrdersFetch = .loaded(placedOrders)
+        
+        sut.$placedOrdersFetch
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { order in
+                expectation.fulfill()
+            }
+            .store(in: cancelbag)
+
+        wait(for: [expectation], timeout: 2)
+        
+        sut.placeFirstOrderButtonTapped()
+        
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .stores)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), categoriseOrders: Bool = false, disableMemoryTest: Bool = false) -> MemberDashboardOrdersViewModel {
         let sut = MemberDashboardOrdersViewModel(container: container, categoriseOrders: categoriseOrders)
         

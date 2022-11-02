@@ -389,7 +389,7 @@
 "checkoutdetails.changefulfilmentmethod.expired" = "This slot has now expired";
 "checkoutdetails.changefulfilmentmethod.noslot" = "No slot selected";
 "checkoutdetails.changefulfilmentmethod.custom.slottime" = "%@ on %@";
-"checkoutdetails.deliverynote.title" = "Add A Delivery Note To Your Order";
+"checkoutdetails.deliverynote.title" = "Add A Note To Your Order";
 "checkoutdetails.addressdisplaycard.unnamed" = "Unnamed address";
 "checkoutdetails.addressdisplaycard.default" = "(Default)";
 "checkoutdetails.checkoutprogress.details" = "Your details";
@@ -503,6 +503,8 @@
 "memberdashboard.loyalty.referrals.subtitle" = "Referrals";
 "memberdashboard.loyalty.referrals.caption" = "Amount of referrals";
 "memberdashboard.orders.noorders" = "No orders found";
+"memberdashboard.orders.firstorder.title" = "We haven't delivered to your door yet";
+"memberdashboard.orders.firstorder.button" = "Place My First Order";
 "memberdashboard.error" = "Sorry, something went wrong when accessing your account. Please try again later.";
 "memberdashboard.profile.yourdetails" = "Your details";
 "memberdashboard.profile.successfullyresetpasssword" = "Successfully reset password";

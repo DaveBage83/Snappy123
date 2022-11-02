@@ -761,6 +761,8 @@ public enum Strings {
         
         enum Orders: String, IterableSnappyString {
             case noOrders = "memberdashboard.orders.noorders"
+            case firstOrderTitle  = "memberdashboard.orders.firstorder.title"
+            case firstOrderButton  = "memberdashboard.orders.firstorder.button"
         }
         
         enum Profile: String, IterableSnappyString {

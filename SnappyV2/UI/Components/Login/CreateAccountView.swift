@@ -59,17 +59,27 @@ struct CreateAccountView: View {
     
     // MARK: - Main body
     var body: some View {
-        mainView
-            .toolbar(content: {
-                ToolbarItem(placement: .principal) {
-                    SnappyLogo()
+        configuredView
+    }
+    
+    @ViewBuilder private var configuredView: some View {
+        if viewModel.isInCheckout {
+            mainView
+                .alert(isPresented: $viewModel.showAlreadyRegisteredAlert) {
+                    Alert(title: Text(Strings.CreateAccount.existingUserTitle.localized), message: Text(Strings.CreateAccount.existingUserBody.localized), dismissButton: .default(Text(GeneralStrings.gotIt.localized)))
                 }
-            })
-            .alert(isPresented: $viewModel.showAlreadyRegisteredAlert) {
-                Alert(title: Text(Strings.CreateAccount.existingUserTitle.localized), message: Text(Strings.CreateAccount.existingUserBody.localized), dismissButton: .default(Text(GeneralStrings.gotIt.localized)))
-            }
-            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
-            .edgesIgnoringSafeArea(.bottom)
+        } else {
+            mainView
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        SnappyLogo()
+                    }
+                })
+                .alert(isPresented: $viewModel.showAlreadyRegisteredAlert) {
+                    Alert(title: Text(Strings.CreateAccount.existingUserTitle.localized), message: Text(Strings.CreateAccount.existingUserBody.localized), dismissButton: .default(Text(GeneralStrings.gotIt.localized)))
+                }
+                .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+        }
     }
     
     @ViewBuilder private var mainView: some View {
@@ -84,7 +94,6 @@ struct CreateAccountView: View {
                 LoadingView()
             }
         }
-        .padding(.bottom, viewModel.isFromInitialView ? Constants.General.standardPadding : tabViewHeight)
     }
     
     @ViewBuilder private var createAccountView: some View {
@@ -106,6 +115,7 @@ struct CreateAccountView: View {
             
             createAccountButton
         }
+        .padding(.bottom, viewModel.isFromInitialView ? Constants.General.standardPadding : tabViewHeight)
     }
     
     // MARK: - Title and subtitle

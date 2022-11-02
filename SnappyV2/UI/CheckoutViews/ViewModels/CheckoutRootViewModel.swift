@@ -226,10 +226,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
     @Published var allowedMarketingChannelText = Strings.CheckoutDetails.WhereDidYouHear.placeholder.localized
     @Published var selectedChannel: AllowedMarketingChannel?
-    var hideSelectedChannel: Bool {
-        let userDefaults = UserDefaults.standard
-        return userDefaults.bool(forKey: userConfirmedSelectedChannelKey) 
-    }
+    @Published var hideSelectedChannel: Bool = false
     
     // Retail Membership
     private var fetchedRetailMembershipResult: CheckRetailMembershipIdResult?
@@ -289,7 +286,7 @@ class CheckoutRootViewModel: ObservableObject {
     // MARK: - Allowed marketing
     var allowedMarketingChannels: [AllowedMarketingChannel]? {
         //Filter the marketing channels so we only get entries which begin with an "ios" string
-        if let channels = container.appState.value.userData.selectedStore.value?.allowedMarketingChannels.filter({$0.name.lowercased().starts(with: "ios")}),
+        if let channels = container.appState.value.userData.selectedStore.value?.allowedMarketingChannels.filter({$0.name.lowercased().contains("ios")}),
             channels.count > 0 {
             return channels
         }
@@ -397,6 +394,7 @@ class CheckoutRootViewModel: ObservableObject {
         setupSelectedStore(with: appState)
         setupSlotError(with: appState)
         setupSelectedChannelError()
+        setupSelectedChannelVisiblity()
         
         // Populate fields
         populateContactDetails(profile: memberProfile)
@@ -707,11 +705,22 @@ class CheckoutRootViewModel: ObservableObject {
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
     }
     
+    func setupSelectedChannelVisiblity() {
+        UserDefaults.standard
+            .publisher(for: \.userConfirmedSelectedChannel)
+            .handleEvents(receiveOutput: { [weak self] channelVisibilityStatus in
+                guard let self = self else { return }
+                print("Setting hideSelectedChannel status to \(channelVisibilityStatus)")
+                self.hideSelectedChannel = channelVisibilityStatus
+            })
+            .sink { _ in }
+            .store(in: &cancellables)
+    }
+    
     func setUserConfirmedSelectedChannel() {
         let userDefaults = UserDefaults.standard
         if !userDefaults.bool(forKey: userConfirmedSelectedChannelKey) {
-            print("User has set channel to \(self.selectedChannel?.name)")
-            userDefaults.set(true, forKey: userConfirmedSelectedChannelKey)
+            userDefaults.userConfirmedSelectedChannel = true
         }
     }
     

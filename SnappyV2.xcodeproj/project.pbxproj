@@ -218,6 +218,8 @@
 		0AFE042C28B92E7A0036CCC9 /* Logger+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDA2CE927DE0B2C00CE26B8 /* Logger+Extensions.swift */; };
 		221BEE602907E38400A660CD /* MockedLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221BEE5F2907E38400A660CD /* MockedLocationManager.swift */; };
 		229248F829003C1000AB26D4 /* LocationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229248F729003C1000AB26D4 /* LocationManagerTests.swift */; };
+		22B673CA29129CDF00A1A5B5 /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B673C929129CDF00A1A5B5 /* UserDefaults+Extensions.swift */; };
+		22B673CB29129CDF00A1A5B5 /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B673C929129CDF00A1A5B5 /* UserDefaults+Extensions.swift */; };
 		550ACC1827E0FC8C00B477F3 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */; };
 		550C91822899855000654C47 /* SnappyLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550C91812899855000654C47 /* SnappyLogo.swift */; };
 		550CD31C2844D70900F36D58 /* TemporaryImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31B2844D70900F36D58 /* TemporaryImageCache.swift */; };
@@ -847,6 +849,7 @@
 		0AFE042628B9215B0036CCC9 /* NotificationContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationContentViewModel.swift; sourceTree = "<group>"; };
 		221BEE5F2907E38400A660CD /* MockedLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedLocationManager.swift; sourceTree = "<group>"; };
 		229248F729003C1000AB26D4 /* LocationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManagerTests.swift; sourceTree = "<group>"; };
+		22B673C929129CDF00A1A5B5 /* UserDefaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extensions.swift"; sourceTree = "<group>"; };
 		550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		550C91812899855000654C47 /* SnappyLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyLogo.swift; sourceTree = "<group>"; };
 		550CD31B2844D70900F36D58 /* TemporaryImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryImageCache.swift; sourceTree = "<group>"; };
@@ -2862,6 +2865,7 @@
 				0AFCE702285C9EE600BC8325 /* URLSession+Extensions.swift */,
 				AFA02CB6288ED76500D9B12B /* ApplePaymentHandler.swift */,
 				0AFE03EC28B4C7EC0036CCC9 /* UIApplication+Extensions.swift */,
+				22B673C929129CDF00A1A5B5 /* UserDefaults+Extensions.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -3557,6 +3561,7 @@
 				553B78DF27DF224700B955AB /* MarketingPreferencesView.swift in Sources */,
 				0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */,
 				558CEC4027A40CEA0003756C /* ImageService.swift in Sources */,
+				22B673CA29129CDF00A1A5B5 /* UserDefaults+Extensions.swift in Sources */,
 				550CD32928464D4000F36D58 /* StoreReviewPill.swift in Sources */,
 				0A957FDE2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift in Sources */,
 				AFF1DE6C28B508640026FFA2 /* Associatable.swift in Sources */,
@@ -3884,6 +3889,7 @@
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
 				0A7976B928BFC167009B1FB6 /* PushNotificationWebRepository.swift in Sources */,
 				0A9D8CDE2796990500E94B06 /* MockedAddressWebRepository.swift in Sources */,
+				22B673CB29129CDF00A1A5B5 /* UserDefaults+Extensions.swift in Sources */,
 				0AE9C115290E5A6300F097E2 /* NetworkHandlerTests.swift in Sources */,
 				0AB2B5C327AFC3C800BE3FBF /* EncodingContainer+AnyCollectionTests.swift in Sources */,
 				55678435286310FC00423E65 /* String+ExtensionsTests.swift in Sources */,

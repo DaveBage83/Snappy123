@@ -70,7 +70,7 @@ struct FulfilmentInfoCard: View {
     // MARK: - Main view
     var body: some View {
         
-        EditableCardContainer(hasWarning: .constant(viewModel.useWarningCardFormat), editDisabled: .constant(viewModel.editButtonIsDisabled), deleteDisabled: .constant(false), content: {
+        EditableCardContainer(hasWarning: .constant(viewModel.useWarningCardFormat), editDisabled: .constant(false), deleteDisabled: .constant(false), content: {
             cardContents
         }, viewModel: .init(
             container: viewModel.container,

@@ -43,11 +43,7 @@ struct MemberDashboardOptionsButton: View {
             return Image.Icons.VerifyMember.standard
         }
     }
-    
-    var isActive: Bool {
-        viewModel.viewState == option
-    }
-    
+ 
     var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
@@ -62,10 +58,10 @@ struct MemberDashboardOptionsButton: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: Constants.iconSize * scale)
-                    .foregroundColor(isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                    .foregroundColor(viewModel.isOptionActive(option) ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
                 
                 Text(option.title)
-                    .foregroundColor(isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                    .foregroundColor(viewModel.isOptionActive(option) ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
                     .font(.Body2.semiBold())
                     .frame(maxWidth: .infinity)
                     .minimumScaleFactor(Constants.minFontScale)
@@ -74,7 +70,7 @@ struct MemberDashboardOptionsButton: View {
             }
         }
         .padding(.vertical, Constants.vPadding)
-        .background(isActive ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
+        .background(viewModel.isOptionActive(option) ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
         .standardCardFormat()
     }
 }

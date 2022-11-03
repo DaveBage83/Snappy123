@@ -1202,6 +1202,9 @@ struct UserService: MemberServiceProtocol {
         // invalidate the cached results
         appState.value.staticCacheData.mentionMeRefereeResult = nil
         appState.value.staticCacheData.mentionMeDashboardResult = nil
+        
+        //Clear login related UserDefaults:
+        UserDefaults.standard.userConfirmedSelectedChannel = false
     }
     
     private func markUserSignedOutAndClearLastDeliveryOrder() async throws {

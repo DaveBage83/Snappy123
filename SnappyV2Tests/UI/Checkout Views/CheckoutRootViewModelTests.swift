@@ -568,9 +568,9 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         let allowedMarketingChannels = [
             AllowedMarketingChannel(
-                id: 123, name: "Facebook"),
+                id: 123, name: "ios Facebook"),
             AllowedMarketingChannel(
-                id: 456, name: "Google")
+                id: 456, name: "ios Google")
         ]
         
         let retailStoreDetails = RetailStoreDetails(
@@ -1010,6 +1010,38 @@ class CheckoutRootViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.allowedMarketingChannelText, "Facebook")
+    }
+    
+    func test_givenAllRequiredOrderDetailsAreSet_whenUserSetsChannelAndGoToPaymentTapped_thenChannelSelectorIsHidden() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        let sut = makeSUT(container: container)
+        
+        //Clear the user defaults and confirm it correctly returns false when nothing returned
+        let userDefaults = UserDefaults.standard
+        userDefaults.userConfirmedSelectedChannel = false
+        XCTAssertEqual(sut.hideSelectedChannel, false)
+        
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = "test@test.com"
+        sut.phoneNumber = "1234556"
+        
+        sut.channelSelected(AllowedMarketingChannel(id: 1, name: "Test"))
+        await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {}, updateMarketingPreferences: {})
+        
+        XCTAssertEqual(sut.hideSelectedChannel, true)
+    }
+    
+    func test_givenAVarietyOfMarketingChannels_whenAllowedMarketingVariablesIsReturned_thenOnlyiOSStringsPresent() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let mockedStore = RetailStoreDetails.mockedData
+        container.appState.value.userData.selectedStore = .loaded(mockedStore)
+        let sut = makeSUT(container: container)
+        
+        //3 entries in the mocked data with varieties of 'ios' string at the start of the channel name
+        XCTAssertEqual(4, sut.allowedMarketingChannels?.count)
     }
     
     func test_whenGoToPaymentTapped_givenFulfimentIsDeliveryAndContactOrAddressInfoIsMissing_thenShowFieldErrorsAlertIsTrueAndIsSubmittingIsFalse() async {

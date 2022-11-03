@@ -381,7 +381,7 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     func isOptionActive(_ option: OptionType) -> Bool {
-        viewState == option
+        activeOptionButton == option
     }
     
     private func startDriverInterface(with sessionSettings: DriverSessionSettings) {

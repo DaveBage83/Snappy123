@@ -139,7 +139,8 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var appIsInForeground: Bool
     @Published var requestingVerifyCode = false
     @Published var resetToken: ResetToken?
-    
+    @Published var activeOptionButton: OptionType = .dashboard
+
     var isFromInitialView: Bool {
         container.appState.value.routing.showInitialView
     }
@@ -159,6 +160,7 @@ class MemberDashboardViewModel: ObservableObject {
         setupDriverNotification(with: appState)
         setupAppIsInForegound(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
+        setupActiveState()
     }
 
     private func setupBindToProfile(with appState: Store<AppState>) {
@@ -194,6 +196,14 @@ class MemberDashboardViewModel: ObservableObject {
                     }
                 }
             }
+            .store(in: &cancellables)
+    }
+        
+    private func setupActiveState() {
+        $viewState
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.activeOptionButton, on: self)
             .store(in: &cancellables)
     }
     
@@ -368,6 +378,10 @@ class MemberDashboardViewModel: ObservableObject {
         } catch {
             return (enabled: false, denied: false)
         }
+    }
+    
+    func isOptionActive(_ option: OptionType) -> Bool {
+        viewState == option
     }
     
     private func startDriverInterface(with sessionSettings: DriverSessionSettings) {

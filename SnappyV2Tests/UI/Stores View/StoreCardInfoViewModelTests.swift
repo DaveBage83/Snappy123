@@ -207,7 +207,6 @@ class StoreCardInfoViewModelTests: XCTestCase {
         XCTAssertNil(orderMethod.lowestTierDeliveryCost)
     }
     
-    
     func test_whenTiersPresent_thenLowestTierDeliveryCostReturned() {
         let cost: Double = 2
         
@@ -219,6 +218,76 @@ class StoreCardInfoViewModelTests: XCTestCase {
         let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: 10, minSpend: 20)
         
         XCTAssertEqual(orderMethod.lowestTierDeliveryCost, 3)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsDelivery_thenFulfilmentTimeTitleSetCorrectly() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        
+        XCTAssertEqual(sut.fulfilmentTimeTitle, GeneralStrings.deliveryTime.localized)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsCollection_thenFulfilmentTimeTitleSetCorrectly() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        
+        XCTAssertEqual(sut.fulfilmentTimeTitle, GeneralStrings.collectionTime.localized)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsDelivery_thenFulfilmentTimeTitleShortSetCorrectly() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        
+        XCTAssertEqual(sut.fulfilmentTimeTitleShort, GeneralStrings.deliveryTimeShort.localized)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsCollection_thenFulfilmentTimeTitleShortSetCorrectly() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        
+        XCTAssertEqual(sut.fulfilmentTimeTitleShort, GeneralStrings.collectionTimeShort.localized)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsDelivery_thenShowDeliveryOfferIfApplicableTrue() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        
+        XCTAssertTrue(sut.showDeliveryOfferIfApplicable)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsCollection_thenShowDeliveryOfferIfApplicableFalse() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        
+        XCTAssertFalse(sut.showDeliveryOfferIfApplicable)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsDelivery_thenShowDeliveryCostTrue() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        
+        XCTAssertTrue(sut.showDeliveryCost)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsCollection_thenShowDeliveryCostFalse() {
+        let sut = makeSUT(storeDetails: storeInit)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        
+        XCTAssertFalse(sut.showDeliveryCost)
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsDelivery_thenFulfilmentTimeStringSetCorrectly() {
+        let sut = makeSUT(storeDetails: .mockedData.first!)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        
+        XCTAssertEqual(sut.fulfilmentTime, "13:20 - 14:20")
+    }
+    
+    func test_whenFulfilmentTypeSelectedIsCollection_thenFulfilmentTimeStringSetCorrectly() {
+            let sut = makeSUT(storeDetails: .mockedData.first!)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        
+        XCTAssertEqual(sut.fulfilmentTime, "13:15 - 13:20")
     }
     
     func makeSUT(storeDetails: RetailStore) -> StoreCardInfoViewModel {

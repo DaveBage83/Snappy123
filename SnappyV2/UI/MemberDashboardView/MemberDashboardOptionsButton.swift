@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 struct MemberDashboardOptionsButton: View {
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options

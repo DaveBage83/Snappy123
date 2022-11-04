@@ -118,9 +118,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         fulfilmentType == .delivery
     }
     
-    // When in checkout, user has already committed to fulfilment type so we do not allow to change here
+    // When in checkout, user has already committed to fulfilment type so we do not allow to change here.
+    // Also if either delivery or collection slots are empty we should not show this toggle.
     var showFulfilmentToggle: Bool {
-        isInCheckout == false
+        isInCheckout == false && selectedRetailStoreDetails.value?.deliveryDays.isEmpty == false && selectedRetailStoreDetails.value?.collectionDays.isEmpty == false
     }
     
     var selectSlotAtCheckoutMessage: String {

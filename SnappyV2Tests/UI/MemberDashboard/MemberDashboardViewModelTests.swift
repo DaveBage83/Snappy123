@@ -425,6 +425,38 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .orders)
     }
     
+    func test_whenStateChanged_thenActiveOptionButtonChanged() {
+        let sut = makeSUT()
+        
+        let expectation = expectation(description: "activeButtonSet")
+        
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.switchState(to: .orders)
+
+        sut.$activeOptionButton
+            .dropFirst()
+            .first()
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertEqual(sut.activeOptionButton, .orders)
+    }
+    
+    func test_whenIsOptionActiveCalled_givenInjectedOptionMatchesViewState_thenReturnTrue() {
+        let sut = makeSUT()
+        XCTAssertTrue(sut.isOptionActive(.dashboard))
+    }
+    
+    func test_whenIsOptionActiveCalled_givenInjectedOptionDoesNotMatchViewState_thenReturnFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.isOptionActive(.orders))
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

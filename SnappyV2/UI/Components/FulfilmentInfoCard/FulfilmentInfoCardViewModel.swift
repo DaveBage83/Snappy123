@@ -25,20 +25,16 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         if let expires = basket?.selectedSlot?.expires {
             return expires.trueDate < Date().trueDate
         }
-        
+
         if let end = basket?.selectedSlot?.end?.trueDate {
             return end.trueDate < Date().trueDate
         }
-        
+
         return false
     }
     
     var showStoreClosedWarning: Bool {
         selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.status == .closed
-    }
-    
-    var editButtonIsDisabled: Bool {
-        useWarningCardFormat
     }
     
     var useWarningCardFormat: Bool {

@@ -1038,10 +1038,56 @@ class CheckoutRootViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let mockedStore = RetailStoreDetails.mockedData
         container.appState.value.userData.selectedStore = .loaded(mockedStore)
+
+        let allowedMarketingChannels = [
+            AllowedMarketingChannel(
+                id: 123, name: "ios Facebook"),
+            AllowedMarketingChannel(
+                id: 456, name: "ios Google"),
+            AllowedMarketingChannel(
+                id: 789, name: "web Other")]
+
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: nil,
+            tips: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            collectionDays: [],
+            paymentMethods: nil,
+            paymentGateways: nil,
+            allowedMarketingChannels: allowedMarketingChannels,
+            timeZone: nil,
+            currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
+            searchPostcode: nil)
+        container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
+
         let sut = makeSUT(container: container)
         
-        //3 entries in the mocked data with varieties of 'ios' string at the start of the channel name
-        XCTAssertEqual(4, sut.allowedMarketingChannels?.count)
+        XCTAssertEqual(2, sut.allowedMarketingChannels?.count)
     }
     
     func test_whenGoToPaymentTapped_givenFulfimentIsDeliveryAndContactOrAddressInfoIsMissing_thenShowFieldErrorsAlertIsTrueAndIsSubmittingIsFalse() async {

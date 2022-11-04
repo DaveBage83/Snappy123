@@ -333,9 +333,8 @@ extension RetailStoreMenuItem {
             count += menuItemOptions.count
             for option in menuItemOptions {
                 // dependencies
-                if let dependencies = option.dependencies {
-                    count += dependencies.count
-                }
+                count += option.dependencies.count
+                
                 if let values = option.values {
                     // values
                     for value in values {

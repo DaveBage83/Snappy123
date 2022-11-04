@@ -163,6 +163,7 @@ struct AddressSelectionView: View {
             hasError: $viewModel.postcodeHasError,
             isLoading: $viewModel.searchingForAddresses,
             showInvalidFieldWarning: .constant(false),
+            autoCaps: .allCharacters,
             labelText: Strings.CheckoutDetails.EditAddress.postcode.localized,
             largeLabelText: nil,
             warningText: nil,

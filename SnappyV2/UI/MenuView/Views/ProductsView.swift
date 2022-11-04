@@ -136,7 +136,10 @@ struct ProductsView: View {
                             
                             mainProducts()
                                 .onChange(of: viewModel.viewState) { _ in
-                                    proxy.scrollTo(topID)
+                                    // Unfortunately, slight delay needed in order for this to work
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                                        proxy.scrollTo(topID)
+                                    }
                                 }
                         }
                         .padding(.bottom, tabViewHeight)
@@ -161,7 +164,10 @@ struct ProductsView: View {
                         VStack(spacing: 0) {
                             mainProducts()
                                 .onChange(of: viewModel.viewState) { _ in
-                                    proxy.scrollTo(topID)
+                                    // Unfortunately, slight delay needed in order for this to work
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                                        proxy.scrollTo(topID)
+                                    }
                                 }
                         }
                         .padding(.bottom, tabViewHeight)
@@ -404,7 +410,7 @@ struct ProductsView: View {
 
     // MARK: - Product search
     private func searchView() -> some View {
-        LazyVStack(alignment: .leading) {
+        VStack(alignment: .leading) {
             // Search result category carousel
             if viewModel.showSearchResultCategories {
                 Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesCategories.localizedFormat("\(viewModel.searchResultCategories.count)", "\(viewModel.searchText)"))
@@ -423,6 +429,7 @@ struct ProductsView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.leading)
                 }
+                .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder: [])
                 .simultaneousGesture(DragGesture().onChanged({ _ in
                     hideKeyboard()
                 }))
@@ -455,6 +462,7 @@ struct ProductsView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity)
                 }
+                .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder: [])
                 .padding(.horizontal, AppConstants.productCardGridSpacing)
                 .background(colorPalette.backgroundMain)
                 .simultaneousGesture(DragGesture().onChanged({ _ in

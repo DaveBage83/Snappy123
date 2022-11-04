@@ -113,11 +113,15 @@ class StoresViewModel: ObservableObject {
     
     private func setupRetailStores() {
         $storeSearchResult
-            .compactMap { result in
-                result.value?.stores
-            }
             .receive(on: RunLoop.main)
-            .assignWeak(to: \.retailStores, on: self)
+            .sink { [weak self] result in
+                guard let self = self else { return }
+                if let stores = result.value?.stores {
+                    self.retailStores = stores
+                } else {
+                    self.retailStores = []
+                }
+            }
             .store(in: &cancellables)
     }
 
@@ -282,8 +286,8 @@ class StoresViewModel: ObservableObject {
     
     func searchPostcode() async throws {
         isFocused = false
-            try await container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString).singleOutput()
- 
+        try await container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString).singleOutput()
+        
     }
     
     func postcodeSearchTapped() async throws {

@@ -432,12 +432,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(id: 123, name: "Facebook"),
-                AllowedMarketingChannel(id: 1, name: "ios Test 1"),
-                AllowedMarketingChannel(id: 2, name: "iOS Test 2"),
-                AllowedMarketingChannel(id: 3, name: "IOS Test 3"),
-                AllowedMarketingChannel(id: 4, name: "Web test 1"),
-                AllowedMarketingChannel(id: 5, name: "Webios test 2")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,

@@ -287,7 +287,6 @@ class StoresViewModel: ObservableObject {
     func searchPostcode() async throws {
         isFocused = false
         try await container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString).singleOutput()
-        
     }
     
     func postcodeSearchTapped() async throws {

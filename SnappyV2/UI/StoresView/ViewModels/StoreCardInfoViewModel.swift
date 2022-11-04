@@ -16,6 +16,36 @@ class StoreCardInfoViewModel: ObservableObject {
         storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
     }
     
+    var fulfilmentTimeTitle: String {
+        if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            return GeneralStrings.deliveryTime.localized
+        }
+        return GeneralStrings.collectionTime.localized
+    }
+    
+    var fulfilmentTimeTitleShort: String {
+        if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            return GeneralStrings.deliveryTimeShort.localized
+        }
+        return GeneralStrings.collectionTimeShort.localized
+    }
+    
+    var showDeliveryOfferIfApplicable: Bool {
+        container.appState.value.userData.selectedFulfilmentMethod == .delivery
+    }
+    
+    var fulfilmentTime: String {
+        if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            return storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.earliestTime ?? "-"
+        } else {
+            return storeDetails.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]?.earliestTime ?? "-"
+        }
+    }
+    
+    var showDeliveryCost: Bool {
+        container.appState.value.userData.selectedFulfilmentMethod == .delivery
+    }
+    
     var currency: RetailStoreCurrency? {
         storeDetails.currency
     }

@@ -17,6 +17,8 @@
 "general.room" = "Room";
 "general.more" = "More";
 "general.deliverytime" = "Delivery Time";
+"general.collectiontime" = "Collection Time";
+"general.collectiontime.short" = "Col. Time";
 "general.deliverytime.short" = "Del. Time";
 "general.free" = "Free";
 "general.shopnow" = "Shop Now";

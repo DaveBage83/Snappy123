@@ -83,7 +83,7 @@ class ProductOptionSectionViewModel: ObservableObject {
     
     func showBottomSheet() {
         #warning("Is this finished? E.g. id is hard coded")
-        bottomSheetValues = RetailStoreMenuItemOption(id: 123, name: title, type: .item, placeholder: "", instances: maximumSelected, displayAsGrid: useBottomSheet, mutuallyExclusive: mutuallyExclusive, minimumSelected: minimumSelected, extraCostThreshold: 0, dependencies: nil, values: optionValues)
+        bottomSheetValues = RetailStoreMenuItemOption(id: 123, name: title, type: .item, placeholder: "", instances: maximumSelected, displayAsGrid: useBottomSheet, mutuallyExclusive: mutuallyExclusive, minimumSelected: minimumSelected, extraCostThreshold: 0, dependencies: [], values: optionValues)
     }
     
     func dismissBottomSheet() {

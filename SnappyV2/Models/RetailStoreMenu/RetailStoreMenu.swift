@@ -198,7 +198,7 @@ struct RetailStoreMenuItemOption: Codable, Equatable, Identifiable, Hashable {
     let mutuallyExclusive: Bool
     let minimumSelected: Int // Maximum selected
     let extraCostThreshold: Double
-    let dependencies: [Int]?
+    let dependencies: [Int]
     // in production values should be populated but there might be cases
     // when the admin team are creating item entries and the value are
     // not present initially

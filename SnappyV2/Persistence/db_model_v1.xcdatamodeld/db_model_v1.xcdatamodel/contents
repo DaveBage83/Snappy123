@@ -548,7 +548,7 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="placeholder" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
-        <relationship name="dependencies" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemOptionDependency" inverseName="option" inverseEntity="RetailStoreMenuItemOptionDependency"/>
+        <relationship name="dependencies" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemOptionDependency" inverseName="option" inverseEntity="RetailStoreMenuItemOptionDependency"/>
         <relationship name="item" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem" inverseName="options" inverseEntity="RetailStoreMenuItem"/>
         <relationship name="values" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemOptionValue" inverseName="option" inverseEntity="RetailStoreMenuItemOptionValue"/>
     </entity>

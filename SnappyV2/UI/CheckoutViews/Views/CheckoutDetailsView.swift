@@ -306,7 +306,7 @@ struct CheckoutDetailsView: View {
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = CheckoutRootViewModel(container: .preview)
-        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: .preview, addressType: .delivery))
+        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: .preview, addressType: .delivery, includeSavedAddressButton: true))
     }
 }
 #endif

@@ -63,7 +63,7 @@ struct CheckoutRootView: View {
                                 })
                             
                         case .details:
-                            CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: viewModel.container, addressType: .delivery))
+                            CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: viewModel.container, addressType: .delivery, includeSavedAddressButton: true))
                                 .withNavigationAnimation(direction: viewModel.navigationDirection)
                                 .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
                                     viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
@@ -87,7 +87,7 @@ struct CheckoutRootView: View {
                                         viewModel.setCheckoutState(state: .paymentSuccess)
                                     },
                                     paymentFailure: {}),
-                                editAddressViewModel: .init(container: viewModel.container, addressType: .billing), checkoutRootViewModel: viewModel)
+                                editAddressViewModel: .init(container: viewModel.container, addressType: .billing, includeSavedAddressButton: false), checkoutRootViewModel: viewModel)
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                             .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
                                 viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)

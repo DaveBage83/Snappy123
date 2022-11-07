@@ -79,7 +79,7 @@ struct MemberDashboardMyDetailsView: View {
                 })
         })
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showAddCardView,
-                     sheetContent: PaymentCardEntryView(viewModel: .init(container: viewModel.container), editAddressViewModel: .init(container: viewModel.container, addressType: .card))
+                     sheetContent: PaymentCardEntryView(viewModel: .init(container: viewModel.container), editAddressViewModel: .init(container: viewModel.container, addressType: .card, includeSavedAddressButton: false))
             .onDisappear {
                 Task { await viewModel.loadSavedCards() }
             })

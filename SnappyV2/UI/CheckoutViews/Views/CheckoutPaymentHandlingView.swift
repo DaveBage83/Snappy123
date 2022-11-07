@@ -274,7 +274,7 @@ struct CheckoutPaymentHandlingView: View {
 #if DEBUG
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, paymentSuccess: {}, paymentFailure: {}), editAddressViewModel: .init(container: .preview, addressType: .billing), checkoutRootViewModel: .init(container: .preview))
+        CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, paymentSuccess: {}, paymentFailure: {}), editAddressViewModel: .init(container: .preview, addressType: .billing, includeSavedAddressButton: false), checkoutRootViewModel: .init(container: .preview))
     }
 }
 #endif

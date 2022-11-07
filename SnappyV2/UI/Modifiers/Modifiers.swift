@@ -7,9 +7,6 @@
 
 import SwiftUI
 
-
-
-
 struct StandardCardFormat: ViewModifier {
     @Binding var isDisabled: Bool
 

@@ -347,7 +347,7 @@ struct StoresView: View {
     // MARK: - Store card list
     @ViewBuilder private func storeCardList(stores: [RetailStore], headerText: String, status: StoreStatus) -> some View {
         if sizeClass == .compact {
-            LazyVStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
+            VStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
                 Section(header: storeStatusHeader(status: status)) {
                     ForEach(stores, id: \.self) { details in
                         Button(action: {

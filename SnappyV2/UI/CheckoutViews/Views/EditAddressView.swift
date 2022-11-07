@@ -42,7 +42,7 @@ struct EditAddressView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: Constants.Spacing.main) {
-            if viewModel.showEditDeliveryAddressOption{
+            if viewModel.showEditDeliveryAddressOption {
                 Text(EditAddressStrings.editDeliveryAddress.localized)
                     .font(.heading4())
                     .foregroundColor(colorPalette.primaryBlue)
@@ -195,6 +195,10 @@ struct EditAddressView: View {
                 countrySelected: { country in viewModel.countrySelected(country) }
             ))
             .id(CheckoutRootViewModel.DetailsFormElements.country)
+            
+            if viewModel.includeSavedAddressButton {
+                selectSavedAddressButton
+            }
         }
     }
     
@@ -289,7 +293,7 @@ struct EditAddressView: View {
 #if DEBUG
 struct EditDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
-        EditAddressView(viewModel: .init(container: .preview, addressType: .billing), setContactDetailsHandler: {}, errorHandler: {_ in })
+        EditAddressView(viewModel: .init(container: .preview, addressType: .billing, includeSavedAddressButton: true), setContactDetailsHandler: {}, errorHandler: {_ in })
     }
 }
 #endif

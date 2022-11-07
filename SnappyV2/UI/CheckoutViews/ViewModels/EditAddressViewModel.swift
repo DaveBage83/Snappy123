@@ -57,6 +57,7 @@ class EditAddressViewModel: ObservableObject {
     @Published var showEnterAddressManuallyError = false
     
     var foundAddresses = [FoundAddress]()
+    let includeSavedAddressButton: Bool
     
     // Following 4 are used when setting the billing address. We do not ask the user to complete email and phone
     // again as we have already gathered these when setting the contact details
@@ -138,7 +139,7 @@ class EditAddressViewModel: ObservableObject {
     }
 
     // MARK: - Initialisation
-    init(container: DIContainer, addressType: AddressType) {
+    init(container: DIContainer, addressType: AddressType, includeSavedAddressButton: Bool) {
         self.container = container
         let appState = container.appState
         self._memberProfile = .init(initialValue: appState.value.userData.memberProfile)
@@ -146,6 +147,7 @@ class EditAddressViewModel: ObservableObject {
         self._useSameBillingAddressAsDelivery = .init(initialValue: appState.value.userData.selectedFulfilmentMethod == .delivery)
         
         self.addressType = addressType
+        self.includeSavedAddressButton = includeSavedAddressButton
         
         setupBindToProfile(with: appState)
 

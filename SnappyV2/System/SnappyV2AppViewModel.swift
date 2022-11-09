@@ -214,6 +214,7 @@ class SnappyV2AppViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $driverMapParameters
+            .receive(on: RunLoop.main)
             .sink { [weak self] in
                 guard let self = self else { return }
                 if $0 == nil {

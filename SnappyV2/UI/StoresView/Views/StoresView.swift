@@ -122,7 +122,7 @@ struct StoresView: View {
             VStack(spacing: 0) {
                 Divider()
                 
-                ScrollView(.vertical, showsIndicators: false) {
+                ScrollView(showsIndicators: false) {
                     HStack {
                         postcodeSearch
                         if sizeClass != .compact {
@@ -365,17 +365,33 @@ struct StoresView: View {
         } else {
             VStack {
                 storeStatusHeader(status: status)
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
-                    ForEach(stores, id: \.self) { details in
-                        Button(action: {
-                            Task {
-                                await viewModel.selectStore(id: details.id)
+                if #available(iOS 15.0, *) {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
+                        ForEach(stores, id: \.self) { details in
+                            Button(action: {
+                                Task {
+                                    await viewModel.selectStore(id: details.id)
+                                }
+                                
+                            }) {
+                                StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
                             }
-                            
-                        }) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
+                            .disabled(viewModel.storeIsLoading)
                         }
-                        .disabled(viewModel.storeIsLoading)
+                    }
+                } else {
+                    VStack {
+                        ForEach(stores, id: \.self) { details in
+                            Button(action: {
+                                Task {
+                                    await viewModel.selectStore(id: details.id)
+                                }
+                                
+                            }) {
+                                StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
+                            }
+                            .disabled(viewModel.storeIsLoading)
+                        }
                     }
                 }
             }

@@ -382,31 +382,6 @@ struct ProductsView: View {
             }
         }
     }
-    
-    // MARK: - Special offers
-    private func specialOfferView() -> some View {
-        VStack {
-            if let offerText = viewModel.offerText {
-                MultiBuyBanner(offerText: offerText)
-            }
-            if let items = viewModel.specialOfferItems {
-                LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
-                    ForEach(items, id: \.id) { result in
-                        ProductCardView(
-                            viewModel: .init(
-                                container: viewModel.container,
-                                menuItem: result,
-                                associatedSearchTerm: viewModel.associatedSearchTerm,
-                                productSelected: {_ in}),
-                            productsViewModel: viewModel
-                        )
-                    }
-                }
-                .padding(.horizontal, Constants.ItemsGrid.padding)
-            }
-        }
-        .padding(.vertical)
-    }
 
     // MARK: - Product search
     private func searchView() -> some View {

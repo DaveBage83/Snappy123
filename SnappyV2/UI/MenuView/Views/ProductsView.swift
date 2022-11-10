@@ -304,7 +304,7 @@ struct ProductsView: View {
                         Text(details.name)
                             .font(.Body1.semiBold())
                             .foregroundColor(colorPalette.typefacePrimary)
-                            .padding(.vertical, c.vPadding)
+                            .padding(.vertical, Constants.RootCatagoryPills.vPadding)
                             .padding(.horizontal, Constants.RootCatagoryPills.hPadding)
                     }
                     .frame(maxWidth: Constants.RootCatagoryPills.maxWidth)

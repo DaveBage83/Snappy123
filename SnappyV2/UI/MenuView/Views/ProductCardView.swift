@@ -18,6 +18,8 @@ struct ProductCardView: View {
     struct Constants {
         static let padding: CGFloat = 16
         static let cornerRadius: CGFloat = 8
+        static let offerProductCardScale: CGFloat = 0.6
+        static let offerProductImagePadding: CGFloat = 4
         
         struct Card {
             struct Search {
@@ -27,7 +29,7 @@ struct ProductCardView: View {
             struct ProductImage {
                 static let standardHeight: CGFloat = 124
                 static let searchHeight: CGFloat = 98
-                static let offerHeight: CGFloat = 50
+                static let offerHeight: CGFloat = 60
                 static let cornerRadius: CGFloat = 8
                 static let lineWidth: CGFloat = 1
             }
@@ -41,7 +43,7 @@ struct ProductCardView: View {
                 static let bottomPadding: CGFloat = 9
                 static let buttonHeight: CGFloat = 36
                 static let internalStackHeight: CGFloat = 100
-                static let spacing: CGFloat = 8
+                static let imagePadding: CGFloat = 8
             }
         }
     }
@@ -65,10 +67,12 @@ struct ProductCardView: View {
     
     // MARK: - Main view
     var body: some View {
-        if viewModel.isOffer {
+        if viewModel.showHorizontalCard {
             offerProductCard()
+                .withLoadingToast(loading: $viewModel.isGettingProductDetails)
         } else {
             standardProductCard()
+                .withLoadingToast(loading: $viewModel.isGettingProductDetails)
         }
     }
     
@@ -76,16 +80,20 @@ struct ProductCardView: View {
     func offerProductCard() -> some View {
         HStack {
             productImageButton
-                .padding(.trailing, Constants.Card.StandardCard.spacing)
+                .padding(.trailing, Constants.Card.StandardCard.imagePadding)
             
             VStack(alignment: .leading) {
                 offerPillButton
                 productDetails
-                price
+                calories
+                HStack {
+                    price
+                    Spacer()
+                    ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
+                        .frame(height: Constants.Card.StandardCard.buttonHeight * scale)
+                }
             }
-            Spacer()
-            ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
-                .frame(height: Constants.Card.StandardCard.buttonHeight * scale)
+            .frame(width: mainWindowSize.width * Constants.offerProductCardScale)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Constants.padding)
@@ -142,7 +150,7 @@ struct ProductCardView: View {
                 try await viewModel.productCardTapped()
             }
         }) {
-            if viewModel.isOffer {
+            if viewModel.showHorizontalCard {
                 offerProductImage
             } else {
                 productImage
@@ -158,19 +166,24 @@ struct ProductCardView: View {
         }) {
             Text(viewModel.itemDetail.name)
                 .font(.Body1.regular())
-                .multilineTextAlignment(viewModel.isOffer ? .leading : .center)
+                .multilineTextAlignment(viewModel.showHorizontalCard ? .leading : .center)
                 .foregroundColor(colorPalette.typefacePrimary)
                 .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
         }
-        .withLoadingToast(loading: $viewModel.isGettingProductDetails)
     }
     
     @ViewBuilder private var price: some View {
         if let fromPriceString = viewModel.fromPriceString {
-            VStack(alignment: viewModel.isOffer ? .leading : .center) {
-                Text(Strings.ProductsView.ProductDetail.from.localized)
-                    .font(.Caption1.bold())
+            VStack(alignment: viewModel.showHorizontalCard ? .leading : .center) {
+                if viewModel.showHorizontalCard == false {
+                    Text(Strings.ProductsView.ProductDetail.from.localized)
+                        .font(.Caption1.bold())
+                }
                 HStack {
+                    if viewModel.showHorizontalCard {
+                        Text(Strings.ProductsView.ProductDetail.from.localized)
+                            .font(.Caption1.bold())
+                    }
                     Text(fromPriceString)
                         .font(.heading4())
                         .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
@@ -230,12 +243,10 @@ struct ProductCardView: View {
                 .resizable()
                 .scaledToFit()
                 .cornerRadius(Constants.cornerRadius)
-                .frame(height: Constants.Card.ProductImage.offerHeight * scale)
         })
         .cornerRadius(Constants.cornerRadius)
         .scaledToFit()
-        .frame(height: Constants.Card.ProductImage.offerHeight * scale)
-        .padding()
+        .padding(Constants.offerProductImagePadding)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)
                 .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)

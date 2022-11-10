@@ -133,6 +133,8 @@ class ProductsViewModel: ObservableObject {
         viewState == .rootCategories
     }
     
+    var showHorizontalItemCards: Bool { container.appState.value.storeMenu.showHorizontalItemCards }
+    
     var showSnappyLogo: Bool {
         viewState == .rootCategories || isSearchActive
     }
@@ -545,12 +547,10 @@ class ProductsViewModel: ObservableObject {
     
     func clearState() {
         subcategoriesOrItemsMenuFetch = .notRequested
-        rootCategoriesMenuFetch = .notRequested
         specialOffersMenuFetch = .notRequested
         sortedItems = []
         unsortedItems = []
         subCategories = []
-        rootCategories = []
         specialOfferItems = []
         selectedOffer = nil
         offerText = nil
@@ -559,6 +559,11 @@ class ProductsViewModel: ObservableObject {
     
     private func getCategories() {
         container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.rootCategoriesMenuFetch))
+    }
+    
+    func carouselCategoryTapped(with category: RetailStoreMenuCategory) {
+        clearState()
+        categoryTapped(with: category, fromState: .rootCategories)
     }
 
     func categoryTapped(with category: RetailStoreMenuCategory, fromState: ProductViewState? = nil) {

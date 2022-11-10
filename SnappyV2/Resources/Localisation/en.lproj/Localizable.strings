@@ -650,6 +650,8 @@
 // MARK: - Settings
 "settings.userfulinfo.title" = "Useful Information";
 "settings.main.title" = "Settings";
+"settings.storemenu.title" = "Store Menu";
+"settings.storemenu.horizontalcards" = "Horizontal menu item cards";
 "settings.marketingprefs.subtitle" = "Methods Of Staying In Touch";
 "settings.marketingprefs.overridetitle" = "Allow Snappy Shopper to send me news and offers";
 

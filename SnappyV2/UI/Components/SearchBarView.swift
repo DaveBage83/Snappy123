@@ -19,7 +19,7 @@ struct SearchBarView: View {
         static let padding: CGFloat = 10
         static let cornerRadius: CGFloat = 8
         static let borderWidth: CGFloat = 1
-        static let textfieldHeight: CGFloat = 28
+        static let textfieldHeight: CGFloat = 22
     }
     
     // MARK: - Properties

@@ -18,6 +18,8 @@ struct ProductCardView: View {
     struct Constants {
         static let padding: CGFloat = 16
         static let cornerRadius: CGFloat = 8
+        static let offerProductCardScale: CGFloat = 0.6
+        static let offerProductImagePadding: CGFloat = 4
         
         struct Card {
             struct Search {
@@ -91,7 +93,7 @@ struct ProductCardView: View {
                         .frame(height: Constants.Card.StandardCard.buttonHeight * scale)
                 }
             }
-            .frame(width: mainWindowSize.width * 0.6)
+            .frame(width: mainWindowSize.width * Constants.offerProductCardScale)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Constants.padding)
@@ -244,7 +246,7 @@ struct ProductCardView: View {
         })
         .cornerRadius(Constants.cornerRadius)
         .scaledToFit()
-        .padding(4)
+        .padding(Constants.offerProductImagePadding)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)
                 .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)

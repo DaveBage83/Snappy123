@@ -28,6 +28,8 @@ struct ProductsView: View {
     
     // MARK: - Constants
     struct Constants {
+        static let standardViewPadding: CGFloat = 10
+        
         struct RootGrid {
             static let spacing: CGFloat = 20
         }
@@ -57,6 +59,14 @@ struct ProductsView: View {
         struct Logo {
             static let width: CGFloat = 207.25
             static let largeScreenWidthMultiplier: CGFloat = 1.5
+        }
+        
+        struct RootCatagoryPills {
+            static let hSpacing: CGFloat = 6
+            static let vPadding: CGFloat = 4
+            static let hPadding: CGFloat = 10
+            static let maxWidth: CGFloat = 150
+            static let strokeWidth: CGFloat = 1.5
         }
     }
     
@@ -127,7 +137,7 @@ struct ProductsView: View {
                                     productsViewModel: viewModel,
                                     text: $viewModel.searchText,
                                     isEditing: $viewModel.isSearchActive)
-                                .padding(.top, 10)
+                                .padding(.top, Constants.standardViewPadding)
                                 .background(colorPalette.typefaceInvert)
                                 .id(topID)
                                 
@@ -288,17 +298,17 @@ struct ProductsView: View {
     
     func rootCategoriesCarousel() -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
+            HStack(spacing: Constants.RootCatagoryPills.hSpacing) {
                 ForEach(viewModel.rootCategories) { details in
                     Button(action: { viewModel.carouselCategoryTapped(with: details)}) {
                         Text(details.name)
                             .font(.Body1.semiBold())
                             .foregroundColor(colorPalette.typefacePrimary)
-                            .padding(.vertical, 4)
-                            .padding(.horizontal, 10)
+                            .padding(.vertical, c.vPadding)
+                            .padding(.horizontal, Constants.RootCatagoryPills.hPadding)
                     }
-                    .frame(maxWidth: 150)
-                    .background(Capsule().strokeBorder(colorPalette.typefacePrimary, lineWidth: 1.5))
+                    .frame(maxWidth: Constants.RootCatagoryPills.maxWidth)
+                    .background(Capsule().strokeBorder(colorPalette.typefacePrimary, lineWidth: Constants.RootCatagoryPills.strokeWidth))
                     .accentColor(colorPalette.typefaceInvert)
                 }
             }

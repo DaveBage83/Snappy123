@@ -11,9 +11,14 @@ import UIKit
 
 extension ImageDetails {
     static let mockedData = ImageDetails(
-        image: UIImage(named: AppV2Constants.Business.placeholderImage)!,
+        image: UIImage(systemName: "star"),
         fetchURLString: "testURLString",
-        fetchTimestamp: nil) // safe to use for testing given thresholds
+        fetchTimestamp: Date().trueDate) // safe to use for testing given thresholds
+    
+    static let mockedDataExpiredCache = ImageDetails(
+        image: UIImage(systemName: "star"),
+        fetchURLString: "testURLString",
+        fetchTimestamp: Calendar.current.date(byAdding: .hour, value: -10, to: Date())!)
     
     var recordsCount: Int {
         var count = 0

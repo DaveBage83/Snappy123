@@ -11,24 +11,33 @@ import OSLog
 
 protocol AsyncImageServiceProtocol {
     func loadImage(url: String) async -> UIImage
+    func clearAllStaleData()
 }
 
 struct AsyncImageService: AsyncImageServiceProtocol {
     
-    let webRepository: AsyncImageWebRepository
+    let webRepository: AsyncImageWebRepositoryProtocol
     let dbRepository: AsyncImageDBRepositoryProtocol
     
     let eventLogger: EventLoggerProtocol
     
-    init(webRepository: AsyncImageWebRepository, dbRepository: AsyncImageDBRepositoryProtocol, eventLogger: EventLoggerProtocol) {
+    init(webRepository: AsyncImageWebRepositoryProtocol, dbRepository: AsyncImageDBRepositoryProtocol, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.eventLogger = eventLogger
     }
     
+    func clearAllStaleData() {
+        let _ = dbRepository.clearAllStaleImageData()
+    }
+    
     func loadImage(url: String) async -> UIImage {
         // Clear image from db if expired
-        await dbRepository.clearImageData(urlString: url)
+        do {
+            let _ = try await dbRepository.clearImageData(urlString: url).singleOutput()
+        } catch {
+            Logger.imageCache.info("No images to clear")
+        }
         
         do {
             let imageDetails = try await dbRepository.fetchImage(urlString: url).singleOutput()
@@ -38,15 +47,15 @@ struct AsyncImageService: AsyncImageServiceProtocol {
                 Logger.imageCache.info("Image \(url) found in DB")
                 return image
             } else {
-                if let formattedURL = URL(string: url) {
+                if let formattedURL =  URL(string: url) {
                     do {
                         // Fetch image from web repository
                         Logger.imageCache.info("Image \(url) not found in DB so fetching from web instead")
-                        let image = try await webRepository.fetch(formattedURL)
+                        let image = try await webRepository.fetch(URLRequest(url: formattedURL))
                         // Try to store to db
                         if let image {
                             do {
-                                let _ = try await dbRepository.store(image: image, urlString: url)
+                                let _ = try await dbRepository.store(image: image, urlString: url).singleOutput()
                                 Logger.imageCache.info("Successfully stored image \(url) to DB")
                             } catch {
                                 Logger.imageCache.error("Failed to store image \(url) to DB")
@@ -71,7 +80,9 @@ struct AsyncImageService: AsyncImageServiceProtocol {
 }
 
 struct StubImageService: AsyncImageServiceProtocol {
+    func clearAllStaleData() {}
+    
     func loadImage(url: String) async -> UIImage {
-        return UIImage()
+        return UIImage(systemName: "star")!
     }
 }

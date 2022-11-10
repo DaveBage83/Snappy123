@@ -17,6 +17,6 @@ final class MockedAsyncImageWebRepository: TestWebRepository, Mock, AsyncImageWe
     var actions = MockActions<Action>(expected: [])
     
     func fetch(_ urlRequest: URLRequest) async throws -> UIImage? {
-        return UIImage()
+        return UIImage(systemName: "star")
     }
 }

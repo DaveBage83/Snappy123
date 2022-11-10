@@ -10,6 +10,7 @@ import Combine
 @testable import SnappyV2
 
 struct MockedAsyncImageService: Mock, AsyncImageServiceProtocol {
+
     enum Action: Equatable {
         case loadImage
     }
@@ -21,6 +22,8 @@ struct MockedAsyncImageService: Mock, AsyncImageServiceProtocol {
     }
     
     func loadImage(url: String) async -> UIImage {
-        return UIImage()
+        return UIImage(systemName: "star")!
     }
+    
+    func clearAllStaleData() {}
 }

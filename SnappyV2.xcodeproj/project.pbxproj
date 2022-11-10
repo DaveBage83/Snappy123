@@ -243,6 +243,7 @@
 		551A639A2853FFDB007E0E78 /* ExpandableTextViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A63992853FFDB007E0E78 /* ExpandableTextViewTests.swift */; };
 		551A639C28540204007E0E78 /* StoreInfoBarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A639B28540204007E0E78 /* StoreInfoBarTests.swift */; };
 		551A639E2857446A007E0E78 /* ProductsNavigationAndSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */; };
+		55220F7F2922238D0074B34F /* AsyncImageServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55220F7E2922238D0074B34F /* AsyncImageServiceTests.swift */; };
 		55229DF728991317006E2CFE /* EditableCardContainerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */; };
 		552605CA2850D915003EDF0F /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 552605C92850D915003EDF0F /* GoogleSignIn */; };
 		552C9AFF2893F53F00D4D6DF /* ValidatableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C9AFE2893F53F00D4D6DF /* ValidatableField.swift */; };
@@ -358,6 +359,7 @@
 		55C815E327E7E7EE0028851F /* MemberDashboardLoyaltyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C815E227E7E7EE0028851F /* MemberDashboardLoyaltyViewModel.swift */; };
 		55C815E927E7EDD40028851F /* LoyaltyViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C815E827E7EDD40028851F /* LoyaltyViewModelTests.swift */; };
 		55C86D7628254C7E00A62A6D /* SocialButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C86D7528254C7E00A62A6D /* SocialButton.swift */; };
+		55CC4FE1291EB106007142B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF96778D2673973600BB4DC9 /* Assets.xcassets */; };
 		55CF89BC28229F4200CDCDA6 /* ColorPaletteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89BB28229F4200CDCDA6 /* ColorPaletteTests.swift */; };
 		55CF89BE2822A7E100CDCDA6 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89BD2822A7E100CDCDA6 /* Color+Extensions.swift */; };
 		55CF89C32823E36D00CDCDA6 /* SnappyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */; };
@@ -389,7 +391,6 @@
 		55EBDF64291C166F0031F7A2 /* MockedAsyncImageWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EBDF63291C166F0031F7A2 /* MockedAsyncImageWebRepository.swift */; };
 		55EBDF66291C169E0031F7A2 /* MockedAsyncImageDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EBDF65291C169E0031F7A2 /* MockedAsyncImageDBRepository.swift */; };
 		55EBDF69291C17170031F7A2 /* AsyncImageMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EBDF68291C17170031F7A2 /* AsyncImageMockedData.swift */; };
-		55EBDF6B291C18470031F7A2 /* AsyncImageWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EBDF6A291C18470031F7A2 /* AsyncImageWebRepositoryTests.swift */; };
 		55EBDF6D291C68130031F7A2 /* AsynImageDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EBDF6C291C68130031F7A2 /* AsynImageDBRepositoryTests.swift */; };
 		55EEAFA2282EAF0700F87C0B /* UserStatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EEAFA1282EAF0700F87C0B /* UserStatusCard.swift */; };
 		55EEAFA4282EB75100F87C0B /* UserStatusCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EEAFA3282EB75100F87C0B /* UserStatusCardTests.swift */; };
@@ -879,6 +880,7 @@
 		551A63992853FFDB007E0E78 /* ExpandableTextViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableTextViewTests.swift; sourceTree = "<group>"; };
 		551A639B28540204007E0E78 /* StoreInfoBarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreInfoBarTests.swift; sourceTree = "<group>"; };
 		551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsNavigationAndSearch.swift; sourceTree = "<group>"; };
+		55220F7E2922238D0074B34F /* AsyncImageServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageServiceTests.swift; sourceTree = "<group>"; };
 		55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableCardContainerViewModelTests.swift; sourceTree = "<group>"; };
 		552C9AFE2893F53F00D4D6DF /* ValidatableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableField.swift; sourceTree = "<group>"; };
 		552E574C2832A88500296A7D /* SnappyTextfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfield.swift; sourceTree = "<group>"; };
@@ -1024,7 +1026,6 @@
 		55EBDF63291C166F0031F7A2 /* MockedAsyncImageWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAsyncImageWebRepository.swift; sourceTree = "<group>"; };
 		55EBDF65291C169E0031F7A2 /* MockedAsyncImageDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAsyncImageDBRepository.swift; sourceTree = "<group>"; };
 		55EBDF68291C17170031F7A2 /* AsyncImageMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageMockedData.swift; sourceTree = "<group>"; };
-		55EBDF6A291C18470031F7A2 /* AsyncImageWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageWebRepositoryTests.swift; sourceTree = "<group>"; };
 		55EBDF6C291C68130031F7A2 /* AsynImageDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsynImageDBRepositoryTests.swift; sourceTree = "<group>"; };
 		55EEAFA1282EAF0700F87C0B /* UserStatusCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatusCard.swift; sourceTree = "<group>"; };
 		55EEAFA3282EB75100F87C0B /* UserStatusCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatusCardTests.swift; sourceTree = "<group>"; };
@@ -1420,6 +1421,7 @@
 				0AA856E427CFDDB400038072 /* MockedBusinessProfileService.swift */,
 				0A7253DD27B0FF0400CE5B1F /* MockedCheckoutService.swift */,
 				554F1FE427A89DEC00D24C6E /* MockedAsyncImageService.swift */,
+				55220F7E2922238D0074B34F /* AsyncImageServiceTests.swift */,
 				0A6A3CB9276F1E9F00D77617 /* MockedRetailStoreService.swift */,
 				0A6A3CBB276F251300D77617 /* MockedRetailStoreMenuService.swift */,
 				0A6A3CBF276F262800D77617 /* MockedUserService.swift */,
@@ -2360,7 +2362,6 @@
 			isa = PBXGroup;
 			children = (
 				55EBDF68291C17170031F7A2 /* AsyncImageMockedData.swift */,
-				55EBDF6A291C18470031F7A2 /* AsyncImageWebRepositoryTests.swift */,
 				55EBDF6C291C68130031F7A2 /* AsynImageDBRepositoryTests.swift */,
 			);
 			path = AsyncImage;
@@ -3418,6 +3419,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55CC4FE1291EB106007142B9 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3963,7 +3965,6 @@
 				0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */,
 				0A0B039328E9856800499794 /* EventLoggerWebRepositoryTests.swift in Sources */,
 				0AA856EA27CFE11700038072 /* BusinessProfileWebRepositoryTests.swift in Sources */,
-				55EBDF6B291C18470031F7A2 /* AsyncImageWebRepositoryTests.swift in Sources */,
 				AFBB1C2A2785A2EA002C5BBD /* BasketListItemViewModelTests.swift in Sources */,
 				AF7939E42732B71A00C71164 /* AppStateTests.swift in Sources */,
 				AFEB1A22273D86790087AECB /* ProductCardViewModelTests.swift in Sources */,
@@ -3989,6 +3990,7 @@
 				0AD6649227B436AC00DEB5E7 /* MockedUserWebRepository.swift in Sources */,
 				0AA856EC27CFE13400038072 /* BusinessProfileDBRepositoryTests.swift in Sources */,
 				0A30A04427942663000C4E50 /* AddressMockedData.swift in Sources */,
+				55220F7F2922238D0074B34F /* AsyncImageServiceTests.swift in Sources */,
 				0A7E310B2809A81B0008A647 /* EventLoggerTests.swift in Sources */,
 				AFF90B3F284A570400DD77F5 /* RetailStoreMenuServiceTests.swift in Sources */,
 				0A86C91A27021210008F16E1 /* RequestMocking.swift in Sources */,

@@ -19,6 +19,7 @@ protocol AsyncImageDBRepositoryProtocol {
     func store(image: UIImage, urlString: String) -> AnyPublisher<ImageDetails, Error>
     func fetchImage(urlString: String) -> AnyPublisher<ImageDetails?, Error>
     func clearImageData(urlString: String) -> AnyPublisher<Bool, Error>
+    func clearAllStaleImageData() -> AnyPublisher<Bool, Error>
 }
 
 struct AsyncImageDBRepository: AsyncImageDBRepositoryProtocol {
@@ -35,8 +36,8 @@ struct AsyncImageDBRepository: AsyncImageDBRepositoryProtocol {
             .map { $0.first }
             .eraseToAnyPublisher()
     }
-
-    // Delete images that have expired
+    
+    // Delete images that have expired which match specific string
     func clearImageData(urlString: String) -> AnyPublisher<Bool, Error>  {
         persistentStore
             .update { context in
@@ -46,7 +47,18 @@ struct AsyncImageDBRepository: AsyncImageDBRepositoryProtocol {
                 return true
             }
     }
-
+    
+    // Delete all images with stale data
+    func clearAllStaleImageData() -> AnyPublisher<Bool, Error> {
+        persistentStore
+            .update { context in
+                try CachedImageMO.delete(
+                    fetchRequest: CachedImageMO.fetchRequestResultForDeletion(),
+                    in: context)
+                return true
+            }
+    }
+    
     // Store images to db
     func store(image: UIImage, urlString: String) -> AnyPublisher<ImageDetails, Error> {
         return persistentStore
@@ -75,8 +87,24 @@ extension CachedImageMO {
         let query = "timestamp < %@ AND id == %@"
         let arguments: [Any] = [
             // Use same expiry as store menu
-            AppV2Constants.Business.retailStoreMenuCachedExpiry as NSDate,
+            AppV2Constants.Business.asyncImageCachedExpiry as NSDate,
             urlString
+        ]
+        
+        request.predicate = NSPredicate(format: query, argumentArray: arguments)
+        return request
+    }
+    
+    static func fetchRequestResultForDeletion() -> NSFetchRequest<NSFetchRequestResult> {
+        let request = newFetchRequestResult()
+
+        // match this functions parameters and also delete any
+        // records that have expired
+        
+        let query = "timestamp < %@"
+        let arguments: [Any] = [
+            // Use same expiry as store menu
+            AppV2Constants.Business.asyncImageCachedExpiry as NSDate
         ]
         
         request.predicate = NSPredicate(format: query, argumentArray: arguments)
@@ -119,16 +147,16 @@ extension ImageDetails {
         self.init(
             image: cachedImage,
             fetchURLString: urlString ?? "",
-            fetchTimestamp: nil)
+            fetchTimestamp: managedObject.timestamp)
     }
     
     @discardableResult
-    func store(in context: NSManagedObjectContext) -> CachedImageMO? {
+    func store(in context: NSManagedObjectContext, timeStamp: Date? = nil) -> CachedImageMO? {
         guard let cachedImage = CachedImageMO.insertNew(in: context) else { return nil }
         
         let data = image?.jpegData(compressionQuality: 1.0)
         cachedImage.contents = data
-        cachedImage.timestamp = Date().trueDate
+        cachedImage.timestamp = timeStamp ?? Date().trueDate
         cachedImage.id = fetchURLString
         
         return cachedImage

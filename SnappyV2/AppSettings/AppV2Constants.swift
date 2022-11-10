@@ -88,6 +88,9 @@ struct AppV2Constants {
         static let userCachedExpiry: Date = {
             return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
+        static let asyncImageCachedExpiry: Date = {
+            return Calendar.current.date(byAdding: .minute, value: -1, to: Date().trueDate) ?? Date().trueDate
+        }()
         static let standardDateOnlyStringFormat = "yyyy-MM-dd"
         static let hourAndMinutesStringFormat = "HH:mm"
         static let hourAndMinutesAndSecondsStringFormat = "HH:mm:ss"

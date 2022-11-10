@@ -6,9 +6,14 @@
 //
 
 import SwiftUI
+import Combine
 
 class MemberDashboardSettingsViewModel: ObservableObject {
     let container: DIContainer
+    
+    @Published var showHorizontalItemCards: Bool
+    
+    private var cancellables = Set<AnyCancellable>()
     
     var showMarketingPreferences: Bool {
         container.appState.value.userData.memberProfile != nil
@@ -16,6 +21,27 @@ class MemberDashboardSettingsViewModel: ObservableObject {
     
     init(container: DIContainer) {
         self.container = container
+        self.showHorizontalItemCards = container.appState.value.storeMenu.showHorizontalItemCards
+        
+        setupItemCardOrientation()
+    }
+    
+    func setupItemCardOrientation() {
+        container.appState
+            .map(\.storeMenu.showHorizontalItemCards)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.showHorizontalItemCards, on: self)
+            .store(in: &cancellables)
+        
+        $showHorizontalItemCards
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self else { return }
+                self.container.appState.value.storeMenu.showHorizontalItemCards = value
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -26,6 +52,10 @@ struct MemberDashboardSettingsView: View {
     typealias SettingsStrings = Strings.Settings
     
     struct Constants {
+        static let mainSpacing: CGFloat = 24.5
+        static let vPadding: CGFloat = 24
+        static let mainPadding: CGFloat = 24
+        
         struct MainStack {
             static let vSpacing: CGFloat = 36
             static let vPadding: CGFloat = 24
@@ -57,6 +87,10 @@ struct MemberDashboardSettingsView: View {
                 
                 PushNotificationSettingsView(viewModel: pushNotificationsMarketingPreferenceViewModel)
                     .padding(.top)
+                
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    horizontalItemCardSetting
+                }
                 
                 if viewModel.showMarketingPreferences {
                     MarketingPreferencesView(viewModel: marketingPreferencesViewModel)
@@ -90,6 +124,22 @@ struct MemberDashboardSettingsView: View {
             backButtonAction: {
                 dismissViewHandler()
             })
+    }
+    
+    private var horizontalItemCardSetting: some View {
+        VStack(alignment: .leading, spacing: Constants.mainSpacing) {
+            Text(SettingsStrings.StoreMenu.title.localized)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
+                .padding(.horizontal, Constants.vPadding)
+            
+            Toggle(isOn: $viewModel.showHorizontalItemCards) {
+                Text(SettingsStrings.StoreMenu.horizontalCard.localized)
+                    .font(.Body2.regular())
+                    .foregroundColor(colorPalette.typefacePrimary)
+            }
+            .padding(.horizontal, Constants.mainPadding)
+        }
     }
     
     private var termsView: some View {

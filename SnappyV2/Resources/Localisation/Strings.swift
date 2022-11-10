@@ -992,6 +992,11 @@ public enum Strings {
             case title = "settings.main.title"
         }
         
+        enum StoreMenu: String, IterableSnappyString {
+            case title = "settings.storemenu.title"
+            case horizontalCard = "settings.storemenu.horizontalcards"
+        }
+        
         enum UsefulInfo: String, IterableSnappyString {
             case title = "settings.userfulinfo.title"
         }

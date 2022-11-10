@@ -81,12 +81,7 @@ struct ProductsNavigationAndSearch: View {
                     }
                 }
             }
-            .padding(.top, Constants.SearchBar.padding)
-            .padding(.bottom, adoptMinimalLayout ? Constants.SearchBar.padding : 0)
-            
-            if !adoptMinimalLayout, let store = productsViewModel.container.appState.value.userData.selectedStore.value {
-                StoreInfoBar(container: productsViewModel.container, store: store)
-            }
+            .padding(.bottom, Constants.SearchBar.padding)
         }
         .padding(.horizontal)
         .background(colorPalette.typefaceInvert)

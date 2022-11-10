@@ -219,7 +219,6 @@ struct InitialView: View {
                         postcodeSearchBarView()
                     }
                 }
-                
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -286,6 +285,9 @@ struct InitialView: View {
             )
             .onAppear {
                 AppDelegate.orientationLock = .portrait
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
         }
         .navigationViewStyle(.stack)
@@ -396,6 +398,7 @@ struct InitialView: View {
                     .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.PostcodeSearch.largeDeviceWidth)
             }
             .padding(.horizontal, Constants.PostcodeSearch.hPadding)
+            
             Spacer()
         }
     }

@@ -33,6 +33,8 @@ class ProductCardViewModel: ObservableObject {
         return wasPrice.toCurrencyString(using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
     }
     
+    var showHorizontalCard: Bool { isOffer || container.appState.value.storeMenu.showHorizontalItemCards }
+    
     var showSpecialOfferPillAsButton: Bool {
         isInBasket == false
     }

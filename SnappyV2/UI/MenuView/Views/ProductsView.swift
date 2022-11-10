@@ -127,7 +127,7 @@ struct ProductsView: View {
                                     productsViewModel: viewModel,
                                     text: $viewModel.searchText,
                                     isEditing: $viewModel.isSearchActive)
-                                .padding(.top)
+                                .padding(.top, 10)
                                 .background(colorPalette.typefaceInvert)
                                 .id(topID)
                                 
@@ -286,9 +286,33 @@ struct ProductsView: View {
         }
     }
     
+    func rootCategoriesCarousel() -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(viewModel.rootCategories) { details in
+                    Button(action: { viewModel.carouselCategoryTapped(with: details)}) {
+                        Text(details.name)
+                            .font(.Body1.semiBold())
+                            .foregroundColor(colorPalette.typefacePrimary)
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 10)
+                    }
+                    .frame(maxWidth: 150)
+                    .background(Capsule().strokeBorder(colorPalette.typefacePrimary, lineWidth: 1.5))
+                    .accentColor(colorPalette.typefaceInvert)
+                }
+            }
+            .padding(.top)
+            .padding(.leading)
+        }
+    }
+    
     // MARK: - Subcategories
     @ViewBuilder private func subCategoriesView() -> some View {
         if sizeClass == .compact {
+            
+            rootCategoriesCarousel()
+            
             VStack(spacing: Constants.CategoriesView.vSpacing) {
                 ForEach(viewModel.lastSubCategories, id: \.id) { details in
                     Button(action: { viewModel.categoryTapped(with: details, fromState: .subCategories) }) {
@@ -300,6 +324,9 @@ struct ProductsView: View {
             .padding(.vertical)
 
         } else {
+            
+            rootCategoriesCarousel()
+            
             VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
                 ForEach(viewModel.splitSubCategories, id: \.self) { categoryCouple in
                     HStack {
@@ -319,10 +346,13 @@ struct ProductsView: View {
     }
     
     // MARK: - Items
-    private func itemsView() -> some View {
-        VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
-            ForEach(viewModel.splitItems(storeItems: viewModel.items, into: numberOfColumns), id: \.self) { itemCouple in
-                HStack(spacing: AppConstants.productCardGridSpacing) {
+    @ViewBuilder private func itemsView() -> some View {
+        
+        rootCategoriesCarousel()
+        
+        if viewModel.showHorizontalItemCards {
+            VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
+                ForEach(viewModel.splitItems(storeItems: viewModel.items, into: numberOfColumns), id: \.self) { itemCouple in
                     ForEach(itemCouple, id: \.self) { item in
                         ProductCardView(
                             viewModel: .init(
@@ -337,11 +367,36 @@ struct ProductsView: View {
                         )
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
             }
-            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, AppConstants.productCardGridSpacing)
+            .padding(.vertical)
+            
+        } else {
+            VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
+                ForEach(viewModel.splitItems(storeItems: viewModel.items, into: numberOfColumns), id: \.self) { itemCouple in
+                    HStack(spacing: AppConstants.productCardGridSpacing) {
+                        ForEach(itemCouple, id: \.self) { item in
+                            ProductCardView(
+                                viewModel: .init(
+                                    container: viewModel.container,
+                                    menuItem: item,
+                                    associatedSearchTerm: viewModel.associatedSearchTerm,
+                                    productSelected: { product in
+                                        viewModel.selectItem(product)
+                                    }
+                                ),
+                                productsViewModel: viewModel
+                            )
+                        }
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, AppConstants.productCardGridSpacing)
+            .padding(.vertical)
         }
-        .padding(.horizontal, AppConstants.productCardGridSpacing)
-        .padding(.vertical)
+        
     }
     
     @ViewBuilder func missedOffersView() -> some View {
@@ -436,38 +491,63 @@ struct ProductsView: View {
             }
             
             // Search result items card list
+            Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
+                .font(.Body1.semiBold())
+                .padding(.leading)
             if viewModel.showSearchResultItems {
-                Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
-                    .font(.Body1.semiBold())
-                    .padding(.leading)
-                
-                VStack(spacing: AppConstants.productCardGridSpacing) {
-                    ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
-                        HStack(spacing: AppConstants.productCardGridSpacing) {
+                if viewModel.container.appState.value.storeMenu.showHorizontalItemCards {
+                    VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
+                        ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
                             ForEach(itemCouple, id: \.self) { item in
                                 ProductCardView(
                                     viewModel: .init(
                                         container: viewModel.container,
                                         menuItem: item,
                                         associatedSearchTerm: viewModel.associatedSearchTerm,
-                                        productSelected: { item in
-                                            viewModel.selectItem(item, logSearchEvent: true)
+                                        productSelected: { product in
+                                            viewModel.selectItem(product)
                                         }
                                     ),
                                     productsViewModel: viewModel
                                 )
                             }
                         }
+                        .fixedSize(horizontal: false, vertical: true)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, AppConstants.productCardGridSpacing)
+                    .padding(.vertical)
+                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder: [])
+                    .simultaneousGesture(DragGesture().onChanged({ _ in
+                        hideKeyboard()
+                    }))
+                } else {
+                    VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
+                        ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
+                            HStack(spacing: AppConstants.productCardGridSpacing) {
+                                ForEach(itemCouple, id: \.self) { item in
+                                    ProductCardView(
+                                        viewModel: .init(
+                                            container: viewModel.container,
+                                            menuItem: item,
+                                            associatedSearchTerm: viewModel.associatedSearchTerm,
+                                            productSelected: { product in
+                                                viewModel.selectItem(product)
+                                            }
+                                        ),
+                                        productsViewModel: viewModel
+                                    )
+                                }
+                            }
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.horizontal, AppConstants.productCardGridSpacing)
+                    .padding(.vertical)
+                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder: [])
+                    .simultaneousGesture(DragGesture().onChanged({ _ in
+                        hideKeyboard()
+                    }))
                 }
-                .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder: [])
-                .padding(.horizontal, AppConstants.productCardGridSpacing)
-                .background(colorPalette.backgroundMain)
-                .simultaneousGesture(DragGesture().onChanged({ _ in
-                    hideKeyboard()
-                }))
             }
             
             // No search result

@@ -99,6 +99,8 @@ struct MemberDashboardOrdersView: View {
                 
                 Spacer()
             }
+            
+            Spacer()
         }
         .sheet(item: $viewModel.selectedOrder, content: { order in
             ToastableViewContainer(content: {

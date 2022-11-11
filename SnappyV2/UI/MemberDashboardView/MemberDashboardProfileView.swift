@@ -86,6 +86,7 @@ struct MemberDashboardProfileView: View {
         VStack(alignment: .leading, spacing: Constants.General.stackSpacing) {
             detailFields
             updateProfileButtons
+            Spacer()
         }
         .onAppear {
             viewModel.onAppearSendEvent()
@@ -155,6 +156,7 @@ struct MemberDashboardProfileView: View {
             }
             .redacted(reason: viewModel.profileIsUpdating ? .placeholder : [])
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
     
     // MARK: - Change password view

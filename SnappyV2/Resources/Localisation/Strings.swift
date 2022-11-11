@@ -23,6 +23,8 @@ public enum Strings {
         case more = "general.more"
         case deliveryTime = "general.deliverytime"
         case deliveryTimeShort = "general.deliverytime.short"
+        case collectionTime = "general.collectiontime"
+        case collectionTimeShort = "general.collectiontime.short"
         case free = "general.free"
         case shopNow = "general.shopnow"
         case updateSlot = "general.updateslot"
@@ -988,6 +990,11 @@ public enum Strings {
     public enum Settings {
         enum Main: String, IterableSnappyString {
             case title = "settings.main.title"
+        }
+        
+        enum StoreMenu: String, IterableSnappyString {
+            case title = "settings.storemenu.title"
+            case horizontalCard = "settings.storemenu.horizontalcards"
         }
         
         enum UsefulInfo: String, IterableSnappyString {

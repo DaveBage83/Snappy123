@@ -273,37 +273,40 @@ struct CheckoutDetailsView: View {
 
     // MARK: - Where did you hear about us?
     @ViewBuilder private func whereDidYouHear(allowedMarketingChannels: [AllowedMarketingChannel]) -> some View {
-        VStack(spacing: Constants.AllowedMarketingChannels.spacing) {
-            Text(Strings.CheckoutDetails.WhereDidYouHear.title.localized)
-                .font(.Body1.semiBold())
-                .foregroundColor(colorPalette.typefacePrimary)
-            
-            Menu {
-                ForEach(allowedMarketingChannels, id: \.self) { channel in
-                    Button {
-                        viewModel.channelSelected(channel)
-                    } label: {
-                        Text(channel.name)
+        if !viewModel.hideSelectedChannel {
+            VStack(spacing: Constants.AllowedMarketingChannels.spacing) {
+                Text(Strings.CheckoutDetails.WhereDidYouHear.title.localized)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.typefacePrimary)
+                
+                Menu {
+                    ForEach(allowedMarketingChannels, id: \.self) { channel in
+                        Button {
+                            viewModel.channelSelected(channel)
+                        } label: {
+                            Text(channel.name)
+                        }
                     }
+                } label: {
+                    SnappyTextfield(
+                        container: viewModel.container,
+                        text: $viewModel.allowedMarketingChannelText,
+                        hasError: $viewModel.selectedChannelHasWarning,
+                        labelText: Strings.CheckoutDetails.WhereDidYouHear.choose.localized,
+                        largeTextLabelText: nil,
+                        fieldType: .label)
                 }
-            } label: {
-                SnappyTextfield(
-                    container: viewModel.container,
-                    text: $viewModel.allowedMarketingChannelText,
-                    hasError: $viewModel.selectedChannelHasWarning,
-                    labelText: Strings.CheckoutDetails.WhereDidYouHear.choose.localized,
-                    largeTextLabelText: nil,
-                    fieldType: .label)
             }
         }
     }
+    
 }
 
 #if DEBUG
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = CheckoutRootViewModel(container: .preview)
-        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: .preview, addressType: .delivery))
+        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: .preview, addressType: .delivery, includeSavedAddressButton: true))
     }
 }
 #endif

@@ -67,6 +67,9 @@ extension AppState {
         // titles
         var subCategoryNavigationTitle = [String]()
         var itemNavigationTitle: String? = nil
+        
+        // settings
+        var showHorizontalItemCards = UIDevice.current.userInterfaceIdiom == .phone ? true : false
     }
 }
 

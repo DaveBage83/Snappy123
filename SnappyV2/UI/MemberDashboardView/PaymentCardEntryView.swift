@@ -114,7 +114,7 @@ struct PaymentCardEntryView: View {
 #if DEBUG
 struct PaymentCardEntryView_Previews: PreviewProvider {
     static var previews: some View {
-        PaymentCardEntryView(viewModel: PaymentCardEntryViewModel(container: .preview), editAddressViewModel: .init(container: .preview, addressType: .card))
+        PaymentCardEntryView(viewModel: PaymentCardEntryViewModel(container: .preview), editAddressViewModel: .init(container: .preview, addressType: .card, includeSavedAddressButton: false))
     }
 }
 #endif

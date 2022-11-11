@@ -605,7 +605,7 @@ class EditAddressViewModelTests: XCTestCase {
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), addressType: AddressType) -> EditAddressViewModel {
         @ObservedObject var basketViewModel = BasketViewModel(container: .preview)
-        let sut = EditAddressViewModel(container: container, addressType: addressType)
+        let sut = EditAddressViewModel(container: container, addressType: addressType, includeSavedAddressButton: true)
         
         trackForMemoryLeaks(sut)
         

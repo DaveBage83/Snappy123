@@ -899,9 +899,12 @@ final class LogoutTests: UserServiceTests {
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
+        UserDefaults.standard.userConfirmedSelectedChannel = true
+        
         do {
             try await sut.logout()
             XCTAssertNil(self.appState.value.userData.memberProfile)
+            XCTAssertFalse(UserDefaults.standard.userConfirmedSelectedChannel)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
             mockedEventLogger.verify()

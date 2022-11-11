@@ -444,7 +444,7 @@ extension RetailStoreMenuItemOption {
             mutuallyExclusive: managedObject.mutuallyExclusive,
             minimumSelected: Int(managedObject.minimumSelected),
             extraCostThreshold: managedObject.extraCostThreshold,
-            dependencies: dependencies,
+            dependencies: dependencies ?? [],
             values: values
         )
         
@@ -466,13 +466,11 @@ extension RetailStoreMenuItemOption {
         option.minimumSelected = Int16(minimumSelected)
         option.extraCostThreshold = extraCostThreshold
         
-        if let dependencies = dependencies {
-            option.dependencies = NSOrderedSet(array: dependencies.compactMap({ optionId -> RetailStoreMenuItemOptionDependencyMO? in
-                let dependencyMO = RetailStoreMenuItemOptionDependencyMO.insertNew(in: context)
-                dependencyMO?.id = Int64(optionId)
-                return dependencyMO
-            }))
-        }
+        option.dependencies = NSOrderedSet(array: dependencies.compactMap({ optionId -> RetailStoreMenuItemOptionDependencyMO? in
+            let dependencyMO = RetailStoreMenuItemOptionDependencyMO.insertNew(in: context)
+            dependencyMO?.id = Int64(optionId)
+            return dependencyMO
+        }))
         
         if let values = values {
             option.values = NSOrderedSet(array: values.compactMap({ value -> RetailStoreMenuItemOptionValueMO? in

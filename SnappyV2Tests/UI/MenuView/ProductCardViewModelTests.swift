@@ -154,6 +154,14 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showSpecialOfferPillAsButton)
     }
     
+    func test_givenHorizontalInAppState_whenChangeToFalse_thenShowHorizontalCardIsFalse() {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
+        
+        sut.container.appState.value.storeMenu.showHorizontalItemCards = false
+        
+        XCTAssertFalse(sut.showHorizontalCard)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false, associatedSearchTerm: String? = nil) -> ProductCardViewModel {
         let sut = ProductCardViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket, associatedSearchTerm: associatedSearchTerm, productSelected: {
         _ in})

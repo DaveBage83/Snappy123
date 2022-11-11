@@ -114,7 +114,6 @@ struct ManualInputAddressView: View {
                 title: viewModel.viewState.navigationTitle,
                 navigationDismissType: viewModel.viewState.dismissType,
                 backButtonAction: nil)
-            .frame(maxHeight: .infinity)
             .background(colorPalette.backgroundMain.ignoresSafeArea(edges: .bottom))
     }
     

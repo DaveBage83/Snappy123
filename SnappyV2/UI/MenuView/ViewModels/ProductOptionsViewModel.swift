@@ -99,9 +99,9 @@ final class ProductOptionsViewModel: ObservableObject {
                 
                 for option in self.availableOptions {
                     guard array.contains(option) == false else { continue }
-                    guard let dependentOn = option.dependencies else { array.append(option); continue }
+                    guard option.dependencies.isEmpty == false else { array.append(option); continue }
                     
-                    if (dependentOn.contains {
+                    if (option.dependencies.contains {
                         return valueIDs.contains($0)
                     }) {
                         array.append(option)

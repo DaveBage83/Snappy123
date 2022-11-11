@@ -196,7 +196,9 @@ struct MemberDashboardView: View {
                 .font(.Body1.regular())
                 .foregroundColor(colorPalette.textGrey1)
             
-            Spacer()
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                Spacer()
+            }
             
             SnappyButton(
                 container: viewModel.container,

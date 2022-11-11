@@ -68,10 +68,9 @@ public final class CardScanner: CardScannerProtocol {
             request.customWords = (0...9).map { "\($0)" } + ["MISS", "MRS", "MS", "MR", "DR", "PROF"] // Not sure this helps
             request.minimumTextHeight = _regionOfInterest.unsafeValue == regionOfInterestDefault ? 0 : 0.1 // Signicantly reduces CPU load with some cards
             request.recognitionLanguages = ["en_US"]
-            if #available(iOS 14.0, *) {
-                // Avoid new iOS versions moving to a newer version with differnet behaviours
-                request.revision = VNRecognizeTextRequestRevision2
-            }
+            
+            // Avoid new iOS versions moving to a newer version with differnet behaviours
+            request.revision = VNRecognizeTextRequestRevision2
             
             let handler = VNImageRequestHandler(
                 ciImage: Self.preprocess(buffer: buffer, regionOfInterest0to1: _regionOfInterest.unsafeValue),

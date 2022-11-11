@@ -48,11 +48,18 @@ struct StoreCardInfoView: View {
     
     // MARK: - Main view
     var body: some View {
-        mainBody
-            .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: false)
-            .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
-            .withLoadingToast(loading: $isLoading)
+        if viewModel.showDeliveryOfferIfApplicable {
+            mainBody
+                .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: false)
+                .background(colorPalette.secondaryWhite)
+                .standardCardFormat()
+                .withLoadingToast(loading: $isLoading)
+        } else {
+            mainBody
+                .background(colorPalette.secondaryWhite)
+                .standardCardFormat()
+                .withLoadingToast(loading: $isLoading)
+        }
     }
     
     private var mainBody: some View {
@@ -77,7 +84,7 @@ struct StoreCardInfoView: View {
                     .font(.snappyFootnote)
                     .padding(.vertical, Constants.General.minPadding)
                     
-                    if let fromDeliveryCost = viewModel.orderDeliveryMethod?.fromDeliveryCost(currency: viewModel.currency) {
+                    if let fromDeliveryCost = viewModel.orderDeliveryMethod?.fromDeliveryCost(currency: viewModel.currency), viewModel.showDeliveryCost {
                         Text(fromDeliveryCost)
                             .font(.Body2.semiBold())
                             .foregroundColor(colorPalette.primaryBlue)
@@ -115,8 +122,8 @@ struct StoreCardInfoView: View {
     private var deliveryTime: some View {
         VStack(alignment: .leading) {
             AdaptableText(
-                text: GeneralStrings.deliveryTime.localized,
-                altText: GeneralStrings.deliveryTimeShort.localized,
+                text: viewModel.fulfilmentTimeTitle,
+                altText: viewModel.fulfilmentTimeTitleShort,
                 threshold: Constants.General.minimalLayoutThreshold)
             .font(.Caption2.semiBold())
             .foregroundColor(viewModel.isClosed ? colorPalette.primaryRed : colorPalette.typefacePrimary)
@@ -126,7 +133,7 @@ struct StoreCardInfoView: View {
                     .font(.Body1.semiBold())
                     .foregroundColor(colorPalette.primaryRed)
             } else {
-                Text(viewModel.storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.earliestTime ?? "-")
+                Text(viewModel.fulfilmentTime)
                     .font(.Body1.semiBold())
                     .foregroundColor(colorPalette.typefacePrimary)
             }

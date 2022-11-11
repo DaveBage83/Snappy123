@@ -106,19 +106,18 @@ final class AddressWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
-    func test_getCountries_whenServerHasNoCountries_returnNilResult() throws {
+    func test_getCountries_whenServerHasNoCountries_returnNilResult() async throws {
         
         let data: [AddressSelectionCountry]? = nil
         
         try mock(.getCountries, result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.getCountries().sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            let result = try await sut.getCountries().singleOutput()
+            XCTAssertEqual(data, result)
+        } catch {
+            XCTFail("Unexpected error", file: #file, line: #line)
+        }
     }
     
     // MARK: - Helper

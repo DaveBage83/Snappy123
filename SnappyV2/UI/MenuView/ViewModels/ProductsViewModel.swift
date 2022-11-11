@@ -671,6 +671,10 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    var showCaloriesSort: Bool {
+        unsortedItems.contains(where: { $0.itemCaptions?.portionSize != nil })
+    }
+    
     func resetSelectedItem() {
         selectedItem = nil
     }

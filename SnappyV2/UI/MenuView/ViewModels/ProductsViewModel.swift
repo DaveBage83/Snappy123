@@ -220,6 +220,10 @@ class ProductsViewModel: ObservableObject {
     var dummyRootCategory: RetailStoreMenuCategory {
         RetailStoreMenuCategory(id: 1, parentId: 1, name: "Dummy Category", image: nil, description: "Dummy Category Desctiption", action: nil)
     }
+    
+    var showCaloriesSort: Bool {
+        unsortedItems.contains(where: { $0.itemCaptions?.portionSize != nil })
+    }
 
     // MARK: - Init
     init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {
@@ -669,10 +673,6 @@ class ProductsViewModel: ObservableObject {
         case .caloriesLowToHigh:
             sortedItems = unsortedItems.sorted(by: \.calories)
         }
-    }
-    
-    var showCaloriesSort: Bool {
-        unsortedItems.contains(where: { $0.itemCaptions?.portionSize != nil })
     }
     
     func resetSelectedItem() {

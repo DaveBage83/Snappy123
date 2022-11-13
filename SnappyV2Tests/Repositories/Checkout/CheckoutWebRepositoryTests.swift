@@ -248,6 +248,29 @@ final class CheckoutWebRepositoryTests: XCTestCase {
         
     }
     
+    // MARK: - getOrder(forBusinessOrderId:hash)
+    
+    func test_getOrder() async {
+    
+        let data = PlacedOrder.mockedData
+        let hash = "bf456eaf4556adc345ea"
+
+        let parameters: [String: Any] = [
+            "businessOrderId": data.businessOrderId,
+            "hash": hash
+        ]
+
+        do {
+            try mock(.getOrderByHash(parameters), result: .success(data))
+            let result = try await sut
+                .getOrder(forBusinessOrderId: data.businessOrderId, withHash: hash)
+            XCTAssertEqual(data, result, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+    }
+    
     // MARK: - Helper
     
     private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {

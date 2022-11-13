@@ -32,6 +32,7 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
     
     func getDriverLocation(forBusinessOrderId: Int) async throws -> DriverLocation
     
+    func getOrder(forBusinessOrderId: Int, withHash: String) async throws -> PlacedOrder
 }
 
 struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
@@ -149,6 +150,15 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         return try await call(endpoint: API.getDriverLocation(parameters)).singleOutput()
     }
     
+    func getOrder(forBusinessOrderId businessOrderId: Int, withHash hash: String) async throws -> PlacedOrder {
+        
+        let parameters: [String: Any] = [
+            "businessOrderId": businessOrderId,
+            "hash": hash
+        ]
+        
+        return try await call(endpoint: API.getOrderByHash(parameters)).singleOutput()
+    }
 }
 
 // MARK: - Endpoints
@@ -162,6 +172,7 @@ extension CheckoutWebRepository {
         case verifyCheckoutcomPayment([String: Any]?)
         case getPlacedOrderStatus([String: Any]?)
         case getDriverLocation([String: Any]?)
+        case getOrderByHash([String: Any]?)
         case makePayment([String: Any]?)
     }
 }
@@ -183,13 +194,15 @@ extension CheckoutWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/order/status.json"
         case .getDriverLocation:
             return AppV2Constants.Client.languageCode + "/order/getDriverLocation.json"
+        case .getOrderByHash:
+            return AppV2Constants.Client.languageCode + "/order/getOrderByHash.json"
         case .makePayment:
             return AppV2Constants.Client.languageCode + "/payments/makePayment.json"
         }
     }
     var method: String {
         switch self {
-        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyCheckoutcomPayment, .getPlacedOrderStatus, .getDriverLocation, .makePayment:
+        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyCheckoutcomPayment, .getPlacedOrderStatus, .getDriverLocation, .getOrderByHash, .makePayment:
             return "POST"
         }
     }
@@ -208,6 +221,8 @@ extension CheckoutWebRepository.API: APICall {
         case let .getPlacedOrderStatus(parameters):
             return parameters
         case let .getDriverLocation(parameters):
+            return parameters
+        case let .getOrderByHash(parameters):
             return parameters
         case let .makePayment(parameters):
             return parameters

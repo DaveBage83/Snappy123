@@ -106,6 +106,12 @@ protocol CheckoutServiceProtocol: AnyObject {
     // the most recent business order id generated whilst placing an order since the app was open
     func lastBusinessOrderIdInCurrentSession() -> Int?
     
+    // To retrieve an order without needing a membership association or access permissions. Its
+    // main purpose is to fetch details when a customer chooses to view their order after an
+    // order update push notification is received. The push notification will contain the
+    // business order id and hash.
+    func getOrder(forBusinessOrderId: Int, withHash: String) async throws -> PlacedOrder
+    
     // used for development to leave test order details in core data so that
     // testing can be performed on automatically testing en route orders
     func addTestLastDeliveryOrderDriverLocation() async throws
@@ -629,6 +635,10 @@ final class CheckoutService: CheckoutServiceProtocol {
         return lastBusinessOrderId
     }
     
+    func getOrder(forBusinessOrderId businessOrderId: Int, withHash hash: String) async throws -> PlacedOrder {
+        return try await webRepository.getOrder(forBusinessOrderId: businessOrderId, withHash: hash)
+    }
+    
     func addTestLastDeliveryOrderDriverLocation() async throws {
         try await dbRepository.clearLastDeliveryOrderOnDevice()
         try await dbRepository.store(
@@ -906,6 +916,10 @@ final class StubCheckoutService: CheckoutServiceProtocol {
     
     func lastBusinessOrderIdInCurrentSession() -> Int? {
         return nil
+    }
+    
+    func getOrder(forBusinessOrderId businessOrderId: Int, withHash hash: String) async throws -> PlacedOrder {
+        .init(id: 123, businessOrderId: 1, status: "", statusText: "", totalPrice: 1, totalDiscounts: nil, totalSurcharge: nil, totalToPay: nil, platform: "", firstOrder: false, createdAt: "", updatedAt: "", store: .init(id: 1, name: "", originalStoreId: nil, storeLogo: nil, address1: "", address2: nil, town: "", postcode: "", telephone: nil, latitude: 1, longitude: 1), fulfilmentMethod: .init(name: .delivery, processingStatus: "", datetime: .init(requestedDate: nil, requestedTime: nil, estimated: nil, fulfilled: nil), place: nil, address: nil, driverTip: nil, refund: nil, deliveryCost: nil, driverTipRefunds: nil), paymentMethod: .init(name: "", dateTime: ""), orderLines: [], customer: .init(firstname: "", lastname: ""), discount: nil, surcharges: nil, loyaltyPoints: nil, coupon: nil, currency: .init(currencyCode: "", symbol: "", ratio: 1, symbolChar: "", name: ""), totalOrderValue: 1, totalRefunded: 1)
     }
     
     func addTestLastDeliveryOrderDriverLocation() async throws { }

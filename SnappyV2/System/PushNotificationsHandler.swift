@@ -207,8 +207,8 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
                     )
                 }
             } else if
-                let orderId = userInfo["orderIdUpdate"] as? Int,
-                let orderToken = userInfo["orderTokenUpdate"] as? String
+                let businessOrderId = userInfo["businessOrderIdUpdate"] as? Int,
+                let orderHash = userInfo["hash"] as? String
             {
                 // fetched the placed order and display the changes
             } else {

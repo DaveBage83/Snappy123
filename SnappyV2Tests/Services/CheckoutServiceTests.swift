@@ -2082,6 +2082,61 @@ final class getDriverLocationTests: CheckoutServiceTests {
     
 }
 
+final class getOrderTests: CheckoutServiceTests {
+    
+    // MARK: getOrder(forBusinessOrderId:withHash)
+    
+    func test_givenBusinessOrderIdAndHash_whenCallingGetOrder_thenSuccessful() async {
+        let order = PlacedOrder.mockedData
+        let hash = "bf456eaf4556adc345ea"
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getOrder(forBusinessOrderId: order.businessOrderId, withHash: hash)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getOrderResponse = .success(order)
+        
+        do {
+            let getOrderResult = try await sut.getOrder(forBusinessOrderId: order.businessOrderId, withHash: hash)
+            
+            XCTAssertEqual(getOrderResult, order, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderIdAndHash_whenCallingGetOrderAndNetworkError_thenReturnError() async {
+        let hash = "bf456eaf4556adc345ea"
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getOrder(forBusinessOrderId: 123, withHash: hash)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getOrderResponse = .failure(networkError)
+        
+        do {
+            let getOrderResult = try await sut.getOrder(forBusinessOrderId: 123, withHash: hash)
+            XCTFail("Unexpected result: \(getOrderResult)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+
+    }
+    
+}
+
 final class getLastDeliveryOrderDriverLocationTests: CheckoutServiceTests {
     
     // MARK: getLastDeliveryOrderDriverLocation()

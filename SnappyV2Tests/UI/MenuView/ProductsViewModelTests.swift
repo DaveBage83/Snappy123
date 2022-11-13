@@ -41,6 +41,7 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showFilterButton)
         XCTAssertTrue(sut.missedOfferMenus.isEmpty)
         XCTAssertTrue(sut.showStandardView)
+        XCTAssertFalse(sut.showCaloriesSort)
     }
     
     func test_whenSpecialsArePopulated_thenViewStateIsOffers() {
@@ -983,6 +984,14 @@ class ProductsViewModelTests: XCTestCase {
         sut.container.appState.value.storeMenu.showHorizontalItemCards = false
         
         XCTAssertFalse(sut.showHorizontalItemCards)
+    }
+    
+    func test_givenItemsWithNoCalories_whenInit_thenShowCaloriesSortIsTrue() {
+        let sut = makeSUT()
+        
+        sut.unsortedItems = [RetailStoreMenuItem.mockedData]
+        
+        XCTAssertTrue(sut.showCaloriesSort)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {

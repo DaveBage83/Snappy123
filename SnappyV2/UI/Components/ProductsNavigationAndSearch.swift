@@ -69,9 +69,11 @@ struct ProductsNavigationAndSearch: View {
                             Text(Strings.ProductsView.ProductCard.Sort.zToA.localized)
                                 .font(.Body2.regular())
                         }
-                        Button(action: { productsViewModel.sort(by: .caloriesLowToHigh) }) {
-                            Text(Strings.ProductsView.ProductCard.Sort.caloriesLowToHigh.localized)
-                                .font(.Body2.regular())
+                        if productsViewModel.showCaloriesSort {
+                            Button(action: { productsViewModel.sort(by: .caloriesLowToHigh) }) {
+                                Text(Strings.ProductsView.ProductCard.Sort.caloriesLowToHigh.localized)
+                                    .font(.Body2.regular())
+                            }
                         }
                     } label: {
                         Image.Products.sort

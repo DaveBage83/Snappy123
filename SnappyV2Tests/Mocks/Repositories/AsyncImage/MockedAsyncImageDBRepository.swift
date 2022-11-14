@@ -10,9 +10,6 @@ import Combine
 @testable import SnappyV2
 
 final class MockedAsyncImageDBRepository: Mock, AsyncImageDBRepositoryProtocol {
-
-    
-    
     enum Action: Equatable {
         case store(image: UIImage, urlString: String)
         case fetchImage(urlString: String)

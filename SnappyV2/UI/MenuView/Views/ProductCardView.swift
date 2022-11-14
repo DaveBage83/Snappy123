@@ -235,7 +235,6 @@ struct ProductCardView: View {
         AsyncImage(container: viewModel.container, urlString: viewModel.itemDetail.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
             .cornerRadius(Constants.cornerRadius)
             .scaledToFit()
-            .frame(height: Constants.Card.ProductImage.offerHeight * scale)
             .padding()
             .overlay(
                 RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)

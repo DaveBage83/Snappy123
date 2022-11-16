@@ -12,6 +12,7 @@ class MemberDashboardSettingsViewModel: ObservableObject {
     let container: DIContainer
     
     @Published var showHorizontalItemCards: Bool
+    @Published var showDropdownCategoryMenu: Bool
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -22,8 +23,10 @@ class MemberDashboardSettingsViewModel: ObservableObject {
     init(container: DIContainer) {
         self.container = container
         self.showHorizontalItemCards = container.appState.value.storeMenu.showHorizontalItemCards
+        self.showDropdownCategoryMenu = container.appState.value.storeMenu.showDropdownCategoryMenu
         
         setupItemCardOrientation()
+        setupCategoryDropdownMenu()
     }
     
     func setupItemCardOrientation() {
@@ -40,6 +43,24 @@ class MemberDashboardSettingsViewModel: ObservableObject {
             .sink { [weak self] value in
                 guard let self else { return }
                 self.container.appState.value.storeMenu.showHorizontalItemCards = value
+            }
+            .store(in: &cancellables)
+    }
+    
+    func setupCategoryDropdownMenu() {
+        container.appState
+            .map(\.storeMenu.showDropdownCategoryMenu)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.showDropdownCategoryMenu, on: self)
+            .store(in: &cancellables)
+        
+        $showDropdownCategoryMenu
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self else { return }
+                self.container.appState.value.storeMenu.showDropdownCategoryMenu = value
             }
             .store(in: &cancellables)
     }
@@ -88,9 +109,8 @@ struct MemberDashboardSettingsView: View {
                 PushNotificationSettingsView(viewModel: pushNotificationsMarketingPreferenceViewModel)
                     .padding(.top)
                 
-                if UIDevice.current.userInterfaceIdiom == .phone {
-                    horizontalItemCardSetting
-                }
+                
+                storeMenuSetting
                 
                 if viewModel.showMarketingPreferences {
                     MarketingPreferencesView(viewModel: marketingPreferencesViewModel)
@@ -126,15 +146,24 @@ struct MemberDashboardSettingsView: View {
             })
     }
     
-    private var horizontalItemCardSetting: some View {
+    private var storeMenuSetting: some View {
         VStack(alignment: .leading, spacing: Constants.mainSpacing) {
             Text(SettingsStrings.StoreMenu.title.localized)
                 .font(.heading4())
                 .foregroundColor(colorPalette.primaryBlue)
                 .padding(.horizontal, Constants.vPadding)
             
-            Toggle(isOn: $viewModel.showHorizontalItemCards) {
-                Text(SettingsStrings.StoreMenu.horizontalCard.localized)
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                Toggle(isOn: $viewModel.showHorizontalItemCards) {
+                    Text(SettingsStrings.StoreMenu.horizontalCard.localized)
+                        .font(.Body2.regular())
+                        .foregroundColor(colorPalette.typefacePrimary)
+                }
+                .padding(.horizontal, Constants.mainPadding)
+            }
+            
+            Toggle(isOn: $viewModel.showDropdownCategoryMenu) {
+                Text(SettingsStrings.StoreMenu.dropdownRootCategoryMenu.localized)
                     .font(.Body2.regular())
                     .foregroundColor(colorPalette.typefacePrimary)
             }

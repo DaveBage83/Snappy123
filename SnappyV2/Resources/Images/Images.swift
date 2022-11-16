@@ -454,6 +454,10 @@ extension Image {
         struct VerifyMember {
             static let standard = Image(systemName: "person.fill.checkmark")
         }
+        
+        struct CategoryMenu {
+            static let standard = Image(systemName: "list.bullet.indent")
+        }
     }
 
     // The following icons to be deprecated in favour of the above official design ones

@@ -70,6 +70,7 @@ extension AppState {
         
         // settings
         var showHorizontalItemCards = UIDevice.current.userInterfaceIdiom == .phone ? true : false
+        var showDropdownCategoryMenu = true
     }
 }
 

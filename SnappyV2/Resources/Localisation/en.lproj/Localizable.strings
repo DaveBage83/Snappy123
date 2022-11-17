@@ -669,6 +669,7 @@
 "pushnotifications.incomingview.title" = "Message";
 "pushnotifications.incomingview.openlink" = "Open Link";
 "pushnotifications.incomingview.call" = "Call";
+"pushnotifications.incomingview.viewupdatedorder" = "View Updated Order";
 
 // MARK: - Push Notification Settings
 "settings.pushnotifications.title" = "Push Notifications";

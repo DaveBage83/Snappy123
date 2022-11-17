@@ -1025,6 +1025,7 @@ public enum Strings {
         case title = "pushnotifications.incomingview.title"
         case openLink = "pushnotifications.incomingview.openlink"
         case call = "pushnotifications.incomingview.call"
+        case viewUpdatedOrder = "pushnotifications.incomingview.viewupdatedorder"
     }
         
     public enum SuccessView: String, IterableSnappyString {

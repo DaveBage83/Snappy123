@@ -1,0 +1,13 @@
+{
+    "Simulator Target Bundle": "com.mtcmobile.My-Mini-Mart",
+    "aps": {
+        "alert": {
+            "title": "Order Update",
+            "subtitle": "Test Push Notifications",
+            "body" : "Order #1234 has been modified. Please check the packaging for allergen information."
+        }
+    },
+	"sendSource": "main_server",
+	"businessOrderIdUpdate": 1133320,
+    "hash": "bf456eaf4556adc345ea"
+}

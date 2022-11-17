@@ -151,6 +151,8 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
             }
             
             let telephone = userInfo["telephone"] as? String
+            let businessOrderId = userInfo["businessOrderIdUpdate"] as? Int
+            let hash = userInfo["hash"] as? String
             
             if let deepLink = userInfo["deepLink"] as? [String: Any] {
                 // display a pop up which will consist of:
@@ -206,11 +208,6 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
                         address: address
                     )
                 }
-            } else if
-                let businessOrderId = userInfo["businessOrderIdUpdate"] as? Int,
-                let orderHash = userInfo["hash"] as? String
-            {
-                // fetched the placed order and display the changes
             } else {
                 displayGenericMessage = true
             }
@@ -220,7 +217,9 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
                     image: imageURL,
                     message: message,
                     link: link,
-                    telephone: telephone
+                    telephone: telephone,
+                    businessOrderId: businessOrderId,
+                    hash: hash
                 )
             }
             

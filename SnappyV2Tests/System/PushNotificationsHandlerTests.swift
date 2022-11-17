@@ -180,7 +180,9 @@ class PushNotificationsHandlerTests: XCTestCase {
             "imageURL": "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png",
             "link": "https://www.snappyshopper.co.uk",
             "telephone": "0333 900 1250",
-            "sendSource": "main_server"
+            "sendSource": "main_server",
+            "businessOrderIdUpdate": 1234,
+            "hash": "bf456eaf4556adc345ea"
         ]
         let response = makeUNNotificationResponse(userInfo: userInfo)
         let appState = Store<AppState>(AppState())
@@ -204,6 +206,14 @@ class PushNotificationsHandlerTests: XCTestCase {
             XCTAssertEqual(
                 appState.value.pushNotifications.displayableNotification?.telephone,
                 "0333 900 1250"
+            )
+            XCTAssertEqual(
+                appState.value.pushNotifications.displayableNotification?.businessOrderId,
+                1234
+            )
+            XCTAssertEqual(
+                appState.value.pushNotifications.displayableNotification?.hash,
+                "bf456eaf4556adc345ea"
             )
             exp.fulfill()
         }

@@ -70,16 +70,25 @@ struct PushNotificationView: View {
                     
                 ForEach(viewModel.options) { option in
                     Group {
-                        Button(action: {
-                            if let linkURL = option.linkURL {
-                                openURL(linkURL) { accepted in
-                                    option.action(false)
+                        if option.loading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        } else {
+                            Button(action: {
+                                if option.isViewOrder {
+                                    Task {
+                                        await option.action(viewModel.getOrder(forOption: option.id))
+                                    }
+                                } else if let linkURL = option.linkURL {
+                                    openURL(linkURL) { accepted in
+                                        option.action(false)
+                                    }
+                                } else {
+                                    option.action(true)
                                 }
-                            } else {
-                                option.action(true)
+                            }) {
+                                Text(option.title)
                             }
-                        }) {
-                            Text(option.title)
                         }
 
                         Divider()
@@ -121,9 +130,11 @@ struct PushNotificationView_Previews: PreviewProvider {
                     image: URL(string: "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png")!,
                     message: "Test push notification message.",
                     link: URL(string: "https://www.snappyshopper.co.uk")!,
-                    telephone: "0333 900 1250"
+                    telephone: "0333 900 1250",
+                    businessOrderId: 1234,
+                    hash: "bf456eaf4556adc345ea"
                 ),
-                dismissPushNotificationViewHandler: {}
+                dismissPushNotificationViewHandler: { _ in }
             )
         )
     }

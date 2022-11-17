@@ -41,8 +41,8 @@ extension DisplayablePushNotification {
         message: "All options message body",
         link: URL(string: "https://www.snappyshopper.co.uk")!,
         telephone: "0333 900 1250",
-        businessOrderId: nil,
-        hash: nil
+        businessOrderId: 1234,
+        hash: "bf456eaf4556adc345ea"
     )
     
     static let mockedLinkedOptionMessageData = DisplayablePushNotification(
@@ -63,7 +63,7 @@ extension DisplayablePushNotification {
         hash: nil
     )
     
-    static let mockedViewUpdateOrderMessageData = DisplayablePushNotification(
+    static let mockedViewUpdatedOrderMessageData = DisplayablePushNotification(
         image: nil,
         message: "Order #1234 has been modified. Please check the packaging for allergen information.",
         link: nil,

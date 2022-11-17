@@ -17,7 +17,7 @@ struct PushNotificationOption: Identifiable {
 }
 
 // Outcome to display after the PushNotificationView is dismissed
-struct PushNotificationDismissDisplayAction {
+struct PushNotificationDismissDisplayAction: Equatable {
     let showOrder: PlacedOrder?
     // more actions can be added as required
 }

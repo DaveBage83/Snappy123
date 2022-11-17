@@ -292,7 +292,8 @@ final class CheckoutService: CheckoutServiceProtocol {
                             fulfilmentDetails: fulfilmentDetails,
                             instructions: instructions,
                             paymentGateway: paymentGatewayType,
-                            storeId: selectedStore.id
+                            storeId: selectedStore.id,
+                            notificationDeviceToken: self.appState.value.system.notificationDeviceToken
                         ).singleOutput()
                     
                     if let businessOrderId = draft.businessOrderId {

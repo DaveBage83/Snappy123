@@ -50,7 +50,9 @@ final class CheckoutWebRepositoryTests: XCTestCase {
             "firstname": "Harold",
             "lastname": "Brown",
             "emailAddress": "h.brown@gmail.com",
-            "phoneNumber": "0798883241"
+            "phoneNumber": "0798883241",
+            "platform": AppV2Constants.Client.platform,
+            "messagingDeviceId": "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         ]
 
         try mock(.createDraftOrder(parameters), result: .success(data))
@@ -68,7 +70,8 @@ final class CheckoutWebRepositoryTests: XCTestCase {
                 ),
                 instructions: "knock twice",
                 paymentGateway: .cash,
-                storeId: 910
+                storeId: 910,
+                notificationDeviceToken: "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
             )
             .sinkToResult { result in
                 result.assertSuccess(value: data)

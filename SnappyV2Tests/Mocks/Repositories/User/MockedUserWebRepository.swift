@@ -12,16 +12,16 @@ import Combine
 final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryProtocol {
 
     enum Action: Equatable {
-        case login(email: String, password: String, basketToken: String?)
-        case login(email: String, oneTimePassword: String, basketToken: String?)
-        case login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType)
-        case login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType)
-        case login(googleAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType)
+        case login(email: String, password: String, basketToken: String?, notificationDeviceToken: String?)
+        case login(email: String, oneTimePassword: String, basketToken: String?, notificationDeviceToken: String?)
+        case login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType)
+        case login(facebookAccessToken: String, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType)
+        case login(googleAccessToken: String, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
         case resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?)
         case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case setToken(to: ApiAuthenticationResult)
-        case logout(basketToken: String?)
+        case logout(basketToken: String?, notificationDeviceToken: String?)
         case getProfile(storeId: Int?)
         case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
         case addAddress(address: Address)
@@ -76,8 +76,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var checkRetailMembershipIdResponse: Result<CheckRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
     var storeRetailMembershipIdResponse: Result<StoreRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
 
-    func login(email: String, password: String, basketToken: String?) async throws -> LoginResult {
-        register(.login(email: email, password: password, basketToken: basketToken))
+    func login(email: String, password: String, basketToken: String?, notificationDeviceToken: String?) async throws -> LoginResult {
+        register(.login(email: email, password: password, basketToken: basketToken, notificationDeviceToken: notificationDeviceToken))
         switch loginByEmailPasswordResponse {
         case let .success(response):
             return response
@@ -86,8 +86,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         }
     }
     
-    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> LoginResult {
-        register(.login(email: email, oneTimePassword: oneTimePassword, basketToken: basketToken))
+    func login(email: String, oneTimePassword: String, basketToken: String?, notificationDeviceToken: String?) async throws -> LoginResult {
+        register(.login(email: email, oneTimePassword: oneTimePassword, basketToken: basketToken, notificationDeviceToken: notificationDeviceToken))
         switch loginByEmailOneTimePasswordResponse {
         case let .success(response):
             return response
@@ -96,8 +96,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         }
     }
     
-    func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
-        register(.login(appleSignInToken: appleSignInToken, username: username, firstname: firstname, lastname: lastname, basketToken: basketToken, registeringFromScreen: registeringFromScreen))
+    func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
+        register(.login(appleSignInToken: appleSignInToken, username: username, firstname: firstname, lastname: lastname, basketToken: basketToken, notificationDeviceToken: notificationDeviceToken, registeringFromScreen: registeringFromScreen))
         switch loginByAppleSignInResponse {
         case let .success(response):
             return response
@@ -106,8 +106,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         }
     }
     
-    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
-        register(.login(facebookAccessToken: facebookAccessToken, basketToken: basketToken, registeringFromScreen: registeringFromScreen))
+    func login(facebookAccessToken: String, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
+        register(.login(facebookAccessToken: facebookAccessToken, basketToken: basketToken, notificationDeviceToken: notificationDeviceToken, registeringFromScreen: registeringFromScreen))
         switch loginByAppleSignInResponse {
         case let .success(response):
             return response
@@ -116,8 +116,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         }
     }
     
-    func login(googleAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
-        register(.login(googleAccessToken: googleAccessToken, basketToken: basketToken, registeringFromScreen: registeringFromScreen))
+    func login(googleAccessToken: String, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
+        register(.login(googleAccessToken: googleAccessToken, basketToken: basketToken, notificationDeviceToken: notificationDeviceToken, registeringFromScreen: registeringFromScreen))
         switch loginByAppleSignInResponse {
         case let .success(response):
             return response
@@ -150,8 +150,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         register(.setToken(to: token))
     }
     
-    func logout(basketToken: String?) -> AnyPublisher<Bool, Error> {
-        register(.logout(basketToken: basketToken))
+    func logout(basketToken: String?, notificationDeviceToken: String?) -> AnyPublisher<Bool, Error> {
+        register(.logout(basketToken: basketToken, notificationDeviceToken: notificationDeviceToken))
         return logoutResponse.publish()
     }
     

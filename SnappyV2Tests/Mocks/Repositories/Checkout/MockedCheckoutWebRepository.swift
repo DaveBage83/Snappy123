@@ -12,7 +12,7 @@ import Combine
 final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRepositoryProtocol {
 
     enum Action: Equatable {
-        case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGatewayType, storeId: Int)
+        case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGatewayType, storeId: Int, notificationDeviceToken: String?)
         case getRealexHPPProducerData(orderId: Int)
         case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
         case confirmPayment(orderId: Int)
@@ -27,9 +27,9 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
             switch (lhs, rhs) {
 
             case (
-                let .createDraftOrder(lhsBasketToken, lhsFulfilmentDetails, lhsInstructions, lhsPaymentGateway, lhsStoreId),
-                let .createDraftOrder(rhsBasketToken, rhsFulfilmentDetails, rhsInstructions, rhsPaymentGateway, rhsStoreId)):
-                return lhsBasketToken == rhsBasketToken && lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsStoreId == rhsStoreId && lhsInstructions == rhsInstructions
+                let .createDraftOrder(lhsBasketToken, lhsFulfilmentDetails, lhsInstructions, lhsPaymentGateway, lhsStoreId, lhsDeviceToken),
+                let .createDraftOrder(rhsBasketToken, rhsFulfilmentDetails, rhsInstructions, rhsPaymentGateway, rhsStoreId, rhsDeviceToken)):
+                return lhsBasketToken == rhsBasketToken && lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsStoreId == rhsStoreId && lhsInstructions == rhsInstructions && lhsDeviceToken == rhsDeviceToken
                 
             case (
                 let .makePayment(lhsOrderId, lhsType, lhsPaymentMethod, lhsToken, lhsCardId, lhsCVV),
@@ -79,7 +79,8 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         instructions: String?,
         paymentGateway: PaymentGatewayType,
-        storeId: Int
+        storeId: Int,
+        notificationDeviceToken: String?
     ) -> AnyPublisher<DraftOrderResult, Error> {
         register(
             .createDraftOrder(
@@ -87,7 +88,8 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
                 fulfilmentDetails: fulfilmentDetails,
                 instructions: instructions,
                 paymentGateway: paymentGateway,
-                storeId: storeId
+                storeId: storeId,
+                notificationDeviceToken: notificationDeviceToken
             )
         )
         return createDraftOrderResponse.publish()

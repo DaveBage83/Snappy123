@@ -15,7 +15,8 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         instructions: String?,
         paymentGateway: PaymentGatewayType,
-        storeId: Int
+        storeId: Int,
+        notificationDeviceToken: String?
     ) -> AnyPublisher<DraftOrderResult, Error>
     
     func getRealexHPPProducerData(orderId: Int) -> AnyPublisher<Data, Error>
@@ -50,7 +51,8 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         instructions: String?,
         paymentGateway: PaymentGatewayType,
-        storeId: Int
+        storeId: Int,
+        notificationDeviceToken: String?
     ) -> AnyPublisher<DraftOrderResult, Error> {
         
         var parameters: [String: Any] = [
@@ -62,8 +64,13 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
             "storeId": storeId
         ]
         
-        if let instructions = instructions {
+        if let instructions {
             parameters["instructions"] = instructions
+        }
+        
+        if let notificationDeviceToken {
+            parameters["platform"] = AppV2Constants.Client.platform
+            parameters["messagingDeviceId"] = notificationDeviceToken
         }
 
         return call(endpoint: API.createDraftOrder(parameters))

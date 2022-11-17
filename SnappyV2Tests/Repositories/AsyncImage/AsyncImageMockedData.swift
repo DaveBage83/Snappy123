@@ -15,6 +15,11 @@ extension ImageDetails {
         fetchURLString: "testURLString",
         fetchTimestamp: Date().trueDate) // safe to use for testing given thresholds
     
+    static let mockedData2 = ImageDetails(
+        image: UIImage(systemName: "star"),
+        fetchURLString: "testURLString2",
+        fetchTimestamp: Date().trueDate) // safe to use for testing given thresholds
+    
     static let mockedDataExpiredCache = ImageDetails(
         image: UIImage(systemName: "star"),
         fetchURLString: "testURLString",

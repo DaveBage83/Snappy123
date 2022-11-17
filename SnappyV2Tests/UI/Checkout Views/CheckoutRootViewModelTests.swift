@@ -614,6 +614,57 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.allowedMarketingChannels, allowedMarketingChannels)
     }
     
+    func test_whenAllowedMarketingChannelsPresentInAppState_givenIOSStringNotPresent_thenAllowedMarketingChannelsIsNil() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let allowedMarketingChannels = [
+            AllowedMarketingChannel(
+                id: 123, name: "Android Facebook"),
+            AllowedMarketingChannel(
+                id: 456, name: "Android Google")
+        ]
+        
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: nil,
+            tips: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            collectionDays: [],
+            paymentMethods: nil,
+            paymentGateways: nil,
+            allowedMarketingChannels: allowedMarketingChannels,
+            timeZone: nil,
+            currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
+            searchPostcode: nil)
+        container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
+        let sut = makeSUT(container: container)
+        XCTAssertNil(sut.allowedMarketingChannels)
+    }
+    
     func test_whenAllowedMarketingChannelsEmptyInAppState_thenAllowedMarketingChannelsNil() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
@@ -1206,7 +1257,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.phoneNumber, "0792334112")
     }
     
-    
     func test_whenGoToPaymentTapped_givenNoFieldErrors_setDeliveryTriggered() async {
         
         let request = BasketContactDetailsRequest(
@@ -1228,6 +1278,102 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.phoneNumber = "1234556"
         sut.selectedChannel = .init(id: 123, name: "Test")
         
+        
+        await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {
+            setDeliveryTriggered = true
+        }, updateMarketingPreferences: {})
+        XCTAssertTrue(setDeliveryTriggered)
+        container.services.verify(as: .basket)
+    }
+    
+    func test_whenGoToPaymentTapped_givenSelectedChannelHasWarningButHideChannelIsTrue_setDeliveryTriggered() async {
+        
+        let request = BasketContactDetailsRequest(
+            firstName: "test",
+            lastName: "test",
+            email: "test@test.com",
+            telephone: "1234556")
+
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setContactDetails(details: request)]))
+        
+        container.appState.value.userData.basket = Basket.mockedData
+        
+        var setDeliveryTriggered = false
+        
+        let sut = makeSUT(container: container)
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = "test@test.com"
+        sut.phoneNumber = "1234556"
+        sut.selectedChannel = nil
+        sut.hideSelectedChannel = true
+        
+        await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {
+            setDeliveryTriggered = true
+        }, updateMarketingPreferences: {})
+        XCTAssertTrue(setDeliveryTriggered)
+        container.services.verify(as: .basket)
+    }
+    
+    func test_whenGoToPaymentTapped_givenSelectedChannelHasWarningButSelectedChannelsIsNil_setDeliveryTriggered() async {
+        
+        let request = BasketContactDetailsRequest(
+            firstName: "test",
+            lastName: "test",
+            email: "test@test.com",
+            telephone: "1234556")
+
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: nil,
+            tips: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            collectionDays: [],
+            paymentMethods: nil,
+            paymentGateways: nil,
+            allowedMarketingChannels: [],
+            timeZone: nil,
+            currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
+            searchPostcode: nil)
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setContactDetails(details: request)]))
+        
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
+        
+        var setDeliveryTriggered = false
+        
+        let sut = makeSUT(container: container)
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = "test@test.com"
+        sut.phoneNumber = "1234556"
+        sut.selectedChannel = nil
+        sut.hideSelectedChannel = false
         
         await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {
             setDeliveryTriggered = true

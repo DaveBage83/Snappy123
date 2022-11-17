@@ -698,6 +698,9 @@ class CheckoutRootViewModel: ObservableObject {
         retailMembershipIdHasWarning = false
         
         if fulfilmentType?.type == .delivery { // We omit the address check if fulfilmentType is collection
+            if hideSelectedChannel || allowedMarketingChannels == nil {
+                return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && editAddressFieldErrors.isEmpty
+            }
             return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
         }
         

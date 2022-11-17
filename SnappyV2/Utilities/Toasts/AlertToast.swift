@@ -235,45 +235,68 @@ public struct AlertToast: Equatable, View{
     }
     
     ///Banner from the bottom of the view
-    public var banner: some View{
-        
+    @ViewBuilder public var banner: some View {
+        bannerView
+            .padding(.horizontal)
+    }
+    
+    @ViewBuilder private var bannerView: some View {
         GeometryReader { geo in
             VStack{
                 Spacer()
                 
                 //Banner view starts here
                 ZStack(alignment: .topTrailing) {
-                    VStack(alignment: .leading, spacing: 10){
-                        HStack{
-                            switch type{
-                            case .complete(let color):
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(color)
-                            case .error(let color):
-                                Image(systemName: "xmark")
-                                    .foregroundColor(color)
-                            case .systemImage(let name, let color):
-                                Image(systemName: name)
-                                    .foregroundColor(color)
-                            case .image(let name, let color):
-                                Image(name)
-                                    .foregroundColor(color)
-                            case .loading:
-                                ProgressView()
-                            case .regular:
-                                EmptyView()
+                    
+                    HStack {
+                        VStack(alignment: .leading, spacing: 10){
+                            HStack{
+                                switch type{
+                                case .complete(let color):
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(color)
+                                case .error(let color):
+                                    Image(systemName: "xmark")
+                                        .foregroundColor(color)
+                                case .systemImage(let name, let color):
+                                    Image(systemName: name)
+                                        .foregroundColor(color)
+                                case .image(let name, let color):
+                                    Image(name)
+                                        .foregroundColor(color)
+                                case .loading:
+                                    ProgressView()
+                                case .regular:
+                                    EmptyView()
+                                }
+                                
+                                Text(verbatim: title ?? "")
+                                    .font(style?.titleFont ?? Font.headline.bold())
                             }
                             
-                            Text(verbatim: title ?? "")
-                                .font(style?.titleFont ?? Font.headline.bold())
+                            if !subTitle.isEmpty {
+                                if tapToDismiss {
+                                    Text(verbatim: subTitle)
+                                        .font(style?.subTitleFont ?? Font.subheadline)
+                                        .multilineTextAlignment(.leading)
+                                    
+                                } else {
+                                    Text(verbatim: subTitle)
+                                        .font(style?.subTitleFont ?? Font.subheadline)
+                                        .multilineTextAlignment(.leading)
+                                }
+                            }
                         }
-                        
-                        if !subTitle.isEmpty {
-                            Text(verbatim: subTitle)
-                                .font(style?.subTitleFont ?? Font.subheadline)
-                                .multilineTextAlignment(.leading)
+                        if tapToDismiss {
+                            Spacer()
+                            Text(GeneralStrings.ok.localized)
+                                .font(style?.titleFont ?? Font.headline.bold())
+                                .frame(maxHeight: .infinity)
+                                .padding(.leading)
+                                .overlay(Rectangle().fill(Color.white).frame(width: 0.5), alignment: .leading)
                         }
                     }
+                    
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
                     .textColor(style?.titleColor ?? nil)
@@ -281,20 +304,10 @@ public struct AlertToast: Equatable, View{
                     .frame(width: geo.size.width, alignment: .leading)
                     .alertBackground(style?.backgroundColor ?? nil)
                     .cornerRadius(10)
-                    
-                    if tapToDismiss {
-                        Image.Icons.Xmark.medium
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(Color.white)
-                            .frame(width: 12, height: 12)
-                            .offset(x: -10, y: 10)
-                    }
                 }
             }
             .padding(.bottom, tabViewHeight)
         }
-        .padding(.horizontal)
     }
     
     ///HUD View

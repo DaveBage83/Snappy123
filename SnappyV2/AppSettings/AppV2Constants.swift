@@ -104,7 +104,7 @@ struct AppV2Constants {
         static let faqURL =  "https://app-staging.snappyshopper.co.uk/faq"
         static let privacyURL = URL(string: "https://app-dev.snappyshopper.co.uk/privacy-policy")
         static let contactUsURL = URL(string: "https://app-dev.snappyshopper.co.uk/contact")
-        static let maxAlertCharacterLengthForAutoDismiss = 40 // When alerts have greater character length than this, they will be set automatically to be tap to dismiss alerts and include an xmark button
+        static let maxAlertCharacterLengthForAutoDismiss = 60 // When alerts have greater character length than this, they will be set automatically to be tap to dismiss alerts and include an xmark button
     }
     
     struct Driver {

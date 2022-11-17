@@ -14,6 +14,7 @@ struct LoginHomeView: View {
     // MARK: - State objects
     @ObservedObject var viewModel: LoginViewModel
     @ObservedObject var socialLoginViewModel: SocialMediaLoginViewModel
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     typealias LoginStrings = Strings.General.Login
     
@@ -103,6 +104,7 @@ struct LoginHomeView: View {
                 icon: nil) {
                     viewModel.createAccountTapped()
                 }
+                .padding(.bottom, tabViewHeight)
         }
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showForgotPassword, sheetContent: NavigationView {
             ForgotPasswordView(

@@ -30,7 +30,7 @@ struct ProductOptionSectionView: View {
             optionSectionTypeViews
         }
         .padding(.bottom, Constants.padding)
-        .snappyBottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize, omitCloseButton: true) { _ in
+        .snappyBottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, windowSize: mainWindowSize, omitCloseButton: true) { _ in
             ToastableViewContainer(content: {
                 bottomSheetView
             }, viewModel: .init(container: viewModel.container, isModal: true))

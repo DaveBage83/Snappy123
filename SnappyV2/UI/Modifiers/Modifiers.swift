@@ -443,7 +443,6 @@ struct DeliveryOfferBanner: ViewModifier {
             .snappyBottomSheet(
                 container: viewModel.container,
                 item: $viewModel.selectedDeliveryTierInfo,
-                title: Strings.StoresView.DeliveryTiers.title.localized,
                 windowSize: mainWindowSize,
                 content: { orderMethod in
                     RetailStoreDeliveryTiers(viewModel: .init(

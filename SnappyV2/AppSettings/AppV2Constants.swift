@@ -122,7 +122,8 @@ struct AppV2Constants {
     struct DriverInterface {
         // v1 API base url used by the driver endpoints
         #if DEBUG
-        static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"// "https://www.staging.dev.snappyshopper.co.uk/mobile_api/"
+//        static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
+        static let baseURL = "https://www.staging.dev.snappyshopper.co.uk/mobile_api/"
         #else
         static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
         #endif
@@ -130,7 +131,7 @@ struct AppV2Constants {
     
     struct API {
         #if DEBUG
-        //        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
+//                static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
         static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
 
         #else

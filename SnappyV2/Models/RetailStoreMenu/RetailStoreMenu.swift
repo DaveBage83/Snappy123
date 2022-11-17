@@ -131,7 +131,7 @@ struct ItemDetails: Codable, Equatable, Hashable {
 }
 
 struct ItemDetailElement: Codable, Equatable, Hashable {
-    let type: String
+    let type: String?
     let text: String?
     let rows: [ItemDetailElementRow]?
 }

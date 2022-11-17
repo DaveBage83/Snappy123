@@ -50,7 +50,7 @@ struct SpecialOfferPill: View {
             .padding(.vertical, type == .chip ? Constants.vPadding : 0)
             .background(type == .chip ? colorPalette.primaryRed : colorPalette.typefaceInvert)
             .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
-            .foregroundColor(type == .chip ? colorPalette.typefaceInvert : colorPalette.primaryRed)
+            .foregroundColor(type == .chip ? .white : colorPalette.primaryRed)
             .font(size.font)
     }
 }

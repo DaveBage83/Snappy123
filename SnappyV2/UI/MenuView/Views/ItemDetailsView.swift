@@ -22,7 +22,7 @@ class ItemDetailsViewModel: ObservableObject {
     }
     
     var bulletElements: [ItemDetailElement]? {
-        itemDetails.elements?.filter { $0.type == ItemDetailsElementType.bullet.rawValue }
+        itemDetails.elements?.filter { $0.type == ItemDetailsElementType.bullet.rawValue || $0.type == nil }
     }
     
     var tableElements: [ItemDetailElement]? {

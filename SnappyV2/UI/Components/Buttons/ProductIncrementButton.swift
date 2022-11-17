@@ -86,7 +86,6 @@ struct ProductIncrementButton: View {
                     secondaryButton: .cancel({})
                 )
             })
-            .withLoadingToast(loading: $viewModel.isGettingProductDetails)
     }
     
     @ViewBuilder func quickAdd() -> some View {
@@ -147,7 +146,7 @@ struct ProductIncrementButton: View {
             title: GeneralStrings.add.localized,
             largeTextTitle: nil,
             icon: Image.Icons.Plus.medium,
-            isLoading: .constant(viewModel.isUpdatingQuantity)) {
+            isLoading: .constant(viewModel.isUpdatingQuantity || viewModel.isGettingProductDetails)) {
                 Task { await viewModel.addItem() }
             }
     }

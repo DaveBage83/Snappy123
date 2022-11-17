@@ -296,24 +296,41 @@ struct ProductsView: View {
         }
     }
     
-    func rootCategoriesCarousel() -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Constants.RootCatagoryPills.hSpacing) {
-                ForEach(viewModel.rootCategories) { details in
-                    Button(action: { viewModel.carouselCategoryTapped(with: details)}) {
-                        Text(details.name)
-                            .font(.Body1.semiBold())
-                            .foregroundColor(colorPalette.typefacePrimary)
-                            .padding(.vertical, Constants.RootCatagoryPills.vPadding)
-                            .padding(.horizontal, Constants.RootCatagoryPills.hPadding)
+    @ViewBuilder func rootCategoriesCarousel() -> some View {
+        if viewModel.container.appState.value.storeMenu.showDropdownCategoryMenu == false {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: Constants.RootCatagoryPills.hSpacing) {
+                    ForEach(viewModel.rootCategories) { details in
+                        Button(action: { viewModel.carouselCategoryTapped(with: details)}) {
+                            Text(details.name)
+                                .font(.Body1.semiBold())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                                .padding(.vertical, Constants.RootCatagoryPills.vPadding)
+                                .padding(.horizontal, Constants.RootCatagoryPills.hPadding)
+                        }
+                        .frame(maxWidth: Constants.RootCatagoryPills.maxWidth)
+                        .background(Capsule().strokeBorder(colorPalette.typefacePrimary, lineWidth: Constants.RootCatagoryPills.strokeWidth))
+                        .accentColor(colorPalette.typefaceInvert)
                     }
-                    .frame(maxWidth: Constants.RootCatagoryPills.maxWidth)
-                    .background(Capsule().strokeBorder(colorPalette.typefacePrimary, lineWidth: Constants.RootCatagoryPills.strokeWidth))
-                    .accentColor(colorPalette.typefaceInvert)
                 }
+                .padding(.top)
+                .padding(.leading)
             }
-            .padding(.top)
-            .padding(.leading)
+        }
+    }
+    
+    @ViewBuilder func toolbarCategoryMenu() -> some View {
+        if viewModel.container.appState.value.storeMenu.showDropdownCategoryMenu {
+            Menu {
+                ForEach(viewModel.rootCategories) { details in
+                    Button(action: { viewModel.carouselCategoryTapped(with: details) }) {
+                        Text(details.name)
+                    }
+                }
+            } label: {
+                Image.Icons.CategoryMenu.standard
+                    .accentColor(colorPalette.typefacePrimary)
+            }
         }
     }
     
@@ -332,6 +349,11 @@ struct ProductsView: View {
                 }
             }
             .padding(.vertical)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    toolbarCategoryMenu()
+                }
+            })
 
         } else {
             
@@ -352,6 +374,11 @@ struct ProductsView: View {
                 .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.vertical)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    toolbarCategoryMenu()
+                }
+            })
         }
     }
     
@@ -381,6 +408,11 @@ struct ProductsView: View {
             }
             .padding(.horizontal, AppConstants.productCardGridSpacing)
             .padding(.vertical)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    toolbarCategoryMenu()
+                }
+            })
             
         } else {
             VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
@@ -405,6 +437,11 @@ struct ProductsView: View {
             }
             .padding(.horizontal, AppConstants.productCardGridSpacing)
             .padding(.vertical)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    toolbarCategoryMenu()
+                }
+            })
         }
         
     }

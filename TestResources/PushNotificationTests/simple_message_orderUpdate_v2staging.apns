@@ -4,10 +4,10 @@
         "alert": {
             "title": "Order Update",
             "subtitle": "Test Push Notifications",
-            "body" : "Order #1234 has been modified. Please check the packaging for allergen information."
+            "body" : "Order #1133320 has been modified. Please check the packaging for allergen information."
         }
     },
 	"sendSource": "main_server",
 	"businessOrderIdUpdate": 1133320,
-    "hash": "bf456eaf4556adc345ea"
+    "hash": "ad34a89f18efaf5cb1318a1c9dcff328"
 }

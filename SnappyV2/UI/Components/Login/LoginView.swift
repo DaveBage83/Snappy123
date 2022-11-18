@@ -87,7 +87,7 @@ struct LoginView: View {
             }
             
             if viewModel.isLoading || socialLoginViewModel.isLoading {
-                LoadingView()
+                AnimatedLoadingView(message: "Logging in...")
             }
         }
         .onAppear {

@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       "state" : {
-        "revision" : "d1349c8fdd18a80a776298e4c5c3526e22feff78",
-        "version" : "6.8.1"
+        "revision" : "8caf67c0d8d784d59f8421ab0cb54fb4f4941aee",
+        "version" : "6.9.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/checkout/checkout-event-logger-ios-framework.git",
       "state" : {
-        "revision" : "2ef34662f1525526aeb5681c6af5f69572ab36c9",
-        "version" : "1.2.0"
+        "revision" : "127060063e2b28ca4610269c26da12dc4ca3a781",
+        "version" : "1.2.1"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "f0926478fda955aef0dfbf99263b5c24b2ca5db4",
-        "version" : "10.1.0"
+        "revision" : "c24031ad9410c746c49deddc739fdf311a386fc7",
+        "version" : "10.2.0"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "68ea347bdb1a69e2d2ae2e25cd085b6ef92f64cb",
-        "version" : "7.9.0"
+        "revision" : "6db6edb48bdd9943426562c7f042a5492de5ba3d",
+        "version" : "7.10.0"
       }
     },
     {
@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "d4289da23e978f37c344ea6a386e5546e2466294",
-        "version" : "2.1.0"
+        "revision" : "5ccda3981422a84186387dbb763ba739178b529c",
+        "version" : "2.3.0"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "2964493a52e64812833662a7bd19def82f35973c",
-        "version" : "3.4.10"
+        "revision" : "ade48cc2d09c3180ac6e179577633b8c2660a8bf",
+        "version" : "3.5.0"
       }
     },
     {
@@ -248,8 +248,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pusher/pusher-websocket-swift",
       "state" : {
-        "revision" : "4cf35593aaf293973ad9c56f13478b29737c48dc",
-        "version" : "10.1.1"
+        "revision" : "98a7b20252f3316982f78911c30c23053b5703cf",
+        "version" : "10.1.2"
       }
     },
     {
@@ -266,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "7521e07ce9a73f23ca9f028d6b0f8917c3e72c1b",
-        "version" : "7.29.0"
+        "revision" : "1748a02801ba456251a082ab06bb7c64ba07909c",
+        "version" : "7.31.1"
       }
     },
     {
@@ -284,8 +284,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
-        "revision" : "9f39744e025c7d377987f30b03770805dcb0bcd1",
-        "version" : "1.1.4"
+        "revision" : "fddd1c00396eed152c45a46bea9f47b98e59301d",
+        "version" : "1.2.0"
       }
     },
     {
@@ -302,8 +302,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "88c7d15e1242fdb6ecbafbc7926426a19be1e98a",
-        "version" : "1.20.2"
+        "revision" : "ab3a58b7209a17d781c0d1dbb3e1ff3da306bae8",
+        "version" : "1.20.3"
       }
     },
     {
@@ -311,8 +311,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/iterable/swift-sdk",
       "state" : {
-        "revision" : "cfa877613092ebbd56c96eb5e63b2b22f89fb62c",
-        "version" : "6.4.8"
+        "revision" : "1e25b4253fe5dcca3cae6477fc934912cae9708d",
+        "version" : "6.4.9"
       }
     },
     {

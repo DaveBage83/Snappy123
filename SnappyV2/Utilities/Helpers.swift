@@ -31,7 +31,7 @@ extension String {
     func localized(_ locale: Locale) -> String {
         let localeId = locale.shortIdentifier
         guard let path = Bundle.main.path(forResource: localeId, ofType: "lproj"),
-            let bundle = Bundle(path: path) else {
+              let bundle = Bundle(path: path) else {
             return NSLocalizedString(self, comment: "")
         }
         return bundle.localizedString(forKey: self, value: nil, table: nil)
@@ -68,3 +68,4 @@ func guaranteeMainThread(_ work: @escaping () -> Void) {
         DispatchQueue.main.async(execute: work)
     }
 }
+

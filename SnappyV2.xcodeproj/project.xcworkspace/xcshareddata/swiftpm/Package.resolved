@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/checkout/checkout-event-logger-ios-framework.git",
       "state" : {
-        "revision" : "2ef34662f1525526aeb5681c6af5f69572ab36c9",
-        "version" : "1.2.0"
+        "revision" : "127060063e2b28ca4610269c26da12dc4ca3a781",
+        "version" : "1.2.1"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "f0926478fda955aef0dfbf99263b5c24b2ca5db4",
-        "version" : "10.1.0"
+        "revision" : "c24031ad9410c746c49deddc739fdf311a386fc7",
+        "version" : "10.2.0"
       }
     },
     {
@@ -266,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "71fd3032635fed58ae1c1ba22bb7ffa158dbb5ee",
-        "version" : "7.30.2"
+        "revision" : "1748a02801ba456251a082ab06bb7c64ba07909c",
+        "version" : "7.31.1"
       }
     },
     {

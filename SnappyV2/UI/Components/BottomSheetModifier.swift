@@ -13,13 +13,11 @@ public struct BottomSheet<Content: View>: View {
     
     // MARK: - Constants
     private let closeButtonHeight: CGFloat = 15
-    private let closeButtonPadding: CGFloat = 8
     private let headerCornerRadius: CGFloat = 2.5
     private let headerWidth: CGFloat = 40
     private let headerHeight: CGFloat = 5
-    private let headerPadding: CGFloat = 5
-    private let titlePadding: CGFloat = 10
     private let mainCornerRadius: CGFloat = 10
+    private let dragPillBottomPadding: CGFloat = 25
     
     @Binding var isPresented: Bool
     
@@ -35,7 +33,6 @@ public struct BottomSheet<Content: View>: View {
     private var onDismiss: () -> Void
     private let animationDelay: TimeInterval = 0.2
     private let container: DIContainer
-    private let title: String?
     private let windowSize: CGSize
     private let omitCloseButton: Bool
     
@@ -49,7 +46,6 @@ public struct BottomSheet<Content: View>: View {
     init(
         container: DIContainer,
         isPresented: Binding<Bool>,
-        title: String?,
         windowSize: CGSize,
         omitCloseButton: Bool,
         @ViewBuilder content: () -> Content,
@@ -59,7 +55,6 @@ public struct BottomSheet<Content: View>: View {
         self.content = content()
         self.onDismiss = onDismiss
         self.container = container
-        self.title = title
         self.windowSize = windowSize
         self.omitCloseButton = omitCloseButton
     }
@@ -111,21 +106,14 @@ public struct BottomSheet<Content: View>: View {
                                         .frame(height: closeButtonHeight)
                                         .foregroundColor(colorPalette.primaryBlue)
                                 }
-                                .padding(closeButtonPadding)
+                                .padding()
                             }
                             
                             VStack(spacing: 0) {                                    RoundedRectangle(cornerRadius: headerCornerRadius)
                                     .frame(width: headerWidth, height: headerHeight)
                                     .foregroundColor(.secondary)
-                                    .padding(.top, headerPadding)
-                                    .padding(.bottom, title == nil ? closeButtonHeight : headerPadding)
-                                
-                                if let title = title {
-                                    Text(title)
-                                        .font(.heading4())
-                                        .padding(titlePadding)
-                                }
-                                
+                                    .padding(.top)
+                                    .padding(.bottom, dragPillBottomPadding)
                                 self.content
                             }
                         }
@@ -215,7 +203,6 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
     
     let container: DIContainer
     @Binding var item: Item?
-    let title: String?
     let windowSize: CGSize
     let omitCloseButton: Bool
     let onDismiss: (() -> Void)?
@@ -250,7 +237,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
             if !bottomSheetAlreadyPresented {
                 if let item = self.item {
                     
-                    let view = BottomSheet(container: container, isPresented: $isPresented, title: title, windowSize: windowSize, omitCloseButton: omitCloseButton) {
+                    let view = BottomSheet(container: container, isPresented: $isPresented, windowSize: windowSize, omitCloseButton: omitCloseButton) {
                         content(item)
                     } onDismiss: {
                         self.item = nil
@@ -299,14 +286,13 @@ public extension View {
    internal func snappyBottomSheet<Item, Content>(
         container: DIContainer,
         item: Binding<Item?>,
-        title: String?,
         windowSize: CGSize,
         omitCloseButton: Bool = false,
         @ViewBuilder content: @escaping (Item) -> Content,
         onDismiss: @escaping () -> Void = {}
     ) -> some View  where Item: Identifiable & Equatable, Content: View {
         
-        self.modifier(BottomSheetItemModifier(container: container, item: item, title: title, windowSize: windowSize, omitCloseButton: omitCloseButton, onDismiss: onDismiss, content: content))
+        self.modifier(BottomSheetItemModifier(container: container, item: item, windowSize: windowSize, omitCloseButton: omitCloseButton, onDismiss: onDismiss, content: content))
     }
 }
 

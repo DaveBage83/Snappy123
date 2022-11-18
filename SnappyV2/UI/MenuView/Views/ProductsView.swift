@@ -94,7 +94,7 @@ struct ProductsView: View {
         NavigationView {
             if #available(iOS 15.0, *) {
                 mainContent
-                    .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: Strings.ProductsView.ProductCard.title.localized, windowSize: mainWindowSize) { item in
+                    .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, windowSize: mainWindowSize) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
                         }, viewModel: .init(container: viewModel.container, isModal: true))
@@ -297,7 +297,7 @@ struct ProductsView: View {
     }
     
     @ViewBuilder func rootCategoriesCarousel() -> some View {
-        if viewModel.container.appState.value.storeMenu.showDropdownCategoryMenu == false {
+        if viewModel.showRootCategoriesCarousel {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: Constants.RootCatagoryPills.hSpacing) {
                     ForEach(viewModel.rootCategories) { details in
@@ -320,7 +320,7 @@ struct ProductsView: View {
     }
     
     @ViewBuilder func toolbarCategoryMenu() -> some View {
-        if viewModel.container.appState.value.storeMenu.showDropdownCategoryMenu {
+        if viewModel.showToolbarCategoryMenu {
             Menu {
                 ForEach(viewModel.rootCategories) { details in
                     Button(action: { viewModel.carouselCategoryTapped(with: details) }) {

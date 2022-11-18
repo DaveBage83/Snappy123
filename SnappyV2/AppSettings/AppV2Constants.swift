@@ -104,7 +104,7 @@ struct AppV2Constants {
         static let faqURL =  "https://app-staging.snappyshopper.co.uk/faq"
         static let privacyURL = URL(string: "https://app-dev.snappyshopper.co.uk/privacy-policy")
         static let contactUsURL = URL(string: "https://app-dev.snappyshopper.co.uk/contact")
-        static let maxAlertCharacterLengthForAutoDismiss = 40 // When alerts have greater character length than this, they will be set automatically to be tap to dismiss alerts and include an xmark button
+        static let maxAlertCharacterLengthForAutoDismiss = 60 // When alerts have greater character length than this, they will be set automatically to be tap to dismiss alerts and include an xmark button
     }
     
     struct Driver {
@@ -122,7 +122,8 @@ struct AppV2Constants {
     struct DriverInterface {
         // v1 API base url used by the driver endpoints
         #if DEBUG
-        static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"// "https://www.staging.dev.snappyshopper.co.uk/mobile_api/"
+//        static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
+        static let baseURL = "https://www.staging.dev.snappyshopper.co.uk/mobile_api/"
         #else
         static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
         #endif
@@ -130,7 +131,7 @@ struct AppV2Constants {
     
     struct API {
         #if DEBUG
-        //        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
+//                static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
         static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
 
         #else

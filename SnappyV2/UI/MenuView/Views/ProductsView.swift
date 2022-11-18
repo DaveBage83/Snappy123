@@ -297,7 +297,7 @@ struct ProductsView: View {
     }
     
     @ViewBuilder func rootCategoriesCarousel() -> some View {
-        if viewModel.container.appState.value.storeMenu.showDropdownCategoryMenu == false {
+        if viewModel.showRootCategoriesCarousel {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: Constants.RootCatagoryPills.hSpacing) {
                     ForEach(viewModel.rootCategories) { details in
@@ -320,7 +320,7 @@ struct ProductsView: View {
     }
     
     @ViewBuilder func toolbarCategoryMenu() -> some View {
-        if viewModel.container.appState.value.storeMenu.showDropdownCategoryMenu {
+        if viewModel.showToolbarCategoryMenu {
             Menu {
                 ForEach(viewModel.rootCategories) { details in
                     Button(action: { viewModel.carouselCategoryTapped(with: details) }) {

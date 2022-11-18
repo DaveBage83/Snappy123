@@ -32,12 +32,14 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var showPushNotificationsEnablePromptView: Bool
     @Published var showVerifyMobileNumberView: Bool
     @Published var driverMapParameters: DriverLocationMapParameters?
+    @Published var showOrder: PlacedOrder?
     
     private var pushNotificationsQueue: [DisplayablePushNotification] = []
     
     private var cancellables = Set<AnyCancellable>()
     
     private var previouslyEnteredForeground = false
+    private var pushNotificationDismissDisplayAction: PushNotificationDismissDisplayAction?
     
     init(container: DIContainer, systemEventsHandler: SystemEventsHandlerProtocol) {
         
@@ -78,6 +80,7 @@ class SnappyV2AppViewModel: ObservableObject {
         setupShowVerifyMobileNumberView(with: container.appState)
         setupPushNotificationLastOrderDriverEnRouteCheck(with: container.appState)
         setupDisplayedDriverLocationCheck(with: container.appState)
+        setupShowOrderCheck(with: container.appState)
         #endif
         
         setUpInitialView()
@@ -224,6 +227,31 @@ class SnappyV2AppViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupShowOrderCheck(with appState: Store<AppState>) {
+        appState
+            .map(\.routing.showOrder)
+            .filter { $0 != nil }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] showOrder in
+                guard
+                    let self = self,
+                    self.showOrder != showOrder
+                else { return }
+                self.showOrder = showOrder
+            }
+            .store(in: &cancellables)
+        
+        $showOrder
+            .receive(on: RunLoop.main)
+            .sink { [weak self] in
+                guard let self = self else { return }
+                if $0 == nil {
+                    self.container.appState.value.routing.showOrder = nil
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     private func getLastDeliveryOrderDriverLocation() async throws {
         if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
             container.appState.value.routing.displayedDriverLocation = driverMapParameters
@@ -320,12 +348,32 @@ class SnappyV2AppViewModel: ObservableObject {
         container.appState.value.system.isInForeground = phase == .active
     }
     
-    func dismissNotificationView() {
+    func dismissNotificationView(withAction action: PushNotificationDismissDisplayAction?) {
         pushNotification = nil
-        // display the next queued push notification
+        pushNotificationDismissDisplayAction = action
+        
+        // check for queued push notification
         if pushNotificationsQueue.count > 0 {
-            pushNotification = pushNotificationsQueue.remove(at: 0)
+            // Delay to be more graceful and allow any pushNotificationDismissDisplayAction to
+            // be actioned first before showing the next queued push notification
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                guard let self else { return }
+                self.pushNotification = self.pushNotificationsQueue.remove(at: 0)
+            }
         }
+    }
+    
+    func pushNotificationViewDismissed() {
+        if let pushNotificationDismissDisplayAction {
+            if let order = pushNotificationDismissDisplayAction.showOrder {
+                container.appState.value.routing.showOrder = order
+            }
+            self.pushNotificationDismissDisplayAction = nil
+        }
+    }
+    
+    func orderViewShown() {
+        showOrder = nil
     }
     
     func dismissEnableNotificationsPromptView() {

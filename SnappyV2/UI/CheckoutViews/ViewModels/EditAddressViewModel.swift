@@ -150,6 +150,7 @@ class EditAddressViewModel: ObservableObject {
         self.includeSavedAddressButton = includeSavedAddressButton
         
         setupBindToProfile(with: appState)
+        setupBindToUseSameBillingAddressAsDelivery()
 
         if addressType == .billing {
             populateContactFields()
@@ -166,6 +167,17 @@ class EditAddressViewModel: ObservableObject {
             .sink { [weak self] profile in
                 guard let self = self else { return }
                 self.memberProfile = profile
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupBindToUseSameBillingAddressAsDelivery() {
+        $useSameBillingAddressAsDelivery
+            .filter { $0 == false }
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.container.eventLogger.sendEvent(for: .viewScreen(.in, .billingDetails), with: .firebaseAnalytics, params: [:])
             }
             .store(in: &cancellables)
     }

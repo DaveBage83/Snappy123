@@ -50,7 +50,8 @@ final class UserWebRepositoryTests: XCTestCase {
                 .login(
                     email: parameters["username"] as! String,
                     password: parameters["password"] as! String,
-                    basketToken: nil
+                    basketToken: nil,
+                    notificationDeviceToken: nil
                 )
             XCTAssertEqual(result, data, file: #file, line: #line)
         } catch {
@@ -81,7 +82,8 @@ final class UserWebRepositoryTests: XCTestCase {
                 .login(
                     email: "kevin.palser@gmail.com",
                     oneTimePassword: "",
-                    basketToken: nil
+                    basketToken: nil,
+                    notificationDeviceToken: nil
                 )
             XCTAssertEqual(result, data, file: #file, line: #line)
         } catch {
@@ -115,6 +117,7 @@ final class UserWebRepositoryTests: XCTestCase {
                     firstname: nil,
                     lastname: nil,
                     basketToken: nil,
+                    notificationDeviceToken: nil,
                     registeringFromScreen: .accountTab
                 )
             XCTAssertEqual(result, data, file: #file, line: #line)
@@ -146,6 +149,7 @@ final class UserWebRepositoryTests: XCTestCase {
                 .login(
                     facebookAccessToken: parameters["access_token"] as! String,
                     basketToken: nil,
+                    notificationDeviceToken: nil,
                     registeringFromScreen: .startScreen
                 )
             XCTAssertEqual(result, data, file: #file, line: #line)
@@ -177,6 +181,7 @@ final class UserWebRepositoryTests: XCTestCase {
                 .login(
                     googleAccessToken: parameters["id_token"] as! String,
                     basketToken: nil,
+                    notificationDeviceToken: nil,
                     registeringFromScreen: .accountTab
                 )
             XCTAssertEqual(result, data, file: #file, line: #line)

@@ -31,28 +31,45 @@ extension DisplayablePushNotification {
         image: nil,
         message: "Simple message body",
         link: nil,
-        telephone: nil
+        telephone: nil,
+        businessOrderId: nil,
+        hash: nil
     )
     
     static let mockedAllOptionsMessageData = DisplayablePushNotification(
         image: URL(string: "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png")!,
         message: "All options message body",
         link: URL(string: "https://www.snappyshopper.co.uk")!,
-        telephone: "0333 900 1250"
+        telephone: "0333 900 1250",
+        businessOrderId: 1234,
+        hash: "bf456eaf4556adc345ea"
     )
     
     static let mockedLinkedOptionMessageData = DisplayablePushNotification(
         image: nil,
         message: "Linked option message body",
         link: URL(string: "https://www.snappyshopper.co.uk")!,
-        telephone: nil
+        telephone: nil,
+        businessOrderId: nil,
+        hash: nil
     )
     
     static let mockedCallOptionMessageData = DisplayablePushNotification(
         image: nil,
         message: "Call option message body",
         link: nil,
-        telephone: "0333 900 1250"
+        telephone: "0333 900 1250",
+        businessOrderId: nil,
+        hash: nil
+    )
+    
+    static let mockedViewUpdatedOrderMessageData = DisplayablePushNotification(
+        image: nil,
+        message: "Order #1234 has been modified. Please check the packaging for allergen information.",
+        link: nil,
+        telephone: nil,
+        businessOrderId: 1234,
+        hash: "bf456eaf4556adc345ea"
     )
     
 }

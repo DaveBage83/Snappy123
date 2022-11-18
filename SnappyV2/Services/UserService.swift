@@ -247,7 +247,8 @@ struct UserService: MemberServiceProtocol {
         let result = try await webRepository.login(
             email: email,
             password: password,
-            basketToken: appState.value.userData.basket?.basketToken
+            basketToken: appState.value.userData.basket?.basketToken,
+            notificationDeviceToken: appState.value.system.notificationDeviceToken
         )
         
         if
@@ -283,7 +284,8 @@ struct UserService: MemberServiceProtocol {
         let result = try await webRepository.login(
             email: email,
             oneTimePassword: oneTimePassword,
-            basketToken: appState.value.userData.basket?.basketToken
+            basketToken: appState.value.userData.basket?.basketToken,
+            notificationDeviceToken: appState.value.system.notificationDeviceToken
         )
         
         if
@@ -330,6 +332,7 @@ struct UserService: MemberServiceProtocol {
             firstname: appleIDCredential.fullName?.givenName,
             lastname: appleIDCredential.fullName?.familyName,
             basketToken: appState.value.userData.basket?.basketToken,
+            notificationDeviceToken: appState.value.system.notificationDeviceToken,
             registeringFromScreen: registeringFromScreen
         )
         
@@ -409,6 +412,7 @@ struct UserService: MemberServiceProtocol {
             let result = try await webRepository.login(
                 facebookAccessToken: tokenString,
                 basketToken: appState.value.userData.basket?.basketToken,
+                notificationDeviceToken: appState.value.system.notificationDeviceToken,
                 registeringFromScreen: registeringFromScreen
             )
             
@@ -491,6 +495,7 @@ struct UserService: MemberServiceProtocol {
             let result = try await webRepository.login(
                 googleAccessToken: tokenString,
                 basketToken: appState.value.userData.basket?.basketToken,
+                notificationDeviceToken: appState.value.system.notificationDeviceToken,
                 registeringFromScreen: registeringFromScreen
             )
             
@@ -645,7 +650,10 @@ struct UserService: MemberServiceProtocol {
         
         do {
             let logoutResult = try await webRepository
-                .logout(basketToken: appState.value.userData.basket?.basketToken)
+                .logout(
+                    basketToken: appState.value.userData.basket?.basketToken,
+                    notificationDeviceToken: appState.value.system.notificationDeviceToken
+                )
                 .singleOutput()
             // There should not ever be a case where the
             // API returns false instead of an error

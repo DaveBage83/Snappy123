@@ -44,6 +44,7 @@ class OrderDetailsViewModel: ObservableObject {
     // The following 2 properties are used for view model creation in parent view so cannot be private
     let container: DIContainer
     let order: PlacedOrder
+    let dismissViewHandler: (()->())?
     @Published var repeatOrderRequested = false
     @Published var showDetailsView = false
     @Published var showMapError = false
@@ -174,10 +175,11 @@ class OrderDetailsViewModel: ObservableObject {
     
     // MARK: - Init
     
-    init(container: DIContainer, order: PlacedOrder, showTrackOrderButton: Bool) {
+    init(container: DIContainer, order: PlacedOrder, showTrackOrderButton: Bool, dismissViewHandler: (()->())? = nil) {
         self.container = container
         self.order = order
         self.showTrackOrderButton = showTrackOrderButton
+        self.dismissViewHandler = dismissViewHandler
     }
     
     // MARK: - Repeat order methods

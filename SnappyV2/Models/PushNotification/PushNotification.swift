@@ -31,6 +31,11 @@ struct DisplayablePushNotification: Equatable, Identifiable {
     let message: String
     let link: URL?
     let telephone: String?
+    
+    /// used for order update notifications
+    let businessOrderId: Int?
+    /// used for order update notifications
+    let hash: String?
 }
 
 struct RawNotification: Equatable, Identifiable {

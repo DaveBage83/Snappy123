@@ -50,7 +50,9 @@ final class CheckoutWebRepositoryTests: XCTestCase {
             "firstname": "Harold",
             "lastname": "Brown",
             "emailAddress": "h.brown@gmail.com",
-            "phoneNumber": "0798883241"
+            "phoneNumber": "0798883241",
+            "platform": AppV2Constants.Client.platform,
+            "messagingDeviceId": "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         ]
 
         try mock(.createDraftOrder(parameters), result: .success(data))
@@ -68,7 +70,8 @@ final class CheckoutWebRepositoryTests: XCTestCase {
                 ),
                 instructions: "knock twice",
                 paymentGateway: .cash,
-                storeId: 910
+                storeId: 910,
+                notificationDeviceToken: "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
             )
             .sinkToResult { result in
                 result.assertSuccess(value: data)
@@ -241,6 +244,29 @@ final class CheckoutWebRepositoryTests: XCTestCase {
             try mock(.getDriverLocation(parameters), result: .success(data))
             let result = try await sut
                 .getDriverLocation(forBusinessOrderId: 2106)
+            XCTAssertEqual(data, result, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+    }
+    
+    // MARK: - getOrder(forBusinessOrderId:hash)
+    
+    func test_getOrder() async {
+    
+        let data = PlacedOrder.mockedData
+        let hash = "bf456eaf4556adc345ea"
+
+        let parameters: [String: Any] = [
+            "businessOrderId": data.businessOrderId,
+            "hash": hash
+        ]
+
+        do {
+            try mock(.getOrderByHash(parameters), result: .success(data))
+            let result = try await sut
+                .getOrder(forBusinessOrderId: data.businessOrderId, withHash: hash)
             XCTAssertEqual(data, result, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)

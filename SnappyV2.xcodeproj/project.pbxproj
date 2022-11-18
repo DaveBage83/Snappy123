@@ -818,6 +818,7 @@
 		0AF16A762727189E0020A2CF /* Basket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Basket.swift; sourceTree = "<group>"; };
 		0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppV2Constants.swift; sourceTree = "<group>"; };
 		0AF2A4AE26F710A200E5C238 /* WebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRepository.swift; sourceTree = "<group>"; };
+		0AF5D28B29212179003F998D /* simple_message_orderUpdate_v2staging.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = simple_message_orderUpdate_v2staging.apns; sourceTree = "<group>"; };
 		0AF72F192791A6940055ECFD /* AddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressService.swift; sourceTree = "<group>"; };
 		0AF72F1C2791A9330055ECFD /* AddressWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressWebRepository.swift; sourceTree = "<group>"; };
 		0AF72F1E2791A94D0055ECFD /* AddressDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDBRepository.swift; sourceTree = "<group>"; };
@@ -1913,6 +1914,7 @@
 		0AE2B80728E9FDAF00D74D19 /* PushNotificationTests */ = {
 			isa = PBXGroup;
 			children = (
+				0AF5D28B29212179003F998D /* simple_message_orderUpdate_v2staging.apns */,
 				0AE2B80928E9FDE600D74D19 /* simple_message_driverLocation.apns */,
 				0AE2B80B28E9FDE600D74D19 /* simple_message_driverUpdate.apns */,
 				0AE2B80C28E9FDE600D74D19 /* simple_message_image.apns */,

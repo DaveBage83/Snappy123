@@ -17,20 +17,27 @@ struct AnimatedLoadingView: View {
     
     var body: some View {
         ZStack {
-            Color.gray
-                .opacity(0.5)
-                .blur(radius: 8, opaque: false)
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color.snappyBlue)
             VStack {
+                Spacer(minLength: 25)
                 Text(message)
+                    .font(Font.snappyTitle2)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                Spacer(minLength: 20)
                 LoadingDotsView()
+                Spacer(minLength: 25)
             }
         }
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(50)
     }
     
 }
 
 struct AnimatedLoadingView_Previews: PreviewProvider {
     static var previews: some View {
-        AnimatedLoadingView(message: "Logging In...")
+        AnimatedLoadingView(message: Strings.AnimatedLoadingView.loggingIn.localized)
     }
 }

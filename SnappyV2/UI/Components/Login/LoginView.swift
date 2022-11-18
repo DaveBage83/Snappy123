@@ -78,16 +78,20 @@ struct LoginView: View {
                 }
                 .padding()
                 .background(colorPalette.backgroundMain)
+                .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? 20:0)
             } else {
                 CardOnBackgroundImageViewContainer(
                     container: viewModel.container,
                     image: Image.Branding.StockPhotos.deliveryMan) {
                         loginView
                     }
+                    .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? 20:0)
             }
             
             if viewModel.isLoading || socialLoginViewModel.isLoading {
-                AnimatedLoadingView(message: "Logging in...")
+                AnimatedLoadingView(message: Strings.AnimatedLoadingView.loggingIn.localized)
+                    .position(x: UIScreen.screenWidth / 2,
+                              y: UIScreen.screenHeight / 2)
             }
         }
         .onAppear {

@@ -275,16 +275,9 @@ public struct AlertToast: Equatable, View{
                             }
                             
                             if !subTitle.isEmpty {
-                                if tapToDismiss {
-                                    Text(verbatim: subTitle)
-                                        .font(style?.subTitleFont ?? Font.subheadline)
-                                        .multilineTextAlignment(.leading)
-                                    
-                                } else {
-                                    Text(verbatim: subTitle)
-                                        .font(style?.subTitleFont ?? Font.subheadline)
-                                        .multilineTextAlignment(.leading)
-                                }
+                                Text(verbatim: subTitle)
+                                    .font(style?.subTitleFont ?? Font.subheadline)
+                                    .multilineTextAlignment(.leading)
                             }
                         }
                         if tapToDismiss {

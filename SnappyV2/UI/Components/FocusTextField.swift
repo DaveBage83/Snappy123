@@ -23,7 +23,7 @@ struct FocusTextField: UIViewRepresentable {
     let spellCheckingEnabled: Bool
 
     func makeUIView(context: UIViewRepresentableContext<FocusTextField>) -> UITextField {
-        let tf = UITextField(frame: .zero)
+        let tf = TextFieldWithPadding(frame: .zero)
         tf.isUserInteractionEnabled = true
         tf.delegate = context.coordinator
         tf.keyboardType = keyboardType ?? .default
@@ -76,5 +76,25 @@ struct FocusTextField: UIViewRepresentable {
             textField.resignFirstResponder()
             return false
         }
+    }
+}
+
+// Used to add padding to the textfield in order to align with floating label
+class TextFieldWithPadding: UITextField {
+    var textPadding = UIEdgeInsets(
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 10
+    )
+
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        let rect = super.textRect(forBounds: bounds)
+        return rect.inset(by: textPadding)
+    }
+
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        let rect = super.editingRect(forBounds: bounds)
+        return rect.inset(by: textPadding)
     }
 }

@@ -287,6 +287,7 @@ struct SnappyTextfield: View {
     private var animatedFloatingLabel: some View {
         HStack {
             Text(sizeCategory.size < Constants.General.largeTextThreshold ? labelText : largeTextLabelText)
+                .lineLimit(1)
                 .font(font)
                 .foregroundColor(labelColor)
                 .background(Color.clear)

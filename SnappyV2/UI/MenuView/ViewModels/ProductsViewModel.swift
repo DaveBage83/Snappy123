@@ -77,6 +77,14 @@ class ProductsViewModel: ObservableObject {
         viewState == .items
     }
     
+    var showToolbarCategoryMenu: Bool {
+        container.appState.value.storeMenu.showDropdownCategoryMenu && showSearchView == false
+    }
+    
+    var showRootCategoriesCarousel: Bool {
+        container.appState.value.storeMenu.showDropdownCategoryMenu == false
+    }
+    
     var items: [RetailStoreMenuItem] {
         guard sortedItems.isEmpty else {
             return sortedItems

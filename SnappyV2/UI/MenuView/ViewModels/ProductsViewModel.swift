@@ -567,6 +567,7 @@ class ProductsViewModel: ObservableObject {
         selectedOffer = nil
         offerText = nil
         navigationWithIsSearchActive = 0
+        searchText = ""
     }
     
     private func getCategories() {

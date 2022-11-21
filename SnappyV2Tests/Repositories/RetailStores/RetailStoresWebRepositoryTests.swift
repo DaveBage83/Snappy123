@@ -244,13 +244,13 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     func test_sendRetailStoreCustomerRating() async throws {
         
         let review = RetailStoreReview.mockedData
-        let data = RetailStoreReviewResponse.mockedData
+        let data = RetailStoreReviewResponse.mockedDataSucess
         
         let parameters: [String: Any] = [
             "orderId": review.orderId,
             "hash": review.hash,
-            "rating": 4,
-            "comments": "some string"
+            "starRating": 4,
+            "comment": "some string"
         ]
         
         try mock(.customerRating(parameters), result: .success(data))

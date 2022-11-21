@@ -137,11 +137,11 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         var parameters: [String: Any] = [
             "orderId": orderId,
             "hash": hash,
-            "rating": rating
+            "starRating": rating
         ]
         
         if let comments = comments {
-            parameters["comments"] = comments
+            parameters["comment"] = comments
         }
         
         return try await call(endpoint: API.customerRating(parameters)).singleOutput()
@@ -176,7 +176,7 @@ extension RetailStoresWebRepository.API: APICall {
         case .futureContactRequest:
             return AppV2Constants.Client.languageCode + "/futureContactRequest.json"
         case .customerRating:
-            return AppV2Constants.Client.languageCode + "/customerStoreRating.json"
+            return AppV2Constants.Client.languageCode + "/stores/review/new.json"
         }
     }
     var method: String {

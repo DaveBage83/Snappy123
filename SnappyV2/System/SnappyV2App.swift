@@ -204,8 +204,8 @@ struct SnappyV2StudyApp: View {
                 viewModel: StoreReviewViewModel(
                     container: viewModel.container,
                     review: review,
-                    dismissStoreReviewViewHandler: { reviewSent in
-                        viewModel.dismissRetailStoreReviewView(reviewSent: reviewSent)
+                    dismissStoreReviewViewHandler: { reviewSentMessage in
+                        viewModel.dismissRetailStoreReviewView(reviewSentMessage: reviewSentMessage)
                         closeRetailStoreReviewView?()
                     }
                 )

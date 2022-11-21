@@ -16,6 +16,7 @@ enum RetailStoresServiceError: Swift.Error, Equatable {
     case fulfilmentLocationRequired
     case cannotUseWhenFoundStores
     case postcodeFormatNotRecognised(String)
+    case cannotSendStoreReview(String)
 }
 
 extension RetailStoresServiceError: LocalizedError {
@@ -29,6 +30,8 @@ extension RetailStoresServiceError: LocalizedError {
             return "Service layer operation should only be called when no store candidates."
         case let .postcodeFormatNotRecognised(postcode):
             return Strings.General.Search.Customisable.postcodeFormatError.localizedFormat(postcode)
+        case let .cannotSendStoreReview(message):
+            return message
         }
     }
 }
@@ -88,7 +91,7 @@ protocol RetailStoresServiceProtocol {
     // TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
     func futureContactRequest(email: String) async throws -> String?
     
-    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws
+    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws -> String
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
@@ -748,8 +751,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         eventLogger.sendEvent(for: .futureContact, with: .firebaseAnalytics, params: firebaseParams)
     }
     
-    func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws {
-        // TODO: Implementation will change based on returned values: https://snappyshopper.atlassian.net/browse/BGB-714
+    func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws -> String {
         let result = try await webRepository.sendRetailStoreCustomerRating(
             orderId: review.orderId,
             hash: review.hash,
@@ -757,8 +759,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             comments: comments
         )
         if result.status == false {
-
+            throw RetailStoresServiceError.cannotSendStoreReview(result.message)
         }
+        return result.message
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {
@@ -767,8 +770,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 }
 
 struct StubRetailStoresService: RetailStoresServiceProtocol {
-    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws {
-        
+    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws -> String {
+        return "Review Sent"
     }
     
     func getStoreDetails(storeId: Int, postcode: String)  -> Future<Void, Error> {

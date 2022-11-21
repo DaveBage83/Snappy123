@@ -1050,7 +1050,6 @@ public enum Strings {
             case instructions = "storereview.instructions"
             case commentRequired = "storereview.commentrequired"
             case submittedTitle = "storereview.submittedtitle"
-            case submittedMessage = "storereview.submittedmessage"
             case missingRating = "storereview.missingrating"
             case missingComment = "storereview.missingcomment"
         }

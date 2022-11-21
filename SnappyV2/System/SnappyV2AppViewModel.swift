@@ -389,10 +389,12 @@ class SnappyV2AppViewModel: ObservableObject {
         }
     }
     
-    func dismissRetailStoreReviewView(reviewSent: Bool) {
+    func dismissRetailStoreReviewView(reviewSentMessage: String?) {
         container.appState.value.retailStoreReview = nil
         storeReview = nil
-        container.appState.value.successToastStrings.append(Strings.StoreReview.StaticText.submittedMessage.localized)
+        if let reviewSentMessage {
+            container.appState.value.successToastStrings.append(reviewSentMessage)
+        }
     }
     
     func dismissDriverMap() {

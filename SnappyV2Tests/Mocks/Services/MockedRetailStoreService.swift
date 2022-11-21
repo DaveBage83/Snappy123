@@ -25,7 +25,7 @@ final class MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         case sendReview(for: RetailStoreReview, rating: Int, comments: String?)
     }
     
-    var sendReviewError: Error?
+    var sendReviewResult: Result<String, Error> = .failure(MockError.valueNotSet)
     
     let actions: MockActions<Action>
     
@@ -74,10 +74,13 @@ final class MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         return nil
     }
     
-    func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws {
+    func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws -> String {
         register(.sendReview(for: review, rating: rating, comments: comments))
-        if let sendReviewError = sendReviewError {
-            throw sendReviewError
+        switch sendReviewResult {
+        case let .success(message):
+            return message
+        case let .failure(error):
+            throw error
         }
     }
     

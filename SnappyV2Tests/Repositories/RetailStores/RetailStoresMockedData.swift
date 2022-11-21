@@ -2120,7 +2120,9 @@ extension RetailStoreReview {
 
 extension RetailStoreReviewResponse {
     
-    static let mockedData = RetailStoreReviewResponse(status: true)
+    static let mockedDataSucess = RetailStoreReviewResponse(status: true, message: "Thank you for sparing time to submit your review.")
+    
+    static let mockedDataFailure = RetailStoreReviewResponse(status: false, message: "This order is too old to review.")
     
 }
 

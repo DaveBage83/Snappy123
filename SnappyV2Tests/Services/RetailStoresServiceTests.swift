@@ -1086,6 +1086,7 @@ final class SendReviewTests: RetailStoresServiceTests {
         let review = RetailStoreReview.mockedData
         let rating = 4
         let comments = "Some comments"
+        let data = RetailStoreReviewResponse.mockedDataSucess
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
@@ -1096,14 +1097,46 @@ final class SendReviewTests: RetailStoresServiceTests {
                 comments: comments
             )
         ])
-        mockedWebRepo.sendRetailStoreCustomerRatingResponse = .success(RetailStoreReviewResponse.mockedData)
+        mockedWebRepo.sendRetailStoreCustomerRatingResponse = .success(data)
         
         do {
-            let _ = try await sut.sendReview(for: review, rating: rating, comments: comments)
-            self.mockedWebRepo.verify()
-            self.mockedEventLogger.verify()
+            let message = try await sut.sendReview(for: review, rating: rating, comments: comments)
+            XCTAssertEqual(message, data.message, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedEventLogger.verify()
         } catch {
             XCTFail("Unexpected error - Error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_unsuccessfulSendReview() async {
+        let review = RetailStoreReview.mockedData
+        let rating = 4
+        let comments = "Some comments"
+        let data = RetailStoreReviewResponse.mockedDataFailure
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .sendRetailStoreCustomerRating(
+                orderId: review.orderId,
+                hash: review.hash,
+                rating: rating,
+                comments: comments
+            )
+        ])
+        mockedWebRepo.sendRetailStoreCustomerRatingResponse = .success(data)
+        
+        do {
+            let message = try await sut.sendReview(for: review, rating: rating, comments: comments)
+            XCTFail("Unexpected result - \(message)", file: #file, line: #line)
+        } catch {
+            if let error = error as? RetailStoresServiceError {
+                XCTAssertEqual(error, RetailStoresServiceError.cannotSendStoreReview(data.message), file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+            mockedWebRepo.verify()
+            mockedEventLogger.verify()
         }
     }
 }

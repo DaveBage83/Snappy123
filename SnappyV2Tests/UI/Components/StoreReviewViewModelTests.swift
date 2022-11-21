@@ -13,7 +13,7 @@ import Combine
 final class StoreReviewViewModelTests: XCTestCase {
     
     // Present here because published vars cannot be used as local function variables
-    @Published var reviewSentResult: Bool?
+    @Published var reviewSentResult: String?
     
     @MainActor override func tearDown() {
         reviewSentResult = nil
@@ -105,9 +105,13 @@ final class StoreReviewViewModelTests: XCTestCase {
         let review = RetailStoreReview.mockedData
         let rating = 4
         let comments = "My test comments"
+        let successMessage = "success message"
+        
+        let retailStoreService = MockedRetailStoreService(expected: [.sendReview(for: review, rating: rating, comments: comments)])
+        retailStoreService.sendReviewResult = .success(successMessage)
         
         let sut = makeSUT(
-            retailStoreService: MockedRetailStoreService(expected: [.sendReview(for: review, rating: rating, comments: comments)]),
+            retailStoreService: retailStoreService,
             review: review
         ) { [weak self] reviewSent in
             guard let self = self else { return }
@@ -136,9 +140,8 @@ final class StoreReviewViewModelTests: XCTestCase {
         XCTAssertTrue(submittingReviewStarted, file: #file, line: #line)
         XCTAssertNotNil(reviewSentResult, file: #file, line: #line)
         if let reviewSentResult = reviewSentResult {
-            XCTAssertTrue(reviewSentResult, file: #file, line: #line)
+            XCTAssertEqual(reviewSentResult, successMessage, file: #file, line: #line)
         }
-        
         XCTAssertNil(sut.container.appState.value.latestError, file: #file, line: #line)
     }
     
@@ -160,7 +163,7 @@ final class StoreReviewViewModelTests: XCTestCase {
             self.reviewSentResult = reviewSent
         }
         
-        retailStoreService.sendReviewError = networkError
+        retailStoreService.sendReviewResult = .failure(networkError)
         
         sut.tappedStar(rating: 4)
         sut.comments = comments
@@ -188,24 +191,21 @@ final class StoreReviewViewModelTests: XCTestCase {
     }
 
     func test_tappedClose() {
-        var reviewSentResult: Bool?
+        var reviewSentResult: String?
         let sut = makeSUT() { reviewSent in
             reviewSentResult = reviewSent
         }
         
         sut.tappedClose()
         
-        XCTAssertNotNil(reviewSentResult, file: #file, line: #line)
-        if let reviewSentResult = reviewSentResult {
-            XCTAssertFalse(reviewSentResult, file: #file, line: #line)
-        }
+        XCTAssertNil(reviewSentResult, file: #file, line: #line)
     }
     
     func makeSUT(
         appState: AppState = AppState(),
         retailStoreService: MockedRetailStoreService = MockedRetailStoreService(expected: []),
         review: RetailStoreReview = RetailStoreReview.mockedData,
-        dismissStoreReviewViewHandler: @escaping (Bool)->() = { _ in }
+        dismissStoreReviewViewHandler: @escaping (String?)->() = { _ in }
     ) -> StoreReviewViewModel {
         
         let services = DIContainer.Services(

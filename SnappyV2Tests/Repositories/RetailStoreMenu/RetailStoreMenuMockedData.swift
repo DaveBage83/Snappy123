@@ -199,6 +199,58 @@ extension RetailStoreMenuItem {
         deal: nil
     )
     
+    static let mockedDataWithNoCaloriesA = RetailStoreMenuItem(
+        id: 3206127,
+        name: "A - Basket limit conflict",
+        eposCode: nil,
+        outOfStock: false,
+        ageRestriction: 0,
+        description: "",
+        quickAdd: true,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
+        price: RetailStoreMenuItemPrice.mockedData,
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        menuItemSizes: nil,
+        menuItemOptions: nil,
+        availableDeals: nil,
+        itemCaptions: nil,
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil,
+        deal: nil
+    )
+    
+    static let mockedDataWithNoCaloriesB = RetailStoreMenuItem(
+        id: 3206127,
+        name: "B - Basket limit conflict",
+        eposCode: nil,
+        outOfStock: false,
+        ageRestriction: 0,
+        description: "",
+        quickAdd: true,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
+        price: RetailStoreMenuItemPrice.mockedData,
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        menuItemSizes: nil,
+        menuItemOptions: nil,
+        availableDeals: nil,
+        itemCaptions: nil,
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil,
+        deal: nil
+    )
+    
     static let mockedDataWithQuickAddFalse = RetailStoreMenuItem(
         id: 3206127,
         name: "Basket limit conflict",

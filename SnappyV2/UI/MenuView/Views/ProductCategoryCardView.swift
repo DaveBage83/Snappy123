@@ -52,25 +52,18 @@ struct ProductCategoryCardView: View {
     
     // MARK: - Item image
     private var itemImage: some View {
-        AsyncImage(urlString: categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-            Image.Placeholders.productPlaceholder
-                .resizable()
-                .cornerRadius(Constants.ItemImage.cornerRadius)
-            
-                .scaledToFit()
-                .padding(Constants.ItemImage.padding)
-        })
-        .scaledToFit()
-        .cornerRadius(Constants.ItemImage.cornerRadius)
-        .frame(width: Constants.ItemImage.size * scale)
-        .padding(Constants.ItemImage.padding)
-        .overlay(
-            RoundedRectangle(cornerRadius: Constants.ItemImage.cornerRadius)
-                .fill(colorPalette.textGrey1.opacity(Constants.ItemImage.backgroundOpacity))
-            
-        )
-        .frame(width: Constants.ItemImage.size * scale, height: Constants.ItemImage.size * scale)
-        .padding(Constants.ItemImage.padding)
+        AsyncImage(container: container, urlString: categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+            .scaledToFit()
+            .cornerRadius(Constants.ItemImage.cornerRadius)
+            .frame(width: Constants.ItemImage.size * scale)
+            .padding(Constants.ItemImage.padding)
+            .overlay(
+                RoundedRectangle(cornerRadius: Constants.ItemImage.cornerRadius)
+                    .fill(colorPalette.textGrey1.opacity(Constants.ItemImage.backgroundOpacity))
+                
+            )
+            .frame(width: Constants.ItemImage.size * scale, height: Constants.ItemImage.size * scale)
+            .padding(Constants.ItemImage.padding)
         
     }
     

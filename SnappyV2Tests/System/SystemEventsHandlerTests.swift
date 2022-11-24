@@ -47,7 +47,7 @@ final class SystemEventsHandlerTests: XCTestCase {
             checkoutService: MockedCheckoutService(expected: []),
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: userPermissionsService
         )

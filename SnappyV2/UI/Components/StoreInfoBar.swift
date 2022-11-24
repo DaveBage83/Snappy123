@@ -34,11 +34,7 @@ struct StoreInfoBar: View {
     // MARK: - Main view
     var body: some View {
         HStack{
-            AsyncImage(urlString: store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                Image.Placeholders.productPlaceholder
-                    .resizable()
-                    .scaledToFit()
-            })
+            AsyncImage(container: container, urlString: store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
             .scaledToFit()
             .frame(width: Constants.ShopLogo.width)
             .clipShape(Circle())

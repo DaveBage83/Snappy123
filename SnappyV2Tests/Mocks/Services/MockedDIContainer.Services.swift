@@ -32,7 +32,7 @@ extension DIContainer.Services {
         checkoutService: [MockedCheckoutService.Action] = [],
         addressService: [MockedAddressService.Action] = [],
         utilityService: [MockedUtilityService.Action] = [],
-        imageService: [MockedImageService.Action] = [],
+        imageService: [MockedAsyncImageService.Action] = [],
         notificationService: [MockedNotificationService.Action] = [],
         userPermissionsService: [MockedUserPermissionsService.Action] = []
     ) -> DIContainer.Services {
@@ -45,7 +45,7 @@ extension DIContainer.Services {
             checkoutService: MockedCheckoutService(expected: checkoutService),
             addressService: MockedAddressService(expected: addressService),
             utilityService: MockedUtilityService(expected: utilityService),
-            imageService: MockedImageService(expected: imageService),
+            imageService: MockedAsyncImageService(expected: imageService),
             notificationService: MockedNotificationService(expected: notificationService),
             userPermissionsService: MockedUserPermissionsService(expected: userPermissionsService)
         )
@@ -78,7 +78,7 @@ extension DIContainer.Services {
             (utilityService as? MockedUtilityService)?
                 .verify(file: file, line: line)
         case .image:
-            (imageService as? MockedImageService)?
+            (imageService as? MockedAsyncImageService)?
                 .verify(file: file, line: line)
         case .notifications:
             (notificationService as? MockedNotificationService)?

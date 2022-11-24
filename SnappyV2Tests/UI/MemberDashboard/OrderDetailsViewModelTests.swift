@@ -194,7 +194,7 @@ class OrderDetailsViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
@@ -252,7 +252,7 @@ class OrderDetailsViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )

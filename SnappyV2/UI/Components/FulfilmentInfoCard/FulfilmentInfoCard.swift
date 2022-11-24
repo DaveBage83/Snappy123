@@ -102,20 +102,14 @@ struct FulfilmentInfoCard: View {
     
     // MARK: - Selected store logo
     private var storeLogo: some View {
-        AsyncImage(urlString: viewModel.selectedStore?.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-            Image.Placeholders.productPlaceholder
-                .resizable()
-                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                .scaledToFill()
-                .cornerRadius(Constants.Logo.cornerRadius)
-        })
-        .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-        .scaledToFit()
-        .cornerRadius(Constants.Logo.cornerRadius)
-        .overlay(
-            RoundedRectangle(cornerRadius: Constants.Logo.cornerRadius)
-                .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: 1.5)
-        )
+        AsyncImage(container: viewModel.container, urlString: viewModel.selectedStore?.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+            .scaledToFit()
+            .cornerRadius(Constants.Logo.cornerRadius)
+            .overlay(
+                RoundedRectangle(cornerRadius: Constants.Logo.cornerRadius)
+                    .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: 1.5)
+            )
     }
     
     // MARK: - Fulfilment slot

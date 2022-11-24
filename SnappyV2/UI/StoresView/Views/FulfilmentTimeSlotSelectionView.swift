@@ -51,6 +51,10 @@ struct FulfilmentTimeSlotSelectionView: View {
         struct NoSlots {
             static let spacing: CGFloat = 10
         }
+        
+        struct FulfilmentIcon {
+            static let height: CGFloat = 40
+        }
     }
     
     // MARK: - View model
@@ -89,8 +93,11 @@ struct FulfilmentTimeSlotSelectionView: View {
                     
                     if viewModel.showNoSlotsAvailableView {
                         VStack(spacing: Constants.NoSlots.spacing) {
-                            (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Truck.filled : Image.Icons.BagShopping.filled)
+                            (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.filled)
                                 .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: Constants.FulfilmentIcon.height)
                                 .foregroundColor(colorPalette.primaryBlue)
                                 .padding()
                                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
@@ -142,8 +149,11 @@ struct FulfilmentTimeSlotSelectionView: View {
     // MARK: - Today message
     private func todaySelectSlotDuringCheckoutMessage() -> some View {
         VStack(alignment: .center) {
-            (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Truck.filled : Image.Icons.BagShopping.filled)
+            (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.filled)
                 .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: Constants.FulfilmentIcon.height)
                 .foregroundColor(colorPalette.primaryBlue)
                 .padding(Constants.messagePadding)
                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)

@@ -37,7 +37,7 @@ struct StartDriverShiftButton: View {
             action()
         } label: {
             HStack(spacing: Constants.General.hSpacing) {
-                Image.Icons.Truck.standard
+                Image.Icons.Delivery.standard
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: Constants.Icon.size)

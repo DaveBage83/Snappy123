@@ -504,14 +504,6 @@ extension Image {
         }
     }
     
-    struct Fulfilment {
-        struct Truck {
-            static let standard = Image("truck")
-            static let filled = Image("truckFilled")
-            static let heavy = Image("truckHeavy")
-        }
-    }
-    
     struct Login {
         struct User {
             static let square = Image(systemName: "person.crop.square")

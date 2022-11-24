@@ -156,10 +156,8 @@ struct StoreCardInfoView: View {
     
     private func deliveryFee(fromDeliveryCost: (hasTiers: Bool, text: String)) -> some View {
         HStack(spacing: Constants.Icons.spacing) {
-            ZStack {
-                infoStackIcon(image: viewModel.showDeliveryCost ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.heavy)
-            }
-            .frame(width: Constants.Icons.width)
+            infoStackIcon(image: viewModel.showDeliveryCost ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.heavy)
+                .frame(width: Constants.Icons.width)
             
             HStack(spacing: Constants.DeliveryFee.spacing) {
                 if fromDeliveryCost.hasTiers, viewModel.showDeliveryCost {
@@ -207,10 +205,8 @@ struct StoreCardInfoView: View {
     // MARK: - Delivery time
     private var deliveryTime: some View {
         HStack(spacing: Constants.Icons.spacing) {
-            ZStack {
-                infoStackIcon(image: Image.Icons.Clock.heavy)
-            }
-            .frame(width: Constants.Icons.width)
+            infoStackIcon(image: Image.Icons.Clock.heavy)
+                .frame(width: Constants.Icons.width)
             
             if viewModel.isClosed {
                 Text(Strings.StoreInfo.Status.closed.localized)
@@ -229,10 +225,8 @@ struct StoreCardInfoView: View {
     
     private var minSpend: some View {
         HStack(spacing: Constants.Icons.spacing) {
-            ZStack {
-                infoStackIcon(image: Image.Icons.Basket.heavy)
-            }
-            .frame(width: Constants.Icons.width)
+            infoStackIcon(image: Image.Icons.Basket.heavy)
+                .frame(width: Constants.Icons.width)
             
             Text(viewModel.minOrder)
                 .font(.Body1.semiBold())
@@ -243,10 +237,8 @@ struct StoreCardInfoView: View {
     // MARK: - Distance
     private var distance: some View {
         HStack(spacing: Constants.Icons.spacing) {
-            ZStack {
-                infoStackIcon(image: Image.Icons.LocationDot.heavy)
-            }
-            .frame(width: Constants.Icons.width)
+            infoStackIcon(image: Image.Icons.LocationDot.heavy)
+                .frame(width: Constants.Icons.width)
             
             Text(DeliveryStrings.Customisable.distanceShort.localizedFormat(viewModel.distance))
                 .font(.Body1.semiBold())

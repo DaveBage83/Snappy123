@@ -100,16 +100,10 @@ struct StoreCardInfoView: View {
     // MARK: - Logo
     private var logo: some View {
         ZStack(alignment: .bottom) {
-            AsyncImage(urlString: viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                Image.Placeholders.productPlaceholder
-                    .resizable()
-                    .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                    .scaledToFill()
-                    .cornerRadius(Constants.Logo.cornerRadius)
-            })
-            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-            .scaledToFit()
-            .cornerRadius(Constants.Logo.cornerRadius)
+            AsyncImage(container: viewModel.container, urlString: viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                .scaledToFit()
+                .cornerRadius(Constants.Logo.cornerRadius)
             
             if let ratings = viewModel.storeDetails.ratings {
                 StoreReviewPill(container: viewModel.container, rating: ratings)

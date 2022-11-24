@@ -56,7 +56,7 @@ extension Image {
     }
     
     struct Placeholders {
-        static let productPlaceholder = Image("productPlaceholder")
+        static let productPlaceholder = Image(AppV2Constants.Business.placeholderImage)
     }
     
     struct Social {

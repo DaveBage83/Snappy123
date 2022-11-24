@@ -213,22 +213,16 @@ struct ProductCardView: View {
     // MARK: - Item image
     @ViewBuilder var productImage: some View {
         ZStack(alignment: .topLeading) {
-            AsyncImage(urlString: viewModel.itemDetail.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                Image.Placeholders.productPlaceholder
-                    .resizable()
-                    .scaledToFit()
-                    .cornerRadius(Constants.cornerRadius)
-                    .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
-            })
-            .cornerRadius(Constants.cornerRadius)
-            .scaledToFit()
-            .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
-            .padding(.horizontal)
-            .overlay(
-                RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)
-                    .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)
-            )
- 
+            AsyncImage(container: viewModel.container, urlString: viewModel.itemDetail.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+                .cornerRadius(Constants.cornerRadius)
+                .scaledToFit()
+                .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
+                .padding(.horizontal)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)
+                        .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)
+                )
+            
             if viewModel.showSpecialOfferPillAsButton {
                 offerPillButton
             } else {
@@ -238,19 +232,15 @@ struct ProductCardView: View {
     }
     
     @ViewBuilder var offerProductImage: some View {
-        AsyncImage(urlString: viewModel.itemDetail.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-            Image.Placeholders.productPlaceholder
-                .resizable()
-                .scaledToFit()
-                .cornerRadius(Constants.cornerRadius)
-        })
-        .cornerRadius(Constants.cornerRadius)
-        .scaledToFit()
-        .padding(Constants.offerProductImagePadding)
-        .overlay(
-            RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)
-                .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)
-        )
+        AsyncImage(container: viewModel.container, urlString: viewModel.itemDetail.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+            .cornerRadius(Constants.cornerRadius)
+            .scaledToFit()
+            .frame(height: Constants.Card.ProductImage.offerHeight * scale)
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)
+                    .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)
+            )
     }
     
     // MARK: - Special offer pill

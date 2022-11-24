@@ -580,7 +580,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
@@ -623,7 +623,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
@@ -667,7 +667,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
@@ -715,7 +715,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
@@ -762,7 +762,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
@@ -819,7 +819,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )

@@ -88,7 +88,6 @@ struct AppV2Constants {
         static let userCachedExpiry: Date = {
             return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
-        static let imagePlaceholder = Image.RemoteImage.placeholder
         static let standardDateOnlyStringFormat = "yyyy-MM-dd"
         static let hourAndMinutesStringFormat = "HH:mm"
         static let hourAndMinutesAndSecondsStringFormat = "HH:mm:ss"
@@ -105,6 +104,7 @@ struct AppV2Constants {
         static let privacyURL = URL(string: "https://app-dev.snappyshopper.co.uk/privacy-policy")
         static let contactUsURL = URL(string: "https://app-dev.snappyshopper.co.uk/contact")
         static let maxAlertCharacterLengthForAutoDismiss = 60 // When alerts have greater character length than this, they will be set automatically to be tap to dismiss alerts and include an xmark button
+        static let placeholderImage = "productPlaceholder"
     }
     
     struct Driver {

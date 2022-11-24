@@ -3,39 +3,44 @@
 //  SnappyV2
 //
 //  Created by David Bage on 30/05/2022.
-// From https://www.vadimbulavin.com/asynchronous-swiftui-image-loading-from-url-with-combine-and-swift/
+//  Adapted from https://www.vadimbulavin.com/asynchronous-swiftui-image-loading-from-url-with-combine-and-swift/
 
 import SwiftUI
 
-struct AsyncImage<Placeholder: View>: View {
+struct AsyncImage: View {
     @StateObject private var loader: ImageLoader
-    private let placeholder: Placeholder
     private let image: (UIImage) -> Image
+    let container: DIContainer
     
     init(
+        container: DIContainer,
         urlString: String?,
-        @ViewBuilder placeholder: () -> Placeholder,
         @ViewBuilder image: @escaping (UIImage) -> Image = Image.init(uiImage:)
     ) {
-        self.placeholder = placeholder()
         self.image = image
-        _loader = StateObject(wrappedValue: ImageLoader(urlString: urlString, cache: Environment(\.imageCache).wrappedValue))
+        self.container = container
+        _loader = StateObject(wrappedValue: ImageLoader(container: container, urlString: urlString))
     }
     
     var body: some View {
         content
-            .onAppear(perform: loader.load)
+            .onAppear {
+                Task {
+                    await loader.load()
+                }
+            }
     }
     
     private var content: some View {
         Group {
-            if loader.isLoading {
-                ProgressView()
-            } else if let image = loader.image {
+            // If image is loaded then show image...
+            if let image = loader.image {
                 Image(uiImage: image)
                     .resizable()
             } else {
-                placeholder
+                // ... otherwise show placeholder image
+                Image.Placeholders.productPlaceholder
+                    .resizable()
             }
         }
     }

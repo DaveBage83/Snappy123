@@ -17,7 +17,7 @@ extension DIContainer {
         let checkoutService: CheckoutServiceProtocol
         let addressService: AddressServiceProtocol
         let utilityService: UtilityServiceProtocol
-        let imageService: ImageServiceProtocol
+        let imageService: AsyncImageServiceProtocol
         let notificationService: NotificationServiceProtocol
         let userPermissionsService: UserPermissionsServiceProtocol
         
@@ -30,7 +30,7 @@ extension DIContainer {
             checkoutService: CheckoutServiceProtocol,
             addressService: AddressServiceProtocol,
             utilityService: UtilityServiceProtocol,
-            imageService: ImageServiceProtocol,
+            imageService: AsyncImageServiceProtocol,
             notificationService: NotificationServiceProtocol,
             userPermissionsService: UserPermissionsServiceProtocol
         ) {

@@ -108,6 +108,11 @@ struct ProductsView: View {
                     }
             }
         }
+        .toolbar(content: {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                SettingsButton(viewModel: .init(container: viewModel.container))
+            }
+        })
         .onTapGesture {
             hideKeyboard()
         }

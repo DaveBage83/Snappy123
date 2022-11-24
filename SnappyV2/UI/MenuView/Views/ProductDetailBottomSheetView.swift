@@ -43,20 +43,13 @@ struct ProductDetailBottomSheetView: View {
         VStack(alignment: .leading) {
             HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading) {
-                    AsyncImage(urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                        Image.Placeholders.productPlaceholder
-                            .resizable()
-                            .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
-                            .cornerRadius(Constants.ItemImage.cornerRadius)
-                            .scaledToFill()
-                        
-                    })
-                    .cornerRadius(Constants.ItemImage.cornerRadius)
-                    .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(colorPalette.typefacePrimary.withOpacity(.twenty), lineWidth: 1)
-                    )
+                    AsyncImage(container: viewModel.container, urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+                        .cornerRadius(Constants.ItemImage.cornerRadius)
+                        .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(colorPalette.typefacePrimary.withOpacity(.twenty), lineWidth: 1)
+                        )
                 }
                 
                 VStack {

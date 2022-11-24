@@ -16,6 +16,10 @@ class OrderSummaryCardViewModel: ObservableObject {
     
     var storeLogoURL: URL?
     
+    var storeLogoURLString: String? {
+        order?.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString
+    }
+    
     var fulfilmentType: RetailStoreOrderMethodType?
     
     var statusType: OrderStatus.StatusType?

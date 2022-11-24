@@ -303,6 +303,49 @@ class StoreCardInfoViewModelTests: XCTestCase {
         XCTAssertEqual(sut.fulfilmentTime, "1 to 6 mins")
     }
     
+    func test_whenDeliveryOrderMethodIsNil_thenFreeDeliveryTextIsNil() {
+        let sut = makeSUT(storeDetails: RetailStore.mockedDataIndividualStoreNoDelivery)
+        XCTAssertNil(sut.freeDeliveryText)
+    }
+    
+    func test_whenDeliveryOrderMethodIsNotNil_givenFreeDeliveryTextPreset_thenFreeDeliveryTextIsPopulated() {
+        let sut = makeSUT(storeDetails: RetailStore.mockedDataIndividualStoreWithDeliveryOffer)
+        XCTAssertEqual(sut.freeDeliveryText, "Test")
+    }
+    
+    func test_whenDeliveryOrderMethodIsNotNil_givenFreeDeliveryTextNotPreset_thenFreeDeliveryTextIsPopulated() {
+        let sut = makeSUT(storeDetails: RetailStore.mockedDataIndividualStoreWithNoDeliveryOffer)
+        XCTAssertNil(sut.freeDeliveryText)
+    }
+    
+    func test_whenNoDeliveryMethod_thenNoMinOrder() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreNoDelivery)
+        XCTAssertEqual(sut.minOrder, Strings.StoresView.DeliveryTiers.noMinOrder.localized)
+    }
+    
+    func test_whenDeliveryMethodPresent_givenShowDeliveryCostIsFalse_thenNoMinOrder() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreWithDeliveryOffer)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertEqual(sut.minOrder, Strings.StoresView.DeliveryTiers.noMinOrder.localized)    }
+    
+    func test_whenDeliveryMethodPresent_givenShowDeliveryCostIsTrueAndMinSpendPresentInAPI_thenMinOrderPopulated() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreWithMinSpend)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertEqual(sut.minOrder, "Min £10")
+    }
+    
+    func test_whenDeliveryMethodPresent_givenShowDeliveryCostIsTrueAndMinSpendPresentInAPIButIs0_thenMinOrderNil() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreWithZeroSpend)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertEqual(sut.minOrder, Strings.StoresView.DeliveryTiers.noMinOrder.localized)
+    }
+    
+    func test_whenDeliveryMethodPresent_givenShowDeliveryCostIsTrueAndNoMinSpendInAPI_thenMinOrderNil() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreWithNilSpend)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertEqual(sut.minOrder, Strings.StoresView.DeliveryTiers.noMinOrder.localized)
+    }
+    
     func makeSUT(storeDetails: RetailStore) -> StoreCardInfoViewModel {
         let sut = StoreCardInfoViewModel(container: .preview, storeDetails: storeDetails)
         

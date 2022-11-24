@@ -40,6 +40,9 @@ struct LoginView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    private let alertViewXPosition = UIScreen.screenWidth / 2
+    private let alertViewYPosition = UIScreen.screenHeight / 2
+
     init(loginViewModel: LoginViewModel, socialLoginViewModel: SocialMediaLoginViewModel) {
         self._viewModel = .init(wrappedValue: loginViewModel)
         self._socialLoginViewModel = .init(wrappedValue: socialLoginViewModel)
@@ -90,8 +93,8 @@ struct LoginView: View {
             
             if viewModel.isLoading || socialLoginViewModel.isLoading {
                 AnimatedLoadingView(message: Strings.AnimatedLoadingView.loggingIn.localized)
-                    .position(x: UIScreen.screenWidth / 2,
-                              y: UIScreen.screenHeight / 2)
+                    .position(x: alertViewXPosition,
+                              y: alertViewYPosition)
             }
         }
         .onAppear {

@@ -145,8 +145,9 @@ struct FulfilmentTimeSlotSelectionView: View {
     private func todaySelectSlotDuringCheckoutMessage() -> some View {
         VStack(alignment: .center) {
             (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.filled)
-                .resizable()
                 .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
                 .foregroundColor(colorPalette.primaryBlue)
                 .padding(Constants.messagePadding)
                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)

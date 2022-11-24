@@ -15,7 +15,7 @@ class StoreCardInfoViewModel: ObservableObject {
     var orderDeliveryMethod: RetailStoreOrderMethod? {
         storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
     }
-    
+        
     var fulfilmentTimeTitle: String {
         if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
             return GeneralStrings.deliveryTime.localized
@@ -34,11 +34,11 @@ class StoreCardInfoViewModel: ObservableObject {
         container.appState.value.userData.selectedFulfilmentMethod == .delivery
     }
     
-    var fulfilmentTime: String {
+    var fulfilmentTime: String? {
         if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
-            return storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.earliestTime ?? "-"
+            return storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.fulfilmentIn
         } else {
-            return storeDetails.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]?.earliestTime ?? "-"
+            return storeDetails.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]?.fulfilmentIn
         }
     }
     
@@ -50,10 +50,26 @@ class StoreCardInfoViewModel: ObservableObject {
         storeDetails.currency
     }
     
+    var minOrder: String {
+        guard let orderDeliveryMethod, showDeliveryCost else { return Strings.StoresView.DeliveryTiers.noMinOrder.localized }
+        
+        // If there is a minSpend value in the API response, return this
+        if let minSpend = orderDeliveryMethod.minSpend {
+            return minSpend > 0 ? "\(GeneralStrings.min.localized) \(minSpend.toCurrencyString(using: storeDetails.currency, roundWholeNumbers: true))" : Strings.StoresView.DeliveryTiers.noMinOrder.localized
+        }
+        return Strings.StoresView.DeliveryTiers.noMinOrder.localized
+    }
+    
     var defaultDeliveryCost: Double? {
         guard let deliveryOrderMethod = orderDeliveryMethod else { return nil }
 
         return deliveryOrderMethod.cost
+    }
+    
+    var freeDeliveryText: String? {
+        guard let deliveryOrderMethod = orderDeliveryMethod else { return nil }
+
+        return deliveryOrderMethod.freeFulfilmentMessage?.isEmpty == true || showDeliveryCost == false ? nil : deliveryOrderMethod.freeFulfilmentMessage
     }
     
     init(container: DIContainer, storeDetails: RetailStore, isClosed: Bool = false) {

@@ -57,7 +57,7 @@ struct FulfilmentInfoCard: View {
     
     private var fulfilmentIcon: Image {
         if viewModel.fulfilmentMethod == .delivery {
-            return Image.Icons.Truck.standard
+            return Image.Icons.Delivery.standard
         } else {
             return Image.Icons.BagShopping.standard
         }

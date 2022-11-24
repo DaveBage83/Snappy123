@@ -130,7 +130,7 @@ struct OrderSummaryCard: View {
             
             Spacer()
             
-            (viewModel.fulfilmentType == .delivery ? Image.Icons.Truck.standard : Image.Icons.BagShopping.standard)
+            (viewModel.fulfilmentType == .delivery ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.standard)
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)

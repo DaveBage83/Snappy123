@@ -73,10 +73,8 @@ extension Image {
             static let magnifyingGlass = Image("search")
         }
         
-        struct Truck {
-            static let standard = Image("truck")
-            static let filled = Image("truckFilled")
-            static let heavy = Image("truckHeavy")
+        struct Delivery {
+            static let standard = Image("moped")
         }
         
         struct Clock {

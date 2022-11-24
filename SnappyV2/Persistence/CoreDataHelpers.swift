@@ -121,4 +121,3 @@ extension NSOrderedSet {
         array.compactMap { $0 as? T }
     }
 }
-

@@ -38,7 +38,7 @@ struct MemberDashboardOptionsButton: View {
         case .logOut:
             return Image.Icons.Arrows.RightFromBracket.light
         case .startDriverShift:
-            return Image.Icons.Truck.filled
+            return Image.Icons.Delivery.standard
         case .verifyAccount:
             return Image.Icons.VerifyMember.standard
         }

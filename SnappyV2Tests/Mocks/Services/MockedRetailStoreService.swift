@@ -80,5 +80,4 @@ final class MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
             throw sendReviewError
         }
     }
-    
 }

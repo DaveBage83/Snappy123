@@ -424,4 +424,5 @@ struct RetailStoreReview: Equatable {
 
 struct RetailStoreReviewResponse: Codable, Equatable {
     let status: Bool
+    let message: String
 }

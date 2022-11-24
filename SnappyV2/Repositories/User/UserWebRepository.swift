@@ -18,18 +18,39 @@ import Combine
 
 protocol UserWebRepositoryProtocol: WebRepository {
     
-    func login(email: String, password: String, basketToken: String?) async throws -> LoginResult
-    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> LoginResult
+    func login(
+        email: String,
+        password: String,
+        basketToken: String?,
+        notificationDeviceToken: String?
+    ) async throws -> LoginResult
+    func login(
+        email: String,
+        oneTimePassword: String,
+        basketToken: String?,
+        notificationDeviceToken: String?
+    ) async throws -> LoginResult
     func login(
         appleSignInToken: String,
         username: String?,
         firstname: String?,
         lastname: String?,
         basketToken: String?,
+        notificationDeviceToken: String?,
         registeringFromScreen: RegisteringFromScreenType
     ) async throws -> LoginResult
-    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult
-    func login(googleAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult
+    func login(
+        facebookAccessToken: String,
+        basketToken: String?,
+        notificationDeviceToken: String?,
+        registeringFromScreen: RegisteringFromScreenType
+    ) async throws -> LoginResult
+    func login(
+        googleAccessToken: String,
+        basketToken: String?,
+        notificationDeviceToken: String?,
+        registeringFromScreen: RegisteringFromScreenType
+    ) async throws -> LoginResult
     
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
     func resetPassword(
@@ -45,7 +66,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
         marketingOptions: [UserMarketingOptionResponse]?
     ) async throws -> UserRegistrationResult
     func setToken(to: ApiAuthenticationResult)
-    func logout(basketToken: String?) -> AnyPublisher<Bool, Error>
+    func logout(basketToken: String?, notificationDeviceToken: String?) -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error>
     func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
@@ -91,7 +112,12 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func login(email: String, password: String, basketToken: String?) async throws -> LoginResult {
+    func login(
+        email: String,
+        password: String,
+        basketToken: String?,
+        notificationDeviceToken: String?
+    ) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
             "client_id": AppV2Constants.API.clientId,
@@ -103,8 +129,12 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let basketToken = basketToken {
+        if let basketToken {
             parameters["basketToken"] = basketToken
+        }
+        if let notificationDeviceToken {
+            parameters["platform"] = AppV2Constants.Client.platform
+            parameters["messagingDeviceId"] = notificationDeviceToken
         }
         
         return try await call(endpoint: API.login(parameters)).singleOutput()
@@ -116,6 +146,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         firstname: String?,
         lastname: String?,
         basketToken: String?,
+        notificationDeviceToken: String?,
         registeringFromScreen: RegisteringFromScreenType
     ) async throws -> LoginResult {
         // required parameters
@@ -131,23 +162,32 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let username = username {
+        if let username {
             parameters["username"] = username
         }
-        if let firstname = firstname {
+        if let firstname {
             parameters["firstname"] = firstname
         }
-        if let lastname = lastname {
+        if let lastname {
             parameters["lastname"] = lastname
         }
-        if let basketToken = basketToken {
+        if let basketToken {
             parameters["basketToken"] = basketToken
+        }
+        if let notificationDeviceToken {
+            parameters["platform"] = AppV2Constants.Client.platform
+            parameters["messagingDeviceId"] = notificationDeviceToken
         }
         
         return try await call(endpoint: API.login(parameters)).singleOutput()
     }
     
-    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
+    func login(
+        facebookAccessToken: String,
+        basketToken: String?,
+        notificationDeviceToken: String?,
+        registeringFromScreen: RegisteringFromScreenType
+    ) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
             "client_id": AppV2Constants.API.clientId,
@@ -161,14 +201,23 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let basketToken = basketToken {
+        if let basketToken {
             parameters["basketToken"] = basketToken
+        }
+        if let notificationDeviceToken {
+            parameters["platform"] = AppV2Constants.Client.platform
+            parameters["messagingDeviceId"] = notificationDeviceToken
         }
         
         return try await call(endpoint: API.login(parameters)).singleOutput()
     }
     
-    func login(googleAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
+    func login(
+        googleAccessToken: String,
+        basketToken: String?,
+        notificationDeviceToken: String?,
+        registeringFromScreen: RegisteringFromScreenType
+    ) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
             "client_id": AppV2Constants.API.clientId,
@@ -182,14 +231,23 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let basketToken = basketToken {
+        if let basketToken {
             parameters["basketToken"] = basketToken
+        }
+        if let notificationDeviceToken {
+            parameters["platform"] = AppV2Constants.Client.platform
+            parameters["messagingDeviceId"] = notificationDeviceToken
         }
         
         return try await call(endpoint: API.login(parameters)).singleOutput()
     }
     
-    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> LoginResult {
+    func login(
+        email: String,
+        oneTimePassword: String,
+        basketToken: String?,
+        notificationDeviceToken: String?
+    ) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
             "client_id": AppV2Constants.API.clientId,
@@ -203,8 +261,12 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let basketToken = basketToken {
+        if let basketToken {
             parameters["basketToken"] = basketToken
+        }
+        if let notificationDeviceToken {
+            parameters["platform"] = AppV2Constants.Client.platform
+            parameters["messagingDeviceId"] = notificationDeviceToken
         }
 
         return try await call(endpoint: API.login(parameters)).singleOutput()
@@ -251,10 +313,10 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let resetToken = resetToken {
+        if let resetToken {
             parameters["resetToken"] = resetToken
         }
-        if let currentPassword = currentPassword {
+        if let currentPassword {
             parameters["currentPassword"] = currentPassword
         }
         
@@ -378,12 +440,16 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return networkHandler.setAccessToken(to: token)
     }
     
-    func logout(basketToken: String?) -> AnyPublisher<Bool, Error> {
+    func logout(basketToken: String?, notificationDeviceToken: String?) -> AnyPublisher<Bool, Error> {
 
         var parameters: [String: Any] = [:]
         // optional paramters
-        if let basketToken = basketToken {
+        if let basketToken {
             parameters["basketToken"] = basketToken
+        }
+        if let notificationDeviceToken {
+            parameters["platform"] = AppV2Constants.Client.platform
+            parameters["messagingDeviceId"] = notificationDeviceToken
         }
         
         return networkHandler.signOut(
@@ -592,7 +658,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let basketToken = basketToken {
+        if let basketToken {
             parameters["basketToken"] = basketToken
         }
         return try await call(endpoint: API.updateMarketingOptions(parameters as [String : Any])).singleOutput()
@@ -648,7 +714,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramter
-        if let token = token {
+        if let token {
             parameters["sessionToken"] = token
         }
         

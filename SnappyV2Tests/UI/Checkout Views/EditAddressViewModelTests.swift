@@ -217,7 +217,7 @@ class EditAddressViewModelTests: XCTestCase {
         }
     }
     
-    func test_whenSetAddressCalled_givenAddressTypeIsBillingAndBillingSameAsDeliveryIsFalse_thenSetBilling() async {
+    func test_whenSetAddressCalled_givenAddressTypeIsBillingAndBillingSameAsDeliveryIsFalse_thenSetBillingAndTriggerEvent() async {
         let country = AddressSelectionCountry(countryCode: "UK", countryName: "United Kingdom", billingEnabled: true, fulfilmentEnabled: true)
         
         let basketAddressRequest = BasketAddressRequest(
@@ -235,7 +235,11 @@ class EditAddressViewModelTests: XCTestCase {
             county: "Surrey",
             location: nil)
         
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setBillingAddress(address: basketAddressRequest)]))
+        
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .viewScreen(.in, .billingDetails), with: .firebaseAnalytics, params: [:])
+        ])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(basketService: [.setBillingAddress(address: basketAddressRequest)]))
         
         container.appState.value.userData.basket = Basket.mockedData
         
@@ -253,8 +257,8 @@ class EditAddressViewModelTests: XCTestCase {
         do {
             try await sut.setAddress(email: "test@test.com", phone: "02929292929")
             container.services.verify(as: .basket)
+            eventLogger.verify()
         } catch {
-            
             XCTFail(error.localizedDescription)
         }
     }

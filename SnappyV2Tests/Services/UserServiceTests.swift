@@ -56,7 +56,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
     
     // MARK: - func login(email:password:)
     
-    func test_successfulLoginByEmailPassword_whenNotAtCheckout_thenNotAtCheckoutEvents() async throws {
+    func test_successfulLoginByEmailPassword_whenNotAtCheckoutAndDeviceTokenEstablished_thenNotAtCheckoutEvents() async throws {
 
         let atCheckout = false
         let loginData = LoginResult.mockedSuccessDataWithoutRegistering
@@ -64,10 +64,11 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
 
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "h.dover@gmail.com", password: "password321!", basketToken: nil),
+            .login(email: "h.dover@gmail.com", password: "password321!", basketToken: nil, notificationDeviceToken: appState.value.system.notificationDeviceToken),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
@@ -100,18 +101,19 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         self.mockedEventLogger.verify()
     }
     
-    func test_successfulLoginByEmailPassword_whenAtCheckout_thenAtCheckoutEvents() async throws {
+    func test_successfulLoginByEmailPassword_whenAtCheckoutAndDeviceTokenNotEstablished_thenAtCheckoutEvents() async throws {
 
         let atCheckout = true
         let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
+        appState.value.system.notificationDeviceToken = nil
 
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "h.dover@gmail.com", password: "password321!", basketToken: nil),
+            .login(email: "h.dover@gmail.com", password: "password321!", basketToken: nil, notificationDeviceToken: nil),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
@@ -158,7 +160,8 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .login(
                 email: "h.dover@gmail.com",
                 password: "password321!",
-                basketToken: appState.value.userData.basket?.basketToken
+                basketToken: appState.value.userData.basket?.basketToken,
+                notificationDeviceToken: nil
             ),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
@@ -200,7 +203,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "failme@gmail.com", password: "password321!", basketToken: nil),
+            .login(email: "failme@gmail.com", password: "password321!", basketToken: nil, notificationDeviceToken: nil),
         ])
         
         // Configuring responses from repositories
@@ -227,17 +230,18 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
     
     // MARK: - func login(email: String, oneTimePassword: String) async throws -> Void
     
-    func test_successfulLoginByEmailOneTimePassword_whenNotAtCheckout_thenNotAtCheckoutEvents() async {
+    func test_successfulLoginByEmailOneTimePassword_whenNotAtCheckoutAndDeviceTokenEstablished_thenNotAtCheckoutEvents() async {
         let atCheckout = false
         let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", basketToken: nil),
+            .login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", basketToken: nil, notificationDeviceToken: appState.value.system.notificationDeviceToken),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
@@ -270,7 +274,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         self.mockedEventLogger.verify()
     }
     
-    func test_successfulLoginByEmailOneTimePassword_whenAtCheckout_thenAtCheckoutEvents() async {
+    func test_successfulLoginByEmailOneTimePassword_whenAtCheckoutAndDeviceTokenNotEstablished_thenAtCheckoutEvents() async {
         let atCheckout = true
         let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
@@ -280,7 +284,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", basketToken: nil),
+            .login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", basketToken: nil, notificationDeviceToken: nil),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
@@ -327,7 +331,8 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
             .login(
                 email: "h.dover@gmail.com",
                 oneTimePassword: "6B9A83",
-                basketToken: appState.value.userData.basket?.basketToken
+                basketToken: appState.value.userData.basket?.basketToken,
+                notificationDeviceToken: nil
             ),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
@@ -370,7 +375,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "failme@gmail.com", oneTimePassword: "6B9A83", basketToken: nil),
+            .login(email: "failme@gmail.com", oneTimePassword: "6B9A83", basketToken: nil, notificationDeviceToken: nil),
         ])
         
         // Configuring responses from repositories
@@ -543,6 +548,8 @@ final class ResetPasswordTests: UserServiceTests {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
+        
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
             .resetPassword(
@@ -551,7 +558,7 @@ final class ResetPasswordTests: UserServiceTests {
                 password: "password1",
                 currentPassword: nil
             ),
-            .login(email: "kevin.palser@gmail.com", password: "password1", basketToken: nil),
+            .login(email: "kevin.palser@gmail.com", password: "password1", basketToken: nil, notificationDeviceToken: appState.value.system.notificationDeviceToken),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
@@ -744,7 +751,7 @@ final class RegisterTests: UserServiceTests {
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .login(email: memberRequest.emailAddress, password: "password", basketToken: nil),
+            .login(email: memberRequest.emailAddress, password: "password", basketToken: nil, notificationDeviceToken: nil),
             .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
@@ -796,7 +803,7 @@ final class RegisterTests: UserServiceTests {
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .login(email: memberRequest.emailAddress, password: "password", basketToken: nil)
+            .login(email: memberRequest.emailAddress, password: "password", basketToken: nil, notificationDeviceToken: nil)
         ])
         
         // Configuring responses from repositories
@@ -846,13 +853,15 @@ final class LogoutTests: UserServiceTests {
     
     // MARK: - func logout()
     
-    func test_successfulLogout() async {
+    func test_successfulLogout_whenDeviceTokenEstablished() async {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
+        
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .logout(basketToken: nil)
+            .logout(basketToken: nil, notificationDeviceToken: appState.value.system.notificationDeviceToken)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,
@@ -877,7 +886,7 @@ final class LogoutTests: UserServiceTests {
         }
     }
     
-    func test_successfulLogout_whenBasketSet() async {
+    func test_successfulLogout_whenBasketSetAndDeviceTokenNoteEstablished() async {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
@@ -885,7 +894,7 @@ final class LogoutTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .logout(basketToken: appState.value.userData.basket?.basketToken)
+            .logout(basketToken: appState.value.userData.basket?.basketToken, notificationDeviceToken: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,

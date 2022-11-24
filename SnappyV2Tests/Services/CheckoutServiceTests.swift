@@ -91,6 +91,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         // Configuring app prexisting states
         appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
@@ -99,7 +100,8 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .cash,
-                storeId: RetailStoreDetails.mockedData.id
+                storeId: RetailStoreDetails.mockedData.id,
+                notificationDeviceToken: appState.value.system.notificationDeviceToken
             )
         ])
         
@@ -204,13 +206,14 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         wait(for: [exp], timeout: 2)
     }
     
-    func test_successfulCreateDraftOrder_whenCashOrder_thenDraftOrderWithBusinessOrderId() {
+    func test_successfulCreateDraftOrder_whenCashOrderAndNoDeviceToken_thenDraftOrderWithBusinessOrderId() {
         let draftOrderResult = DraftOrderResult.mockedCashData
         let basket = Basket.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        appState.value.system.notificationDeviceToken = nil
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
@@ -219,7 +222,8 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .cash,
-                storeId: RetailStoreDetails.mockedData.id
+                storeId: RetailStoreDetails.mockedData.id,
+                notificationDeviceToken: nil
             )
         ])
         
@@ -474,6 +478,7 @@ final class GetRealexHPPProducerDataTests: CheckoutServiceTests {
         // Configuring app prexisting states
         appState.value.userData.basket = Basket.mockedData
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
@@ -482,7 +487,8 @@ final class GetRealexHPPProducerDataTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .realex,
-                storeId: RetailStoreDetails.mockedData.id
+                storeId: RetailStoreDetails.mockedData.id,
+                notificationDeviceToken: appState.value.system.notificationDeviceToken
             ),
             .getRealexHPPProducerData(orderId: draftOrderResult.draftOrderId)
         ])
@@ -572,6 +578,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         // Configuring app prexisting states
         appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
@@ -580,7 +587,8 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .realex,
-                storeId: RetailStoreDetails.mockedData.id
+                storeId: RetailStoreDetails.mockedData.id,
+                notificationDeviceToken: appState.value.system.notificationDeviceToken
             ),
             .processRealexHPPConsumerData(
                 orderId: draftOrderResult.draftOrderId,
@@ -758,10 +766,11 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         // Configuring app prexisting states
         appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(selectedStore)
+        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: appState.value.system.notificationDeviceToken),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .applepay, paymentMethod: "apple_pay", token: "TOKEN", cardId: nil, cvv: nil)
         ])
         
@@ -857,7 +866,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .applepay, paymentMethod: "apple_pay", token: "TOKEN", cardId: nil, cvv: nil)
         ])
         
@@ -952,7 +961,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .applepay, paymentMethod: "apple_pay", token: "TOKEN", cardId: nil, cvv: nil)
         ])
         
@@ -992,7 +1001,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .token, paymentMethod: "card", token: "SomeToken", cardId: nil, cvv: nil)
         ])
         
@@ -1096,7 +1105,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .token, paymentMethod: "card", token: "SomeToken", cardId: nil, cvv: nil)
         ])
         
@@ -1134,7 +1143,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .token, paymentMethod: "card", token: "SomeToken", cardId: nil, cvv: nil)
         ])
         
@@ -1170,7 +1179,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .token, paymentMethod: "card", token: "SomeToken", cardId: nil, cvv: nil)
         ])
         
@@ -1228,7 +1237,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id)
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil)
         ])
         
         // Configuring responses from repositories
@@ -1270,7 +1279,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .token, paymentMethod: "card", token: "SomeToken", cardId: nil, cvv: nil)
         ])
         
@@ -1310,7 +1319,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .id, paymentMethod: "card", token: nil, cardId: memberCard.id, cvv: 100)
         ])
         
@@ -1414,7 +1423,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .id, paymentMethod: "card", token: nil, cardId: memberCard.id, cvv: 100)
         ])
         
@@ -1452,7 +1461,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .id, paymentMethod: "card", token: nil, cardId: memberCard.id, cvv: 100)
         ])
         
@@ -1488,7 +1497,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .id, paymentMethod: "card", token: nil, cardId: memberCard.id, cvv: 100)
         ])
         
@@ -1547,7 +1556,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .id, paymentMethod: "card", token: nil, cardId: memberCard.id, cvv: 100)
         ])
         
@@ -1591,7 +1600,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id, notificationDeviceToken: nil),
             .makePayment(orderId: draftOrderResult.draftOrderId, type: .id, paymentMethod: "card", token: nil, cardId: memberCard.id, cvv: 100)
         ])
         
@@ -1769,7 +1778,8 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .realex,
-                storeId: RetailStoreDetails.mockedData.id
+                storeId: RetailStoreDetails.mockedData.id,
+                notificationDeviceToken: nil
             ),
             .confirmPayment(orderId: draftOrderResult.draftOrderId)
         ])
@@ -2072,6 +2082,61 @@ final class getDriverLocationTests: CheckoutServiceTests {
         do {
             let getDriverLocationResult = try await sut.getDriverLocation(businessOrderId: 123)
             XCTFail("Unexpected result: \(getDriverLocationResult)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+
+    }
+    
+}
+
+final class getOrderTests: CheckoutServiceTests {
+    
+    // MARK: getOrder(forBusinessOrderId:withHash)
+    
+    func test_givenBusinessOrderIdAndHash_whenCallingGetOrder_thenSuccessful() async {
+        let order = PlacedOrder.mockedData
+        let hash = "bf456eaf4556adc345ea"
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getOrder(forBusinessOrderId: order.businessOrderId, withHash: hash)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getOrderResponse = .success(order)
+        
+        do {
+            let getOrderResult = try await sut.getOrder(forBusinessOrderId: order.businessOrderId, withHash: hash)
+            
+            XCTAssertEqual(getOrderResult, order, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderIdAndHash_whenCallingGetOrderAndNetworkError_thenReturnError() async {
+        let hash = "bf456eaf4556adc345ea"
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getOrder(forBusinessOrderId: 123, withHash: hash)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getOrderResponse = .failure(networkError)
+        
+        do {
+            let getOrderResult = try await sut.getOrder(forBusinessOrderId: 123, withHash: hash)
+            XCTFail("Unexpected result: \(getOrderResult)", file: #file, line: #line)
         } catch {
             XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
             mockedWebRepo.verify()

@@ -42,6 +42,8 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.missedOfferMenus.isEmpty)
         XCTAssertTrue(sut.showStandardView)
         XCTAssertFalse(sut.showCaloriesSort)
+        XCTAssertFalse(sut.showRootCategoriesCarousel)
+        XCTAssertTrue(sut.showToolbarCategoryMenu)
     }
     
     func test_whenSpecialsArePopulated_thenViewStateIsOffers() {
@@ -874,13 +876,17 @@ class ProductsViewModelTests: XCTestCase {
         let sut = makeSUT()
         let item1 = RetailStoreMenuItem.mockedData
         let item2 = RetailStoreMenuItem.mockedDataComplex
+        let itemA = RetailStoreMenuItem.mockedDataWithNoCaloriesA
+        let itemB = RetailStoreMenuItem.mockedDataWithNoCaloriesB
         
-        sut.unsortedItems = [item1, item2]
+        sut.unsortedItems = [item1, itemB, itemA, item2]
         
         sut.sort(by: .caloriesLowToHigh)
         
         XCTAssertEqual(sut.sortedItems[0], item2)
         XCTAssertEqual(sut.sortedItems[1], item1)
+        XCTAssertEqual(sut.sortedItems[2], itemA)
+        XCTAssertEqual(sut.sortedItems[3], itemB)
     }
     
     func test_whenSortByDefaultSelected_thenItemsInCorrectOrderAndSortedItemsIsEmpty() {
@@ -992,6 +998,15 @@ class ProductsViewModelTests: XCTestCase {
         sut.unsortedItems = [RetailStoreMenuItem.mockedData]
         
         XCTAssertTrue(sut.showCaloriesSort)
+    }
+    
+    func test_givenShowDropdownCategoryMenuIsFalse_whenInit_thenShowToolbarCategoryMenuIsFalseAndShowRootCategoriesCarouselIsTrue() {
+        let sut = makeSUT()
+        
+        sut.container.appState.value.storeMenu.showDropdownCategoryMenu = false
+        
+        XCTAssertTrue(sut.showRootCategoriesCarousel)
+        XCTAssertFalse(sut.showToolbarCategoryMenu)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {

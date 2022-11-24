@@ -670,6 +670,7 @@
 "pushnotifications.incomingview.title" = "Message";
 "pushnotifications.incomingview.openlink" = "Open Link";
 "pushnotifications.incomingview.call" = "Call";
+"pushnotifications.incomingview.viewupdatedorder" = "View Updated Order";
 
 // MARK: - Push Notification Settings
 "settings.pushnotifications.title" = "Push Notifications";
@@ -682,7 +683,6 @@
 "storereview.negativecommentsplaceholder" = "Please explain how this %@ should improve its service.";
 "storereview.commentrequired" = "Please enter a comment to continue.";
 "storereview.submittedtitle" = "Review Submitted";
-"storereview.submittedmessage" = "Thank you for sparing time to submit your review.";
 "storereview.missingrating" = "Select the star rating above to continue.";
 "storereview.missingcomment" = "To continue add some information to help improve the service.";
 

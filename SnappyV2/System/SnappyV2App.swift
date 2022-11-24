@@ -49,6 +49,7 @@ struct SnappyV2StudyApp: View {
     @State private var closeRetailStoreReviewView: (()->())? = nil
     @State private var closeVerifyMobileNumberView: (()->())? = nil
     @State private var closeDriverMapView: (()->())? = nil
+    @State private var closeOrderDetailView: (()->())? = nil
     
     init(viewModel: SnappyV2AppViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
@@ -87,9 +88,9 @@ struct SnappyV2StudyApp: View {
         )
         
         closePushNotificationsEnablePromptView = {
-            popup.dismiss(animated: true) {
-                closePushNotificationsEnablePromptView = nil
-            }
+            // outside of dismiss closure below to avoid strong retention memory leak
+            closePushNotificationsEnablePromptView = nil
+            popup.dismiss(animated: true) { }
         }
     }
     
@@ -108,8 +109,8 @@ struct SnappyV2StudyApp: View {
                 viewModel: .init(
                     container: viewModel.container,
                     notification: pushNotification,
-                    dismissPushNotificationViewHandler: {
-                        viewModel.dismissNotificationView()
+                    dismissPushNotificationViewHandler: { displayAction in
+                        viewModel.dismissNotificationView(withAction: displayAction)
                         closePushNotificationView?(nil)
                     }
                 )
@@ -127,13 +128,65 @@ struct SnappyV2StudyApp: View {
         )
         
         closePushNotificationView = { pushNotification in
+            // outside of dismiss closure below to avoid strong retention memory leak
+            closePushNotificationView = nil
             popup.dismiss(animated: true) {
-                closePushNotificationView = nil
+                viewModel.pushNotificationViewDismissed()
                 // recursively present the next notification
                 if let pushNotification = pushNotification {
                     showPushNotification(pushNotification)
                 }
             }
+        }
+    }
+    
+    private func showOrder(_ order: PlacedOrder) {
+        
+        if let closeOrderDetailView = closeOrderDetailView {
+            closeOrderDetailView()
+            return
+        }
+        
+        guard let rootViewController = UIApplication.topViewController() else { return }
+        
+        let popup = UIHostingController(
+            rootView: OrderDetailsView(
+                viewModel: .init(
+                    container: viewModel.container,
+                    order: order,
+                    showTrackOrderButton: false
+                ) {
+                    closeOrderDetailView?()
+                }
+            )
+            .navigationViewStyle(.stack)
+        )
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // Using .popover causes problems for iPads even when supplying the sourceView
+            // as rootViewController.view
+            popup.modalPresentationStyle = .overCurrentContext
+        } else {
+            popup.modalPresentationStyle = .popover
+            // Disable the swip down to dismiss because we cannot detect and set
+            // closeOrderDetailView to nil. Tried various strategies such as using the
+            // OrderDetailsViewModel deinit to clear closeOrderDetailView but it is never
+            // reached because of the popup reference in the closeOrderDetailView closure
+            popup.isModalInPresentation = true
+        }
+        
+        rootViewController.present(
+            popup,
+            animated: true,
+            completion: {
+                viewModel.orderViewShown()
+            }
+        )
+        
+        closeOrderDetailView = {
+            // outside of dismiss closure below to avoid strong retention memory leak
+            closeOrderDetailView = nil
+            popup.dismiss(animated: true) { }
         }
     }
     
@@ -151,8 +204,8 @@ struct SnappyV2StudyApp: View {
                 viewModel: StoreReviewViewModel(
                     container: viewModel.container,
                     review: review,
-                    dismissStoreReviewViewHandler: { reviewSent in
-                        viewModel.dismissRetailStoreReviewView(reviewSent: reviewSent)
+                    dismissStoreReviewViewHandler: { reviewSentMessage in
+                        viewModel.dismissRetailStoreReviewView(reviewSentMessage: reviewSentMessage)
                         closeRetailStoreReviewView?()
                     }
                 )
@@ -170,9 +223,9 @@ struct SnappyV2StudyApp: View {
         )
         
         closeRetailStoreReviewView = {
-            popup.dismiss(animated: true) {
-                closeRetailStoreReviewView = nil
-            }
+            // outside of dismiss closure below to avoid strong retention memory leak
+            closeRetailStoreReviewView = nil
+            popup.dismiss(animated: true) { }
         }
     }
     
@@ -206,9 +259,9 @@ struct SnappyV2StudyApp: View {
         )
         
         closeVerifyMobileNumberView = {
-            popup.dismiss(animated: true) {
-                closeVerifyMobileNumberView = nil
-            }
+            // outside of dismiss closure below to avoid strong retention memory leak
+            closeVerifyMobileNumberView = nil
+            popup.dismiss(animated: true) { }
         }
     }
     
@@ -253,9 +306,9 @@ struct SnappyV2StudyApp: View {
         )
         
         closeDriverMapView = {
-            popup.dismiss(animated: true) {
-                closeDriverMapView = nil
-            }
+            // outside of dismiss closure below to avoid strong retention memory leak
+            closeDriverMapView = nil
+            popup.dismiss(animated: true) { }
         }
     }
     
@@ -290,8 +343,13 @@ struct SnappyV2StudyApp: View {
             // the number of locations is so numerous that it significantly complicates the
             // app. E.g. Push notification enable prompt
         }
+        .onChange(of: viewModel.showOrder) { order in
+            if let order {
+                showOrder(order)
+            }
+        }
         .onChange(of: viewModel.storeReview) { storeReview in
-            if let storeReview = storeReview {
+            if let storeReview {
                 showStoreReview(storeReview)
             }
         }
@@ -301,12 +359,12 @@ struct SnappyV2StudyApp: View {
             }
         }
         .onChange(of: viewModel.pushNotification) { pushNotification in
-            if let pushNotification = pushNotification {
+            if let pushNotification {
                 showPushNotification(pushNotification)
             }
         }
         .onChange(of: viewModel.urlToOpen) { url in
-            if let url = url {
+            if let url {
                 openURL(url) { _ in
                     viewModel.urlToOpenAttempted()
                 }
@@ -318,7 +376,7 @@ struct SnappyV2StudyApp: View {
             }
         }
         .onChange(of: viewModel.driverMapParameters) { driverMapParameters in
-            if let driverMapParameters = driverMapParameters {
+            if let driverMapParameters {
                 showDriverMapView(driverMapParameters)
             }
         }

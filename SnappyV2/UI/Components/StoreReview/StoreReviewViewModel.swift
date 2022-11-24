@@ -12,7 +12,7 @@ import CoreGraphics
 @MainActor
 class StoreReviewViewModel: ObservableObject {
     let container: DIContainer
-    let dismissStoreReviewViewHandler: (Bool) -> ()
+    let dismissStoreReviewViewHandler: (String?) -> ()
     let review: RetailStoreReview
     
     @Published var rating = 0
@@ -34,7 +34,7 @@ class StoreReviewViewModel: ObservableObject {
     private(set) var showTelephoneNumber = ""
     private var cancellables = Set<AnyCancellable>()
 
-    init(container: DIContainer, review: RetailStoreReview, dismissStoreReviewViewHandler: @escaping (Bool)->()) {
+    init(container: DIContainer, review: RetailStoreReview, dismissStoreReviewViewHandler: @escaping (String?)->()) {
         self.container = container
         self.review = review
         self.dismissStoreReviewViewHandler = dismissStoreReviewViewHandler
@@ -79,7 +79,7 @@ class StoreReviewViewModel: ObservableObject {
     }
     
     func tappedClose() {
-        dismissStoreReviewViewHandler(false)
+        dismissStoreReviewViewHandler(nil)
     }
     
     func tappedSubmitReview() async {
@@ -92,12 +92,12 @@ class StoreReviewViewModel: ObservableObject {
         submittingReview = true
         
         do {
-            try await container.services.retailStoresService.sendReview(
+            let successMessage = try await container.services.retailStoresService.sendReview(
                 for: review,
                 rating: rating,
                 comments: trimmedComments
             )
-            dismissStoreReviewViewHandler(true)
+            dismissStoreReviewViewHandler(successMessage)
         } catch {
             submittingReview = false
             self.container.appState.value.errors.append(error)

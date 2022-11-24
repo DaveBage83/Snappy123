@@ -16,6 +16,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     var processSavedCardPaymentOrderResult: (Int?, CheckoutCom3DSURLs?) = (nil, nil)
     var processApplePaymentOrderResult: Result<Int?, Error> = .failure(MockError.valueNotSet)
     var driverLocationResult: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
+    var getOrderResult: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
     
     enum Action: Equatable {
         case currentDraftOrderId
@@ -37,6 +38,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case getLastDeliveryOrderDriverLocation
         case clearLastDeliveryOrderOnDevice
         case lastBusinessOrderIdInCurrentSession
+        case getOrder(forBusinessOrderId: Int, withHash: String)
         case addTestLastDeliveryOrderDriverLocation
         
         // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
@@ -99,6 +101,11 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 
             case (.lastBusinessOrderIdInCurrentSession, .lastBusinessOrderIdInCurrentSession):
                 return true
+                
+            case (
+                let .getOrder(forBusinessOrderId: lhsBusinessOrderId, withHash: lhsHash),
+                let .getOrder(forBusinessOrderId: rhsBusinessOrderId, withHash: rhsHash)):
+                return lhsBusinessOrderId == rhsBusinessOrderId && lhsHash == rhsHash
                 
             case (.addTestLastDeliveryOrderDriverLocation, .addTestLastDeliveryOrderDriverLocation):
                 return true
@@ -248,6 +255,16 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     func lastBusinessOrderIdInCurrentSession() -> Int? {
         register(.lastBusinessOrderIdInCurrentSession)
         return nil
+    }
+    
+    func getOrder(forBusinessOrderId businessOrderId: Int, withHash hash: String) async throws -> SnappyV2.PlacedOrder {
+        register(.getOrder(forBusinessOrderId: businessOrderId, withHash: hash))
+        switch getOrderResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
     func addTestLastDeliveryOrderDriverLocation() async throws {

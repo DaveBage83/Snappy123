@@ -111,7 +111,7 @@ struct UserMarketingOptionsUpdateResponse: Codable, Equatable {
 }
 
 struct PlacedOrder: Codable, Equatable, Identifiable {
-    let id: Int // draft order ID
+    let id: Int // draft/record order ID
     let businessOrderId: Int
     let status: String // Displayable localised text
     let statusText: String // Enumations for actions

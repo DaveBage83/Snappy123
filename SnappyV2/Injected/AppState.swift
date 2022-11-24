@@ -49,6 +49,7 @@ extension AppState {
         var urlToOpen: URL?
         var showVerifyMobileView = false
         var displayedDriverLocation: DriverLocationMapParameters?
+        var showOrder: PlacedOrder?
     }
 }
 

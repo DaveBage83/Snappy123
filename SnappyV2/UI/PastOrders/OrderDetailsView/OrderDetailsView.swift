@@ -99,7 +99,7 @@ struct OrderDetailsView: View {
             }
             .background(colorPalette.backgroundMain)
             .edgesIgnoringSafeArea(.bottom)
-            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.PlacedOrders.OrderDetailsView.title.localized, navigationDismissType: .close, backButtonAction: nil)
+            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.PlacedOrders.OrderDetailsView.title.localized, navigationDismissType: .close, backButtonAction: viewModel.dismissViewHandler)
         }
         .onAppear {
             viewModel.onAppearSendEvent()

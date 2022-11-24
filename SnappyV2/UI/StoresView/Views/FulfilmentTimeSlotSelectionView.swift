@@ -51,6 +51,10 @@ struct FulfilmentTimeSlotSelectionView: View {
         struct NoSlots {
             static let spacing: CGFloat = 10
         }
+        
+        struct FulfilmentIcon {
+            static let height: CGFloat = 40
+        }
     }
     
     // MARK: - View model
@@ -93,6 +97,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                                 .renderingMode(.template)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
+                                .frame(height: Constants.FulfilmentIcon.height)
                                 .foregroundColor(colorPalette.primaryBlue)
                                 .padding()
                                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
@@ -148,6 +153,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
+                .frame(height: Constants.FulfilmentIcon.height)
                 .foregroundColor(colorPalette.primaryBlue)
                 .padding(Constants.messagePadding)
                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)

@@ -30,6 +30,8 @@ struct LoginView: View {
             static let topPadding: CGFloat = 50
             static let largeDeviceTopPadding: CGFloat = 200
             static let hPadding: CGFloat = 16
+            static let blurred: CGFloat = 20
+            static let notBlurred: CGFloat = 0
         }
     }
     
@@ -81,14 +83,14 @@ struct LoginView: View {
                 }
                 .padding()
                 .background(colorPalette.backgroundMain)
-                .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? 20:0)
+                .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? Constants.LoginStack.blurred : Constants.LoginStack.notBlurred)
             } else {
                 CardOnBackgroundImageViewContainer(
                     container: viewModel.container,
                     image: Image.Branding.StockPhotos.deliveryMan) {
                         loginView
                     }
-                    .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? 20:0)
+                    .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? Constants.LoginStack.blurred : Constants.LoginStack.notBlurred)
             }
             
             if viewModel.isLoading || socialLoginViewModel.isLoading {

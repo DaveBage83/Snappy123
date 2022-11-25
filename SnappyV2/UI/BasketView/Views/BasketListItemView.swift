@@ -108,14 +108,8 @@ struct BasketListItemView: View {
     }
     
     private var itemImage: some View {
-        AsyncImage(urlString: viewModel.item.menuItem.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-            Image.Placeholders.productPlaceholder
-                .resizable()
-                .scaledToFit()
-                .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
-                .cornerRadius(Constants.ItemImage.cornerRadius)
-        })
-        .basketAndPastOrderImage(container: viewModel.container)
+        AsyncImage(container: viewModel.container, urlString: viewModel.item.menuItem.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+            .basketAndPastOrderImage(container: viewModel.container)
     }
     
     @ViewBuilder func OptionsTexts() -> some View {

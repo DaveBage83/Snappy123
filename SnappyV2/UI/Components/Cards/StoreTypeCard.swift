@@ -54,14 +54,9 @@ struct StoreTypeCard: View {
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            AsyncImage(urlString: storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                Image.Placeholders.productPlaceholder
-                    .resizable()
-                    .scaledToFill()
-                    .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
-                    .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
-                    .opacity(active ? 1 : Constants.deSelectedOpacity)
-            })
+            AsyncImage(
+                container: viewModel.container,
+                urlString: storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
             .scaledToFit()
             .frame(height: Constants.height)
             .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])

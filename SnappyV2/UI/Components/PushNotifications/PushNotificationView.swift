@@ -51,14 +51,8 @@ struct PushNotificationView: View {
                         .frame(maxWidth: .infinity)
                     
                     if let imageURL = viewModel.notification.image {
-                        AsyncImage(
-                            urlString: imageURL.absoluteString,
-                            placeholder: {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
-                            }
-                        )
-                        .scaledToFit()
+                        AsyncImage(container: viewModel.container, urlString: imageURL.absoluteString)
+                            .scaledToFit()
                     }
                     
                     Text(viewModel.notification.message)

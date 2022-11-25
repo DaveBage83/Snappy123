@@ -29,7 +29,31 @@ struct StoreCardInfoView: View {
         struct General {
             static let minimalLayoutThreshold: Int = 7
             static let spacing: CGFloat = 24
-            static let minPadding: CGFloat = 1
+            static let minFontScale: CGFloat = 0.6
+            static let maxPadding: CGFloat = 12
+            static let minPadding: CGFloat = 5
+        }
+        
+        struct Icons {
+            static let width: CGFloat = 18
+            static let spacing: CGFloat = 4
+        }
+        
+        struct IconInfoStacks {
+            static let spacing: CGFloat = 2
+            static let maxWidthMultiplier: CGFloat = 0.33
+        }
+        
+        struct FreeDeliveryPill {
+            static let spacing: CGFloat = 4
+            static let iconFrameWidth: CGFloat = 11
+            static let vPadding: CGFloat = 4
+            static let hPadding: CGFloat = 8
+        }
+        
+        struct DeliveryFee {
+            static let iconFrameWidth: CGFloat = 16
+            static let spacing: CGFloat = 2
         }
     }
     
@@ -48,18 +72,10 @@ struct StoreCardInfoView: View {
     
     // MARK: - Main view
     var body: some View {
-        if viewModel.showDeliveryOfferIfApplicable {
-            mainBody
-                .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: false)
-                .background(colorPalette.secondaryWhite)
-                .standardCardFormat()
-                .withLoadingToast(loading: $isLoading)
-        } else {
-            mainBody
-                .background(colorPalette.secondaryWhite)
-                .standardCardFormat()
-                .withLoadingToast(loading: $isLoading)
-        }
+        mainBody
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
+            .withLoadingToast(loading: $isLoading)
     }
     
     private var mainBody: some View {
@@ -74,42 +90,104 @@ struct StoreCardInfoView: View {
                         .font(.Body1.semiBold())
                         .foregroundColor(colorPalette.typefacePrimary)
                     
-                    HStack(alignment: .top, spacing: Constants.General.spacing) {
-                        deliveryTime
+                    HStack(spacing: Constants.IconInfoStacks.spacing) {
+                        HStack {
+                            deliveryTime
+                            Spacer()
+                        }
+                        .frame(maxWidth: mainWindowSize.width * Constants.IconInfoStacks.maxWidthMultiplier)
                         
-                        Spacer()
-                        
-                        distance
+                        HStack {
+                            distance
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
                     }
-                    .font(.snappyFootnote)
-                    .padding(.vertical, Constants.General.minPadding)
                     
-                    if let fromDeliveryCost = viewModel.orderDeliveryMethod?.fromDeliveryCost(currency: viewModel.currency), viewModel.showDeliveryCost {
-                        Text(fromDeliveryCost)
-                            .font(.Body2.semiBold())
-                            .foregroundColor(colorPalette.primaryBlue)
+                    HStack(spacing: Constants.IconInfoStacks.spacing) {
+                        HStack {
+                            minSpend
+                            Spacer()
+                        }
+                        .frame(maxWidth: mainWindowSize.width * Constants.IconInfoStacks.maxWidthMultiplier)
+
+                        if let fromDeliveryCost = viewModel.orderDeliveryMethod?.fromDeliveryCost(currency: viewModel.currency) {
+                            
+                            HStack {
+                                deliveryFee(fromDeliveryCost: fromDeliveryCost)
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                    
+                    if let deliveryOffer = viewModel.freeDeliveryText {
+                        freeDeliveryPill(deliveryOffer: deliveryOffer)
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
             }
-            .padding()
+            .padding([.leading, .vertical], Constants.General.maxPadding)
+            .padding(.trailing, Constants.General.minPadding)
             .frame(maxWidth: .infinity)
+            Spacer()
         }
+        .frame(maxHeight: .infinity)
+    }
+    
+    private func freeDeliveryPill(deliveryOffer: String) -> some View {
+        HStack(spacing: Constants.FreeDeliveryPill.spacing) {
+            Image.Icons.Tag.filled
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: Constants.FreeDeliveryPill.iconFrameWidth)
+                .foregroundColor(colorPalette.alertSuccess)
+            Text(deliveryOffer)
+        }
+        .font(.Body2.semiBold())
+        .foregroundColor(colorPalette.alertSuccess)
+        .padding(.vertical, Constants.FreeDeliveryPill.vPadding)
+        .padding(.horizontal, Constants.FreeDeliveryPill.hPadding)
+        .background(Color.white)
+        .standardPillFormat()
+    }
+    
+    private func deliveryFee(fromDeliveryCost: (hasTiers: Bool, text: String)) -> some View {
+        HStack(spacing: Constants.Icons.spacing) {
+            infoStackIcon(image: viewModel.showDeliveryCost ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.heavy)
+                .frame(width: Constants.Icons.width)
+            
+            HStack(spacing: Constants.DeliveryFee.spacing) {
+                if fromDeliveryCost.hasTiers, viewModel.showDeliveryCost {
+                    Text(GeneralStrings.from.localized)
+                        .font(.Caption2.bold())
+                        .foregroundColor(colorPalette.typefacePrimary)
+                }
+                Text(viewModel.showDeliveryCost ? fromDeliveryCost.text : GeneralStrings.free.localized)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.typefacePrimary)
+            }
+        }
+    }
+    
+    private func infoStackIcon(image: Image) -> some View {
+        image
+            .renderingMode(.template)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: Constants.DeliveryFee.iconFrameWidth)
+            .foregroundColor(colorPalette.primaryBlue)
     }
     
     // MARK: - Logo
     private var logo: some View {
         ZStack(alignment: .bottom) {
-            AsyncImage(urlString: viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                Image.Placeholders.productPlaceholder
-                    .resizable()
-                    .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                    .scaledToFill()
-                    .cornerRadius(Constants.Logo.cornerRadius)
-            })
-            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-            .scaledToFit()
-            .cornerRadius(Constants.Logo.cornerRadius)
+            AsyncImage(container: viewModel.container, urlString: viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                .scaledToFit()
+                .cornerRadius(Constants.Logo.cornerRadius)
             
             if let ratings = viewModel.storeDetails.ratings {
                 StoreReviewPill(container: viewModel.container, rating: ratings)
@@ -120,44 +198,45 @@ struct StoreCardInfoView: View {
     
     // MARK: - Delivery time
     private var deliveryTime: some View {
-        VStack(alignment: .leading) {
-            AdaptableText(
-                text: viewModel.fulfilmentTimeTitle,
-                altText: viewModel.fulfilmentTimeTitleShort,
-                threshold: Constants.General.minimalLayoutThreshold)
-            .font(.Caption2.semiBold())
-            .foregroundColor(viewModel.isClosed ? colorPalette.primaryRed : colorPalette.typefacePrimary)
+        HStack(spacing: Constants.Icons.spacing) {
+            infoStackIcon(image: Image.Icons.Clock.heavy)
+                .frame(width: Constants.Icons.width)
             
             if viewModel.isClosed {
                 Text(Strings.StoreInfo.Status.closed.localized)
                     .font(.Body1.semiBold())
                     .foregroundColor(colorPalette.primaryRed)
             } else {
-                Text(viewModel.fulfilmentTime)
-                    .font(.Body1.semiBold())
-                    .foregroundColor(colorPalette.typefacePrimary)
+                if let fulfilmentIn = viewModel.fulfilmentTime {
+                    Text(fulfilmentIn)
+                        .font(.Body1.semiBold())
+                        .foregroundColor(colorPalette.typefacePrimary)
+                }
             }
-            
         }
         .multilineTextAlignment(.leading)
     }
     
+    private var minSpend: some View {
+        HStack(spacing: Constants.Icons.spacing) {
+            infoStackIcon(image: Image.Icons.Basket.heavy)
+                .frame(width: Constants.Icons.width)
+            
+            Text(viewModel.minOrder)
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.typefacePrimary)
+        }
+    }
+    
     // MARK: - Distance
     private var distance: some View {
-        VStack(alignment: .leading) {
-            AdaptableText(
-                text: DeliveryStrings.distance.localized,
-                altText: DeliveryStrings.distanceShort.localized,
-                threshold: Constants.General.minimalLayoutThreshold)
-            .font(.Caption2.semiBold())
-            .foregroundColor(colorPalette.typefacePrimary)
+        HStack(spacing: Constants.Icons.spacing) {
+            infoStackIcon(image: Image.Icons.LocationDot.heavy)
+                .frame(width: Constants.Icons.width)
             
-            AdaptableText(
-                text: DeliveryStrings.Customisable.distance.localizedFormat(viewModel.distance),
-                altText: DeliveryStrings.Customisable.distanceShort.localizedFormat(viewModel.distance),
-                threshold: Constants.General.minimalLayoutThreshold)
-            .font(.Body1.semiBold())
-            .foregroundColor(colorPalette.typefacePrimary)
+            Text(DeliveryStrings.Customisable.distanceShort.localizedFormat(viewModel.distance))
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.typefacePrimary)
         }
     }
 }
@@ -165,7 +244,7 @@ struct StoreCardInfoView: View {
 #if DEBUG
 struct StoreCardInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 0.47, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "01:50 - 02:05", status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: "Free from £10", deliveryTiers: nil, freeFrom: nil, minSpend: nil)], ratings: RetailStoreRatings(averageRating: 4, numRatings: 54), currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 0.47, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "01:50 - 02:05", status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: "Free from £10", deliveryTiers: nil, freeFrom: nil, minSpend: nil)], ratings: RetailStoreRatings(averageRating: 4, numRatings: 54), currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewDevice(PreviewDevice(rawValue: "iPod touch (7th generation) (15.5)"))

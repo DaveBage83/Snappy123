@@ -75,25 +75,25 @@ extension RetailStoreOrderMethod {
     }
     
     #warning("Backend plan to change API response to always return delivery tiers. If this happens we can remove the below")
-    func fromDeliveryCost(currency: RetailStoreCurrency?) -> String? {
+    func fromDeliveryCost(currency: RetailStoreCurrency?) -> (hasTiers: Bool, text: String)? {
         guard let currency = currency else { return nil }
         // Check if there are tiers and extract lowest value one
         if let lowestTierDeliveryCost = lowestTierDeliveryCost {
             // Is there a default cost? If so, is it lower than the lowest tier cost? And is there no minSpend?
             if let cost = cost, lowestTierDeliveryCost > cost, (minSpend == nil || minSpend == 0)  {
                 // If so, we return the cost value (or a "Free delivery" String if 0)
-                return cost == 0 ? Strings.StoresView.DeliveryTiers.freeDelivery.localized : Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(cost.toCurrencyString(using: currency))
+                return cost == 0 ? (true, Strings.StoresView.DeliveryTiers.freeDelivery.localized)  : (true, cost.toCurrencyString(using: currency, roundWholeNumbers: true))
             }
             // Otherwise, return the lowest cost tier value
-            return Strings.StoresView.DeliveryTiersCustom.deliveryFrom.localizedFormat(lowestTierDeliveryCost.toCurrencyString(using: currency))
+            return (true, lowestTierDeliveryCost.toCurrencyString(using: currency, roundWholeNumbers: true))
             
         // If no tiers, check if there is a minSpend and that freeFrom is present. We also check if minSpend
         // is greater than freeFrom. If it is, return "From free" String
         } else if let minSpend = minSpend, let freeFrom = freeFrom, freeFrom > 0, minSpend >= freeFrom {
-            return Strings.StoresView.DeliveryTiers.freeDelivery.localized
+            return (false, Strings.StoresView.DeliveryTiers.freeDelivery.localized)
         // Otherwise return cost String
         } else if let cost = cost {
-            return cost == 0 ? Strings.StoresView.DeliveryTiers.freeDelivery.localized : Strings.StoresView.DeliveryTiersCustom.cost.localizedFormat(cost.toCurrencyString(using: currency))
+            return cost == 0 ? (false, Strings.StoresView.DeliveryTiers.freeDelivery.localized) : (false, cost.toCurrencyString(using: currency, roundWholeNumbers: true))
         }
         return nil
     }

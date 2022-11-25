@@ -242,7 +242,7 @@ class DeliveryBannerViewModelTests: XCTestCase {
         
         let sut = makeSUT(deliveryTierInfo: deliveryTierInfo, fromBasket: false)
         
-        let expectedString = deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)
+        let expectedString = deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)?.text
         
         XCTAssertEqual(sut.deliveryBannerText, expectedString)
         XCTAssertTrue(sut.showDeliveryBanner)
@@ -263,7 +263,7 @@ class DeliveryBannerViewModelTests: XCTestCase {
         
         let sut = makeSUT(deliveryTierInfo: deliveryTierInfo, fromBasket: false)
         
-        let expectedString = deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)
+        let expectedString = deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)?.text
         
         XCTAssertEqual(sut.deliveryBannerText, expectedString)
         XCTAssertTrue(sut.showDeliveryBanner)

@@ -45,7 +45,7 @@ class DeliveryOfferBannerViewModel: ObservableObject {
         } else if let freeFrom = freeFrom, freeFrom != 0, let tiers = deliveryTierInfo.orderMethod?.deliveryTiers, tiers.isEmpty {
             return Strings.StoresView.DeliveryTiersCustom.freeFrom.localizedFormat(freeFrom.toCurrencyString(using: currency))
         } else if deliveryTierInfo.orderMethod?.deliveryTiers != nil, deliveryTierInfo.orderMethod?.deliveryTiers?.isEmpty == false {
-            return deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)
+            return deliveryTierInfo.orderMethod?.fromDeliveryCost(currency: currency)?.text
         }
         
         return nil

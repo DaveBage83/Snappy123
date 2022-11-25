@@ -88,18 +88,7 @@ struct OrderStoreView: View {
     // MARK: - Store logo
     
     @ViewBuilder private var storeLogo: some View {
-        if let logo = viewModel.storeLogo, let imageURL = URL(string: logo) {
-            RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
-                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                .scaledToFit()
-                .cornerRadius(Constants.Logo.cornerRadius)
-        } else {
-            Image.Stores.convenience
-                .resizable()
-                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                .scaledToFit()
-                .cornerRadius(Constants.Logo.cornerRadius)
-        }
+        AsyncImage(container: viewModel.container, urlString: viewModel.storeLogo)
     }
     
     // MARK: - Store info view

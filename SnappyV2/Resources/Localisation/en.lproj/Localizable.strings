@@ -49,6 +49,8 @@
 "general.success" = "Success!";
 "general.gotit" = "Got it!";
 "general.start" = "Start";
+"general.from" = "From";
+"general.min" = "Min";
 
 // MARK: - General - custom
 
@@ -259,11 +261,12 @@
 "storesview.deliverytiers.ordervalue" = "Order Value*";
 "storesview.deliverytiers.delivery" = "Delivery";
 "storesview.deliverytiers.ordervaluecondition" = "*Excluding offers, service charges and delivery fees.";
-"storesview.deliverytiers.free" = "Free delivery";
-"storesview.deliverytiers.custom.deliveryfrom" = "From %@ delivery";
+"storesview.deliverytiers.free" = "Free";
+"storesview.deliverytiers.custom.deliveryfrom" = "From %@";
 "storesview.deliverytiers.custom.cost" = "%@ delivery";
-"storesview.deliverytiers.custom.freefrom" = "Free delivery from %@";
+"storesview.deliverytiers.custom.freefrom" = "Free from %@";
 "storesview.deliverytiers.title" = "Delivery Fees";
+"storesview.deliverytiers.nominorder" = "No min order";
 
 // MARK: - Store Info
 

@@ -74,6 +74,9 @@ extension ManagedEntity where Self: NSManagedObject {
         // Perform the fetch request
         let objects = try context.fetch(fetchRequest)
             
+        print("***** To Delete: \(objects.count)")
+
+        
         // Delete the objects
         for object in objects {
             if let mo = object as? NSManagedObject {
@@ -121,4 +124,3 @@ extension NSOrderedSet {
         array.compactMap { $0 as? T }
     }
 }
-

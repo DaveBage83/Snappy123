@@ -174,7 +174,7 @@ struct OrderDetailsView: View {
     
     private var deliveryInfoView: some View {
         HStack(spacing: Constants.DeliveryInfo.hStackSpacing) {
-            (viewModel.order.fulfilmentMethod.name == .delivery ? Image.Icons.Truck.standard : Image.Icons.BagShopping.standard)
+            (viewModel.order.fulfilmentMethod.name == .delivery ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.standard)
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()

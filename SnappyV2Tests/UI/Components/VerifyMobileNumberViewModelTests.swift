@@ -321,7 +321,7 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
             checkoutService: MockedCheckoutService(expected: []),
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )

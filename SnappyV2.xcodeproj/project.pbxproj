@@ -593,6 +593,7 @@
 		AFF90B42284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF90B41284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift */; };
 		AFF90B44284A5FDB00DD77F5 /* MockedRetailStoreMenuDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF90B43284A5FDA00DD77F5 /* MockedRetailStoreMenuDBRepository.swift */; };
 		AFFAC2292702008A00DFE9A8 /* StoresViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFAC2282702008A00DFE9A8 /* StoresViewModel.swift */; };
+		C140CB54291BBC2A0039AA65 /* AnimatedLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C140CB53291BBC2A0039AA65 /* AnimatedLoadingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1233,6 +1234,7 @@
 		AFF90B41284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoreMenuWebRepository.swift; sourceTree = "<group>"; };
 		AFF90B43284A5FDA00DD77F5 /* MockedRetailStoreMenuDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoreMenuDBRepository.swift; sourceTree = "<group>"; };
 		AFFAC2282702008A00DFE9A8 /* StoresViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresViewModel.swift; sourceTree = "<group>"; };
+		C140CB53291BBC2A0039AA65 /* AnimatedLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedLoadingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3101,6 +3103,7 @@
 				554BDD7828E4A77F006E34DB /* SettingsButton.swift */,
 				5566B0BC28F5CDA600114BBE /* ToastableViewContainer.swift */,
 				558579FE2908869C0017855B /* LoadingDotsView.swift */,
+				C140CB53291BBC2A0039AA65 /* AnimatedLoadingView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3523,6 +3526,7 @@
 				553DA367288EE17200EBEC76 /* SavedPaymentCardCard.swift in Sources */,
 				55C815E327E7E7EE0028851F /* MemberDashboardLoyaltyViewModel.swift in Sources */,
 				AF9A392E28047AB400A7B30F /* ActivityIndicator.swift in Sources */,
+				C140CB54291BBC2A0039AA65 /* AnimatedLoadingView.swift in Sources */,
 				55E69F35283E5DF900F795D1 /* ContentSizeCategory+Extensions.swift in Sources */,
 				AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */,
 				55F957BE2877811E00A99BA3 /* AddressSelectionView.swift in Sources */,

@@ -367,45 +367,48 @@ struct UserService: MemberServiceProtocol {
         // calling the logout function first resolves potential problems when in
         // a confused state
         loginManager.logOut()
-        
+
         var tokenString: String?
         
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
-            do {
-                loginManager.logIn(
-                    permissions: ["public_profile", "email"],
-                    from: nil
-                ) { (loginResult, error) in
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                    } else if let loginResult = loginResult {
-                        
-                        if loginResult.isCancelled {
-                            // The customer decided to abandon login so this will not
-                            // recoreded as an error and the App State will remain
-                            // unchanged.
-                            continuation.resume()
-                        } else  {
-                            if loginResult.grantedPermissions.contains("email") && loginResult.grantedPermissions.contains("public_profile") {
-                                if let facebookAccessToken = loginResult.token?.tokenString {
-                                    tokenString = facebookAccessToken
+           try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
+                do {
+                    guaranteeMainThread {
+                        loginManager.logIn(
+                            permissions: ["public_profile", "email"],
+                            from: nil
+                        ) { (loginResult, error) in
+                            if let error = error {
+                                continuation.resume(throwing: error)
+                            } else if let loginResult = loginResult {
+
+                                if loginResult.isCancelled {
+                                    // The customer decided to abandon login so this will not be
+                                    // recorded as an error and the App State will remain
+                                    // unchanged.
                                     continuation.resume()
-                                    
-                                } else {
-                                    continuation.resume(throwing: UserServiceError.missingFacebookLoginAccessToken)
+                                } else  {
+                                    if loginResult.grantedPermissions.contains("email") && loginResult.grantedPermissions.contains("public_profile") {
+                                        if let facebookAccessToken = loginResult.token?.tokenString {
+                                            tokenString = facebookAccessToken
+                                            continuation.resume()
+
+                                        } else {
+                                            continuation.resume(throwing: UserServiceError.missingFacebookLoginAccessToken)
+                                        }
+                                    } else {
+                                        continuation.resume(throwing: UserServiceError.missingFacebookLoginPrivileges)
+                                    }
                                 }
+
                             } else {
-                                continuation.resume(throwing: UserServiceError.missingFacebookLoginPrivileges)
+                                // Should never get here as either loginResult or error should be set
+                                continuation.resume(throwing: UserServiceError.unknownFacebookLoginProblem)
                             }
                         }
-                        
-                    } else {
-                        // Should never get here as either loginResult or error should be set
-                        continuation.resume(throwing: UserServiceError.unknownFacebookLoginProblem)
                     }
                 }
             }
-        }
+
         
         if let tokenString = tokenString {
             

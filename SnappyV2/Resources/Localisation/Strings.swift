@@ -1080,4 +1080,8 @@ public enum Strings {
             case instructionsWhenCoupon = "verifymobilenumber.entercodeview.instructionsWhenCoupon"
         }
     }
+    
+    public enum AnimatedLoadingView: String, IterableSnappyString {
+        case loggingIn = "loadingView.loggingin"
+    }
 }

@@ -705,3 +705,6 @@
 "ageRestriction.title" = "Age Restricted Item";
 "ageRestriction.message" = "This item is age restricted. Anyone who appears to be under the age of 25 must show valid ID to prove that they are over %@.";
 "ageRestriction.confirmAge" = "I am at least %@";
+
+// MARK: - Animated Loading View
+"loadingView.loggingin" = "Logging In...";

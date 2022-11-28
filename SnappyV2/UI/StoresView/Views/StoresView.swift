@@ -103,6 +103,13 @@ struct StoresView: View {
                 static let largeScreenWidthMultiplier: CGFloat = 0.5
             }
         }
+        
+        struct PostcodesDropDown {
+            static let spacing: CGFloat = 10
+            static let hPadding: CGFloat = 16
+            static let vPadding: CGFloat = 6
+            static let width: CGFloat = 250
+        }
     }
     
     // MARK: - View Model
@@ -125,16 +132,19 @@ struct StoresView: View {
                 ScrollView(showsIndicators: false) {
                     HStack {
                         postcodeSearch
+                        
                         if sizeClass != .compact {
                             FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
                                 .frame(maxWidth: Constants.FulfilmentSelectionToggle.largeScreenWidth, maxHeight: .infinity)
                         }
                     }
+                    .zIndex(1) // Ensures drop down is on top of other views
                     .padding()
                     VStack(alignment: .leading) {
                         if sizeClass == .compact {
                             FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
                                 .padding(.horizontal)
+                                
                         }
                         
                         browseStores
@@ -159,33 +169,65 @@ struct StoresView: View {
         }
         .onTapGesture {
             hideKeyboard()
+            viewModel.clearPostcodes()
         }
     }
     
     // MARK: - Postcode search bar and button
     private var postcodeSearch: some View {
-        SnappyTextFieldWithButton(
-            container: viewModel.container,
-            text: $viewModel.postcodeSearchString,
-            hasError: $viewModel.invalidPostcodeError,
-            isLoading: .constant(viewModel.storesSearchIsLoading),
-            showInvalidFieldWarning: .constant(false),
-            autoCaps: .allCharacters,
-            labelText: GeneralStrings.Search.searchPostcode.localized,
-            largeLabelText: GeneralStrings.Search.search.localized,
-            warningText: nil,
-            keyboardType: nil,
-            mainButton: (GeneralStrings.Search.search.localized, {
-                Task {
-                    try await viewModel.postcodeSearchTapped()
-                }
-            }),
-            mainButtonLargeTextLogo: Image.Icons.MagnifyingGlass.standard,
-            internalButton: (Image.Icons.LocationCrosshairs.standard, {
-                Task {
-                    await viewModel.searchViaLocationTapped()
-                }
-            }))
+        VStack(spacing: 0) {
+            SnappyTextFieldWithButton(
+                container: viewModel.container,
+                text: $viewModel.postcodeSearchString,
+                hasError: $viewModel.invalidPostcodeError,
+                isLoading: .constant(viewModel.storesSearchIsLoading),
+                showInvalidFieldWarning: .constant(false),
+                autoCaps: .allCharacters,
+                labelText: GeneralStrings.Search.searchPostcode.localized,
+                largeLabelText: GeneralStrings.Search.search.localized,
+                warningText: nil,
+                keyboardType: nil,
+                mainButton: (GeneralStrings.Search.search.localized, {
+                    Task {
+                        try await viewModel.postcodeSearchTapped()
+                    }
+                }),
+                mainButtonLargeTextLogo: Image.Icons.MagnifyingGlass.standard,
+                internalButton: (Image.Icons.LocationCrosshairs.standard, {
+                    Task {
+                        await viewModel.searchViaLocationTapped()
+                    }
+                }))
+            Rectangle() // Used to attach the overlay beneath the textfield
+                .frame(height: 0)
+            .overlay(
+                postcodesDropDown,
+                alignment: .topLeading)
+        }
+    }
+    
+    @State var dropdownHeight: CGFloat = 0
+    
+    @ViewBuilder private var postcodesDropDown: some View {
+        VStack(alignment: .leading, spacing: Constants.PostcodesDropDown.spacing) {
+                ForEach($viewModel.postcodeSearchResults, id: \.self) { postcode in
+                        Button {
+                            viewModel.postcodeSearchString = postcode.wrappedValue
+                            viewModel.storedPostcodes = []
+                        } label: {
+                            Text(postcode.wrappedValue)
+                                .font(.Body2.semiBold())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                        }
+                        .padding(.horizontal, Constants.PostcodesDropDown.hPadding)
+                        .padding(.vertical, Constants.PostcodesDropDown.vPadding)
+                        
+                        Divider()
+                    }
+            }
+        .frame(width: Constants.PostcodesDropDown.width)
+            .background(Color.white)
+            .standardCardFormat()
     }
     
     // MARK: - Horizontal store type scroll view

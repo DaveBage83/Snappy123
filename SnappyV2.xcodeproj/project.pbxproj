@@ -313,6 +313,10 @@
 		556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */; };
 		5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5584934728328B5A00F84AC1 /* DayChipTests.swift */; };
 		558579FF2908869C0017855B /* LoadingDotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558579FE2908869C0017855B /* LoadingDotsView.swift */; };
+		558620BA29326EE0005EB336 /* Postcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620B929326EDF005EB336 /* Postcode.swift */; };
+		558620BD29326F7A005EB336 /* PostcodeDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BC29326F7A005EB336 /* PostcodeDBRepository.swift */; };
+		558620BF29327476005EB336 /* Postcode+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BE29327476005EB336 /* Postcode+CoreData.swift */; };
+		558620C12932ABAC005EB336 /* PostcodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620C02932ABAC005EB336 /* PostcodeService.swift */; };
 		558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3D27A409CC0003756C /* ImageWebRepository.swift */; };
 		558CEC4027A40CEA0003756C /* AsyncImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3F27A40CEA0003756C /* AsyncImageService.swift */; };
 		55962B4B284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55962B4A284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift */; };
@@ -950,6 +954,10 @@
 		556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBannerViewTests.swift; sourceTree = "<group>"; };
 		5584934728328B5A00F84AC1 /* DayChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChipTests.swift; sourceTree = "<group>"; };
 		558579FE2908869C0017855B /* LoadingDotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingDotsView.swift; sourceTree = "<group>"; };
+		558620B929326EDF005EB336 /* Postcode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Postcode.swift; sourceTree = "<group>"; };
+		558620BC29326F7A005EB336 /* PostcodeDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeDBRepository.swift; sourceTree = "<group>"; };
+		558620BE29327476005EB336 /* Postcode+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Postcode+CoreData.swift"; sourceTree = "<group>"; };
+		558620C02932ABAC005EB336 /* PostcodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeService.swift; sourceTree = "<group>"; };
 		558CEC3D27A409CC0003756C /* ImageWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWebRepository.swift; sourceTree = "<group>"; };
 		558CEC3F27A40CEA0003756C /* AsyncImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageService.swift; sourceTree = "<group>"; };
 		55962B4A284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextFieldWithButtonTests.swift; sourceTree = "<group>"; };
@@ -2230,6 +2238,23 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		558620B829326ECD005EB336 /* Postcode */ = {
+			isa = PBXGroup;
+			children = (
+				558620B929326EDF005EB336 /* Postcode.swift */,
+				558620BE29327476005EB336 /* Postcode+CoreData.swift */,
+			);
+			path = Postcode;
+			sourceTree = "<group>";
+		};
+		558620BB29326F6B005EB336 /* Postcode */ = {
+			isa = PBXGroup;
+			children = (
+				558620BC29326F7A005EB336 /* PostcodeDBRepository.swift */,
+			);
+			path = Postcode;
+			sourceTree = "<group>";
+		};
 		558CEC3C27A409AD0003756C /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -2911,6 +2936,7 @@
 				0AEA010128A569EC00D48E10 /* UserPermissionsService.swift */,
 				559A43DA2798276200281034 /* UtilityService.swift */,
 				AF82E60228073C970020ADBE /* NotificationService.swift */,
+				558620C02932ABAC005EB336 /* PostcodeService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -2918,6 +2944,7 @@
 		AFAE478926F1EE0100B4FEC3 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				558620B829326ECD005EB336 /* Postcode */,
 				0AF72F202791ACD20055ECFD /* Address */,
 				0AF16A75272718880020A2CF /* Basket */,
 				0AA856DF27CF94BA00038072 /* BusinessProfile */,
@@ -2938,6 +2965,7 @@
 		AFAE478A26F1EE0D00B4FEC3 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
+				558620BB29326F6B005EB336 /* Postcode */,
 				558CEC3C27A409AD0003756C /* Images */,
 				0AF72F1B2791A9030055ECFD /* Address */,
 				0A57F93E272E7B4E00B1269D /* Basket */,
@@ -3555,6 +3583,7 @@
 				AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */,
 				AF96588226BAEE9600021531 /* Publisher+Extensions.swift in Sources */,
 				55E8051327EE2C7900111D58 /* MemberDashboardProfileView.swift in Sources */,
+				558620BF29327476005EB336 /* Postcode+CoreData.swift in Sources */,
 				5569A5DE2840215800BD67BF /* AdaptableText.swift in Sources */,
 				AFEB1A20273D58720087AECB /* ProductCardViewModel.swift in Sources */,
 				0ABCADB8271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift in Sources */,
@@ -3584,6 +3613,7 @@
 				0A57F942272E7BBD00B1269D /* BasketDBRepository.swift in Sources */,
 				550CD3202844D74E00F36D58 /* AsyncImage.swift in Sources */,
 				553B78DF27DF224700B955AB /* MarketingPreferencesView.swift in Sources */,
+				558620BD29326F7A005EB336 /* PostcodeDBRepository.swift in Sources */,
 				0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */,
 				558CEC4027A40CEA0003756C /* AsyncImageService.swift in Sources */,
 				22B673CA29129CDF00A1A5B5 /* UserDefaults+Extensions.swift in Sources */,
@@ -3734,6 +3764,7 @@
 				0AFCE6F72859A25B00BC8325 /* MapKit+Extensions.swift in Sources */,
 				556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */,
 				AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */,
+				558620BA29326EE0005EB336 /* Postcode.swift in Sources */,
 				0ADB1D2D28C75FD8008EBA11 /* StoreReviewView.swift in Sources */,
 				AFF1DE6828B507E80026FFA2 /* AxesSet.swift in Sources */,
 				AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */,
@@ -3808,6 +3839,7 @@
 				0A4EEBFF27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift in Sources */,
 				553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */,
 				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
+				558620C12932ABAC005EB336 /* PostcodeService.swift in Sources */,
 				0AA7B8BE283E7E8300D4DFF1 /* DriverMapView.swift in Sources */,
 				55B252B427FCA63100131426 /* OrderStoreView.swift in Sources */,
 				552C9AFF2893F53F00D4D6DF /* ValidatableField.swift in Sources */,

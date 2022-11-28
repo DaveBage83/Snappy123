@@ -98,6 +98,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 
     let webRepository: RetailStoresWebRepositoryProtocol
     let dbRepository: RetailStoresDBRepositoryProtocol
+    let postcodeDBRepository: PostcodeDBRepository
     
     // For the service functions that are expected to update the
     // data that belongs to the AppState.
@@ -107,11 +108,12 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     
     private var cancelBag = CancelBag()
 
-    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
+    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, postcodeDBRepository: PostcodeDBRepository, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
         self.eventLogger = eventLogger
+        self.postcodeDBRepository = postcodeDBRepository
     }
 
     // convenience functions to avoid passing clearCache, cache handling will be needed in future
@@ -125,6 +127,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 promise(.failure(RetailStoresServiceError.postcodeFormatNotRecognised(postcode)))
             }
         }
+
+        let _ = postcodeDBRepository.store(postcode: postcode)
         return searchRetailStores(postcode: postcode, clearCache: true)
     }
     

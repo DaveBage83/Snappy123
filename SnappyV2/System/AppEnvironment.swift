@@ -170,6 +170,7 @@ extension AppEnvironment {
         let checkoutDBRepository = CheckoutDBRepository(persistentStore: persistentStore)
         let addressDBRepository = AddressDBRepository(persistentStore: persistentStore)
         let asyncImageDBRepository = AsyncImageDBRepository(persistentStore: persistentStore)
+        let postcodeDBRepository = PostcodeDBRepository(persistentStore: persistentStore)
         
         return .init(
             businessProfileRepository: businessProfileDBRepository,
@@ -179,7 +180,8 @@ extension AppEnvironment {
             memberRepository: memberDBRepository,
             checkoutRepository: checkoutDBRepository,
             addressRepository: addressDBRepository,
-            asyncImageRepository: asyncImageDBRepository
+            asyncImageRepository: asyncImageDBRepository,
+            postcodeRepository: postcodeDBRepository
         )
     }
     
@@ -212,6 +214,7 @@ extension AppEnvironment {
         let retailStoreService = RetailStoresService(
             webRepository: webRepositories.retailStoresRepository,
             dbRepository: dbRepositories.retailStoresRepository,
+            postcodeDBRepository: dbRepositories.postcodeRepository,
             appState: appState,
             eventLogger: eventLogger
         )
@@ -263,6 +266,8 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         
+        let postcodeService = PostcodeService(dbRepository: dbRepositories.postcodeRepository)
+        
         let userPermissionsService = UserPermissionsService(
             userDefaultsRepository: userDefaultsRepositories.userPermissionsRepository,
             appState: appState,
@@ -284,7 +289,8 @@ extension AppEnvironment {
             utilityService: utilityService,
             imageService: imageService,
             notificationService: notificationService,
-            userPermissionsService: userPermissionsService
+            userPermissionsService: userPermissionsService,
+            postcodeService: postcodeService
         )
     }
 }
@@ -313,6 +319,7 @@ extension DIContainer {
         let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
         let asyncImageRepository: AsyncImageDBRepository
+        let postcodeRepository: PostcodeDBRepository
     }
     
     struct UserDefaultsRepositories {

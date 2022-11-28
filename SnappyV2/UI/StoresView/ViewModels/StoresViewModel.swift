@@ -35,6 +35,9 @@ class StoresViewModel: ObservableObject {
     @Published var isFocused = false
     @Published var showFulfilmentSlotSelection = false
     @Published var storeIsLoading = false
+    @Published var storedPostcodes: [Postcode]?
+    @Published var postcodeSearchResults = [String]()
+
     private(set) var selectedStoreID: Int?
     let locationManager: LocationManager
     
@@ -91,6 +94,17 @@ class StoresViewModel: ObservableObject {
         setupPostcodeError()
     }
     
+
+    func clearPostcodes() {
+        self.postcodeSearchResults = []
+    }
+    
+    private func populateStoredPostcodes() {
+        Task {
+            self.storedPostcodes = await self.container.services.postcodeService.getAllPostcodes()
+        }
+    }
+    
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
@@ -104,9 +118,16 @@ class StoresViewModel: ObservableObject {
         $postcodeSearchString
             .dropFirst()
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] postcode in
                 guard let self = self else { return }
                 self.invalidPostcodeError = false
+                self.populateStoredPostcodes()
+                
+                if postcode.isEmpty == false {
+                    self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
+                } else {
+                    self.postcodeSearchResults = self.storedPostcodes?.compactMap { $0.postcode } ?? []
+                }
             }
             .store(in: &cancellables)
     }

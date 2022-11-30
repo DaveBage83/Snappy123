@@ -219,7 +219,8 @@ final class StoreReviewViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         
         let sut = StoreReviewViewModel(

@@ -49,7 +49,8 @@ final class SystemEventsHandlerTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: userPermissionsService
+            userPermissionsService: userPermissionsService,
+            postcodeService: MockedPostcodeService(expected: [])
         )
         
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)

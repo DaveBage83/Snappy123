@@ -27,6 +27,13 @@ extension PostcodeMO {
         let request = newFetchRequest()
         return request
     }
+    
+    static func fetchRequestForDeletion(postcode: String) -> NSFetchRequest<NSFetchRequestResult> {
+        let request = newFetchRequestResult()
+        
+        request.predicate = NSPredicate(format: "postcode == %@", postcode)
+        return request
+    }
 }
 
 extension PostcodeMO: ManagedEntity {}

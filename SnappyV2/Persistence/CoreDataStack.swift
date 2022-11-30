@@ -16,7 +16,7 @@ protocol PersistentStore {
     
     func count<T>(_ fetchRequest: NSFetchRequest<T>) -> AnyPublisher<Int, Error>
     func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>, map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
-    func fetch<T>(_ fetchRequest: NSFetchRequest<T>) -> [T]?
+    func fetch<T>(_ fetchRequest: NSFetchRequest<T>) throws -> [T]?
     @discardableResult func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error>
     
     // More efficient but not suited to unit testing
@@ -86,7 +86,6 @@ struct CoreDataStack: PersistentStore {
                         }
                         return mapped
                     }
-                    print("*** \(results.first)")
                     promise(.success(results))
                 } catch {
                     promise(.failure(error))
@@ -98,21 +97,13 @@ struct CoreDataStack: PersistentStore {
             .eraseToAnyPublisher()
     }
     
-    func fetch<T>(_ fetchRequest: NSFetchRequest<T>) -> [T]? {
-        var objectsFound: [T]?
-
-        // assert(Thread.isMainThread)
-        // Caused conflicts with UI main thread when testing 19/11/21. Commented out but kept as a reminder that this "might" cause an issue in future.
-        let fetch = Future<[T], Error> { [weak container] promise in
-            guard let context = container?.viewContext else { return }
-            
-            do {
-                objectsFound = try context.fetch(fetchRequest)
-            } catch {
-                print("Failed to fetch objects")
-            }
+    // Simple fetch method to return all objects as an array. Can be used when no mapping is required.
+    func fetch<T>(_ fetchRequest: NSFetchRequest<T>) throws -> [T]? {
+        do {
+            return try container.viewContext.fetch(fetchRequest)
+        } catch {
+            throw error
         }
-        return objectsFound
     }
     
     func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error> {

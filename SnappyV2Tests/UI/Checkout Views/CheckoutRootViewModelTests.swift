@@ -75,7 +75,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -132,7 +133,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -189,7 +191,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1516,7 +1519,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1626,7 +1630,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1731,7 +1736,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData

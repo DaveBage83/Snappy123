@@ -299,7 +299,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
 
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
@@ -335,7 +336,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
 
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
@@ -375,7 +377,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         
         let eventLogger = MockedEventLogger(expected: [
@@ -420,7 +423,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         
         let eventLogger = MockedEventLogger(expected: [
@@ -471,7 +475,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)

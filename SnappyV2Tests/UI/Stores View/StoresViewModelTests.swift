@@ -873,6 +873,52 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertTrue(sut.locationManager.showLocationUnknownAlert)
     }
     
+    func test_whenHidePostcodeDropdownTriggered_givenShowPostcodeDropdownIsTrue_thenShowPostcodeDropdownIsFalse() {
+        let sut = makeSUT()
+        sut.showPostcodeDropdown = true
+        sut.hidePostcodeDropdown()
+        XCTAssertFalse(sut.showPostcodeDropdown)
+    }
+    
+    func test_whenHidePostcodeDropdownTriggered_givenShowPostcodeDropdownIsFalse_thenShowPostcodeDropdownIsFalse() {
+        let sut = makeSUT()
+        sut.showPostcodeDropdown = false
+        sut.hidePostcodeDropdown()
+        XCTAssertFalse(sut.showPostcodeDropdown)
+    }
+    
+    func test_whenPostcodeTapped_thenPostcodeSearchStringPopulatedAndSearchResultsIsEmptyAndShowPostcodeDropdownIsFalse() {
+        let sut = makeSUT()
+        sut.postcodeSearchResults = ["GU99EP"]
+        sut.postcodeTapped(postcode: "PG43AG")
+        
+        XCTAssertEqual(sut.postcodeSearchString, "PG43AG")
+        XCTAssertEqual(sut.postcodeSearchResults, [])
+        XCTAssertFalse(sut.showPostcodeDropdown)
+        
+    }
+    
+    func test_whenPostcodeStringChanged_givenPostcodeStringNotEmpty_thenPostcodeSearchResultsPopulated() {
+        let sut = makeSUT()
+        var cancellables = Set<AnyCancellable>()
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(postcodeService: [.getAllPostcodes]))
+        
+        let expectation = expectation(description: "populatedSearchResults")
+
+        sut.postcodeSearchString = "GU9"
+        
+        sut.$postcodeSearchString
+            .first()
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 0.5)
+        
+        container.services.verify(as: .postcodeService)
+    }
+    
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),
@@ -882,7 +928,7 @@ class StoresViewModelTests: XCTestCase {
         let mockedLocationManager = MockedLocationManager(locationAuthStatus: locationAuthorisationStatus, setLocation: testLocation)
         let sut = StoresViewModel(container: container, locationManager: mockedLocationManager)
         
-        trackForMemoryLeaks(sut)
+//        trackForMemoryLeaks(sut)
         
         return sut
     }

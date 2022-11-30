@@ -35,16 +35,32 @@ struct PostcodeDBRepository: PostcodeDBRepositoryProtocol {
     func fetchAllPostcodes() -> [Postcode]? {
         let fetchRequest = PostcodeMO.fetchAllPostcodes()
         var postcodes = [Postcode]()
-        let storedResults = persistentStore.fetch(fetchRequest)
         
-        storedResults?.forEach { result in
-            if let timestamp = result.timestamp, let postcode = result.postcode {
-                postcodes.append(Postcode(timestamp: timestamp, postcode: postcode))
-            }
+        do {
+            let storedResults = try persistentStore.fetch(fetchRequest)
             
+            storedResults?.forEach { result in
+                if let timestamp = result.timestamp, let postcode = result.postcode {
+                    postcodes.append(Postcode(timestamp: timestamp, postcode: postcode))
+                }
+                
+            }
+     
+            return postcodes
+        } catch {
+            print(error)
+            return nil
         }
- 
-        return postcodes
+    }
+    
+    func deletePostcode(postcodeString: String) -> AnyPublisher<Bool, Error> {
+        return persistentStore
+            .update { context in
+                try PostcodeMO.delete(
+                    fetchRequest: PostcodeMO.fetchRequestForDeletion(postcode: postcodeString),
+                    in: context)
+                return true
+            }
     }
     
     // Store postcode
@@ -55,12 +71,19 @@ struct PostcodeDBRepository: PostcodeDBRepositoryProtocol {
         
         let searchedTrimmedString = postcode.removeWhitespace()
         
-        print(trimmedPostcodeStrings)
-        print(searchedTrimmedString)
-        
-        if trimmedPostcodeStrings?.contains(searchedTrimmedString) == false
+        // If there are no matching postcodes then we will save this one
+        if trimmedPostcodeStrings?.contains(searchedTrimmedString) == false {
+            // First check if we have more than the allowed number of postcodes in the db as specified by the AppConstants
+            if let postcodes, postcodes.count > AppV2Constants.Business.maximumPostcodes {
+                // If so, get the earliest saved one...
+                let postcodeToDelete = postcodes.min(by: { $0.timestamp < $1.timestamp })?.postcode
+                
+                // ... and delete it
+                if let postcodeToDelete {
+                    let _ = deletePostcode(postcodeString: postcodeToDelete)
+                }
+            }
             
-        {
             return persistentStore
                 .update { context in
                     let postcode = Postcode(timestamp: Date(), postcode: postcode)

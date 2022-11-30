@@ -129,7 +129,8 @@ final class PushNotificationViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let sut = makeSUT(notification: viewUpdatedOrderMessage, services: services) { displayAction in
             XCTAssertEqual(displayAction, PushNotificationDismissDisplayAction(showOrder: order), file: #file, line: #line)
@@ -205,7 +206,8 @@ final class PushNotificationViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            postcodeService: MockedPostcodeService(expected: [])
         )
         let sut = makeSUT(notification: viewUpdatedOrderMessage, services: services)
         XCTAssertEqual(sut.notification, viewUpdatedOrderMessage, file: #file, line: #line)

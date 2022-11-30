@@ -35,7 +35,9 @@ class StoresViewModel: ObservableObject {
     @Published var isFocused = false
     @Published var showFulfilmentSlotSelection = false
     @Published var storeIsLoading = false
+    
     @Published var storedPostcodes: [Postcode]?
+    @Published var showPostcodeDropdown = false
     @Published var postcodeSearchResults = [String]()
 
     private(set) var selectedStoreID: Int?
@@ -92,11 +94,19 @@ class StoresViewModel: ObservableObject {
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
         setupOrderMethodStatusSections()
         setupPostcodeError()
+        populateStoredPostcodes()
     }
     
-
-    func clearPostcodes() {
-        self.postcodeSearchResults = []
+    func hidePostcodeDropdown() {
+        if showPostcodeDropdown {
+            showPostcodeDropdown = false
+        }
+    }
+    
+    func postcodeTapped(postcode: String) {
+        postcodeSearchString = postcode
+        postcodeSearchResults = []
+        showPostcodeDropdown = false
     }
     
     private func populateStoredPostcodes() {
@@ -121,10 +131,12 @@ class StoresViewModel: ObservableObject {
             .sink { [weak self] postcode in
                 guard let self = self else { return }
                 self.invalidPostcodeError = false
+                
                 self.populateStoredPostcodes()
                 
                 if postcode.isEmpty == false {
                     self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
+                    
                 } else {
                     self.postcodeSearchResults = self.storedPostcodes?.compactMap { $0.postcode } ?? []
                 }

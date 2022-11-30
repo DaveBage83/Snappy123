@@ -144,7 +144,6 @@ struct StoresView: View {
                         if sizeClass == .compact {
                             FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
                                 .padding(.horizontal)
-                                
                         }
                         
                         browseStores
@@ -169,7 +168,7 @@ struct StoresView: View {
         }
         .onTapGesture {
             hideKeyboard()
-            viewModel.clearPostcodes()
+            viewModel.hidePostcodeDropdown()
         }
     }
     
@@ -198,6 +197,9 @@ struct StoresView: View {
                         await viewModel.searchViaLocationTapped()
                     }
                 }))
+            .onTapGesture {
+                viewModel.showPostcodeDropdown = true
+            }
             Rectangle() // Used to attach the overlay beneath the textfield
                 .frame(height: 0)
             .overlay(
@@ -209,25 +211,26 @@ struct StoresView: View {
     @State var dropdownHeight: CGFloat = 0
     
     @ViewBuilder private var postcodesDropDown: some View {
-        VStack(alignment: .leading, spacing: Constants.PostcodesDropDown.spacing) {
-                ForEach($viewModel.postcodeSearchResults, id: \.self) { postcode in
-                        Button {
-                            viewModel.postcodeSearchString = postcode.wrappedValue
-                            viewModel.storedPostcodes = []
-                        } label: {
-                            Text(postcode.wrappedValue)
-                                .font(.Body2.semiBold())
-                                .foregroundColor(colorPalette.typefacePrimary)
+        if viewModel.showPostcodeDropdown {
+            VStack(alignment: .leading, spacing: Constants.PostcodesDropDown.spacing) {
+                    ForEach($viewModel.postcodeSearchResults, id: \.self) { postcode in
+                            Button {
+                                viewModel.postcodeTapped(postcode: postcode.wrappedValue)
+                            } label: {
+                                Text(postcode.wrappedValue)
+                                    .font(.Body2.semiBold())
+                                    .foregroundColor(colorPalette.typefacePrimary)
+                            }
+                            .padding(.horizontal, Constants.PostcodesDropDown.hPadding)
+                            .padding(.vertical, Constants.PostcodesDropDown.vPadding)
+                            
+                            Divider()
                         }
-                        .padding(.horizontal, Constants.PostcodesDropDown.hPadding)
-                        .padding(.vertical, Constants.PostcodesDropDown.vPadding)
-                        
-                        Divider()
-                    }
-            }
-        .frame(width: Constants.PostcodesDropDown.width)
-            .background(Color.white)
-            .standardCardFormat()
+                }
+            .frame(width: Constants.PostcodesDropDown.width)
+                .background(Color.white)
+                .standardCardFormat()
+        }
     }
     
     // MARK: - Horizontal store type scroll view

@@ -197,9 +197,6 @@ struct StoresView: View {
                         await viewModel.searchViaLocationTapped()
                     }
                 }))
-            .onTapGesture {
-                viewModel.showPostcodeDropdown = true
-            }
             Rectangle() // Used to attach the overlay beneath the textfield
                 .frame(height: 0)
             .overlay(

@@ -137,6 +137,12 @@ class StoresViewModel: ObservableObject {
                 if postcode.isEmpty == false {
                     self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
                     
+                    if self.postcodeSearchResults.count == 1 && self.postcodeSearchResults.first == self.postcodeSearchString {
+                        self.showPostcodeDropdown = false
+                    } else if self.postcodeSearchResults.count > 0 {
+                        self.showPostcodeDropdown = true
+                    }
+                    
                 } else {
                     self.postcodeSearchResults = self.storedPostcodes?.compactMap { $0.postcode } ?? []
                 }

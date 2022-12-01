@@ -427,7 +427,6 @@
 		55F957CE287F5CFD00A99BA3 /* EditAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */; };
 		55F957D0288011B900A99BA3 /* EditAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */; };
 		55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */; };
-		55FCDCB52937A4E30000E53A /* SnappyTextfieldWithHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FCDCB42937A4E30000E53A /* SnappyTextfieldWithHistory.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
 		AF00E20F28D38928001B8184 /* ExpandableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF00E20E28D38928001B8184 /* ExpandableContentView.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
@@ -1072,7 +1071,6 @@
 		55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressView.swift; sourceTree = "<group>"; };
 		55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressViewModel.swift; sourceTree = "<group>"; };
 		55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDisplayCardTests.swift; sourceTree = "<group>"; };
-		55FCDCB42937A4E30000E53A /* SnappyTextfieldWithHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfieldWithHistory.swift; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
 		AF00E20E28D38928001B8184 /* ExpandableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContentView.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -2215,7 +2213,6 @@
 				553469A42891A9700091DA04 /* CountrySelectorViewModel.swift */,
 				550CD323284509AF00F36D58 /* SnappyTextFieldWithButton.swift */,
 				AF4B61E3289EBE5700BF20D6 /* CardExpiryDateSelector.swift */,
-				55FCDCB42937A4E30000E53A /* SnappyTextfieldWithHistory.swift */,
 			);
 			path = TextfieldFloatingWithBorder;
 			sourceTree = "<group>";
@@ -3576,7 +3573,6 @@
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
 				0A27480528CA5A6100147CFC /* UserPermissionsUserDefaultsRepository.swift in Sources */,
 				0AFE03EB28B40DBA0036CCC9 /* PushNotificationSettingsViewModel.swift in Sources */,
-				55FCDCB52937A4E30000E53A /* SnappyTextfieldWithHistory.swift in Sources */,
 				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
 				AF55501928887E3700492141 /* OTPPromptViewModel.swift in Sources */,
 				0AEA00FA28A4FDF000D48E10 /* SystemEventsHandler.swift in Sources */,

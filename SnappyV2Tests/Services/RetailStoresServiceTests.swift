@@ -17,7 +17,7 @@ class RetailStoresServiceTests: XCTestCase {
     var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedRetailStoresWebRepository!
     var mockedDBRepo: MockedRetailStoresDBRepository!
-    var mockedPostcodeDBRepo: MockedPostcodeDBRepository!
+    var mockedSearchHistoryDBRepo: MockedSearchHistoryDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: RetailStoresService!
 
@@ -25,11 +25,11 @@ class RetailStoresServiceTests: XCTestCase {
         mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedRetailStoresWebRepository()
         mockedDBRepo = MockedRetailStoresDBRepository()
-        mockedPostcodeDBRepo = MockedPostcodeDBRepository()
+        mockedSearchHistoryDBRepo = MockedSearchHistoryDBRepository()
         sut = RetailStoresService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
-            postcodeDBRepository: mockedPostcodeDBRepo,
+            searchHistoryDBRepository: mockedSearchHistoryDBRepo,
             appState: appState,
             eventLogger: mockedEventLogger
         )

@@ -1,5 +1,5 @@
 //
-//  PostcodeServiceTests.swift
+//  SearchHistoryServiceTests.swift
 //  SnappyV2Tests
 //
 //  Created by David Bage on 30/11/2022.
@@ -9,17 +9,17 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-class PostcodeServiceTests: XCTestCase {
+class SearchHistoryServiceTests: XCTestCase {
     var appState = CurrentValueSubject<AppState, Never>(AppState())
     var mockedEventLogger: MockedEventLogger!
-    var mockedDBRepo: MockedPostcodeDBRepository!
+    var mockedDBRepo: MockedSearchHistoryDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: SearchHistoryService!
 
     override func setUp() {
         
         mockedEventLogger = MockedEventLogger()
-        mockedDBRepo = MockedPostcodeDBRepository()
+        mockedDBRepo = MockedSearchHistoryDBRepository()
         sut = SearchHistoryService(dbRepository: mockedDBRepo)
     }
     
@@ -36,7 +36,7 @@ class PostcodeServiceTests: XCTestCase {
     }
 }
 
-final class GetPostcodeTests: PostcodeServiceTests {
+final class GetPostcodeTests: SearchHistoryServiceTests {
     func test_whenFetchAllPostcodes_thenAllPostcodesReturned() async {
         
         mockedDBRepo.actions = .init(expected: [
@@ -61,7 +61,7 @@ final class GetPostcodeTests: PostcodeServiceTests {
     }
 }
 
-final class StorePostcodeTests: PostcodeServiceTests {
+final class StorePostcodeTests: SearchHistoryServiceTests {
     func test_whenStorePostcode_thenPostcodeStored() async {
         let postcodeString = Postcode.mockedData.postcode
         mockedDBRepo.actions = .init(expected: [

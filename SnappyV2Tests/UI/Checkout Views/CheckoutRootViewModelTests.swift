@@ -76,7 +76,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -134,7 +134,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -192,7 +192,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1520,7 +1520,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1631,7 +1631,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1737,7 +1737,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData

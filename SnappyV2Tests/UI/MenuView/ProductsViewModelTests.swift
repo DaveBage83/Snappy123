@@ -483,7 +483,7 @@ class ProductsViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(
             appState: AppState(),

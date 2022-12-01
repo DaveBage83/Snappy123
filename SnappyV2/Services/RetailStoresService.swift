@@ -98,7 +98,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 
     let webRepository: RetailStoresWebRepositoryProtocol
     let dbRepository: RetailStoresDBRepositoryProtocol
-    let postcodeDBRepository: SearchHistoryDBRepositoryProtocol
+    let searchHistoryDBRepository: SearchHistoryDBRepositoryProtocol
     
     // For the service functions that are expected to update the
     // data that belongs to the AppState.
@@ -108,12 +108,12 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     
     private var cancelBag = CancelBag()
 
-    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, postcodeDBRepository: SearchHistoryDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
+    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, searchHistoryDBRepository: SearchHistoryDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
         self.eventLogger = eventLogger
-        self.postcodeDBRepository = postcodeDBRepository
+        self.searchHistoryDBRepository = searchHistoryDBRepository
     }
 
     // convenience functions to avoid passing clearCache, cache handling will be needed in future
@@ -128,7 +128,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             }
         }
 
-        let _ = postcodeDBRepository.store(postcode: postcode)
+        let _ = searchHistoryDBRepository.store(postcode: postcode)
         return searchRetailStores(postcode: postcode, clearCache: true)
     }
     

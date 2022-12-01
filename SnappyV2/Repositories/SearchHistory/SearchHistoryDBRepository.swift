@@ -1,5 +1,5 @@
 //
-//  PostcodeDBRepository.swift
+//  SearchHistoryDBRepository.swift
 //  SnappyV2
 //
 //  Created by David Bage on 26/11/2022.
@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import OSLog
 
-enum PostcodeError: Swift.Error, Equatable {
+enum SearchHistoryError: Swift.Error, Equatable {
     case unableToSave
 }
 
@@ -93,6 +93,6 @@ struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
                     }
                 }
         }
-        return Fail(error: PostcodeError.unableToSave).eraseToAnyPublisher()
+        return Fail(error: SearchHistoryError.unableToSave).eraseToAnyPublisher()
     }
 }

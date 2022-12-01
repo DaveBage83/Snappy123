@@ -495,7 +495,7 @@ struct WithSearchHistory: ViewModifier {
     
     @Binding var searchResults: [String]
     
-    var showPostcodeDropDown: Bool {
+    var showSearchHistoryDropDown: Bool {
         searchResults.isEmpty == false
     }
     
@@ -516,7 +516,7 @@ struct WithSearchHistory: ViewModifier {
     }
     
     @ViewBuilder private var searchHistoryDropdown: some View {
-        if showPostcodeDropDown {
+        if showSearchHistoryDropDown {
             VStack(alignment: .leading, spacing: spacing) {
                     ForEach($searchResults, id: \.self) { postcode in
                             Button {

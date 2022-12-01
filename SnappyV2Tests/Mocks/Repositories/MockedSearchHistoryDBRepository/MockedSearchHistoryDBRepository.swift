@@ -1,5 +1,5 @@
 //
-//  MockedPostcodeDBRepository.swift
+//  MockedSearchHistoryDBRepository.swift
 //  SnappyV2Tests
 //
 //  Created by David Bage on 29/11/2022.
@@ -9,7 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-final class MockedPostcodeDBRepository: Mock, SearchHistoryDBRepositoryProtocol {
+final class MockedSearchHistoryDBRepository: Mock, SearchHistoryDBRepositoryProtocol {
     
     enum Action: Equatable {
         case fetchPostcode(postcodeString: String)

@@ -100,7 +100,7 @@ class StoresViewModel: ObservableObject {
     }
     
     func populateStoredPostcodes() async {
-        self.storedPostcodes = await self.container.services.postcodeService.getAllPostcodes()
+        self.storedPostcodes = await self.container.services.searchHistoryService.getAllPostcodes()
     }
     
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {

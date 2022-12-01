@@ -170,7 +170,7 @@ extension AppEnvironment {
         let checkoutDBRepository = CheckoutDBRepository(persistentStore: persistentStore)
         let addressDBRepository = AddressDBRepository(persistentStore: persistentStore)
         let asyncImageDBRepository = AsyncImageDBRepository(persistentStore: persistentStore)
-        let postcodeDBRepository = SearchHistoryDBRepository(persistentStore: persistentStore)
+        let searchHistoryDBRepository = SearchHistoryDBRepository(persistentStore: persistentStore)
         
         return .init(
             businessProfileRepository: businessProfileDBRepository,
@@ -181,7 +181,7 @@ extension AppEnvironment {
             checkoutRepository: checkoutDBRepository,
             addressRepository: addressDBRepository,
             asyncImageRepository: asyncImageDBRepository,
-            postcodeRepository: postcodeDBRepository
+            searchHistoryRepository: searchHistoryDBRepository
         )
     }
     
@@ -214,7 +214,7 @@ extension AppEnvironment {
         let retailStoreService = RetailStoresService(
             webRepository: webRepositories.retailStoresRepository,
             dbRepository: dbRepositories.retailStoresRepository,
-            postcodeDBRepository: dbRepositories.postcodeRepository,
+            searchHistoryDBRepository: dbRepositories.searchHistoryRepository,
             appState: appState,
             eventLogger: eventLogger
         )
@@ -266,7 +266,7 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         
-        let postcodeService = SearchHistoryService(dbRepository: dbRepositories.postcodeRepository)
+        let searchHistoryService = SearchHistoryService(dbRepository: dbRepositories.searchHistoryRepository)
         
         let userPermissionsService = UserPermissionsService(
             userDefaultsRepository: userDefaultsRepositories.userPermissionsRepository,
@@ -290,7 +290,7 @@ extension AppEnvironment {
             imageService: imageService,
             notificationService: notificationService,
             userPermissionsService: userPermissionsService,
-            postcodeService: postcodeService
+            searchHistoryService: searchHistoryService
         )
     }
 }
@@ -319,7 +319,7 @@ extension DIContainer {
         let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
         let asyncImageRepository: AsyncImageDBRepository
-        let postcodeRepository: SearchHistoryDBRepository
+        let searchHistoryRepository: SearchHistoryDBRepository
     }
     
     struct UserDefaultsRepositories {

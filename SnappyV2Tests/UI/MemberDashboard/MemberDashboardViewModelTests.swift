@@ -159,7 +159,7 @@ class MemberDashboardViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         
@@ -206,7 +206,7 @@ class MemberDashboardViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         
@@ -254,7 +254,7 @@ class MemberDashboardViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         
@@ -381,7 +381,7 @@ class MemberDashboardViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         let sut = makeSUT(container: container)

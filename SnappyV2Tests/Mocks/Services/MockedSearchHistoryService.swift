@@ -1,5 +1,5 @@
 //
-//  MockedPostcodeService.swift
+//  MockedSearchHistoryService.swift
 //  SnappyV2Tests
 //
 //  Created by David Bage on 29/11/2022.
@@ -9,7 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-struct MockedPostcodeService: Mock, SearchHistoryServiceProtocol {
+struct MockedSearchHistoryService: Mock, SearchHistoryServiceProtocol {
     enum Action: Equatable {
         case getPostcode(postcodeString: String)
         case storePostcode(postcodeString: String)

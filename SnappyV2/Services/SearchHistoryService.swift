@@ -1,5 +1,5 @@
 //
-//  PostcodeService.swift
+//  SearchHistoryService.swift
 //  SnappyV2
 //
 //  Created by David Bage on 26/11/2022.
@@ -44,7 +44,7 @@ struct SearchHistoryService: SearchHistoryServiceProtocol {
     }
 }
 
-struct StubPostcodeService: SearchHistoryServiceProtocol {
+struct StubSearchHistoryService: SearchHistoryServiceProtocol {
     func getAllPostcodes() async -> [Postcode]? {
         return nil
     }

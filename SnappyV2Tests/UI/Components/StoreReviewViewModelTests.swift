@@ -220,7 +220,7 @@ final class StoreReviewViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         
         let sut = StoreReviewViewModel(

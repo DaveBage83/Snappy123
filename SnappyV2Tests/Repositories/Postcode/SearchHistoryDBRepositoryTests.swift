@@ -1,5 +1,5 @@
 //
-//  PostcodeDBRepositoryTests.swift
+//  SearchHistoryDBRepositoryTests.swift
 //  SnappyV2Tests
 //
 //  Created by David Bage on 30/11/2022.
@@ -9,7 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-final class PostcodeDBRepositoryTests: XCTestCase {
+final class SearchHistoryDBRepositoryTests: XCTestCase {
     var mockedStore: MockedPersistentStore!
     var sut: SearchHistoryDBRepository!
     var cancelBag = CancelBag()

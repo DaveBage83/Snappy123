@@ -289,7 +289,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
@@ -332,7 +332,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
@@ -398,7 +398,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
 
@@ -464,7 +464,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
         var checkoutState: CheckoutRootViewModel.CheckoutState?
@@ -711,7 +711,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: []),
-            postcodeService: MockedPostcodeService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)

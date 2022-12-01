@@ -314,9 +314,9 @@
 		5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5584934728328B5A00F84AC1 /* DayChipTests.swift */; };
 		558579FF2908869C0017855B /* LoadingDotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558579FE2908869C0017855B /* LoadingDotsView.swift */; };
 		558620BA29326EE0005EB336 /* Postcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620B929326EDF005EB336 /* Postcode.swift */; };
-		558620BD29326F7A005EB336 /* PostcodeDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BC29326F7A005EB336 /* PostcodeDBRepository.swift */; };
+		558620BD29326F7A005EB336 /* SearchHistoryDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BC29326F7A005EB336 /* SearchHistoryDBRepository.swift */; };
 		558620BF29327476005EB336 /* Postcode+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BE29327476005EB336 /* Postcode+CoreData.swift */; };
-		558620C12932ABAC005EB336 /* PostcodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620C02932ABAC005EB336 /* PostcodeService.swift */; };
+		558620C12932ABAC005EB336 /* SearchHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620C02932ABAC005EB336 /* SearchHistoryService.swift */; };
 		558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3D27A409CC0003756C /* ImageWebRepository.swift */; };
 		558CEC4027A40CEA0003756C /* AsyncImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3F27A40CEA0003756C /* AsyncImageService.swift */; };
 		55962B4B284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55962B4A284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift */; };
@@ -427,6 +427,7 @@
 		55F957CE287F5CFD00A99BA3 /* EditAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */; };
 		55F957D0288011B900A99BA3 /* EditAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */; };
 		55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */; };
+		55FCDCB52937A4E30000E53A /* SnappyTextfieldWithHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FCDCB42937A4E30000E53A /* SnappyTextfieldWithHistory.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
 		AF00E20F28D38928001B8184 /* ExpandableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF00E20E28D38928001B8184 /* ExpandableContentView.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
@@ -960,9 +961,9 @@
 		5584934728328B5A00F84AC1 /* DayChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChipTests.swift; sourceTree = "<group>"; };
 		558579FE2908869C0017855B /* LoadingDotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingDotsView.swift; sourceTree = "<group>"; };
 		558620B929326EDF005EB336 /* Postcode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Postcode.swift; sourceTree = "<group>"; };
-		558620BC29326F7A005EB336 /* PostcodeDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeDBRepository.swift; sourceTree = "<group>"; };
+		558620BC29326F7A005EB336 /* SearchHistoryDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryDBRepository.swift; sourceTree = "<group>"; };
 		558620BE29327476005EB336 /* Postcode+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Postcode+CoreData.swift"; sourceTree = "<group>"; };
-		558620C02932ABAC005EB336 /* PostcodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeService.swift; sourceTree = "<group>"; };
+		558620C02932ABAC005EB336 /* SearchHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryService.swift; sourceTree = "<group>"; };
 		558CEC3D27A409CC0003756C /* ImageWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWebRepository.swift; sourceTree = "<group>"; };
 		558CEC3F27A40CEA0003756C /* AsyncImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageService.swift; sourceTree = "<group>"; };
 		55962B4A284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextFieldWithButtonTests.swift; sourceTree = "<group>"; };
@@ -1071,6 +1072,7 @@
 		55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressView.swift; sourceTree = "<group>"; };
 		55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressViewModel.swift; sourceTree = "<group>"; };
 		55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDisplayCardTests.swift; sourceTree = "<group>"; };
+		55FCDCB42937A4E30000E53A /* SnappyTextfieldWithHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfieldWithHistory.swift; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
 		AF00E20E28D38928001B8184 /* ExpandableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContentView.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -2213,6 +2215,7 @@
 				553469A42891A9700091DA04 /* CountrySelectorViewModel.swift */,
 				550CD323284509AF00F36D58 /* SnappyTextFieldWithButton.swift */,
 				AF4B61E3289EBE5700BF20D6 /* CardExpiryDateSelector.swift */,
+				55FCDCB42937A4E30000E53A /* SnappyTextfieldWithHistory.swift */,
 			);
 			path = TextfieldFloatingWithBorder;
 			sourceTree = "<group>";
@@ -2264,7 +2267,7 @@
 		558620BB29326F6B005EB336 /* Postcode */ = {
 			isa = PBXGroup;
 			children = (
-				558620BC29326F7A005EB336 /* PostcodeDBRepository.swift */,
+				558620BC29326F7A005EB336 /* SearchHistoryDBRepository.swift */,
 			);
 			path = Postcode;
 			sourceTree = "<group>";
@@ -2967,7 +2970,7 @@
 				0AEA010128A569EC00D48E10 /* UserPermissionsService.swift */,
 				559A43DA2798276200281034 /* UtilityService.swift */,
 				AF82E60228073C970020ADBE /* NotificationService.swift */,
-				558620C02932ABAC005EB336 /* PostcodeService.swift */,
+				558620C02932ABAC005EB336 /* SearchHistoryService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -3573,6 +3576,7 @@
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
 				0A27480528CA5A6100147CFC /* UserPermissionsUserDefaultsRepository.swift in Sources */,
 				0AFE03EB28B40DBA0036CCC9 /* PushNotificationSettingsViewModel.swift in Sources */,
+				55FCDCB52937A4E30000E53A /* SnappyTextfieldWithHistory.swift in Sources */,
 				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
 				AF55501928887E3700492141 /* OTPPromptViewModel.swift in Sources */,
 				0AEA00FA28A4FDF000D48E10 /* SystemEventsHandler.swift in Sources */,
@@ -3644,7 +3648,7 @@
 				0A57F942272E7BBD00B1269D /* BasketDBRepository.swift in Sources */,
 				550CD3202844D74E00F36D58 /* AsyncImage.swift in Sources */,
 				553B78DF27DF224700B955AB /* MarketingPreferencesView.swift in Sources */,
-				558620BD29326F7A005EB336 /* PostcodeDBRepository.swift in Sources */,
+				558620BD29326F7A005EB336 /* SearchHistoryDBRepository.swift in Sources */,
 				0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */,
 				558CEC4027A40CEA0003756C /* AsyncImageService.swift in Sources */,
 				22B673CA29129CDF00A1A5B5 /* UserDefaults+Extensions.swift in Sources */,
@@ -3870,7 +3874,7 @@
 				0A4EEBFF27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift in Sources */,
 				553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */,
 				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
-				558620C12932ABAC005EB336 /* PostcodeService.swift in Sources */,
+				558620C12932ABAC005EB336 /* SearchHistoryService.swift in Sources */,
 				0AA7B8BE283E7E8300D4DFF1 /* DriverMapView.swift in Sources */,
 				55B252B427FCA63100131426 /* OrderStoreView.swift in Sources */,
 				552C9AFF2893F53F00D4D6DF /* ValidatableField.swift in Sources */,

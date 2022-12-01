@@ -9,7 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-struct MockedPostcodeService: Mock, PostcodeServiceProtocol {
+struct MockedPostcodeService: Mock, SearchHistoryServiceProtocol {
     enum Action: Equatable {
         case getPostcode(postcodeString: String)
         case storePostcode(postcodeString: String)

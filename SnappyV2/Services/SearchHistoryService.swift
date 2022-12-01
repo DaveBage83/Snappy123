@@ -7,15 +7,16 @@
 
 import Foundation
 import Combine
+import OSLog
 
-protocol PostcodeServiceProtocol {
+protocol SearchHistoryServiceProtocol {
     func getPostcode(postcodeString: String) async -> Postcode?
     func storePostcode(postcodeString: String) async
     func getAllPostcodes() async -> [Postcode]?
 }
 
-struct PostcodeService: PostcodeServiceProtocol {
-    let dbRepository: PostcodeDBRepositoryProtocol
+struct SearchHistoryService: SearchHistoryServiceProtocol {
+    let dbRepository: SearchHistoryDBRepositoryProtocol
     
     var cancellables = Set<AnyCancellable>()
     
@@ -25,7 +26,7 @@ struct PostcodeService: PostcodeServiceProtocol {
             let postcode = try await dbRepository.fetchPostcode(using: postcodeString).singleOutput()
             return postcode
         } catch {
-            print("Unable to fetch results")
+            Logger.postcodeStorage.error("Failed to fetch postcode")
             return nil
         }
     }
@@ -38,12 +39,12 @@ struct PostcodeService: PostcodeServiceProtocol {
         do {
             let _ = try await dbRepository.store(postcode: postcodeString).singleOutput()
         } catch {
-            print("Failed to store postcode")
+            Logger.postcodeStorage.error("Failed to store postcode")
         }
     }
 }
 
-struct StubPostcodeService: PostcodeServiceProtocol {
+struct StubPostcodeService: SearchHistoryServiceProtocol {
     func getAllPostcodes() async -> [Postcode]? {
         return nil
     }
@@ -52,7 +53,5 @@ struct StubPostcodeService: PostcodeServiceProtocol {
         return nil
     }
     
-    func storePostcode(postcodeString: String) async {
-        print("Done")
-    }
+    func storePostcode(postcodeString: String) async {}
 }

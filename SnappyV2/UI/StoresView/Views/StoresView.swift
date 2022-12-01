@@ -166,9 +166,10 @@ struct StoresView: View {
         .onAppear {
             viewModel.onAppearSendEvent()
         }
-        .onTapGesture {
-            hideKeyboard()
-            viewModel.hidePostcodeDropdown()
+        .onAppear { // Need to avoid task in init
+            Task {
+                await viewModel.populateStoredPostcodes()
+            }
         }
     }
     
@@ -197,36 +198,11 @@ struct StoresView: View {
                         await viewModel.searchViaLocationTapped()
                     }
                 }))
-            Rectangle() // Used to attach the overlay beneath the textfield
-                .frame(height: 0)
-            .overlay(
-                postcodesDropDown,
-                alignment: .topLeading)
-        }
-    }
-    
-    @State var dropdownHeight: CGFloat = 0
-    
-    @ViewBuilder private var postcodesDropDown: some View {
-        if viewModel.showPostcodeDropdown {
-            VStack(alignment: .leading, spacing: Constants.PostcodesDropDown.spacing) {
-                    ForEach($viewModel.postcodeSearchResults, id: \.self) { postcode in
-                            Button {
-                                viewModel.postcodeTapped(postcode: postcode.wrappedValue)
-                            } label: {
-                                Text(postcode.wrappedValue)
-                                    .font(.Body2.semiBold())
-                                    .foregroundColor(colorPalette.typefacePrimary)
-                            }
-                            .padding(.horizontal, Constants.PostcodesDropDown.hPadding)
-                            .padding(.vertical, Constants.PostcodesDropDown.vPadding)
-                            
-                            Divider()
-                        }
-                }
-            .frame(width: Constants.PostcodesDropDown.width)
-                .background(Color.white)
-                .standardCardFormat()
+            .withSearchHistory(
+                container: viewModel.container,
+                searchResults: $viewModel.postcodeSearchResults, textfieldTextSetter: { postcode in
+                    viewModel.postcodeTapped(postcode: postcode)
+                })
         }
     }
     

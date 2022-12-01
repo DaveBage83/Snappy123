@@ -20,7 +20,7 @@ extension DIContainer {
         let imageService: AsyncImageServiceProtocol
         let notificationService: NotificationServiceProtocol
         let userPermissionsService: UserPermissionsServiceProtocol
-        let postcodeService: PostcodeServiceProtocol
+        let postcodeService: SearchHistoryServiceProtocol
         
         init(
             businessProfileService: BusinessProfileServiceProtocol,
@@ -34,7 +34,7 @@ extension DIContainer {
             imageService: AsyncImageServiceProtocol,
             notificationService: NotificationServiceProtocol,
             userPermissionsService: UserPermissionsServiceProtocol,
-            postcodeService: PostcodeServiceProtocol
+            postcodeService: SearchHistoryServiceProtocol
         ) {
             self.businessProfileService = businessProfileService
             self.retailStoresService = retailStoreService

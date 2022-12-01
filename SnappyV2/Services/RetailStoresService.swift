@@ -98,7 +98,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 
     let webRepository: RetailStoresWebRepositoryProtocol
     let dbRepository: RetailStoresDBRepositoryProtocol
-    let postcodeDBRepository: PostcodeDBRepositoryProtocol
+    let postcodeDBRepository: SearchHistoryDBRepositoryProtocol
     
     // For the service functions that are expected to update the
     // data that belongs to the AppState.
@@ -108,7 +108,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     
     private var cancelBag = CancelBag()
 
-    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, postcodeDBRepository: PostcodeDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
+    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, postcodeDBRepository: SearchHistoryDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState

@@ -11,12 +11,12 @@ import Combine
 
 final class PostcodeDBRepositoryTests: XCTestCase {
     var mockedStore: MockedPersistentStore!
-    var sut: PostcodeDBRepository!
+    var sut: SearchHistoryDBRepository!
     var cancelBag = CancelBag()
     
     override func setUp() {
         mockedStore = MockedPersistentStore()
-        sut = PostcodeDBRepository(persistentStore: mockedStore)
+        sut = SearchHistoryDBRepository(persistentStore: mockedStore)
         mockedStore.verify()
     }
     

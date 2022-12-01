@@ -25,3 +25,26 @@ extension Postcode {
         return storedPostcode
     }
 }
+
+extension PostcodeMO {
+    static func fetchRequest(postcode: String) -> NSFetchRequest<PostcodeMO> {
+        let request = newFetchRequest()
+        request.predicate = NSPredicate(format: "postcode == %@", postcode)
+        request.fetchLimit = 1
+        return request
+    }
+    
+    static func fetchAllPostcodes() -> NSFetchRequest<PostcodeMO> {
+        let request = newFetchRequest()
+        return request
+    }
+    
+    static func fetchRequestForDeletion(postcode: String) -> NSFetchRequest<NSFetchRequestResult> {
+        let request = newFetchRequestResult()
+        
+        request.predicate = NSPredicate(format: "postcode == %@", postcode)
+        return request
+    }
+}
+
+extension PostcodeMO: ManagedEntity {}

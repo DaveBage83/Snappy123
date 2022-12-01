@@ -14,13 +14,13 @@ class PostcodeServiceTests: XCTestCase {
     var mockedEventLogger: MockedEventLogger!
     var mockedDBRepo: MockedPostcodeDBRepository!
     var subscriptions = Set<AnyCancellable>()
-    var sut: PostcodeService!
+    var sut: SearchHistoryService!
 
     override func setUp() {
         
         mockedEventLogger = MockedEventLogger()
         mockedDBRepo = MockedPostcodeDBRepository()
-        sut = PostcodeService(dbRepository: mockedDBRepo)
+        sut = SearchHistoryService(dbRepository: mockedDBRepo)
     }
     
     func delay(_ closure: @escaping () -> Void) {

@@ -9,7 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-final class MockedPostcodeDBRepository: Mock, PostcodeDBRepositoryProtocol {
+final class MockedPostcodeDBRepository: Mock, SearchHistoryDBRepositoryProtocol {
     
     enum Action: Equatable {
         case fetchPostcode(postcodeString: String)

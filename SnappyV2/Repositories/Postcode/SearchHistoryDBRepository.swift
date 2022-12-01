@@ -7,18 +7,19 @@
 
 import Foundation
 import Combine
+import OSLog
 
 enum PostcodeError: Swift.Error, Equatable {
     case unableToSave
 }
 
-protocol PostcodeDBRepositoryProtocol {
+protocol SearchHistoryDBRepositoryProtocol {
     func fetchPostcode(using postcodeString: String) -> AnyPublisher<Postcode?, Error>
     func store(postcode: String) -> AnyPublisher<Postcode?, Error>
     func fetchAllPostcodes() -> [Postcode]?
 }
 
-struct PostcodeDBRepository: PostcodeDBRepositoryProtocol {
+struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
     let persistentStore: PersistentStore
     
     // Fetch postcode
@@ -48,7 +49,7 @@ struct PostcodeDBRepository: PostcodeDBRepositoryProtocol {
      
             return postcodes
         } catch {
-            print(error)
+            Logger.postcodeStorage.info("No postcodes fetched")
             return nil
         }
     }
@@ -95,13 +96,3 @@ struct PostcodeDBRepository: PostcodeDBRepositoryProtocol {
         return Fail(error: PostcodeError.unableToSave).eraseToAnyPublisher()
     }
 }
-
-extension String {
-    func replace(string:String, replacement:String) -> String {
-        return self.replacingOccurrences(of: string, with: replacement, options: NSString.CompareOptions.literal, range: nil)
-    }
-
-    func removeWhitespace() -> String {
-        return self.replace(string: " ", replacement: "")
-    }
-  }

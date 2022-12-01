@@ -170,7 +170,7 @@ extension AppEnvironment {
         let checkoutDBRepository = CheckoutDBRepository(persistentStore: persistentStore)
         let addressDBRepository = AddressDBRepository(persistentStore: persistentStore)
         let asyncImageDBRepository = AsyncImageDBRepository(persistentStore: persistentStore)
-        let postcodeDBRepository = PostcodeDBRepository(persistentStore: persistentStore)
+        let postcodeDBRepository = SearchHistoryDBRepository(persistentStore: persistentStore)
         
         return .init(
             businessProfileRepository: businessProfileDBRepository,
@@ -266,7 +266,7 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         
-        let postcodeService = PostcodeService(dbRepository: dbRepositories.postcodeRepository)
+        let postcodeService = SearchHistoryService(dbRepository: dbRepositories.postcodeRepository)
         
         let userPermissionsService = UserPermissionsService(
             userDefaultsRepository: userDefaultsRepositories.userPermissionsRepository,
@@ -319,7 +319,7 @@ extension DIContainer {
         let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
         let asyncImageRepository: AsyncImageDBRepository
-        let postcodeRepository: PostcodeDBRepository
+        let postcodeRepository: SearchHistoryDBRepository
     }
     
     struct UserDefaultsRepositories {

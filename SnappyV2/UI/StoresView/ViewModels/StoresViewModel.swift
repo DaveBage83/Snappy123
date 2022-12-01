@@ -37,7 +37,6 @@ class StoresViewModel: ObservableObject {
     @Published var storeIsLoading = false
     
     @Published var storedPostcodes: [Postcode]?
-    @Published var showPostcodeDropdown = false
     @Published var postcodeSearchResults = [String]()
 
     private(set) var selectedStoreID: Int?
@@ -94,25 +93,14 @@ class StoresViewModel: ObservableObject {
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
         setupOrderMethodStatusSections()
         setupPostcodeError()
-        populateStoredPostcodes()
     }
-    
-    func hidePostcodeDropdown() {
-        if showPostcodeDropdown {
-            showPostcodeDropdown = false
-        }
-    }
-    
+
     func postcodeTapped(postcode: String) {
         postcodeSearchString = postcode
-        postcodeSearchResults = []
-        showPostcodeDropdown = false
     }
     
-    private func populateStoredPostcodes() {
-        Task {
-            self.storedPostcodes = await self.container.services.postcodeService.getAllPostcodes()
-        }
+    func populateStoredPostcodes() async {
+        self.storedPostcodes = await self.container.services.postcodeService.getAllPostcodes()
     }
     
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
@@ -132,15 +120,15 @@ class StoresViewModel: ObservableObject {
                 guard let self = self else { return }
                 self.invalidPostcodeError = false
                 
-                self.populateStoredPostcodes()
-                
+                Task {
+                    await self.populateStoredPostcodes()
+                }
+
                 if postcode.isEmpty == false {
                     self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
                     
                     if self.postcodeSearchResults.count == 1 && self.postcodeSearchResults.first == self.postcodeSearchString {
-                        self.showPostcodeDropdown = false
-                    } else if self.postcodeSearchResults.count > 0 {
-                        self.showPostcodeDropdown = true
+                        self.postcodeSearchResults = []
                     }
                     
                 } else {

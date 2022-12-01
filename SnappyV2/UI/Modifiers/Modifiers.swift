@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct StandardCardFormat: ViewModifier {
     @Binding var isDisabled: Bool
@@ -476,6 +477,71 @@ extension View {
                     sheetContent
                 }, viewModel: .init(container: container, isModal: true))
             }
+    }
+}
+
+struct WithSearchHistory: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+        
+    // MARK: - Constants
+    let spacing: CGFloat = 10
+    let hPadding: CGFloat = 16
+    let vPadding: CGFloat = 6
+    let width: CGFloat = 250
+    let container: DIContainer
+    let textfieldTextSetter: (String) -> Void
+    
+    // MARK: - View model
+    
+    @Binding var searchResults: [String]
+    
+    var showPostcodeDropDown: Bool {
+        searchResults.isEmpty == false
+    }
+    
+    private var colorPalette: ColorPalette {
+        .init(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        VStack(spacing: 0) {
+            content
+            
+            Rectangle() // Used to attach the overlay beneath the textfield
+                .frame(height: 0)
+                .overlay(
+                    searchHistoryDropdown,
+                    alignment: .topLeading)
+        }
+    }
+    
+    @ViewBuilder private var searchHistoryDropdown: some View {
+        if showPostcodeDropDown {
+            VStack(alignment: .leading, spacing: spacing) {
+                    ForEach($searchResults, id: \.self) { postcode in
+                            Button {
+                                textfieldTextSetter(postcode.wrappedValue)
+                            } label: {
+                                Text(postcode.wrappedValue)
+                                    .font(.Body2.semiBold())
+                                    .foregroundColor(colorPalette.typefacePrimary)
+                            }
+                            .padding(.horizontal, hPadding)
+                            .padding(.vertical, vPadding)
+                            
+                            Divider()
+                        }
+                }
+            .frame(width: width)
+                .background(Color.white)
+                .standardCardFormat()
+        }
+    }
+}
+
+extension View {
+    func withSearchHistory(container: DIContainer, searchResults: Binding<[String]>, textfieldTextSetter: @escaping (String) -> Void) -> some View {
+        modifier(WithSearchHistory(container: container, textfieldTextSetter: textfieldTextSetter, searchResults: searchResults))
     }
 }
 

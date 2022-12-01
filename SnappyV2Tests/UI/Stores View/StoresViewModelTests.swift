@@ -873,29 +873,12 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertTrue(sut.locationManager.showLocationUnknownAlert)
     }
     
-    func test_whenHidePostcodeDropdownTriggered_givenShowPostcodeDropdownIsTrue_thenShowPostcodeDropdownIsFalse() {
-        let sut = makeSUT()
-        sut.showPostcodeDropdown = true
-        sut.hidePostcodeDropdown()
-        XCTAssertFalse(sut.showPostcodeDropdown)
-    }
-    
-    func test_whenHidePostcodeDropdownTriggered_givenShowPostcodeDropdownIsFalse_thenShowPostcodeDropdownIsFalse() {
-        let sut = makeSUT()
-        sut.showPostcodeDropdown = false
-        sut.hidePostcodeDropdown()
-        XCTAssertFalse(sut.showPostcodeDropdown)
-    }
-    
     func test_whenPostcodeTapped_thenPostcodeSearchStringPopulatedAndSearchResultsIsEmptyAndShowPostcodeDropdownIsFalse() {
         let sut = makeSUT()
         sut.postcodeSearchResults = ["GU99EP"]
         sut.postcodeTapped(postcode: "PG43AG")
         
         XCTAssertEqual(sut.postcodeSearchString, "PG43AG")
-        XCTAssertEqual(sut.postcodeSearchResults, [])
-        XCTAssertFalse(sut.showPostcodeDropdown)
-        
     }
     
     func test_whenPostcodeStringChanged_givenPostcodeStringNotEmpty_thenPostcodeSearchResultsPopulated() {
@@ -914,7 +897,7 @@ class StoresViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 0.5)
+        wait(for: [expectation], timeout: 2)
         
         container.services.verify(as: .postcodeService)
     }
@@ -928,7 +911,7 @@ class StoresViewModelTests: XCTestCase {
         let mockedLocationManager = MockedLocationManager(locationAuthStatus: locationAuthorisationStatus, setLocation: testLocation)
         let sut = StoresViewModel(container: container, locationManager: mockedLocationManager)
         
-//        trackForMemoryLeaks(sut)
+        trackForMemoryLeaks(sut)
         
         return sut
     }

@@ -36,10 +36,6 @@ struct ForgotPasswordView: View {
             static let sizeThreshold = 7
             static let largeScreenWidthMultiplier: CGFloat = 0.6
         }
-        
-        struct Button {
-            static let bottomPadding: CGFloat = 30
-        }
     }
     
     private var colorPalette: ColorPalette {
@@ -62,17 +58,16 @@ struct ForgotPasswordView: View {
                     
                     SnappyTextfield(
                         container: viewModel.container,
-                    text: $viewModel.email,
-                    hasError: $viewModel.emailHasError,
-                    labelText: LoginStrings.emailAddress.localized,
-                        largeTextLabelText: LoginStrings.email.localized.capitalized)
+                        text: $viewModel.email,
+                        hasError: $viewModel.emailHasError,
+                        labelText: LoginStrings.emailAddress.localized,
+                        largeTextLabelText: LoginStrings.email.localized.capitalized,
+                        keyboardType: .emailAddress,
+                        spellCheckingEnabled: false
+                    )
                     .keyboardType(.emailAddress)
                 }
                 .frame(height: Constants.EmailStack.emailStackHeight * scale)
-                
-                if sizeClass == .compact {
-                    Spacer()
-                }
                 
                 SnappyButton(
                     container: viewModel.container,
@@ -85,7 +80,9 @@ struct ForgotPasswordView: View {
                             await viewModel.submitTapped()
                         }
                     }
-                    .padding(.bottom, Constants.Button.bottomPadding)
+                    .padding(.top, Constants.vSpacing)
+                
+                Spacer()
             }
             .padding()
             .background(colorPalette.backgroundMain)

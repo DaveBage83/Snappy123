@@ -117,8 +117,21 @@ struct MemberDashboardView: View {
                             SnappyLogo()
                         }
                     })
-                    }
                 }
+            }.sheet(item: $viewModel.resetToken) { token in
+                ToastableViewContainer(content: {
+                    NavigationView {
+                        ResetPasswordView(viewModel: .init(
+                            container: viewModel.container,
+                            isInCheckout: false,
+                            resetToken: token.id,
+                            dismissHandler: { error in
+                                viewModel.container.appState.value.errors.append(error)
+                            })
+                        )
+                    }
+                }, viewModel: .init(container: viewModel.container, isModal: true))
+            }
         }
     }
     

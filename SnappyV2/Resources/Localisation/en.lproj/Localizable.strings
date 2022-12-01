@@ -702,3 +702,8 @@
 "ageRestriction.title" = "Age Restricted Item";
 "ageRestriction.message" = "This item is age restricted. Anyone who appears to be under the age of 25 must show valid ID to prove that they are over %@.";
 "ageRestriction.confirmAge" = "I am at least %@";
+
+// MARK: - NetworkAuthenticator
+"networkAuthenticator.errors.unabletounwrapself" = "Unable to unwrap self instance";
+"networkAuthenticator.errors.passwordresetfailure" = "Unable to reset password and sign in. Try requesting a new reset password email in case this link has expired.";
+"networkAuthenticator.errors.unknown" = "Internal error in NetworkAuthenticator";

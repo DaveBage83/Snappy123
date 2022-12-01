@@ -95,10 +95,6 @@ struct ResetPasswordView: View {
                     memberAlreadySignedInWarning
                     
                 }
-
-                if sizeClass == .compact {
-                    Spacer()
-                }
                 
                 SnappyButton(
                     container: viewModel.container,
@@ -107,19 +103,26 @@ struct ResetPasswordView: View {
                     title: viewModel.noMemberFound ? ResetPasswordStrings.submit.localized : Strings.General.close.localized,
                     largeTextTitle: nil,
                     icon: nil) {
+                        hideKeyboard()
                         Task {
                             await viewModel.submitTapped()
                         }
                     }
+                    .padding(.top, Constants.vSpacing)
+                
+                Spacer()
             }
             .padding()
+            .background(colorPalette.backgroundMain)
             
             if viewModel.isLoading {
                 LoadingView()
             }
         }
+        .edgesIgnoringSafeArea(.bottom)
+        .background(colorPalette.backgroundMain)
         .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
-        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: ResetPasswordStrings.title.localized)
+        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: ResetPasswordStrings.title.localized, navigationDismissType: .close)
         .onChange(of: viewModel.dismiss, perform: { dismiss in
             if dismiss {
                 presentation.wrappedValue.dismiss()

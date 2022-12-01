@@ -139,15 +139,9 @@ protocol MemberServiceProtocol {
     func loginWithGoogle(registeringFromScreen: RegisteringFromScreenType) async throws
     
     // Sends a password reset code to the member email. The recieved code along with
-    // the new password is sent using the resetPassword method below.
+    // the new password is sent using the resetPasswordAndSignIn method below.
     func resetPasswordRequest(email: String) async throws
-    
-    // Update password and can automatically sign in succesfully registering members
-    // Notes:
-    // resetToken - from the resetPasswordRequest and is required if the customer is not signed in
-    // currentPassword - required when the resetToken is not supplied (general path when customer signed in)
-    // email - always optional but required to sign in the member after the password has been changed
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws
+    func resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String, atCheckout: Bool) async throws
     
     // Automatically signs in succesfully registering members
     // Notes:
@@ -166,6 +160,9 @@ protocol MemberServiceProtocol {
     ) async throws -> Bool
     
     //* methods that require a member to be signed in *//
+    
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String, atCheckout: Bool) async throws
+    
     func logout() async throws
     
     func restoreLastUser() async throws
@@ -269,7 +266,7 @@ struct UserService: MemberServiceProtocol {
         // If we are here, we can retrieve a profile
         try await getProfile(filterDeliveryAddresses: false, loginContext: atCheckout ? .atCheckout(.email) : .outsideCheckout(.email))
         
-        // Mark the user login state as "one_time_password" in the keychain
+        // Mark the user login state as "email" in the keychain
         keychain[memberSignedInKey] = "email"
         
         // invalidate the cached results
@@ -357,7 +354,7 @@ struct UserService: MemberServiceProtocol {
             loginContext: registeringFromScreen == .billingCheckout ? .atCheckout(.appleSignIn) : .outsideCheckout(.appleSignIn)
         )
         
-        // Mark the user login state as "one_time_password" in the keychain
+        // Mark the user login state as "apple_sign_in" in the keychain
         keychain[memberSignedInKey] = "apple_sign_in"
     }
     
@@ -549,35 +546,51 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws  {
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String, atCheckout: Bool) async throws  {
         
-        if resetToken == nil && appState.value.userData.memberProfile == nil {
+        if appState.value.userData.memberProfile == nil {
             throw UserServiceError.memberRequiredToBeSignedIn
         }
         
         let webResult = try await webRepository
             .resetPassword(
-                resetToken: resetToken,
                 logoutFromAll: logoutFromAll,
                 password: password,
                 currentPassword: currentPassword
             ).singleOutput()
         
-        if webResult.success {
-            // if the user in not logged, i.e they have used the password recovery option
-            // then sign them in with the newly chosen password
-            var knownEmail = email
-            if knownEmail == nil {
-                knownEmail = webResult.email
-            }
-            if let email = knownEmail, appState.value.userData.memberProfile == nil {
-                do {
-                    try await login(email: email, password: password, atCheckout: atCheckout)
-                } catch {
-                    throw UserServiceError.unableToLoginAfterResetingPassword(error.localizedDescription)
-                }
+        if webResult.success == false {
+            throw UserServiceError.unableToResetPassword
+        }
+    }
+    
+    func resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String, atCheckout: Bool) async throws {
+        
+        let success = try await webRepository
+            .resetPasswordAndSignIn(
+                resetToken: resetToken,
+                logoutFromAll: logoutFromAll,
+                password: password
+            ).singleOutput()
+        
+        if success {
+            // If we are here, we have a newly sign in user so we clear past marketing options
+            let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
+            
+            // If we are here, we can retrieve a profile
+            try await getProfile(filterDeliveryAddresses: false, loginContext: atCheckout ? .atCheckout(.email) : .outsideCheckout(.email))
+            
+            // Mark the user login state as "email" in the keychain
+            keychain[memberSignedInKey] = "email"
+            
+            // invalidate the cached results
+            guaranteeMainThread {
+                appState.value.staticCacheData.mentionMeRefereeResult = nil
+                appState.value.staticCacheData.mentionMeDashboardResult = nil
             }
         } else {
+            // in theory the displayable APIErrorResult or NetworkAuthenticatorError would be
+            // thrown before ever getting here
             throw UserServiceError.unableToResetPassword
         }
     }
@@ -1244,11 +1257,13 @@ struct StubUserService: MemberServiceProtocol {
 
     func resetPasswordRequest(email: String) async throws { }
 
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws { }
+    func resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String, atCheckout: Bool) async throws { }
 
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool) async throws -> Bool {
         return false
     }
+    
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String, atCheckout: Bool) async throws { }
 
     func logout() async throws { }
 

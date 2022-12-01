@@ -79,8 +79,8 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         ])
         mockedEventLogger.actions = .init(expected: [
             .setCustomerID(profileUUID: member.uuid),
-            .sendEvent(for: .login(atCheckout ? .in : .outside), with: .appsFlyer, params: [:]),
-            .sendEvent(for: .login(atCheckout ? .in : .outside), with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+            .sendEvent(for: .login(.outside), with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login(.outside), with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
         ])
         
         // Configuring responses from repositories
@@ -124,8 +124,8 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         ])
         mockedEventLogger.actions = .init(expected: [
             .setCustomerID(profileUUID: member.uuid),
-            .sendEvent(for: .login(atCheckout ? .in : .outside), with: .appsFlyer, params: [:]),
-            .sendEvent(for: .login(atCheckout ? .in : .outside), with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+            .sendEvent(for: .login(.outside), with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login(.outside), with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
         ])
         
         // Configuring responses from repositories

@@ -54,11 +54,15 @@ protocol UserWebRepositoryProtocol: WebRepository {
     
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
     func resetPassword(
-        resetToken: String?,
         logoutFromAll: Bool,
         password: String,
-        currentPassword: String?
+        currentPassword: String
     ) -> AnyPublisher<UserSuccessResult, Error>
+    func resetPasswordAndSignIn(
+        resetToken: String,
+        logoutFromAll: Bool,
+        password: String
+    ) -> AnyPublisher<Bool, Error>
     func register(
         member: MemberProfileRegisterRequest,
         password: String,
@@ -294,31 +298,35 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.resetPasswordRequest(parameters))
     }
     
-    func resetPassword(
-        resetToken: String?,
+    func resetPasswordAndSignIn(
+        resetToken: String,
         logoutFromAll: Bool,
-        password: String,
-        currentPassword: String?
-    ) -> AnyPublisher<UserSuccessResult, Error> {
-        // see note (a)
-        if resetToken == nil && currentPassword == nil {
-            return Fail<UserSuccessResult, Error>(error: UserServiceError.invalidParameters(["either resetToken or currentPassword must be set"]))
-                .eraseToAnyPublisher()
-        }
+        password: String
+    ) -> AnyPublisher<Bool, Error> {
         
-        // required parameters
-        var parameters: [String: Any] = [
+        let parameters: [String: Any] = [
             "logoutFromAll": logoutFromAll,
+            "resetToken": resetToken,
             "password": password
         ]
         
-        // optional paramters
-        if let resetToken {
-            parameters["resetToken"] = resetToken
-        }
-        if let currentPassword {
-            parameters["currentPassword"] = currentPassword
-        }
+        return networkHandler.resetPasswordAndSignIn(
+            connectionTimeout: AppV2Constants.API.connectionTimeout,
+            parameters: parameters
+        )
+    }
+    
+    func resetPassword(
+        logoutFromAll: Bool,
+        password: String,
+        currentPassword: String
+    ) -> AnyPublisher<UserSuccessResult, Error> {
+
+        let parameters: [String: Any] = [
+            "logoutFromAll": logoutFromAll,
+            "password": password,
+            "currentPassword": currentPassword
+        ]
         
         return call(endpoint: API.resetPassword(parameters))
     }
@@ -454,7 +462,6 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         
         return networkHandler.signOut(
             connectionTimeout: AppV2Constants.API.connectionTimeout,
-            // TODO: add notification device paramters
             parameters: parameters
         )
     }

@@ -53,10 +53,7 @@ class ResetPasswordViewModel: ObservableObject {
         self.resetToken = resetToken
         self.dismissHandler = dismissHandler
         
-        // clear the app state because this view is now handling the token
-        container.appState.value.passwordResetCode = nil
-        
-       if noMemberFound {
+        if noMemberFound {
            setupPasswordFieldBindingsForHasErrors()
         }
     }
@@ -102,34 +99,24 @@ class ResetPasswordViewModel: ObservableObject {
         confirmationPasswordHasError = confirmationPassword.isEmpty || confirmationPasswordDifferent
         
         guard newPasswordHasError == false && confirmationPasswordHasError == false else {
-            self.container.appState.value.errors.append(ResetPasswordViewError.passwordFieldErrors)
+            container.appState.value.errors.append(ResetPasswordViewError.passwordFieldErrors)
             return
         }
         
         isLoading = true
         
         do {
-            try await self.container.services.memberService.resetPassword(
+            try await self.container.services.memberService.resetPasswordAndSignIn(
                 resetToken: self.resetToken,
                 logoutFromAll: false,
-                email: nil,
                 password: newPassword,
-                currentPassword: nil,
                 atCheckout: isInCheckout
             )
             Logger.member.log("Reset password")
             dismiss = true
         } catch {
-            switch error {
-            case UserServiceError.unableToLoginAfterResetingPassword:
-                // close the reset password view but show the failed to login error
-                Logger.member.error("Failed to login after resetting password with error: \(error.localizedDescription)")
-                dismiss = true
-                dismissHandler(error)
-            default:
-                Logger.member.error("Failed to reset password with error: \(error.localizedDescription)")
-                self.container.appState.value.errors.append(error)
-            }
+            Logger.member.error("Failed to reset password with error: \(error.localizedDescription)")
+            container.appState.value.errors.append(error)
         }
         
         self.isLoading = false

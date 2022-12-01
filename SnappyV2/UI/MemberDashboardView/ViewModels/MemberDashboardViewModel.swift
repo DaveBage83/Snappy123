@@ -242,6 +242,13 @@ class MemberDashboardViewModel: ObservableObject {
                 else { return }
                 self.resetToken = ResetToken(id: token)
             }.store(in: &cancellables)
+        
+        $resetToken
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] token in
+                self?.container.appState.value.passwordResetCode = nil
+            }.store(in: &cancellables)
     }
     
     private func setError(_ err: Error) {

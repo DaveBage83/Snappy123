@@ -93,6 +93,7 @@ extension APIErrorResult: LocalizedError {
 
 enum NetworkAuthenticatorError: Swift.Error {
     case selfError
+    case passwordReset
     case unknown
 }
 
@@ -100,9 +101,11 @@ extension NetworkAuthenticatorError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .selfError:
-            return "Unable to unwrap self instance"
+            return Strings.NetworkAuthenticator.Errors.unableToUnwrapSelf.localized
+        case .passwordReset:
+            return Strings.NetworkAuthenticator.Errors.passwordResetFailure.localized
         case .unknown:
-            return "Internal error in NetworkAuthenticator"
+            return Strings.NetworkAuthenticator.Errors.unknown.localized
         }
     }
 }
@@ -126,6 +129,7 @@ class NetworkAuthenticator {
     
     private let authenticationURL: URL
     private let signOutURL: URL
+    private let resetPasswordURL: URL
     
     private let accessTokenKey = "accessToken"
     private let refreshTokenKey = "refreshToken"
@@ -147,9 +151,15 @@ class NetworkAuthenticator {
         var success: Bool
     }
     
+    struct ApiResetPasswordAndSignInResult: Decodable {
+        var success: Bool
+        var token: ApiAuthenticationResult?
+    }
+    
     init(
         authenticateURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.authenticationURL)!,
         signOutURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.signOutURL)!,
+        resetPasswordURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.resetPasswordURL)!,
         accessToken: String? = nil,
         refreshToken: String? = nil,
         apiErrorEventHandler: @escaping ([String : Any]) -> Void = { _ in }
@@ -157,6 +167,7 @@ class NetworkAuthenticator {
         
         self.authenticationURL = authenticateURL
         self.signOutURL = signOutURL
+        self.resetPasswordURL = resetPasswordURL
         
         if let accessToken = accessToken {
             // use a specified access token and save it persistently
@@ -296,6 +307,49 @@ class NetworkAuthenticator {
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
             
+        }).eraseToAnyPublisher()
+        
+    }
+    
+    func resetPasswordAndSignIn(connectionTimeout: TimeInterval, parameters: [String: Any], withDebugTrace debugTrace: Bool = false) -> AnyPublisher<Bool, Error> {
+        
+        self.debugTrace = debugTrace
+        
+        var requestParameters: [String: Any] = [
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
+            "grant_type": "password",
+            "scope": "*"
+        ]
+        
+        // merge the parameters into the request replacing any of the existing
+        // entries with new values
+        requestParameters = requestParameters.merging(parameters) { (_, new) in new }
+        
+        let publisher: AnyPublisher<ApiResetPasswordAndSignInResult, Error> = requestURL(
+                resetPasswordURL,
+                connectionTimeout: connectionTimeout,
+                parameters: requestParameters
+            )
+            .share()
+            .eraseToAnyPublisher()
+        
+        return publisher.flatMap({ [weak self] resetAndAuthenticationResult -> AnyPublisher<Bool, Error> in
+            guard let self = self else {
+                // Note: No point attempting event sending if self is unavailable
+                return Fail<Bool, Error>(error: NetworkAuthenticatorError.selfError).eraseToAnyPublisher()
+            }
+            if
+                let token = resetAndAuthenticationResult.token,
+                resetAndAuthenticationResult.success
+            {
+                self.setAccessToken(to: token)
+                return Just(true)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            
+            return Fail<Bool, Error>(error: NetworkAuthenticatorError.passwordReset).eraseToAnyPublisher()
         }).eraseToAnyPublisher()
         
     }

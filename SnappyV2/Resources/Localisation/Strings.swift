@@ -1077,4 +1077,12 @@ public enum Strings {
             case instructionsWhenCoupon = "verifymobilenumber.entercodeview.instructionsWhenCoupon"
         }
     }
+    
+    public enum NetworkAuthenticator {
+        enum Errors: String, IterableSnappyString {
+            case unableToUnwrapSelf = "networkAuthenticator.errors.unabletounwrapself"
+            case passwordResetFailure = "networkAuthenticator.errors.passwordresetfailure"
+            case unknown = "networkAuthenticator.errors.unknown"
+        }
+    }
 }

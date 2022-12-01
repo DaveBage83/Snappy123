@@ -227,15 +227,9 @@ struct OrderListView: View {
     
     // MARK: - Item image
     @ViewBuilder private func itemImage(item: PastOrderLineItem) -> some View {
-        AsyncImage(urlString: item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-            Image.Placeholders.productPlaceholder
-                .resizable()
-                .scaledToFit()
-                .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
-                .cornerRadius(Constants.ItemImage.cornerRadius)
-        })
-        .cornerRadius(Constants.ItemImage.cornerRadius)
-        .basketAndPastOrderImage(container: viewModel.container)
+        AsyncImage(container: viewModel.container, urlString: item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+            .cornerRadius(Constants.ItemImage.cornerRadius)
+            .basketAndPastOrderImage(container: viewModel.container)
     }
 }
 

@@ -32,14 +32,9 @@ struct GlobalSearchCategoryCard: View {
     // MARK: - Main view
     var body: some View {
         VStack(spacing: Constants.spacing) {
-            AsyncImage(urlString: category.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                Image.Placeholders.productPlaceholder
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: Constants.itemImageHeight)
-            })
-            .scaledToFit()
-            .frame(width: Constants.itemImageHeight)
+            AsyncImage(container: container, urlString: category.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+                .scaledToFit()
+                .frame(width: Constants.itemImageHeight)
             
             Spacer()
             

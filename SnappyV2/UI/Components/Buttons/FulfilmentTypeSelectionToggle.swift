@@ -98,7 +98,7 @@ struct FulfilmentTypeSelectionToggle: View {
             viewModel.toggleFulfilmentMethod()
         } label: {
             HStack {
-                (type == .delivery ? Image.Icons.Truck.standard : Image.Icons.BagShopping.standard)
+                (type == .delivery ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.standard)
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()

@@ -36,14 +36,11 @@ struct ProductOptionsView: View {
                 ScrollViewReader { value in
                     VStack(spacing: Constants.spacing) {
                         VStack {
-                            AsyncImage(urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString) {
-                                Image.Placeholders.productPlaceholder
-                                    .resizable()
-                            }
-                            .scaledToFill()
-                            .frame(height: Constants.imageHeight)
-                            .clipShape(Rectangle())
-                            .brightness(Constants.brightness)
+                            AsyncImage(container: viewModel.container, urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+                                .scaledToFill()
+                                .frame(height: Constants.imageHeight)
+                                .clipShape(Rectangle())
+                                .brightness(Constants.brightness)
                             
                             ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true, showExpandableText: viewModel.showExpandedDescription))
                             

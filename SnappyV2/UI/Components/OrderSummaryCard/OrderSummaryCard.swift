@@ -101,20 +101,10 @@ struct OrderSummaryCard: View {
     // MARK: - Store logo
     
     @ViewBuilder private var storeLogo: some View {
-        if let logoURL = viewModel.storeLogoURL {
-            RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: logoURL))
-                .scaledToFit()
-                .frame(width: Constants.StoreLogo.size)
-                .cornerRadius(Constants.StoreLogo.cornerRadius)
-        } else {
-            Image.Stores.convenience
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
-                .cornerRadius(Constants.StoreLogo.cornerRadius)
-                .foregroundColor(colorPalette.textGrey1)
-        }
+        AsyncImage(container: viewModel.container, urlString: viewModel.storeLogoURLString)
+            .scaledToFit()
+            .frame(width: Constants.StoreLogo.size)
+            .cornerRadius(Constants.StoreLogo.cornerRadius)
     }
     
     // MARK: - Delivery status view
@@ -130,7 +120,7 @@ struct OrderSummaryCard: View {
             
             Spacer()
             
-            (viewModel.fulfilmentType == .delivery ? Image.Icons.Truck.standard : Image.Icons.BagShopping.standard)
+            (viewModel.fulfilmentType == .delivery ? Image.Icons.Delivery.standard : Image.Icons.BagShopping.standard)
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)

@@ -56,7 +56,7 @@ extension Image {
     }
     
     struct Placeholders {
-        static let productPlaceholder = Image("productPlaceholder")
+        static let productPlaceholder = Image(AppV2Constants.Business.placeholderImage)
     }
     
     struct Social {
@@ -73,10 +73,8 @@ extension Image {
             static let magnifyingGlass = Image("search")
         }
         
-        struct Truck {
-            static let standard = Image("truck")
-            static let filled = Image("truckFilled")
-            static let heavy = Image("truckHeavy")
+        struct Delivery {
+            static let standard = Image("moped")
         }
         
         struct Clock {
@@ -503,14 +501,6 @@ extension Image {
         struct Camera {
             static let camera = Image(systemName: "camera")
             static let cameraFilled = Image(systemName: "camera.filled")
-        }
-    }
-    
-    struct Fulfilment {
-        struct Truck {
-            static let standard = Image("truck")
-            static let filled = Image("truckFilled")
-            static let heavy = Image("truckHeavy")
         }
     }
     

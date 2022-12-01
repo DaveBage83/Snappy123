@@ -118,7 +118,12 @@ class InitialViewModel: ObservableObject {
         setupDriverNotification(with: appState)
         setupBusinessProfileIsLoaded(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
-        setupShowDeniedLocationAlert()        
+        setupShowDeniedLocationAlert()
+        clearAllStaleImageData()
+    }
+    
+    private func clearAllStaleImageData() {
+        container.services.imageService.clearAllStaleData()
     }
 
     private func restorePreviousState(with appState: Store<AppState>) async {

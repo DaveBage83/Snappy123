@@ -30,6 +30,8 @@ struct LoginView: View {
             static let topPadding: CGFloat = 50
             static let largeDeviceTopPadding: CGFloat = 200
             static let hPadding: CGFloat = 16
+            static let blurred: CGFloat = 20
+            static let notBlurred: CGFloat = 0
         }
     }
     
@@ -40,6 +42,9 @@ struct LoginView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    private let alertViewXPosition = UIScreen.screenWidth / 2
+    private let alertViewYPosition = UIScreen.screenHeight / 2
+
     init(loginViewModel: LoginViewModel, socialLoginViewModel: SocialMediaLoginViewModel) {
         self._viewModel = .init(wrappedValue: loginViewModel)
         self._socialLoginViewModel = .init(wrappedValue: socialLoginViewModel)
@@ -78,16 +83,20 @@ struct LoginView: View {
                 }
                 .padding()
                 .background(colorPalette.backgroundMain)
+                .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? Constants.LoginStack.blurred : Constants.LoginStack.notBlurred)
             } else {
                 CardOnBackgroundImageViewContainer(
                     container: viewModel.container,
                     image: Image.Branding.StockPhotos.deliveryMan) {
                         loginView
                     }
+                    .blur(radius: (viewModel.isLoading || socialLoginViewModel.isLoading) ? Constants.LoginStack.blurred : Constants.LoginStack.notBlurred)
             }
             
             if viewModel.isLoading || socialLoginViewModel.isLoading {
-                LoadingView()
+                AnimatedLoadingView(message: Strings.AnimatedLoadingView.loggingIn.localized)
+                    .position(x: alertViewXPosition,
+                              y: alertViewYPosition)
             }
         }
         .onAppear {

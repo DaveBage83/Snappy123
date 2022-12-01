@@ -111,16 +111,10 @@ struct StoreReviewView: View {
                     
                     HStack {
                         Spacer()
-                        AsyncImage(urlString: viewModel.review.logo?.absoluteString, placeholder: {
-                            Image.Placeholders.productPlaceholder
-                                .resizable()
-                                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                                .scaledToFill()
-                                .cornerRadius(Constants.Logo.cornerRadius)
-                        })
-                        .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                        .scaledToFit()
-                        .cornerRadius(Constants.Logo.cornerRadius)
+                        AsyncImage(container: viewModel.container, urlString: viewModel.review.logo?.absoluteString)
+                            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                            .scaledToFit()
+                            .cornerRadius(Constants.Logo.cornerRadius)
                         
                         VStack(alignment: .leading, spacing: Constants.Address.vStackSpacing) {
                             Text(viewModel.review.name)

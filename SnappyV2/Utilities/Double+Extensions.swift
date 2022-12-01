@@ -18,10 +18,15 @@ extension Double {
     // reason we are not passing currencyCode instead of RetailStoreCurrency
     // is because in the future RetailStoreCurrency might have more formatting
     // settings
-    func toCurrencyString(using currency: RetailStoreCurrency) -> String {
+    func toCurrencyString(using currency: RetailStoreCurrency, roundWholeNumbers: Bool = false) -> String {
         let formatter = NumberFormatter()
         formatter.currencyCode = currency.currencyCode
         formatter.numberStyle = .currency
+        
+        if roundWholeNumbers, self.truncatingRemainder(dividingBy: 1) == 0 {
+            formatter.maximumFractionDigits = 0
+        }
+
         // Possible future extension, e.g.:
         // formatter.locale = Locale(identifier: "es_ES")
         // formatter.groupingSeparator = ","

@@ -567,6 +567,7 @@ class ProductsViewModel: ObservableObject {
         selectedOffer = nil
         offerText = nil
         navigationWithIsSearchActive = 0
+        searchText = ""
     }
     
     private func getCategories() {
@@ -679,8 +680,13 @@ class ProductsViewModel: ObservableObject {
         case .priceLowToHigh:
             sortedItems = unsortedItems.sorted(by: \.price.price)
         case .caloriesLowToHigh:
-            sortedItems = unsortedItems.sorted(by: \.calories)
+            sortedItems = sortedByCaloriesAndAtoZ()
         }
+    }
+    
+    private func sortedByCaloriesAndAtoZ() -> [RetailStoreMenuItem] {
+        let alphabeticallySorted = unsortedItems.sorted(by: \.name)
+        return alphabeticallySorted.sorted(by: \.calories)
     }
     
     func resetSelectedItem() {

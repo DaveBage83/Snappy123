@@ -58,6 +58,8 @@ public enum Strings {
         case success = "general.success"
         case gotIt = "general.gotit"
         case start = "general.start"
+        case from = "general.from"
+        case min = "general.min"
         
         public enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
@@ -366,6 +368,7 @@ public enum Strings {
             case orderValueCondition = "storesview.deliverytiers.ordervaluecondition"
             case freeDelivery = "storesview.deliverytiers.free"
             case title = "storesview.deliverytiers.title"
+            case noMinOrder = "storesview.deliverytiers.nominorder"
         }
     }
     
@@ -1084,5 +1087,9 @@ public enum Strings {
             case passwordResetFailure = "networkAuthenticator.errors.passwordresetfailure"
             case unknown = "networkAuthenticator.errors.unknown"
         }
+    }
+    
+    public enum AnimatedLoadingView: String, IterableSnappyString {
+        case loggingIn = "loadingView.loggingin"
     }
 }

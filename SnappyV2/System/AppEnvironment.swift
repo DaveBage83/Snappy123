@@ -130,7 +130,9 @@ extension AppEnvironment {
             baseURL: AppV2Constants.API.baseURL
         )
         
-        let imageRepository = ImageWebRepository()
+        let imageRepository = AsyncImageWebRepository(
+            baseURL: AppV2Constants.API.baseURL,
+            networkHandler: networkHandler)
         
         let pushNotificationRepository = PushNotificationWebRepository(
             networkHandler: networkHandler,
@@ -167,6 +169,7 @@ extension AppEnvironment {
         let memberDBRepository = UserDBRepository(persistentStore: persistentStore)
         let checkoutDBRepository = CheckoutDBRepository(persistentStore: persistentStore)
         let addressDBRepository = AddressDBRepository(persistentStore: persistentStore)
+        let asyncImageDBRepository = AsyncImageDBRepository(persistentStore: persistentStore)
         
         return .init(
             businessProfileRepository: businessProfileDBRepository,
@@ -175,7 +178,8 @@ extension AppEnvironment {
             basketRepository: basketDBRepository,
             memberRepository: memberDBRepository,
             checkoutRepository: checkoutDBRepository,
-            addressRepository: addressDBRepository
+            addressRepository: addressDBRepository,
+            asyncImageRepository: asyncImageDBRepository
         )
     }
     
@@ -253,8 +257,9 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         
-        let imageService = ImageService(
+        let imageService = AsyncImageService(
             webRepository: webRepositories.imageRepository,
+            dbRepository: dbRepositories.asyncImageRepository,
             eventLogger: eventLogger
         )
         
@@ -294,7 +299,7 @@ extension DIContainer {
         let checkoutRepository: CheckoutWebRepository
         let addressRepository: AddressWebRepository
         let utilityRepository: UtilityWebRepository
-        let imageRepository: ImageWebRepository
+        let imageRepository: AsyncImageWebRepository
         let pushNotificationsWebRepository: PushNotificationWebRepository
         let eventLogger: EventLoggerWebRepository
     }
@@ -307,6 +312,7 @@ extension DIContainer {
         let memberRepository: UserDBRepository
         let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
+        let asyncImageRepository: AsyncImageDBRepository
     }
     
     struct UserDefaultsRepositories {

@@ -480,7 +480,7 @@ class ProductsViewModelTests: XCTestCase {
             checkoutService: MockedCheckoutService(expected: []),
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
-            imageService: MockedImageService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
             userPermissionsService: MockedUserPermissionsService(expected: [])
         )
@@ -876,13 +876,17 @@ class ProductsViewModelTests: XCTestCase {
         let sut = makeSUT()
         let item1 = RetailStoreMenuItem.mockedData
         let item2 = RetailStoreMenuItem.mockedDataComplex
+        let itemA = RetailStoreMenuItem.mockedDataWithNoCaloriesA
+        let itemB = RetailStoreMenuItem.mockedDataWithNoCaloriesB
         
-        sut.unsortedItems = [item1, item2]
+        sut.unsortedItems = [item1, itemB, itemA, item2]
         
         sut.sort(by: .caloriesLowToHigh)
         
         XCTAssertEqual(sut.sortedItems[0], item2)
         XCTAssertEqual(sut.sortedItems[1], item1)
+        XCTAssertEqual(sut.sortedItems[2], itemA)
+        XCTAssertEqual(sut.sortedItems[3], itemB)
     }
     
     func test_whenSortByDefaultSelected_thenItemsInCorrectOrderAndSortedItemsIsEmpty() {

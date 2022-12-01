@@ -461,5 +461,4 @@ struct BasketView_Previews: PreviewProvider {
             .previewCases()
     }
 }
-
 #endif

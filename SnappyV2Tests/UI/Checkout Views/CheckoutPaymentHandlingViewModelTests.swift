@@ -531,8 +531,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         sut.creditCardName = cardDetails.cardName
         sut.creditCardNumber = cardDetails.number
-        sut.creditCardExpiryMonth = cardDetails.expiryMonth
-        sut.creditCardExpiryYear = cardDetails.expiryYear
+        sut.creditCardExpiryMonth = String(cardDetails.expiryMonth)
+        sut.creditCardExpiryYear = String(cardDetails.expiryYear)
         sut.creditCardCVV = cardDetails.cvv
         
         await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
@@ -575,8 +575,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         sut.creditCardName = cardDetails.cardName
         sut.creditCardNumber = cardDetails.number
-        sut.creditCardExpiryMonth = cardDetails.expiryMonth
-        sut.creditCardExpiryYear = cardDetails.expiryYear
+        sut.creditCardExpiryMonth = String(cardDetails.expiryMonth)
+        sut.creditCardExpiryYear = String(cardDetails.expiryYear)
         sut.creditCardCVV = cardDetails.cvv
         
         await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
@@ -620,8 +620,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         sut.creditCardName = cardDetails.cardName
         sut.creditCardNumber = cardDetails.number
-        sut.creditCardExpiryMonth = cardDetails.expiryMonth
-        sut.creditCardExpiryYear = cardDetails.expiryYear
+        sut.creditCardExpiryMonth = String(cardDetails.expiryMonth)
+        sut.creditCardExpiryYear = String(cardDetails.expiryYear)
         sut.creditCardCVV = cardDetails.cvv
         
         await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
@@ -669,8 +669,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         sut.creditCardName = cardDetails.cardName
         sut.creditCardNumber = cardDetails.number
-        sut.creditCardExpiryMonth = cardDetails.expiryMonth
-        sut.creditCardExpiryYear = cardDetails.expiryYear
+        sut.creditCardExpiryMonth = String(cardDetails.expiryMonth)
+        sut.creditCardExpiryYear = String(cardDetails.expiryYear)
         sut.creditCardCVV = cardDetails.cvv
         
         await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
@@ -896,8 +896,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let sut = makeSUT()
         sut.creditCardName = cardDetails.cardName
         sut.creditCardNumber = cardDetails.number
-        sut.creditCardExpiryMonth = cardDetails.expiryMonth
-        sut.creditCardExpiryYear = cardDetails.expiryYear
+        sut.creditCardExpiryMonth = String(cardDetails.expiryMonth)
+        sut.creditCardExpiryYear = String(cardDetails.expiryYear)
         sut.creditCardCVV = cardDetails.cvv
         
         let expectation = expectation(description: "setupCardType")

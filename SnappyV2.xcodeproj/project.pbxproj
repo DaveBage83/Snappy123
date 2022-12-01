@@ -4920,7 +4920,7 @@
 			repositoryURL = "https://github.com/checkout/frames-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				minimumVersion = 4.0.0;
 			};
 		};
 		AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {

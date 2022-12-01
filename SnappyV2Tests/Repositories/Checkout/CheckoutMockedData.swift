@@ -274,8 +274,8 @@ extension DriverLocationMapParameters {
 extension CheckoutCardDetails {
     static let mockedCard = CheckoutCardDetails(
         number: "4242424242424242",
-        expiryMonth: "05",
-        expiryYear: "25",
+        expiryMonth: 05,
+        expiryYear: 25,
         cvv: "100",
         cardName: "Some Name"
     )

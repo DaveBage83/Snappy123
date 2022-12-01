@@ -11,21 +11,32 @@ import Frames
 struct Checkoutcom3DSHandleView: UIViewControllerRepresentable {
     typealias UIViewControllerType = ThreedsWebViewController
     
-    init(urls: CheckoutCom3DSURLs, delegate: ThreedsWebViewControllerDelegate) {
-        self.delegate = delegate
-        self.redirectURL = urls.redirectUrl
-        self.successURL = urls.successUrl
-        self.failURL = urls.failUrl
-    }
-    
+    private let container: DIContainer
+    private let paymentEvironment: PaymentGatewayMode
     private let delegate: ThreedsWebViewControllerDelegate
     private let redirectURL: URL
     private let successURL: URL
     private let failURL: URL
     
+    init(container: DIContainer, urls: CheckoutCom3DSURLs, delegate: ThreedsWebViewControllerDelegate) {
+        self.container = container
+        self.delegate = delegate
+        self.redirectURL = urls.redirectUrl
+        self.successURL = urls.successUrl
+        self.failURL = urls.failUrl
+        
+        if let paymentGateway = self.container.appState.value.userData.selectedStore.value?.paymentGateways?.first(where: { $0.name ==  "checkoutcom"}) {
+            self.paymentEvironment = paymentGateway.mode
+        } else if let  paymentGateway = self.container.appState.value.businessData.businessProfile?.paymentGateways.first(where: { $0.name ==  "checkoutcom"}) {
+            self.paymentEvironment = paymentGateway.mode
+        } else {
+            self.paymentEvironment = .sandbox
+        }
+    }
+    
     func makeUIViewController(context: Context) -> ThreedsWebViewController {
-        let threeDSWebViewController = ThreedsWebViewController(successUrl: successURL, failUrl: failURL)
-        threeDSWebViewController.authUrl = redirectURL
+        let threeDSWebViewController = ThreedsWebViewController(environment: paymentEvironment == .live ? .live : .sandbox, successUrl: successURL, failUrl: failURL)
+        threeDSWebViewController.authURL = redirectURL
         threeDSWebViewController.delegate = delegate
         return threeDSWebViewController
     }

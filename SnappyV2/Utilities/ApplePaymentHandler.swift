@@ -204,10 +204,10 @@ extension ApplePaymentHandler {
     }
 }
 
-extension CheckoutAPIClient {
-    func createApplePayToken(paymentData: Data) async throws -> CkoCardTokenResponse {
+extension CheckoutAPIService {
+    func createApplePayToken(paymentData: Data) async throws -> TokenDetails {
        return try await withCheckedThrowingContinuation { continuation in
-            createApplePayToken(paymentData: paymentData) { result in
+           createToken(.applePay(ApplePay(tokenData: paymentData))) { result in
                 continuation.resume(with: result)
             }
         }
@@ -225,7 +225,7 @@ extension ApplePaymentHandler: PKPaymentAuthorizationControllerDelegate {
         } else {
             guard let publicKey = self.publicKey else { paymentStatus = .failure; return }
             
-            let checkoutAPIClient = CheckoutAPIClient(publicKey: publicKey, environment: paymentGatewayMode == .live ? .live : .sandbox)
+            let checkoutAPIClient = CheckoutAPIService(publicKey: publicKey, environment: paymentGatewayMode == .live ? .live : .sandbox)
             let paymentData = payment.token.paymentData
             
             Task {

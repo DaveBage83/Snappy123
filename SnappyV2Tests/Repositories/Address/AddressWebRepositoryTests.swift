@@ -70,7 +70,7 @@ final class AddressWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
-    func test_findAddresses_givenInvalidOrUknownPostcode_returnNilResult() throws {
+    func test_findAddresses_givenInvalidOrUknownPostcode_returnNilResult() async throws {
         let data: [FoundAddress]? = nil
 
         let parameters: [String: Any] = [
@@ -79,14 +79,13 @@ final class AddressWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.findAddresses(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
-
-        sut.findAddresses(postcode: "ZZ99 9ZZ", countryCode: "UK").sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        
+        do {
+            let result = try await sut.findAddresses(postcode: "ZZ99 9ZZ", countryCode: "UK").singleOutput()
+            XCTAssertEqual(data, result)
+        } catch {
+            XCTFail("Unexpected error", file: #file, line: #line)
+        }
     }
     
     // MARK: - getCountries()

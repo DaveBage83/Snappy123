@@ -108,6 +108,9 @@ struct ProductsView: View {
                     }
             }
         }
+        .onDisappear {
+            viewModel.clearAppstateSearchQuery()
+        }
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
                 SettingsButton(viewModel: .init(container: viewModel.container))
@@ -115,6 +118,7 @@ struct ProductsView: View {
         })
         .onTapGesture {
             hideKeyboard()
+            viewModel.clearSearchResults()
         }
         .withLoadingToast(loading: .constant(viewModel.isSearching))
     }
@@ -403,6 +407,9 @@ struct ProductsView: View {
                                 associatedSearchTerm: viewModel.associatedSearchTerm,
                                 productSelected: { product in
                                     viewModel.selectItem(product)
+                                    Task {
+                                        await viewModel.storeSearchQuery(viewModel.searchText)
+                                    }
                                 }
                             ),
                             productsViewModel: viewModel

@@ -352,6 +352,10 @@
         <relationship name="menuFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuFetch" inverseName="dealSections" inverseEntity="RetailStoreMenuFetch"/>
         <relationship name="menuItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem" inverseName="mainCategory" inverseEntity="RetailStoreMenuItem"/>
     </entity>
+    <entity name="MenuItemSearch" representedClassName="MenuItemSearchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
     <entity name="PaymentGateway" representedClassName="PaymentGatewayMO" syncable="YES" codeGenerationType="class">
         <attribute name="mode" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>

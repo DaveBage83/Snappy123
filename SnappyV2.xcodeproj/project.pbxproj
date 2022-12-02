@@ -313,7 +313,7 @@
 		556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */; };
 		5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5584934728328B5A00F84AC1 /* DayChipTests.swift */; };
 		558579FF2908869C0017855B /* LoadingDotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558579FE2908869C0017855B /* LoadingDotsView.swift */; };
-		558620BA29326EE0005EB336 /* Postcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620B929326EDF005EB336 /* Postcode.swift */; };
+		558620BA29326EE0005EB336 /* SearchHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620B929326EDF005EB336 /* SearchHistory.swift */; };
 		558620BD29326F7A005EB336 /* SearchHistoryDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BC29326F7A005EB336 /* SearchHistoryDBRepository.swift */; };
 		558620BF29327476005EB336 /* Postcode+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BE29327476005EB336 /* Postcode+CoreData.swift */; };
 		558620C12932ABAC005EB336 /* SearchHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620C02932ABAC005EB336 /* SearchHistoryService.swift */; };
@@ -330,7 +330,7 @@
 		55A840C32936798900E75E5E /* MockedSearchHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A840C22936798900E75E5E /* MockedSearchHistoryService.swift */; };
 		55A840C629368AC400E75E5E /* MockedSearchHistoryDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A840C529368AC400E75E5E /* MockedSearchHistoryDBRepository.swift */; };
 		55A840C829372B1E00E75E5E /* SearchHistoryServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A840C729372B1E00E75E5E /* SearchHistoryServiceTests.swift */; };
-		55A840CB29372CC800E75E5E /* PostcodeMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A840CA29372CC800E75E5E /* PostcodeMockedData.swift */; };
+		55A840CB29372CC800E75E5E /* SearchHistoryMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A840CA29372CC800E75E5E /* SearchHistoryMockedData.swift */; };
 		55A840CD2937305C00E75E5E /* SearchHistoryDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A840CC2937305C00E75E5E /* SearchHistoryDBRepositoryTests.swift */; };
 		55ADF22427E1CDEC00A65CDC /* LoginViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55ADF22327E1CDEC00A65CDC /* LoginViewModelTests.swift */; };
 		55ADF22627E1DB9100A65CDC /* CreateAccountViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55ADF22527E1DB9100A65CDC /* CreateAccountViewModelTests.swift */; };
@@ -427,6 +427,7 @@
 		55F957CE287F5CFD00A99BA3 /* EditAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */; };
 		55F957D0288011B900A99BA3 /* EditAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */; };
 		55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */; };
+		55FCDCB72938EE870000E53A /* MenuItemSearch+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FCDCB62938EE870000E53A /* MenuItemSearch+CoreData.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
 		AF00E20F28D38928001B8184 /* ExpandableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF00E20E28D38928001B8184 /* ExpandableContentView.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
@@ -959,7 +960,7 @@
 		556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBannerViewTests.swift; sourceTree = "<group>"; };
 		5584934728328B5A00F84AC1 /* DayChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChipTests.swift; sourceTree = "<group>"; };
 		558579FE2908869C0017855B /* LoadingDotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingDotsView.swift; sourceTree = "<group>"; };
-		558620B929326EDF005EB336 /* Postcode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Postcode.swift; sourceTree = "<group>"; };
+		558620B929326EDF005EB336 /* SearchHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistory.swift; sourceTree = "<group>"; };
 		558620BC29326F7A005EB336 /* SearchHistoryDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryDBRepository.swift; sourceTree = "<group>"; };
 		558620BE29327476005EB336 /* Postcode+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Postcode+CoreData.swift"; sourceTree = "<group>"; };
 		558620C02932ABAC005EB336 /* SearchHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryService.swift; sourceTree = "<group>"; };
@@ -976,7 +977,7 @@
 		55A840C22936798900E75E5E /* MockedSearchHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedSearchHistoryService.swift; sourceTree = "<group>"; };
 		55A840C529368AC400E75E5E /* MockedSearchHistoryDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedSearchHistoryDBRepository.swift; sourceTree = "<group>"; };
 		55A840C729372B1E00E75E5E /* SearchHistoryServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryServiceTests.swift; sourceTree = "<group>"; };
-		55A840CA29372CC800E75E5E /* PostcodeMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeMockedData.swift; sourceTree = "<group>"; };
+		55A840CA29372CC800E75E5E /* SearchHistoryMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryMockedData.swift; sourceTree = "<group>"; };
 		55A840CC2937305C00E75E5E /* SearchHistoryDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryDBRepositoryTests.swift; sourceTree = "<group>"; };
 		55ADF22327E1CDEC00A65CDC /* LoginViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModelTests.swift; sourceTree = "<group>"; };
 		55ADF22527E1DB9100A65CDC /* CreateAccountViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewModelTests.swift; sourceTree = "<group>"; };
@@ -1071,6 +1072,7 @@
 		55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressView.swift; sourceTree = "<group>"; };
 		55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressViewModel.swift; sourceTree = "<group>"; };
 		55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDisplayCardTests.swift; sourceTree = "<group>"; };
+		55FCDCB62938EE870000E53A /* MenuItemSearch+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MenuItemSearch+CoreData.swift"; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
 		AF00E20E28D38928001B8184 /* ExpandableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContentView.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -2252,13 +2254,14 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
-		558620B829326ECD005EB336 /* Postcode */ = {
+		558620B829326ECD005EB336 /* SearchHistory */ = {
 			isa = PBXGroup;
 			children = (
-				558620B929326EDF005EB336 /* Postcode.swift */,
+				558620B929326EDF005EB336 /* SearchHistory.swift */,
+				55FCDCB62938EE870000E53A /* MenuItemSearch+CoreData.swift */,
 				558620BE29327476005EB336 /* Postcode+CoreData.swift */,
 			);
-			path = Postcode;
+			path = SearchHistory;
 			sourceTree = "<group>";
 		};
 		558620BB29326F6B005EB336 /* SearchHistory */ = {
@@ -2298,7 +2301,7 @@
 		55A840C929372C9F00E75E5E /* Postcode */ = {
 			isa = PBXGroup;
 			children = (
-				55A840CA29372CC800E75E5E /* PostcodeMockedData.swift */,
+				55A840CA29372CC800E75E5E /* SearchHistoryMockedData.swift */,
 				55A840CC2937305C00E75E5E /* SearchHistoryDBRepositoryTests.swift */,
 			);
 			path = Postcode;
@@ -2975,7 +2978,7 @@
 		AFAE478926F1EE0100B4FEC3 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				558620B829326ECD005EB336 /* Postcode */,
+				558620B829326ECD005EB336 /* SearchHistory */,
 				0AF72F202791ACD20055ECFD /* Address */,
 				0AF16A75272718880020A2CF /* Basket */,
 				0AA856DF27CF94BA00038072 /* BusinessProfile */,
@@ -3795,7 +3798,7 @@
 				0AFCE6F72859A25B00BC8325 /* MapKit+Extensions.swift in Sources */,
 				556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */,
 				AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */,
-				558620BA29326EE0005EB336 /* Postcode.swift in Sources */,
+				558620BA29326EE0005EB336 /* SearchHistory.swift in Sources */,
 				0ADB1D2D28C75FD8008EBA11 /* StoreReviewView.swift in Sources */,
 				AFF1DE6828B507E80026FFA2 /* AxesSet.swift in Sources */,
 				AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */,
@@ -3819,6 +3822,7 @@
 				AFAE47A826F3825E00B4FEC3 /* RetailStoresWebRepository.swift in Sources */,
 				AFF1DE5228B502B70026FFA2 /* CardCheck.swift in Sources */,
 				AFAE479D26F24DAD00B4FEC3 /* AppEnvironment.swift in Sources */,
+				55FCDCB72938EE870000E53A /* MenuItemSearch+CoreData.swift in Sources */,
 				0AA6292127BFF325005BFDD6 /* Location.swift in Sources */,
 				0AF2A4AF26F710A300E5C238 /* WebRepository.swift in Sources */,
 				55DAA15F281AA5A100BF3F16 /* TabBarView.swift in Sources */,
@@ -4009,7 +4013,7 @@
 				0A86C8FA270057CE008F16E1 /* TestHelpers.swift in Sources */,
 				0A6A3CC0276F262800D77617 /* MockedUserService.swift in Sources */,
 				55C815E927E7EDD40028851F /* LoyaltyViewModelTests.swift in Sources */,
-				55A840CB29372CC800E75E5E /* PostcodeMockedData.swift in Sources */,
+				55A840CB29372CC800E75E5E /* SearchHistoryMockedData.swift in Sources */,
 				55B945EF2890038900CFC254 /* ManualInputAddressViewModelTests.swift in Sources */,
 				0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */,
 				0AF8E66C2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift in Sources */,

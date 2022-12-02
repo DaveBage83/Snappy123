@@ -14,15 +14,23 @@ enum SearchHistoryError: Swift.Error, Equatable {
 }
 
 protocol SearchHistoryDBRepositoryProtocol {
+    // Postcode methods
     func fetchPostcode(using postcodeString: String) -> AnyPublisher<Postcode?, Error>
     func store(postcode: String) -> AnyPublisher<Postcode?, Error>
     func fetchAllPostcodes() -> [Postcode]?
+    func deletePostcode(postcodeString: String) -> AnyPublisher<Bool, Error>
+    
+    // Searched menu item methods
+    func fetchMenuItemSearch(using menuItemSearchString: String) -> AnyPublisher<MenuItemSearch?, Error>
+    func store(searchedMenuItem: String) -> AnyPublisher<MenuItemSearch?, Error>
+    func fetchAllMenuItemSearches() -> [MenuItemSearch]?
+    func deleteMenuItemSearch(menuItemSearchString: String) -> AnyPublisher<Bool, Error>
 }
 
 struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
     let persistentStore: PersistentStore
     
-    // Fetch postcode
+    // MARK: - Postcode methods
     func fetchPostcode(using postcodeString: String) -> AnyPublisher<Postcode?, Error> {
         let fetchRequest = PostcodeMO.fetchRequest(postcode: postcodeString)
         return persistentStore
@@ -49,7 +57,7 @@ struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
      
             return postcodes
         } catch {
-            Logger.postcodeStorage.info("No postcodes fetched")
+            Logger.searchHistoryStorage.info("No postcodes fetched")
             return nil
         }
     }
@@ -94,5 +102,90 @@ struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
                 }
         }
         return Fail(error: SearchHistoryError.unableToSave).eraseToAnyPublisher()
+    }
+    
+    // MARK: - Searched menu item methods
+    
+    // Fetch searched menu item
+    func fetchMenuItemSearch(using menuItemSearchString: String) -> AnyPublisher<MenuItemSearch?, Error> {
+        let fetchRequest = MenuItemSearchMO.fetchRequest(name: menuItemSearchString)
+        return persistentStore
+            .fetch(fetchRequest) {
+                MenuItemSearch(managedObject: $0)
+            }
+            .map { $0.first }
+            .eraseToAnyPublisher()
+    }
+    
+    func fetchAllMenuItemSearches() -> [MenuItemSearch]? {
+        let fetchRequest = MenuItemSearchMO.fetchAllMenuItemSearches()
+        var searchedMenuItems = [MenuItemSearch]()
+        
+        do {
+            let storedResults = try persistentStore.fetch(fetchRequest)
+            
+            storedResults?.forEach { result in
+                if let timestamp = result.timestamp, let name = result.name {
+                    searchedMenuItems.append(MenuItemSearch(timestamp: timestamp, name: name))
+                }
+                
+            }
+     
+            return searchedMenuItems
+        } catch {
+            Logger.searchHistoryStorage.info("No menu items found fetched")
+            return nil
+        }
+    }
+    
+    func deleteMenuItemSearch(menuItemSearchString: String) -> AnyPublisher<Bool, Error> {
+        return persistentStore
+            .update { context in
+                try MenuItemSearchMO.delete(
+                    fetchRequest: MenuItemSearchMO.fetchRequestForDeletion(name: menuItemSearchString),
+                    in: context)
+                return true
+            }
+    }
+    
+    // Store fetched menu item
+    func store(searchedMenuItem: String) -> AnyPublisher<MenuItemSearch?, Error> {
+        let searchedMenuItems = fetchAllMenuItemSearches()
+        
+        let trimmedSearchStrings = searchedMenuItems?.compactMap({ $0.name.removeWhitespace() })
+        
+        let searchedTrimmedString = searchedMenuItem.removeWhitespace()
+        
+        // If there are no matching menu item searches then we will save this one
+        if let searchedMenuItems, let matchingSearchQuery = searchedMenuItems.filter({ $0.name == searchedMenuItem }).first {
+            let _ = deleteMenuItemSearch(menuItemSearchString: matchingSearchQuery.name)
+            return persistentStore
+                .update { context in
+                    let searchedMenuItem = MenuItemSearch(timestamp: Date(), name: searchedMenuItem)
+                    return searchedMenuItem.store(in: context).flatMap {
+                        MenuItemSearch(managedObject: $0)
+                    }
+                }
+        } else {
+            
+            // First check if we have more than the allowed number of searches in the db as specified by the AppConstants
+            if let searchedMenuItems, searchedMenuItems.count > AppV2Constants.Business.maximumPostcodes {
+                // If so, get the earliest saved one...
+                let searchedMenuItemToDelete = searchedMenuItems.min(by: { $0.timestamp < $1.timestamp })?.name
+                
+                // ... and delete it
+                if let searchedMenuItemToDelete {
+                    let _ = deleteMenuItemSearch(menuItemSearchString: searchedMenuItemToDelete)
+                }
+            }
+            
+            return persistentStore
+                .update { context in
+                    let searchedMenuItem = MenuItemSearch(timestamp: Date(), name: searchedMenuItem)
+                    return searchedMenuItem.store(in: context).flatMap {
+                        MenuItemSearch(managedObject: $0)
+                    }
+                }
+        }
     }
 }

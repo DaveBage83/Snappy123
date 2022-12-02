@@ -13,3 +13,9 @@ struct Postcode: Identifiable, Hashable {
     let timestamp: Date
     let postcode: String
 }
+
+struct MenuItemSearch: Identifiable, Hashable {
+    let id = UUID()
+    let timestamp: Date
+    let name: String
+}

@@ -24,6 +24,7 @@ struct AppState: Equatable {
     var storeMenu = StoreMenu()
     var retailStoreReview: RetailStoreReview?
     var passwordResetCode: String?
+    var searchHistoryData = SearchHistoryData()
     
     // Toast properties
     var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
@@ -111,6 +112,12 @@ extension AppState {
         var mentionMeRefereeResult: MentionMeRequestResult?
         var mentionMeOfferResult: MentionMeRequestResult?
         var mentionMeDashboardResult: MentionMeRequestResult?
+    }
+}
+
+extension AppState {
+    struct SearchHistoryData: Equatable {
+        var latestProductSearch: String?
     }
 }
 

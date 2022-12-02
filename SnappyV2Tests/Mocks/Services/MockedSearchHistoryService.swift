@@ -14,6 +14,9 @@ struct MockedSearchHistoryService: Mock, SearchHistoryServiceProtocol {
         case getPostcode(postcodeString: String)
         case storePostcode(postcodeString: String)
         case getAllPostcodes
+        case getMenuItemSearch(menuItemSearchString: String)
+        case storeMenuItemSearch(menuItemSearchString: String)
+        case getAllMenuItemSearches
     }
     
     let actions: MockActions<Action>
@@ -34,5 +37,19 @@ struct MockedSearchHistoryService: Mock, SearchHistoryServiceProtocol {
     func getAllPostcodes() async -> [SnappyV2.Postcode]? {
         register(.getAllPostcodes)
         return [.init(timestamp: Date(), postcode: "GU99EP")]
+    }
+    
+    func getMenuItemSearch(menuItemSearchString: String) async -> SnappyV2.MenuItemSearch? {
+        register(.getMenuItemSearch(menuItemSearchString: menuItemSearchString))
+        return nil
+    }
+    
+    func storeMenuItemSearch(menuItemSearchString: String) async {
+        register(.storeMenuItemSearch(menuItemSearchString: menuItemSearchString))
+    }
+    
+    func getAllMenuItemSearches() async -> [SnappyV2.MenuItemSearch]? {
+        register(.getAllMenuItemSearches)
+        return [.mockedData]
     }
 }

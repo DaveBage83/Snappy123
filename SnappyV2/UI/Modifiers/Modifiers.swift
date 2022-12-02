@@ -480,6 +480,27 @@ extension View {
     }
 }
 
+class WithSearchHistoryModifierViewModel: ObservableObject {
+    let container: DIContainer
+    @Published var showPostcodeDropdown = false
+    @Published var postcodeSearchResults = [String]()
+//    @Published var storedPostcodes: [Postcode]?
+//    @Published var textfieldText: String
+    
+//    private var cancellables = Set<AnyCancellable>()
+    
+    init(container: DIContainer) {
+        self.container = container
+//        setupTextfieldText()
+    }
+    
+//    func postcodeTapped(postcode: String) {
+//        textfieldText = postcode
+//        postcodeSearchResults = []
+//        showPostcodeDropdown = false
+//    }
+}
+
 struct WithSearchHistory: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
         
@@ -495,7 +516,7 @@ struct WithSearchHistory: ViewModifier {
     
     @Binding var searchResults: [String]
     
-    var showSearchHistoryDropDown: Bool {
+    var showPostcodeDropDown: Bool {
         searchResults.isEmpty == false
     }
     
@@ -516,25 +537,28 @@ struct WithSearchHistory: ViewModifier {
     }
     
     @ViewBuilder private var searchHistoryDropdown: some View {
-        if showSearchHistoryDropDown {
+        if showPostcodeDropDown {
             VStack(alignment: .leading, spacing: spacing) {
-                    ForEach($searchResults, id: \.self) { postcode in
-                            Button {
-                                textfieldTextSetter(postcode.wrappedValue)
-                            } label: {
-                                Text(postcode.wrappedValue)
-                                    .font(.Body2.semiBold())
-                                    .foregroundColor(colorPalette.typefacePrimary)
-                            }
-                            .padding(.horizontal, hPadding)
-                            .padding(.vertical, vPadding)
-                            
-                            Divider()
-                        }
+                ForEach($searchResults, id: \.self) { postcode in
+                    Button {
+                        textfieldTextSetter(postcode.wrappedValue)
+                    } label: {
+                        HStack {
+                            Text(postcode.wrappedValue)
+                                .font(.Body2.semiBold())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                            Spacer()
+                        }.frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, hPadding)
+                    .padding(.vertical, vPadding)
+                    
+                    Divider()
                 }
+            }
             .frame(width: width)
-                .background(Color.white)
-                .standardCardFormat()
+            .background(Color.white)
+            .standardCardFormat()
         }
     }
 }

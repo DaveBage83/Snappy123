@@ -123,6 +123,10 @@ class ProductIncrementButtonViewModel: ObservableObject {
     private func updateBasket(newValue: Int) async {
         self.isUpdatingQuantity = true
         
+        if let latestSearchTerm = container.appState.value.searchHistoryData.latestProductSearch {
+            await container.services.searchHistoryService.storeMenuItemSearch(menuItemSearchString: latestSearchTerm)
+        }
+        
         // Add item
         if self.basketQuantity == 0 {
             let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, sizeId: nil, bannerAdvertId: nil, options: nil, instructions: nil)

@@ -222,6 +222,7 @@ extension AppEnvironment {
         let retailStoreMenuService = RetailStoreMenuService(
             webRepository: webRepositories.retailStoreMenuRepository,
             dbRepository: dbRepositories.retailStoreMenuRepository,
+            searchHistoryDBRepository: dbRepositories.searchHistoryRepository,
             appState: appState,
             eventLogger: eventLogger
         )

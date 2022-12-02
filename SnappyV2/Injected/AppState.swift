@@ -122,16 +122,7 @@ extension AppState {
 }
 
 extension AppState {
-    struct Notifications: Equatable {
-        // Add/change/remove item to/in/from basket toasts
-        var showAddItemToBasketToast = false
-        var addItemToBasketAlertToast: AlertToast = AlertToast(
-            displayMode: .banner(.pop),
-            type: .complete(.snappyRed),
-            title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
-            subTitle: .constant(Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized), tapToDismiss: false
-        )
-    }
+    struct Notifications: Equatable {}
 }
 
 extension AppState {

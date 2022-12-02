@@ -14,7 +14,6 @@ class RootViewModel: ObservableObject {
     
     @Published var selectedTab: Tab
     @Published var basketTotal: String?
-    @Published var showAddItemToBasketToast: Bool
     
     private var showing = false
     private var cancellables = Set<AnyCancellable>()
@@ -23,24 +22,10 @@ class RootViewModel: ObservableObject {
         self.container = container
         let appState = container.appState
         _selectedTab = .init(initialValue: appState.value.routing.selectedTab)
-        _showAddItemToBasketToast = .init(initialValue: appState.value.notifications.showAddItemToBasketToast)
         
         setupBindToSelectedTab(with: appState)
         setupBasketTotal(with: appState)
-        setupShowToast(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
-    }
-    
-    private func setupShowToast(with appState: Store<AppState>) {
-        appState
-            .map(\.notifications.showAddItemToBasketToast)
-            .removeDuplicates()
-            .assignWeak(to: \.showAddItemToBasketToast, on: self)
-            .store(in: &cancellables)
-        
-        $showAddItemToBasketToast
-            .sink { appState.value.notifications.showAddItemToBasketToast = $0 }
-            .store(in: &cancellables)
     }
     
     private func setupBindToSelectedTab(with appState: Store<AppState>) {

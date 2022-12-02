@@ -50,7 +50,6 @@ struct AppV2Constants {
         static var userDeviceIdentifier: String? = {
             return UIDevice.current.identifierForVendor?.uuidString
         }()
-        static let appleAppIdentifier = "1089652370"
     }
     
     // Settings that can vary between busineses and app deployments

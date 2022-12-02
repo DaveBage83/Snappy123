@@ -22,6 +22,6 @@ class LoginButtonTests: XCTestCase {
     func makeSUT() -> LoginButton {
         LoginButton(action: {
             print("")
-        }, text: "test", icon: Image.General.thumbsUp)
+        }, text: "test", icon: Image(systemName: "checkmark"))
     }
 }

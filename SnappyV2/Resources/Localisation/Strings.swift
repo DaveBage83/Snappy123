@@ -11,8 +11,8 @@ typealias IterableSnappyString = SnappyString & CaseIterable
 
 typealias IterableSnappyStringCustomisable = SnappyStringCustomisable & CaseIterable
 
-public enum Strings {
-    public enum General: String, IterableSnappyString {
+enum Strings {
+    enum General: String, IterableSnappyString {
         case close = "general.close"
         case next = "general.next"
         case showAll = "general.showall"
@@ -62,11 +62,11 @@ public enum Strings {
         case min = "general.min"
         case shop = "general.shop"
         
-        public enum Custom: String, IterableSnappyStringCustomisable {
+        enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
         }
         
-        public enum Login: String, IterableSnappyString {
+        enum Login: String, IterableSnappyString {
             case email = "general.login.email"
             case apple = "general.login.apple"
             case facebook = "general.login.facebook"
@@ -90,50 +90,50 @@ public enum Strings {
             case continueWithEmail = "general.login.continuewithemail"
             case appleSignInFail = "general.login.applesigninfail"
             
-            public enum Customisable: String, IterableSnappyStringCustomisable {
+            enum Customisable: String, IterableSnappyStringCustomisable {
                 case signInWith = "general.login.customisable.signinwith"
             }
         }
         
-        public enum Logout: String, IterableSnappyString {
+        enum Logout: String, IterableSnappyString {
             case title = "general.logout.title"
             case verify = "general.logout.verify"
         }
         
-        public enum Search: String, IterableSnappyString {
+        enum Search: String, IterableSnappyString {
             case searchPostcode = "general.search.searchpostcode"
             case search = "general.search.search"
             
-            public enum Customisable: String, IterableSnappyStringCustomisable {
+            enum Customisable: String, IterableSnappyStringCustomisable {
                 case postcodeFormatError = "general.search.customisable.postcodeformaterror"
             }
         }
         
-        public enum DriverInterface: String, IterableSnappyString {
+        enum DriverInterface: String, IterableSnappyString {
             case startShift = "general.driverinterface.startshift"
 		}
 		
-        public enum Errors: String, IterableSnappyString {
+        enum Errors: String, IterableSnappyString {
             case generic = "general.errors.generic"
 
         }
     }
     
-    public enum RootView {
-        public enum Tabs: String, IterableSnappyString {
+    enum RootView {
+        enum Tabs: String, IterableSnappyString {
             case stores = "rootview.tabs.stores"
             case menu = "rootview.tabs.menu"
             case basket = "rootview.tabs.basket"
             case account = "rootview.tabs.account"
         }
         
-        public enum ChangeStore: String, IterableSnappyString {
+        enum ChangeStore: String, IterableSnappyString {
             case noStore = "rootview.changestore.nostore"
             case changeStore = "rootview.changestore.changestore"
         }
     }
     
-    public enum InitialView: String, IterableSnappyString {
+    enum InitialView: String, IterableSnappyString {
         case tagline = "initialview.tagline"
         case subTagline = "initialview.subtagline"
         case createAccount = "initialview.createaccount"
@@ -146,65 +146,44 @@ public enum Strings {
         case restoring = "initialview.restoring"
     }
     
-    public enum CheckoutView {
-        public enum Progress: String, IterableSnappyString {
+    enum CheckoutView {
+        enum Progress: String, IterableSnappyString {
             case time = "checkoutview.progress.time"
             case orderTotal = "checkoutview.progress.ordertotal"
         }
         
-        public enum GuestCheckoutCard: String, IterableSnappyString {
+        enum GuestCheckoutCard: String, IterableSnappyString {
             case guest = "checkoutview.guestcheckoutcard.guest"
             case noTies = "checkoutview.guestcheckoutcard.noties"
         }
         
-        public enum RetailMembershipIdWarning: String, IterableSnappyString {
+        enum RetailMembershipIdWarning: String, IterableSnappyString {
             case prefix = "checkoutview.retailmembershipidwarning.prefix"
             case cannotAssociateStart = "checkoutview.retailmembershipidwarning.cannotassociatestart"
             case cannotAssociateEnd = "checkoutview.retailmembershipidwarning.cannotassociateend"
         }
         
-        public enum LoginToAccount: String, IterableSnappyString {
+        enum LoginToAccount: String, IterableSnappyString {
             case login = "checkoutview.logintoaccount.login"
             case earnPoints = "checkoutview.logintoaccount.earnpoints"
         }
         
-        public enum RetailMembership: String, IterableSnappyString {
+        enum RetailMembership: String, IterableSnappyString {
             case title = "checkoutview.retailmembership.title"
         }
         
-        public enum AddDetails: String, IterableSnappyString {
+        enum AddDetails: String, IterableSnappyString {
             case title = "checkoutview.adddetails.title"
             case email = "checkoutview.adddetails.email"
             case phone = "checkoutview.adddetails.phone"
             case alertTitle = "checkoutview.detailsalerttitle"
-            
-            public enum Customisable: String, IterableSnappyStringCustomisable {
-                case alertMessage = "checkoutview.detailsalertmessage"
-            }
         }
         
-        public enum CreateAccount: String, IterableSnappyString {
+        enum CreateAccount: String, IterableSnappyString {
             case subtitle = "checkoutview.createaccount.subtitle"
         }
         
-        public enum AddAddress: String, IterableSnappyString {
-            case titleDelivery = "checkoutview.addaddress.titledelivery"
-            case titleBilling = "checkoutview.addaddress.titlebilling"
-            case findAddress = "checkoutview.addaddress.findaddress"
-            case line1 = "checkoutview.addaddress.line1"
-            case line2 = "checkoutview.addaddress.line2"
-            case postcode = "checkoutview.addaddress.postcode"
-            case city = "checkoutview.addaddress.city"
-            case country = "checkoutview.addaddress.country"
-        }
-        
-        public enum TsAndCs: String, IterableSnappyString {
-            case confirm = "checkoutview.tsandcs.confirm"
-            case title = "checkoutview.tsandcs.title"
-            case emailMarketing = "checkoutview.tsandcs.emailmarketing"
-        }
-        
-        public enum Payment: String, IterableSnappyString {
+        enum Payment: String, IterableSnappyString {
             case unsuccessfulPayment = "checkoutview.payment.unsuccessful"
             case checkAndChooseAlternativePayment = "checkoutview.payment.checkandchoosealternativepayment"
             case payByCard = "checkoutview.payment.paybycard"
@@ -233,24 +212,20 @@ public enum Strings {
             case placeOrder = "checkoutview.payment.placeorder"
         }
 
-        public enum PaymentCustom: String, IterableSnappyStringCustomisable {
+        enum PaymentCustom: String, IterableSnappyStringCustomisable {
             case buttonTitle = "checkoutview.paymentcustom.button.title"
             case callStore = "checkoutview.paymentcustom.callstore"
             case confirmCashPaymentMessage = "checkoutview.paymentcustom.confirmcashpaymentmessage"
         }
         
-        public enum General: String, IterableSnappyString {
-            case addInstructions = "checkoutview.general.addinstructions"
-        }
-        
-        public enum OTP: String, IterableSnappyString {
+        enum OTP: String, IterableSnappyString {
             case promptTitle = "checkoutview.otp.prompttitle"
             case emailOTP = "checkoutview.otp.emailotp"
             case textOTP = "checkoutview.otp.textotp"
             case otpSentTitle = "checkoutview.otp.optsenttitle"
             case enterPassword = "checkoutview.otp.enterpassword"
             
-            public enum Customisable: String, IterableSnappyStringCustomisable {
+            enum Customisable: String, IterableSnappyStringCustomisable {
                 case promptText = "checkoutview.otp.prompttext"
                 case otpSentEmailText = "checkoutview.otp.optsentemailtext"
                 case otpSentMobileText = "checkoutview.otp.optsentmobiletext"
@@ -258,7 +233,7 @@ public enum Strings {
         }
     }
     
-    public enum BasketView: String, IterableSnappyString {
+    enum BasketView: String, IterableSnappyString {
         case subtotal = "basketview.subtotal"
         case subtotalShort = "basketview.subtotal.short"
         case checkout = "basketview.checkout"
@@ -276,19 +251,15 @@ public enum Strings {
         case viewSelection = "basketview.viewselection"
         case moreItemsRequired = "basketview.minspend.moreitemsrequired"
         
-        public enum DeliveryBanner: String, IterableSnappyString {
+        enum DeliveryBanner: String, IterableSnappyString {
             case change = "basketview.deliverybanner.change"
-            
-            public enum Customisable: String, IterableSnappyStringCustomisable {
+
+            enum Customisable: String, IterableSnappyStringCustomisable {
                 case expires = "basketview.deliverybanner.customisable.expires"
             }
         }
         
-        public enum Promotions: String, IterableSnappyStringCustomisable {
-            case missed = "basketview.promotions.missed"
-        }
-        
-        public enum Coupon: String, IterableSnappyString {
+        enum Coupon: String, IterableSnappyString {
             case code = "basketview.coupon.code"
             case codeTitle = "basketview.coupon.code.title"
             case failure = "basketview.coupon.unabletoapply"
@@ -302,33 +273,33 @@ public enum Strings {
             case verifiedAccountInstructionsWhenMobileNumber = "basketview.coupon.verifiedaccountinstructionswhenmobilenumber"
             case verifiedAccountInstructionsWhenNoMobileNumber = "basketview.coupon.verifiedaccountinstructionswhennomobilenumber"
             
-            public enum Customisable: String, IterableSnappyStringCustomisable {
+            enum Customisable: String, IterableSnappyStringCustomisable {
                 case verifiedAccountRequiredForCoupon = "basketview.coupon.verifiedaccountrequired"
                 case successfullyAddedCoupon = "basketview.coupon.successfullyaddedcoupon"
             }
         }
         
-        public enum ListEntry: String, IterableSnappyString {
+        enum ListEntry: String, IterableSnappyString {
             case chargeInfo = "basketview.listentry.chargeinfo"
             case gotIt = "basketview.listentry.gotit"
             case missed = "basketview.listentry.missed"
         }
     }
     
-    public enum StoresView: String, IterableSnappyString {
+    enum StoresView: String, IterableSnappyString {
         case available = "storesview.available"
         
-        public enum StoreTypes: String, IterableSnappyString {
+        enum StoreTypes: String, IterableSnappyString {
             case browse = "storesview.storetypes.browse"
             case browseShort = "storesview.storetypes.browse.short"
             case showAll = "storesview.storetypes.showall"
         }
         
-        public enum SearchCustom: String, IterableSnappyStringCustomisable {
+        enum SearchCustom: String, IterableSnappyStringCustomisable {
             case noStores = "storesview.searchcustom.nostores"
         }
         
-        public enum FailedSearch: String, IterableSnappyString {
+        enum FailedSearch: String, IterableSnappyString {
             case notInArea = "storesview.failedsearch.notinarea"
             case showInterest = "storesview.failedsearch.showinterest"
             case showInterestPrompt = "storesview.failedsearch.showinterestprompt"
@@ -340,30 +311,22 @@ public enum Strings {
             case invalidPostcodeSubtitle = "storesview.failedsearch.invalidpostcode.subtitle"
         }
         
-        public enum StoreStatus: String, IterableSnappyString {
+        enum StoreStatus: String, IterableSnappyString {
             case stores = "storesview.storestatus.stores"
             case openStores = "storesview.storestatus.openstores"
             case closedStores = "storesview.storestatus.closedstores"
             case preorderstores = "storesview.storestatus.preorderstores"
             case nearYou = "storesview.storestatus.nearyou"
         }
-        
-        public enum NoSlots: String, IterableSnappyString {
-            case title = "storesview.noslots.title"
-        }
-        
-        public enum NoSlotsCustom: String, IterableSnappyStringCustomisable {
-            case subtitle = "storesview.noslotscustom.subtitle"
-        }
 
-        public enum DeliveryTiersCustom: String, IterableSnappyStringCustomisable {
+        enum DeliveryTiersCustom: String, IterableSnappyStringCustomisable {
             case minSpend = "storesview.deliverytiers.custom.minspend"
             case deliveryFrom = "storesview.deliverytiers.custom.deliveryfrom"
             case cost = "storesview.deliverytiers.custom.cost"
             case freeFrom = "storesview.deliverytiers.custom.freefrom"
         }
         
-        public enum DeliveryTiers: String, IterableSnappyString {
+        enum DeliveryTiers: String, IterableSnappyString {
             case orderValue = "storesview.deliverytiers.ordervalue"
             case delivery = "storesview.deliverytiers.delivery"
             case orderValueCondition = "storesview.deliverytiers.ordervaluecondition"
@@ -373,23 +336,23 @@ public enum Strings {
         }
     }
     
-    public enum StoreInfo {
-        public enum Status: String, IterableSnappyString {
+    enum StoreInfo {
+        enum Status: String, IterableSnappyString {
             case closed = "storeinfo.status.closed"
         }
         
-        public enum Delivery: String, IterableSnappyString {
+        enum Delivery: String, IterableSnappyString {
             case distance = "storeinfo.delivery.distance"
             case distanceShort = "storeinfo.delivery.distance.short"
             
-            public enum Customisable: String, IterableSnappyStringCustomisable {
+            enum Customisable: String, IterableSnappyStringCustomisable {
                 case distance = "storeinfo.delivery.customisable.distance"
                 case distanceShort = "storeinfo.delivery.customisable.distance.short"
             }
         }
     }
     
-    public enum SlotSelection: String, IterableSnappyString {
+    enum SlotSelection: String, IterableSnappyString {
         case upTo10Days = "slotselection.upto10days"
         case noDaysAvailable = "slotselection.nodaysavailable"
         case morningSlots = "slotselection.morningslots"
@@ -400,7 +363,7 @@ public enum Strings {
         case noTimeSelected = "slotselection.notimeselected"
         case update = "slotselection.update"
         
-        public enum Customisable: String, IterableSnappyStringCustomisable {
+        enum Customisable: String, IterableSnappyStringCustomisable {
             case chooseSlot = "slotselection.customisable.chooseslot"
             case today = "slotselection.customisable.today"
             case upToHour = "slotselection.customisable.uptohour"
@@ -410,33 +373,33 @@ public enum Strings {
         }
     }
     
-    public enum ProductsView: String, IterableSnappyString {
+    enum ProductsView: String, IterableSnappyString {
         case searchStore = "productsview.searchstore"
         case filter = "productsview.filter"
         
-        public enum Alerts: String, IterableSnappyString {
+        enum Alerts: String, IterableSnappyString {
             case multipleComplexItemsTitle = "productsview.alerts.multiplecomplexitemstitle"
             case multipleComplexItemsMessage = "productsview.alerts.multiplecomplexitemsmessage"
             case goToBasket = "productsview.alerts.gottobasket"
             case noItemsInCategory = "productsview.alerts.noitemsincategory"
         }
         
-        public enum ProductCard: String, IterableSnappyString {
+        enum ProductCard: String, IterableSnappyString {
             case vegetarian = "productsview.productcard.vegetarian"
             case title = "productsview.productcard.title"
             
-            public enum SearchStandard: String, IterableSnappyString {
+            enum SearchStandard: String, IterableSnappyString {
                 case enterMoreCharacters = "productsview.productcard.searchstandard.entermore"
                 case tryAgain = "productsview.productcard.searchstandard.tryagain"
             }
             
-            public enum Search: String, IterableSnappyStringCustomisable {
+            enum Search: String, IterableSnappyStringCustomisable {
                 case resultThatIncludesCategories = "productsview.productcard.search.resultthatincludescategories"
                 case resultThatIncludesItems = "productsview.productcard.search.resultthatincludesitems"
                 case noResults = "productsview.productcard.search.noresults"
             }
             
-            public enum Sort: String, IterableSnappyString {
+            enum Sort: String, IterableSnappyString {
                 case `default` = "productsview.productcard.sort.default"
                 case aToZ = "productsview.productcard.sort.atoz"
                 case zToA = "productsview.productcard.sort.ztoa"
@@ -446,7 +409,7 @@ public enum Strings {
             }
         }
         
-        public enum ProductDetail: String, IterableSnappyString {
+        enum ProductDetail: String, IterableSnappyString {
             case was = "productsview.productdetail.was"
             case now = "productsview.productdetail.now"
             case from = "productsview.productdetail.from"
@@ -454,7 +417,7 @@ public enum Strings {
         }
     }
     
-    public enum ProductOptions: String, IterableSnappyString {
+    enum ProductOptions: String, IterableSnappyString {
         case add = "productoptions.add"
         case update = "productoptions.update"
         case additionalInfo = "productoptions.additionalinfo"
@@ -466,15 +429,15 @@ public enum Strings {
         }
     }
     
-    public enum ProductCarousel: String, IterableSnappyString {
+    enum ProductCarousel: String, IterableSnappyString {
         case offers = "productcarousel.offers"
     }
     
-    public enum AddressService: String, IterableSnappyString {
+    enum AddressService: String, IterableSnappyString {
         case noAddressesFound = "addressservice.noaddressesfound"
     }
     
-    public enum PostCodeSearch: String, IterableSnappyString {
+    enum PostCodeSearch: String, IterableSnappyString {
         case findButton = "postcodesearch.findbutton"
         case addAddress = "postcodesearch.addaddress"
         case editAddress = "postcodesearch.editaddress"
@@ -491,7 +454,7 @@ public enum Strings {
         case deliveryMainTitle = "postcodesearch.deliverymaintitle"
         case billingMainTitle = "postcodesearch.billingmaintitle"
         
-        public enum Address: String, IterableSnappyString {
+        enum Address: String, IterableSnappyString {
             case line1 = "postcodesearch.address.line1"
             case line2 = "postcodesearch.address.line2"
             case city = "postcodesearch.address.city"
@@ -510,7 +473,7 @@ public enum Strings {
         }
     }
     
-    public enum EditableCardContainer {
+    enum EditableCardContainer {
         enum Delete: String, IterableSnappyString {
             case areYouSure = "editablecardcontainer.areyousure"
             case cannotUndo = "editablecardcontainer.cannotundo"
@@ -518,17 +481,17 @@ public enum Strings {
         
     }
     
-    public enum CheckoutDetails {
-        public enum GlobalPayments: String, IterableSnappyString {
+    enum CheckoutDetails {
+        enum GlobalPayments: String, IterableSnappyString {
             case navTitle = "checkoutdetails.globalpayments.navtitle"
         }
         
-        public enum CheckoutProgress: String, IterableSnappyString {
+        enum CheckoutProgress: String, IterableSnappyString {
             case details = "checkoutdetails.checkoutprogress.details"
             case payment = "checkoutdetails.checkoutprogress.payment"
         }
         
-        public enum EditAddress: String, IterableSnappyString {
+        enum EditAddress: String, IterableSnappyString {
             case editDeliveryAddress = "checkoutdetails.editaddress.editDeliveryAddress"
             case postcode = "checkoutdetails.editaddress.postcode"
             case addressLine1 = "checkoutdetails.editaddress.addressline1"
@@ -544,19 +507,14 @@ public enum Strings {
             case noAddresses = "checkoutdetails.editaddress.noaddresses"
             case firstName = "checkoutdetails.editaddress.firstname"
             case lastName = "checkoutdetails.editaddress.lastname"
-            
-            public enum Error: String, IterableSnappyString {
-                case title = "checkoutdetails.editaddress.error.title"
-                case subtitle = "checkoutdetails.editaddress.error.subtitle"
-            }
         }
         
-        public enum AddressDisplayCard: String, IterableSnappyString {
+        enum AddressDisplayCard: String, IterableSnappyString {
             case unnamed = "checkoutdetails.addressdisplaycard.unnamed"
             case defaultAddress = "checkoutdetails.addressdisplaycard.default"
         }
         
-        public enum AddressSelectionView: String, IterableSnappyString {
+        enum AddressSelectionView: String, IterableSnappyString {
             case navTitle = "checkoutdetails.addressselectionview.navtitle"
             case addressErrorTitle = "checkoutdetails.addressselectionview.addresserror.title"
             case addressErrorGeneric = "checkoutdetails.addressselectionview.addresserror.generic"
@@ -564,7 +522,7 @@ public enum Strings {
             case selectBilling = "checkoutdetails.addressselectionview.select.billing"
         }
         
-        public enum SavedAddressesSelectionView: String, IterableSnappyString {
+        enum SavedAddressesSelectionView: String, IterableSnappyString {
             case title = "checkoutdetails.savedaddressselectionview.title"
             case titleBilling = "checkoutdetails.savedaddressselectionview.title.billing"
             case setAsDeliveryAddressButton = "checkoutdetails.savedaddressselectionview.button"
@@ -580,7 +538,7 @@ public enum Strings {
             case addressSetterErrorGeneric = "checkoutdetails.savedaddressselectionview.addresssettererror.generic"
         }
         
-        public enum MarketingPreferences: String, IterableSnappyString {
+        enum MarketingPreferences: String, IterableSnappyString {
             case title = "checkoutdetails.marketingpreferences.title"
             case prompt = "checkoutdetails.marketingpreferences.prompt"
             case email = "checkoutdetails.marketingpreferences.email"
@@ -590,59 +548,49 @@ public enum Strings {
             case telephone = "checkoutdetails.marketingpreferences.telephone"
         }
         
-        public enum ChangeFulfilmentMethodCustom: String, IterableSnappyStringCustomisable {
+        enum ChangeFulfilmentMethodCustom: String, IterableSnappyStringCustomisable {
             case button = "checkoutdetails.changefulfilmentmethod.custom.button"
             case slotExpiring = "checkoutdetails.changefulfilmentmethod.custom.slotexpiring"
             case slotTimeDelivery = "checkoutdetails.changefulfilmentmethod.custom.slottime.delivery"
             case slotTimeCollection = "checkoutdetails.changefulfilmentmethod.custom.slottime.collection"
         }
         
-        public enum ChangeFulfilmentMethod: String, IterableSnappyString {
+        enum ChangeFulfilmentMethod: String, IterableSnappyString {
             case slotExpired = "checkoutdetails.changefulfilmentmethod.expired"
             case noSlot = "checkoutdetails.changefulfilmentmethod.noslot"
         }
         
-        public enum DeliveryNote: String, IterableSnappyString {
+        enum DeliveryNote: String, IterableSnappyString {
             case label = "checkoutdetails.deliverynote.label"
             case title = "checkoutdetails.deliverynote.title"
         }
         
-        public enum ContactDetails: String, IterableSnappyString {
+        enum ContactDetails: String, IterableSnappyString {
             case emailInvalid = "checkoutdetails.contactdetails.emailinvalid"
         }
         
-        public enum WhereDidYouHear: String, IterableSnappyString {
+        enum WhereDidYouHear: String, IterableSnappyString {
             case title = "checkoutdetails.wheredidyouhear.title"
             case choose = "checkoutdetails.wheredidyouhear.choose"
             case placeholder = "checkoutdetails.wheredidyouhear.placeholder"
         }
         
-        public enum Errors {
-            public enum Missing: String, IterableSnappyString {
+        enum Errors {
+            enum Missing: String, IterableSnappyString {
                 case title = "checkoutdetails.errors.missing.title"
                 case subtitle = "checkoutdetails.errors.missing.subtitle"
             }
             
-            public enum NoAddresses: String, IterableSnappyString {
+            enum NoAddresses: String, IterableSnappyString {
                 case postcodeSearch = "checkoutdetails.noaddresses.postcodesearch"
                 case savedAddresses = "checkoutdetails.noaddresses.savedaddresses"
             }
             
-            public enum Field: String, IterableSnappyString {
-                case title = "checkoutdetails.errors.field.title"
-                case subtitle = "checkoutdetails.errors.field.subtitle"
-            }
-            
-            public enum Submit: String, IterableSnappyString {
-                case title = "checkoutdetails.errors.submit"
-                case genericSubtitle = "checkoutdetails.errors.genericsubtitle"
-            }
-            
-            public enum NoSlots: String, IterableSnappyString {
+            enum NoSlots: String, IterableSnappyString {
                 case title = "checkoutdetails.errors.noslots"
             }
             
-            public enum CardPayment: String, IterableSnappyString {
+            enum CardPayment: String, IterableSnappyString {
                 case missingCheckoutcomPaymentGateway = "checkoutdetails.errors.cardpayment.missingcheckoutcompaymentgateway"
                 case processCardOrderResultEmpty = "checkoutdetails.errors.cardpayment.processcardorderresultempty"
                 case missingPublicKey = "checkoutdetails.errors.cardpayment.missingpublickey"
@@ -652,19 +600,19 @@ public enum Strings {
             }
         }
         
-        public enum Submit: String, IterableSnappyString {
+        enum Submit: String, IterableSnappyString {
             case title = "checkoutdetails.submit.title"
             case titleLarge = "checkoutdetails.submit.title.large"
         }
     }
     
-    public enum OrderSummaryCard: String, IterableSnappyString {
+    enum OrderSummaryCard: String, IterableSnappyString {
         case status = "ordersummarycard.status"
         case total = "ordersummarycard.total"
         case view = "ordersummarycard.view"
     }
     
-    public enum CreateAccount: String, IterableSnappyString {
+    enum CreateAccount: String, IterableSnappyString {
         case create = "createaccount.create"
         case title = "createaccount.title"
         case newTitle = "createaccount.new.title"
@@ -680,7 +628,7 @@ public enum Strings {
         case existingUserBody = "createaccount.existinguser.body"
     }
     
-    public enum Terms: String, IterableSnappyString {
+    enum Terms: String, IterableSnappyString {
         case agreeTo = "terms.agreeto"
         case terms = "terms.terms"
         case and = "terms.and"
@@ -688,21 +636,17 @@ public enum Strings {
         case contactUs = "terms.contactus"
     }
     
-    public enum MarketingPreferences: String, IterableSnappyString {
-        case title = "marketingpreferences.title"
-    }
-    
-    public enum ForgotPassword: String, IterableSnappyString {
+    enum ForgotPassword: String, IterableSnappyString {
         case title = "forgetpassword.title"
         case subtitle = "forgetpassword.subtitle"
         case subtitleShort = "forgetpassword.subtitle.short"
     }
     
-    public enum ForgetPasswordCustom: String, IterableSnappyStringCustomisable {
+    enum ForgetPasswordCustom: String, IterableSnappyStringCustomisable {
         case confirmation = "forgetpasswordcustom.confirmation"
     }
     
-    public enum ResetPassword: String, IterableSnappyString {
+    enum ResetPassword: String, IterableSnappyString {
         case title = "resetpassword.title"
         case subtitle = "resetpassword.subtitle"
         case subtitleShort = "resetpassword.subtitle.short"
@@ -715,15 +659,15 @@ public enum Strings {
         case confirmation = "resetpassword.confirmation"
     }
     
-    public enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {
+    enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {
         case unableToLoginAfterReset = "resetpasswordcustom.unableToLoginAfterReset"
     }
     
-    public enum CustomMemberDashboard: String, IterableSnappyStringCustomisable {
+    enum CustomMemberDashboard: String, IterableSnappyStringCustomisable {
         case welcome = "custommemberdashboard.welcome"
     }
     
-    public enum MemberDashboard: String, IterableSnappyString {
+    enum MemberDashboard: String, IterableSnappyString {
         case noMember = "memberdashboard.nomember"
         case errorFindingAccount = "memberdashboard.error"
         
@@ -792,7 +736,7 @@ public enum Strings {
         }
     }
     
-    public enum PlacedOrders {
+    enum PlacedOrders {
         enum MainView: String, IterableSnappyString {
             case currentOrders = "placedorders.mainview.currentorders"
             case pastOrders = "placedorders.mainview.pastorders"
@@ -826,12 +770,6 @@ public enum Strings {
             case unknown = "placedorders.orderstoreview.unknown"
         }
         
-        enum OrderListItemView: String, IterableSnappyString {
-            case items = "placedorders.orderlistitemview.items"
-            case quantity = "placedorders.orderlistitemview.quantity"
-            case price = "placedorders.orderlistitemview.price"
-        }
-        
         enum CustomOrderListItem: String, IterableSnappyStringCustomisable {
             case each = "placedorders.customorderlistitem.each"
         }
@@ -842,24 +780,14 @@ public enum Strings {
             case noStoreFound = "placedorders.errors.nostorefound"
             case failedToSetDeliveryAddress = "placedorders.errors.failedtosetdeliveryaddress"
         }
-        
-        enum OrderLine: String, IterableSnappyString {
-            case quantityChanged = "placedorders.orderline.quantitychanged"
-            case substitutedItem = "placedorders.orderline.substituteditem"
-        }
     }
     
-    public enum DriverMap: String, IterableSnappyString {
+    enum DriverMap: String, IterableSnappyString {
         case title = "drivermap.navigationbartitle"
         enum InformationBar: String, IterableSnappyString {
             case withDriverNamePrefix = "drivermap.informationbar.driverenroutewithnameprefix"
             case withDriverNameSuffix = "drivermap.informationbar.driverenroutewithnamesuffix"
             case withoutDriverName = "drivermap.informationbar.driverenroutewithoutname"
-        }
-        
-        enum Error: String, IterableSnappyString {
-            case title = "drivermap.error.title"
-            case body = "drivermap.error.body"
         }
         
         enum Button: String, IterableSnappyString {
@@ -868,7 +796,7 @@ public enum Strings {
         }
     }
     
-    public enum ToastNotifications {
+    enum ToastNotifications {
         enum BasketChangeTitle: String, IterableSnappyString {
             case itemAdded = "toastnotifications.basketchangetitle.itemadded"
             case itemUpdated = "toastnotifications.basketchangetitle.itemupdated"
@@ -882,14 +810,9 @@ public enum Strings {
             case updatedItemInBasket = "toastnotifications.basketchangesitem.updatediteminbasket"
             case removedItemFromBasket = "toastnotifications.basketchangesitem.removeditemfrombasket"
         }
-        
-        enum StoreSearch: String, IterableSnappyString {
-            case title = "toastnotifications.storesearch.title"
-            case subtitle = "toastnotifications.storesearch.subtitle"
-        }
     }
     
-    public enum Alerts {
+    enum Alerts {
         enum CameraPermission: String, IterableSnappyString {
             case title = "alerts.camerapermission.title"
             case message = "alerts.camerapermission.message"
@@ -906,7 +829,7 @@ public enum Strings {
         }
     }
     
-    public enum PayMethods {
+    enum PayMethods {
         enum Card: String, IterableSnappyString {
             case title = "paymentmethods.card.title"
             case subtitle = "paymentmethods.card.subtitle"
@@ -923,11 +846,11 @@ public enum Strings {
         }
     }
     
-    public enum StoreRatings: String, IterableSnappyString {
+    enum StoreRatings: String, IterableSnappyString {
         case numRatingsGeneric = "storereviews.ratings.generic"
     }
     
-    public enum FulfilmentTimeSlotSelection {
+    enum FulfilmentTimeSlotSelection {
         enum StoreUnavailableHeadline: String, IterableSnappyString {
             case paused = "fulfilmenttimetlotselection.paused"
             case pausedShort = "fulfilmenttimetlotselection.paused.short"
@@ -954,14 +877,9 @@ public enum Strings {
         enum Holiday: String, IterableSnappyString {
             case defaultMessage = "fulfilmenttimetlotselection.holiday.defaultmessage"
         }
-        
-        enum Update: String, IterableSnappyString {
-            case successTitle = "fulfilmenttimetlotselection.update.success"
-            case successSubtitle = "fulfilmenttimetlotselection.update.success.subtitle"
-        }
     }
     
-    public enum CheckoutServiceErrors: String, IterableSnappyString {
+    enum CheckoutServiceErrors: String, IterableSnappyString {
         case selfError = "checkoutserviceerrors.selferror"
         case storeSelectionRequired = "checkoutserviceerrors.storeselectionrequired"
         case unableToProceedWithoutBasket = "checkoutserviceerrors.unabletoproceedwithoutbasket"
@@ -971,14 +889,7 @@ public enum Strings {
         case unablePersistLastDeliverOrder = "checkoutserviceerrors.unablepersistlastdeliverorder"
     }
     
-    public enum FulfilmentInfoCard: String, IterableSnappyString {
-        case editDelivery = "fulfilmentinfocard.editdelivery"
-        case editCollection = "fulfilmentinfocard.editcollection"
-        case changeToDeliver = "fulfilmentinfocard.changetodeliver"
-        case changeToCollect = "fulfilmentinfocard.changetocollect"
-    }
-    
-    public enum MentionMe {
+    enum MentionMe {
         enum Webview: String, IterableSnappyString {
             case loading = "mentionme.webview.loading"
             case fallbackTitle = "mentionme.webview.fallbackTitle"
@@ -991,7 +902,7 @@ public enum Strings {
         }
     }
     
-    public enum Settings {
+    enum Settings {
         enum Main: String, IterableSnappyString {
             case title = "settings.main.title"
         }
@@ -1018,11 +929,11 @@ public enum Strings {
         }
     }
     
-    public enum FormErrors: String, IterableSnappyString {
+    enum FormErrors: String, IterableSnappyString {
         case passwordsDoNotMatch = "formerrors.passwordsdonotmatch"
     }
     
-    public enum PushNotifications: String, IterableSnappyString {
+    enum PushNotifications: String, IterableSnappyString {
         case defaultEnabledMessage = "pushnotifications.enableview.defaultdefaultmessage"
         case defaultEnabledOrdersOnly = "pushnotifications.enableview.defaultordesonly"
         case defaultEnabledIncludeMarketing = "pushnotifications.enableview.defaultincludemarketing"
@@ -1033,20 +944,20 @@ public enum Strings {
         case viewUpdatedOrder = "pushnotifications.incomingview.viewupdatedorder"
     }
         
-    public enum SuccessView: String, IterableSnappyString {
+    enum SuccessView: String, IterableSnappyString {
         case noPassword = "successview.nopassword"
     }
     
-    public enum AgeRestrictionAlert: String, IterableSnappyString {
+    enum AgeRestrictionAlert: String, IterableSnappyString {
         case ageRestrictionTitle = "ageRestriction.title"
     }
     
-    public enum AgeRestrictionAlertCustomisable: String, IterableSnappyStringCustomisable {
+    enum AgeRestrictionAlertCustomisable: String, IterableSnappyStringCustomisable {
         case ageRestrictionMessage = "ageRestriction.message"
         case ageRestrictionConfirmAge = "ageRestriction.confirmAge"
     }
     
-    public enum StoreReview {
+    enum StoreReview {
         enum InstructionsText: String, IterableSnappyStringCustomisable {
             case instructions = "storereview.instructions"
         }
@@ -1063,7 +974,7 @@ public enum Strings {
         }
     }
     
-    public enum VerifyMobileNumber {
+    enum VerifyMobileNumber {
         enum RequestCodeErrors: String, IterableSnappyString {
             case unableToSendMobileVerificationCode = "verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcode"
             case mobileNumberAlreadyVerifiedWithAnotherMember = "verifymobilenumber.requestcodeerrors.mobilenumberalreadyverifiedwithanothermember"
@@ -1082,7 +993,7 @@ public enum Strings {
         }
     }
     
-    public enum AnimatedLoadingView: String, IterableSnappyString {
+    enum AnimatedLoadingView: String, IterableSnappyString {
         case loggingIn = "loadingView.loggingin"
     }
 }

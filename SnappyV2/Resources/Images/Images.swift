@@ -39,7 +39,6 @@ extension Image {
     
     struct Branding {
         struct Logo {
-            static let fullColor = Image("logoFullColor")
             static let white = Image("logoWhite")
             static let inline = Image("logoInline")
         }
@@ -52,7 +51,6 @@ extension Image {
     
     struct PaymentMethods {
         static let applePay = Image("applePay")
-        static let applePayDisabled = Image("applePayDisabled")
     }
     
     struct Placeholders {
@@ -69,7 +67,6 @@ extension Image {
         static let star = Image("star")
         
         struct Search {
-            static let microphone = Image("microphone")
             static let magnifyingGlass = Image("search")
         }
         
@@ -79,26 +76,16 @@ extension Image {
         
         struct Clock {
             static let standard = Image("clock")
-            static let filled = Image("clockFilled")
             static let heavy = Image("clockHeavy")
         }
         
         struct Camera {
-            static let standard = Image("camera")
-            static let filled = Image("cameraFilled")
             static let viewFinder = Image(systemName: "camera.viewfinder")
         }
         
         struct Padlock {
             static let standard = Image("padlock")
             static let filled = Image("padlockFilled")
-            static let heavy = Image("padlockHeavy")
-        }
-        
-        struct Bars {
-            static let standard = Image("bars")
-            static let medium = Image("barsMedium")
-            static let heavy = Image("barsHeavy")
         }
         
         struct House {
@@ -191,12 +178,6 @@ extension Image {
             static let heavy = Image("plusHeavy")
         }
         
-        struct Minus {
-            static let standard = Image("minus")
-            static let medium = Image("minusMedium")
-            static let heavy = Image("minusHeavy")
-        }
-        
         struct Shop {
             static let standard = Image("shop")
             static let filled = Image("shopFilled")
@@ -237,40 +218,10 @@ extension Image {
         }
         
         struct Arrows {
-            struct Left {
-                static let light = Image("arrowLeftLight")
-                static let medium = Image("arrowLeftMedium")
-                static let heavy = Image("arrowLeftHeavy")
-            }
-            
-            struct Right {
-                static let light = Image("arrowRightLight")
-                static let medium = Image("arrowRightMedium")
-                static let heavy = Image("arrowRightHeavy")
-            }
-            
-            struct Up {
-                static let light = Image("arrowUpLight")
-                static let medium = Image("arrowUpMedium")
-                static let heavy = Image("arrowUpHeavy")
-            }
-            
-            struct Down {
-                static let light = Image("arrowDownLight")
-                static let medium = Image("arrowDownMedium")
-                static let heavy = Image("arrowDownHeavy")
-            }
-            
             struct RightFromBracket {
                 static let light = Image("rightFromBracket")
                 static let medium = Image("rightFromBracketMedium")
                 static let heavy = Image("rightFromBracketHeavy")
-            }
-            
-            struct RighLeft {
-                static let light = Image("rightLeft")
-                static let medium = Image("rightLeftMedium")
-                static let heavy = Image("rightLeftheavy")
             }
         }
         
@@ -346,22 +297,10 @@ extension Image {
             static let heavy = Image("circleUserHeavy")
         }
         
-        struct Trash {
-            static let standard = Image("trash")
-            static let filled = Image("trashFilled")
-            static let heavy = Image("trashHeavy")
-        }
-        
         struct PersonWalking {
             static let standard = Image("personWalking")
             static let medium = Image("personWalkingMedium")
             static let heavy = Image("personWalkingHeavy")
-        }
-        
-        struct CircleXmark {
-            static let standard = Image("circleXmark")
-            static let medium = Image("circleXmarkFilled")
-            static let heavy = Image("circleXmarkHeavy")
         }
         
         struct MoneyBill {
@@ -401,12 +340,6 @@ extension Image {
             static let heavy = Image("moneyBill1WaveHeavy")
         }
         
-        struct UserGroup {
-            static let standard = Image("userGroup")
-            static let filled = Image("userGroupFilled")
-            static let heavy = Image("userGroupHeavy")
-        }
-        
         struct Comment {
             static let standard = Image("comment")
             static let filled = Image("commentFilled")
@@ -419,34 +352,16 @@ extension Image {
             static let heavy = Image("doorHeavy")
         }
         
-        struct StoreSlash {
-            static let standard = Image("storeSlash")
-            static let filled = Image("storeSlashFilled")
-            static let heavy = Image("storeSlashHeavy")
-        }
-        
         struct Tag {
             static let standard = Image("tag")
             static let filled = Image("tagFilled")
             static let heavy = Image("tagHeavy")
         }
         
-        struct CircleExclamation {
-            static let standard = Image("circleExclamation")
-            static let filled = Image("circleExclamationFilled")
-            static let heavy = Image("circleExclamationHeavy")
-        }
-        
         struct WeightScale {
             static let standard = Image("weightScale")
             static let filled = Image("weightScaleFilled")
             static let heavy = Image("weightScaleHeavy")
-        }
-        
-        struct Microphone {
-            static let standard = Image("microphone")
-            static let filled = Image("microphoneFilled")
-            static let heavy = Image("microphoneHeavy")
         }
         
         struct VerifyMember {
@@ -467,12 +382,6 @@ extension Image {
         static let close = Image(systemName: "xmark.circle")
     }
     
-    struct SnappyLogos {
-        static let snappyLogoWhite = Image("snappy-logo-white")
-        static let defaultLargeLogo = Image("default_large_logo")
-        static let colouredLogo = Image("large_logo_3")
-    }
-    
     struct Actions {
         struct Close {
             static let xmarkCircle = Image(systemName: "xmark.circle")
@@ -480,82 +389,7 @@ extension Image {
             static let multiply = Image(systemName: "multiply.circle.fill")
         }
         
-        struct Search {
-            static let standard = Image(systemName: "magnifyingglass")
-            static let address = Image(systemName: "mail.and.text.magnifyingglass")
-        }
-        
-        struct Add {
-            static let circleFilled = Image(systemName: "plus.circle.fill")
-            static let circle = Image(systemName: "plus.circle")
-            static let standard = Image(systemName: "plus")
-        }
-        
-        struct Remove {
-            static let circleFilled = Image(systemName: "minus.circle.fill")
-            static let circle = Image(systemName: "minus.circle")
-        }
-        
         static let edit = Image(systemName: "rectangle.and.pencil.and.ellipsis")
-        
-        struct Camera {
-            static let camera = Image(systemName: "camera")
-            static let cameraFilled = Image(systemName: "camera.filled")
-        }
-    }
-    
-    struct Login {
-        struct User {
-            static let square = Image(systemName: "person.crop.square")
-            static let standard = Image(systemName: "person")
-        }
-        
-        static let signup = Image(systemName: "person.badge.plus")
-        
-        struct Password {
-            static let showPassword = Image(systemName: "eye.fill")
-            static let hidePassword = Image(systemName: "eye.slash.fill")
-        }
-        
-        struct Methods {
-            static let apple = Image(systemName: "applelogo")
-            static let facebook = Image("facebook-logo")
-        }
-    }
-    
-    struct General {
-        struct Number {
-            static let filledCircle = Image(systemName: "number.circle.fill")
-        }
-        
-        struct Info {
-            static let circle = Image(systemName: "info.circle")
-        }
-        
-        struct Checkbox {
-            static let checked = Image(systemName: "checkmark.circle.fill")
-            static let unChecked = Image(systemName: "circle")
-        }
-        
-        static let bulletList = Image(systemName: "list.bullet.rectangle")
-        static let thumbsUp = Image(systemName: "hand.thumbsup")
-        static let alert = Image(systemName: "bell")
-        static let rightArrow = Image(systemName: "arrow.forward")
-        static let savings = Image(systemName: "giftcard")
-        static let fulfilmentTypeDelivery = Image(systemName: "car")
-        static let delete = Image(systemName: "trash")
-        static let noDelete = Image(systemName: "trash.slash")
-    }
-    
-    struct Tabs {
-        static let home = Image(systemName: "house")
-        static let menu = Image(systemName: "square.grid.2x2")
-        static let basket = Image(systemName: "bag")
-        static let more = Image(systemName: "ellipsis")
-    }
-    
-    struct InitialView {
-        static let screenBackground = Image("screen")
     }
     
     struct Checkout {
@@ -566,11 +400,6 @@ extension Image {
         static let cart = Image(systemName: "cart")
     }
     
-    struct Stores {
-        static let convenience = Image("convenience")
-        static let note = Image(systemName: "note.text")
-    }
-    
     struct Products {
         static let bottles = Image("bottle-cats")
         static let pizza = Image("pizzaMain")
@@ -578,19 +407,7 @@ extension Image {
         static let sort = Image(systemName: "line.3.horizontal.decrease.circle")
     }
     
-    struct RemoteImage {
-        static let placeholder = Image(systemName: "photo")
-    }
-    
     struct MemberDashboard {
-        struct Options {
-            static let dashboard = Image(systemName: "person.circle")
-            static let orders = Image(systemName: "list.bullet.rectangle")
-            static let addresses = Image(systemName: "house")
-            static let profile = Image(systemName: "person.text.rectangle")
-            static let loyalty = Image(systemName: "gift")
-            static let logOut = Image(systemName: "rectangle.portrait.and.arrow.right")
-        }
         
         struct Loyalty {
             static let copyToClipboard = Image(systemName: "doc.on.doc")

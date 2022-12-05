@@ -881,27 +881,6 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.postcodeSearchString, "PG43AG")
     }
     
-    func test_whenPostcodeStringChanged_givenPostcodeStringNotEmpty_thenPostcodeSearchResultsPopulated() {
-        let sut = makeSUT()
-        var cancellables = Set<AnyCancellable>()
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(searchHistoryService: [.getAllPostcodes]))
-        
-        let expectation = expectation(description: "populatedSearchResults")
-
-        sut.postcodeSearchString = "GU9"
-        
-        sut.$postcodeSearchString
-            .first()
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        wait(for: [expectation], timeout: 2)
-        
-        container.services.verify(as: .searchHistoryService)
-    }
-    
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),

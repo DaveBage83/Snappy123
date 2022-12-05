@@ -71,3 +71,39 @@ final class StorePostcodeTests: SearchHistoryServiceTests {
         mockedDBRepo.verify()
     }
 }
+
+final class GetMenuItemSearchTests: SearchHistoryServiceTests {
+    func test_whenFetchAllMenuItemSearches_thenAllMenuItemSearchesReturned() async {
+        
+        mockedDBRepo.actions = .init(expected: [
+            .fetchAllMenuItemSearches
+        ])
+        
+        let menuItemSearches = await sut.getAllMenuItemSearches()
+        mockedDBRepo.verify()
+        XCTAssertEqual(menuItemSearches, [.mockedData])
+    }
+    
+    func test_whenFetchMenuItemSearch_thenFetchSearch() async {
+        let menuItemString = MenuItemSearch.mockedData.name
+        
+        mockedDBRepo.actions = .init(expected: [
+            .fetchMenuItemSearch(menuItemSearchString: menuItemString)
+        ])
+        
+        let menuItemSearch = await sut.getMenuItemSearch(menuItemSearchString: menuItemString)
+        mockedDBRepo.verify()
+        XCTAssertEqual(menuItemSearch, .mockedData)
+    }
+}
+
+final class StoreMenuItemSearchTests: SearchHistoryServiceTests {
+    func test_whenStoreMenuItemSearc_thenMenuItemSearchStored() async {
+        let menuItemString = MenuItemSearch.mockedData.name
+        mockedDBRepo.actions = .init(expected: [
+            .store(searchedMenuItem: menuItemString)
+        ])
+        await sut.storeMenuItemSearch(menuItemSearchString: menuItemString)
+        mockedDBRepo.verify()
+    }
+}

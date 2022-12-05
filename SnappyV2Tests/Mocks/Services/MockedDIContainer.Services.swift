@@ -50,7 +50,7 @@ extension DIContainer.Services {
             imageService: MockedAsyncImageService(expected: imageService),
             notificationService: MockedNotificationService(expected: notificationService),
             userPermissionsService: MockedUserPermissionsService(expected: userPermissionsService),
-            searchHistoryService: MockedSearchHistoryService(expected: [])
+            searchHistoryService: MockedSearchHistoryService(expected: searchHistoryService)
         )
     }
     

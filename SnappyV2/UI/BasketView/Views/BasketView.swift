@@ -72,79 +72,85 @@ struct BasketView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                
-                Divider()
-                
-                if viewModel.basketIsEmpty {
-                    emptyBasket
-                        .padding([.top, .horizontal])
-                        .padding(.bottom, tabViewHeight)
+            ZStack(alignment: .bottom) {
+                VStack(spacing: 0) {
+                    
+                    Divider()
+                    
+                    if viewModel.basketIsEmpty {
+                        emptyBasket
+                            .padding([.top, .horizontal])
+                            .padding(.bottom, tabViewHeight)
+                            .navigationTitle(BasketViewStrings.title.localized)
+                            .navigationBarTitleDisplayMode(.inline)
+                            .background(colorPalette.backgroundMain)
+                    } else {
+                        ScrollView(showsIndicators: false) {
+                            VStack {
+                                FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
+                                    .padding(.bottom)
+                                
+                                if viewModel.showBasketItems {
+                                    basketItems()
+                                        .padding(.bottom, Constants.BasketItems.bottomPadding)
+                                }
+                                
+                                if viewModel.basketIsEmpty {
+                                    Text(BasketViewStrings.noItems.localized)
+                                        .font(.Body1.semiBold())
+                                        .foregroundColor(colorPalette.typefacePrimary)
+                                }
+                                
+                                VStack(spacing: Constants.SubItemStack.spacing) {
+                                    minSpendWarning
+                                    
+                                    verifiedAccountRequiredWarning
+                                    
+                                    couponInput
+                                    
+                                    mentionMe
+                                        .padding(.bottom)
+                                }
+                            }
+                            .padding([.top, .leading, .trailing])
+                            .frame(maxHeight: .infinity)
+                            .onAppear {
+                                viewModel.onBasketViewSendEvent()
+                            }
+                            .padding(.bottom, tabViewHeight)
+                        }
+                        .background(colorPalette.backgroundMain)
                         .navigationTitle(BasketViewStrings.title.localized)
                         .navigationBarTitleDisplayMode(.inline)
-                        .background(colorPalette.backgroundMain)
-                } else {
-                    ScrollView(showsIndicators: false) {
-                        VStack {
-                            FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
-                                .padding(.bottom)
-                            
-                            if viewModel.showBasketItems {
-                                basketItems()
-                                    .padding(.bottom, Constants.BasketItems.bottomPadding)
-                            }
-                            
-                            if viewModel.basketIsEmpty {
-                                Text(BasketViewStrings.noItems.localized)
-                                    .font(.Body1.semiBold())
-                                    .foregroundColor(colorPalette.typefacePrimary)
-                            }
-                            
-                            VStack(spacing: Constants.SubItemStack.spacing) {
-                                minSpendWarning
-                                
-                                verifiedAccountRequiredWarning
-                                
-                                couponInput
-                                
-                                mentionMe
-                                
-                                mainButton
-                            }
+                        .onTapGesture {
+                            hideKeyboard()
                         }
-                        .padding([.top, .leading, .trailing])
-                        .frame(maxHeight: .infinity)
-                        .onAppear {
-                            viewModel.onBasketViewSendEvent()
-                        }
-                        .padding(.bottom, tabViewHeight)
+                        Text("")
+                            .alert(isPresented: $viewModel.showCouponAlert) {
+                                Alert(
+                                    title: Text(CouponStrings.alertTitle.localized),
+                                    message: Text(CouponStrings.alertMessage.localized),
+                                    primaryButton:
+                                            .default(Text(CouponStrings.alertApply.localized), action: { Task { await viewModel.submitCoupon() } }),
+                                    secondaryButton:
+                                            .destructive(Text(CouponStrings.alertRemove.localized), action: { Task { await viewModel.clearCouponAndContinue() } })
+                                )
+                            }
                     }
-                    .background(colorPalette.backgroundMain)
-                    .navigationTitle(BasketViewStrings.title.localized)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .onTapGesture {
-                        hideKeyboard()
-                    } 
-                    Text("")
-                        .alert(isPresented: $viewModel.showCouponAlert) {
-                            Alert(
-                                title: Text(CouponStrings.alertTitle.localized),
-                                message: Text(CouponStrings.alertMessage.localized),
-                                primaryButton:
-                                        .default(Text(CouponStrings.alertApply.localized), action: { Task { await viewModel.submitCoupon() } }),
-                                secondaryButton:
-                                        .destructive(Text(CouponStrings.alertRemove.localized), action: { Task { await viewModel.clearCouponAndContinue() } })
-                            )
-                        }
+                    // MARK: NavigationLinks
+                    NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
+                        CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
+                            viewModel.dismissView()
+                        })
+                    }
                 }
-                // MARK: NavigationLinks
-                NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                    CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
-                        viewModel.dismissView()
-                    })
-                }
+                .background(colorPalette.backgroundMain)
+
+                mainButton
+                    .padding()
+                    .padding(.bottom)
+                    .offset(y: -tabViewHeight / 2)
             }
-            .background(colorPalette.backgroundMain)
         }
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
                      sheetContent: MentionMeWebView(
@@ -258,7 +264,18 @@ struct BasketView: View {
                     viewModel.startShoppingPressed()
                 }
         } else {
-            VStack(spacing: Constants.MainButtonStack.spacing) {
+            HStack(spacing: Constants.MainButtonStack.spacing) {
+                
+                SnappyButton(
+                    container: viewModel.container,
+                    type: .outline,
+                    size: .large,
+                    title: GeneralStrings.shop.localized,
+                    largeTextTitle: nil,
+                    icon: nil) {
+                        viewModel.startShoppingPressed()
+                    }
+                
                 if viewModel.showCheckoutButton {
                     SnappyButton(
                         container: viewModel.container,
@@ -272,16 +289,6 @@ struct BasketView: View {
                             }
                         }
                 }
-                
-                SnappyButton(
-                    container: viewModel.container,
-                    type: .outline,
-                    size: .large,
-                    title: BasketViewStrings.continueShopping.localized,
-                    largeTextTitle: nil,
-                    icon: nil) {
-                        viewModel.startShoppingPressed()
-                    }
             }
         }
     }
@@ -295,9 +302,7 @@ struct BasketView: View {
                 .font(.Body1.semiBold())
                 .foregroundColor(colorPalette.typefacePrimary)
             
-            Spacer()
-            
-            mainButton
+            Spacer()            
         }
     }
     

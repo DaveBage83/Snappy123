@@ -480,27 +480,6 @@ extension View {
     }
 }
 
-class WithSearchHistoryModifierViewModel: ObservableObject {
-    let container: DIContainer
-    @Published var showPostcodeDropdown = false
-    @Published var postcodeSearchResults = [String]()
-//    @Published var storedPostcodes: [Postcode]?
-//    @Published var textfieldText: String
-    
-//    private var cancellables = Set<AnyCancellable>()
-    
-    init(container: DIContainer) {
-        self.container = container
-//        setupTextfieldText()
-    }
-    
-//    func postcodeTapped(postcode: String) {
-//        textfieldText = postcode
-//        postcodeSearchResults = []
-//        showPostcodeDropdown = false
-//    }
-}
-
 struct WithSearchHistory: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
         
@@ -539,12 +518,13 @@ struct WithSearchHistory: ViewModifier {
     @ViewBuilder private var searchHistoryDropdown: some View {
         if showPostcodeDropDown {
             VStack(alignment: .leading, spacing: spacing) {
-                ForEach($searchResults, id: \.self) { postcode in
+                ForEach($searchResults, id: \.self) { searchTerm in
                     Button {
-                        textfieldTextSetter(postcode.wrappedValue)
+                        textfieldTextSetter(searchTerm.wrappedValue)
+                        searchResults = []
                     } label: {
                         HStack {
-                            Text(postcode.wrappedValue)
+                            Text(searchTerm.wrappedValue)
                                 .font(.Body2.semiBold())
                                 .foregroundColor(colorPalette.typefacePrimary)
                             Spacer()

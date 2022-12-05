@@ -32,7 +32,6 @@ class RetailStoreMenuServiceTests: XCTestCase {
         sut = RetailStoreMenuService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
-            searchHistoryDBRepository: mockedSearchHistoryDB,
             appState: appState,
             eventLogger: mockedEventLogger
         )

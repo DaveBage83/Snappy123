@@ -64,7 +64,6 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     let webRepository: RetailStoreMenuWebRepositoryProtocol
     let dbRepository: RetailStoreMenuDBRepositoryProtocol
-    let searchHistoryDBRepository: SearchHistoryDBRepositoryProtocol
     
     // Example in the clean architecture Countries exampe of the appState
     // being passed to a service (but not used the code). Using this as
@@ -74,10 +73,9 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     let eventLogger: EventLoggerProtocol
 
-    init(webRepository: RetailStoreMenuWebRepositoryProtocol, dbRepository: RetailStoreMenuDBRepositoryProtocol, searchHistoryDBRepository: SearchHistoryDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
+    init(webRepository: RetailStoreMenuWebRepositoryProtocol, dbRepository: RetailStoreMenuDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
-        self.searchHistoryDBRepository = searchHistoryDBRepository
         self.appState = appState
         self.eventLogger = eventLogger
     }

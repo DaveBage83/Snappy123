@@ -27,7 +27,7 @@ final class MockedSearchHistoryDBRepository: Mock, SearchHistoryDBRepositoryProt
     var storePostcode: Result<Postcode?, Error> = .failure(MockError.valueNotSet)
     var fetchPostcodes: [Postcode]?
     var deletePostcode: Result<Bool, Error> = .failure(MockError.valueNotSet)
-    var fetchMenuItemSearch: Result<MenuItemSearch?, Error> = .failure(MockError.valueNotSet)
+    var fetchMenuItemSearch: Result<MenuItemSearch?, Error> = .success(.mockedData)
     var storeMenuItemSearch: Result<MenuItemSearch?, Error> = .failure(MockError.valueNotSet)
     var fetchAllMenuItemSearchQueries: [MenuItemSearch]?
     var deleteMenuItemSearch: Result<Bool, Error> = .failure(MockError.valueNotSet)

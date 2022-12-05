@@ -109,7 +109,7 @@ struct BasketView: View {
                                     couponInput
                                     
                                     mentionMe
-                                        .padding(.bottom)
+                                        .padding(.bottom, 20)
                                 }
                             }
                             .padding([.top, .leading, .trailing])
@@ -145,11 +145,16 @@ struct BasketView: View {
                     }
                 }
                 .background(colorPalette.backgroundMain)
-
-                mainButton
-                    .padding()
-                    .padding(.bottom)
-                    .offset(y: -tabViewHeight / 2)
+                
+                if #available(iOS 15.0, *) {
+                    mainButton
+                        .padding(.horizontal)
+                        .background(.ultraThinMaterial)
+                        .padding(.bottom)
+                } else {
+                    mainButton
+                        .padding(.horizontal)
+                }
             }
         }
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
@@ -290,6 +295,8 @@ struct BasketView: View {
                         }
                 }
             }
+            .padding(.bottom, tabViewHeight * 0.5)
+            .padding(.vertical)
         }
     }
 

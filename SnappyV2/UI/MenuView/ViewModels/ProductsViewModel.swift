@@ -47,6 +47,7 @@ class ProductsViewModel: ObservableObject {
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
+    @Published var selectedSearchTerm: String?
     
     // Search variables
     @Published var searchText: String
@@ -273,6 +274,7 @@ class ProductsViewModel: ObservableObject {
         setupSpecialOffers()
         setupIsSearchActive()
         setupBindingsToStoreDisplayedStates(with: appState)
+        setupSelectedSearchTerm()
         
         if let missedOffer = missedOffer {
             getMissedPromotion(offer: missedOffer)
@@ -379,6 +381,17 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    private func setupSelectedSearchTerm() {
+        $selectedSearchTerm
+            .receive(on: RunLoop.main)
+            .sink { [weak self] term in
+                guard let self = self, let term else { return }
+                self.searchText = term
+                self.clearSearchResults()
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedStore)
@@ -468,7 +481,7 @@ class ProductsViewModel: ObservableObject {
         let results = sortMenuSearchQueries(storedSearches)?.compactMap { $0.name } ?? []
         
         if self.itemSearchHistoryResults.count == 1 && self.itemSearchHistoryResults.first == self.searchText {
-            self.itemSearchHistoryResults = []
+            clearSearchResults()
         } else {
             self.itemSearchHistoryResults = results
         }
@@ -477,6 +490,10 @@ class ProductsViewModel: ObservableObject {
     private func showAllSearchHistoryResults() {
         let allStoredSearches = storedSearches?.sorted { $0.timestamp > $1.timestamp }
         self.itemSearchHistoryResults = allStoredSearches?.compactMap { $0.name } ?? []
+    }
+    
+    func clearSelectedSearchTerm() {
+        selectedSearchTerm = nil
     }
     
     private func setupSearchText() {
@@ -500,8 +517,10 @@ class ProductsViewModel: ObservableObject {
                     self.isSearchActive = true
                     // Store search text
                     self.container.appState.value.searchHistoryData.latestProductSearch = searchText
+                    if self.selectedSearchTerm == nil {
+                        self.configureSearchHistoryResults()
+                    }
                     
-                    self.configureSearchHistoryResults()
                 } else {
                     self.showAllSearchHistoryResults()
                     self.showEnterMoreCharactersView = false
@@ -619,7 +638,7 @@ class ProductsViewModel: ObservableObject {
     }
     
     func clearSearchResults() {
-        itemSearchHistoryResults = []
+//        itemSearchHistoryResults = []
     }
 
     func categoryTapped(with category: RetailStoreMenuCategory, fromState: ProductViewState? = nil) {

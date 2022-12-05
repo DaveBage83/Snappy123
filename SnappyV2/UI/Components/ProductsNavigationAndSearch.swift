@@ -50,8 +50,11 @@ struct ProductsNavigationAndSearch: View {
                         container: productsViewModel.container,
                         searchResults: $productsViewModel.itemSearchHistoryResults,
                         textfieldTextSetter: { searchTerm in
-                            productsViewModel.searchText = searchTerm
+                            productsViewModel.selectedSearchTerm = searchTerm
                         })
+                    .onTapGesture {
+                        productsViewModel.clearSelectedSearchTerm()
+                    }
                 
                 if productsViewModel.showFilterButton {
                     Menu {

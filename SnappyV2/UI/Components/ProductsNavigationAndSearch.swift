@@ -53,7 +53,7 @@ struct ProductsNavigationAndSearch: View {
                             productsViewModel.selectedSearchTerm = searchTerm
                         })
                     .onTapGesture {
-                        productsViewModel.clearSelectedSearchTerm()
+                        productsViewModel.configureSearchHistoryResults()
                     }
                 
                 if productsViewModel.showFilterButton {

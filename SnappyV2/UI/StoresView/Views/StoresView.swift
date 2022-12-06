@@ -171,6 +171,9 @@ struct StoresView: View {
                 await viewModel.populateStoredPostcodes()
             }
         }
+        .onTapGesture {
+            viewModel.clearPostcodeSearchResults()
+        }
     }
     
     // MARK: - Postcode search bar and button
@@ -198,6 +201,9 @@ struct StoresView: View {
                         await viewModel.searchViaLocationTapped()
                     }
                 }))
+            .onTapGesture {
+                viewModel.configurePostcodeSearch(postcode: viewModel.postcodeSearchString)
+            }
             .withSearchHistory(
                 container: viewModel.container,
                 searchResults: $viewModel.postcodeSearchResults, textfieldTextSetter: { postcode in

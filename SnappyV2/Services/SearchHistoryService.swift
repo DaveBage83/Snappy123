@@ -33,7 +33,7 @@ struct SearchHistoryService: SearchHistoryServiceProtocol {
             let postcode = try await dbRepository.fetchPostcode(using: postcodeString).singleOutput()
             return postcode
         } catch {
-            Logger.searchHistoryStorage.error("Failed to fetch postcode")
+            Logger.searchHistoryStorage.error("Failed to fetch postcode: \(error)")
             return nil
         }
     }
@@ -46,7 +46,7 @@ struct SearchHistoryService: SearchHistoryServiceProtocol {
         do {
             let _ = try await dbRepository.store(postcode: postcodeString).singleOutput()
         } catch {
-            Logger.searchHistoryStorage.error("Failed to store postcode")
+            Logger.searchHistoryStorage.error("Failed to store postcode: \(error)")
         }
     }
     

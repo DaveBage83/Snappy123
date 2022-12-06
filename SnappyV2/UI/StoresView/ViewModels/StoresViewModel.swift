@@ -94,6 +94,10 @@ class StoresViewModel: ObservableObject {
         setupOrderMethodStatusSections()
         setupPostcodeError()
     }
+    
+    func clearPostcodeSearchResults() {
+        postcodeSearchResults = []
+    }
 
     func postcodeTapped(postcode: String) {
         postcodeSearchString = postcode
@@ -112,6 +116,19 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func configurePostcodeSearch(postcode: String) {
+        if postcode.isEmpty == false {
+            self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
+            
+            if self.postcodeSearchResults.count == 1 && self.postcodeSearchResults.first == self.postcodeSearchString {
+                self.postcodeSearchResults = []
+            }
+            
+        } else {
+            self.postcodeSearchResults = self.storedPostcodes?.compactMap { $0.postcode } ?? []
+        }
+    }
+    
     private func setupPostcodeError() {
         $postcodeSearchString
             .dropFirst()
@@ -124,16 +141,7 @@ class StoresViewModel: ObservableObject {
                     await self.populateStoredPostcodes()
                 }
 
-                if postcode.isEmpty == false {
-                    self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
-                    
-                    if self.postcodeSearchResults.count == 1 && self.postcodeSearchResults.first == self.postcodeSearchString {
-                        self.postcodeSearchResults = []
-                    }
-                    
-                } else {
-                    self.postcodeSearchResults = self.storedPostcodes?.compactMap { $0.postcode } ?? []
-                }
+                self.configurePostcodeSearch(postcode: postcode)
             }
             .store(in: &cancellables)
     }

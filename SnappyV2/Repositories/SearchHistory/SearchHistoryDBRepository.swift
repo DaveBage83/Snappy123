@@ -57,7 +57,7 @@ struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
      
             return postcodes
         } catch {
-            Logger.searchHistoryStorage.info("No postcodes fetched")
+            Logger.searchHistoryStorage.info("No postcodes fetched: \(error)")
             return nil
         }
     }

@@ -537,7 +537,7 @@ struct WithSearchHistory: ViewModifier {
                 }
             }
             .frame(width: width)
-            .background(Color.white)
+            .background(colorPalette.typefaceInvert)
             .standardCardFormat()
         }
     }

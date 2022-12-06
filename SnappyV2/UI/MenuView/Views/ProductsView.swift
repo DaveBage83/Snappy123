@@ -94,6 +94,10 @@ struct ProductsView: View {
         NavigationView {
             if #available(iOS 15.0, *) {
                 mainContent
+                    .onTapGesture {
+                        hideKeyboard()
+                        viewModel.clearSearchResults()
+                    }
                     .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, windowSize: mainWindowSize) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
@@ -101,6 +105,10 @@ struct ProductsView: View {
                     }
             } else {
                 mainContent
+                    .onTapGesture {
+                        hideKeyboard()
+                        viewModel.clearSearchResults()
+                    }
                     .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
@@ -116,10 +124,6 @@ struct ProductsView: View {
                 SettingsButton(viewModel: .init(container: viewModel.container))
             }
         })
-        .onTapGesture {
-            hideKeyboard()
-            viewModel.clearSearchResults()
-        }
         .withLoadingToast(loading: .constant(viewModel.isSearching))
     }
     

@@ -124,7 +124,9 @@ class ProductIncrementButtonViewModel: ObservableObject {
         self.isUpdatingQuantity = true
         
         if let latestSearchTerm = container.appState.value.searchHistoryData.latestProductSearch {
+            // Store latest search term
             await container.services.searchHistoryService.storeMenuItemSearch(menuItemSearchString: latestSearchTerm)
+            container.appState.value.searchHistoryData.latestProductSearch = nil
         }
         
         // Add item

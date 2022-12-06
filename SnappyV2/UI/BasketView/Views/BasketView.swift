@@ -59,6 +59,10 @@ struct BasketView: View {
         struct DeliveryBanner {
             static let widthAdjustment: CGFloat = 16
         }
+        
+        struct MentionMe {
+            static let bottomPadding: CGFloat = 20
+        }
     }
     
     // MARK: - View model
@@ -109,7 +113,7 @@ struct BasketView: View {
                                     couponInput
                                     
                                     mentionMe
-                                        .padding(.bottom, 20)
+                                        .padding(.bottom, Constants.MentionMe.bottomPadding)
                                 }
                             }
                             .padding([.top, .leading, .trailing])

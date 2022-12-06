@@ -285,6 +285,11 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    // Triggered from the view .onAppear method
+    func onAppear() async {
+        await populateStoredSearches()
+    }
+    
     func populateStoredSearches() async {
         self.storedSearches = await self.container.services.searchHistoryService.getAllMenuItemSearches()
     }
@@ -473,12 +478,15 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func sortMenuSearchQueries(_ menuItemSearches: [MenuItemSearch]?) -> [MenuItemSearch]? {
-        menuItemSearches?.filter { $0.name.removeWhitespace().contains(searchText.removeWhitespace()) }.sorted { $0.timestamp > $1.timestamp }
+    private func sortMenuSearchQueriesByTimestamp(_ menuItemSearches: [MenuItemSearch]?) -> [MenuItemSearch]? {
+        guard searchText.isEmpty == false else {
+            return menuItemSearches?.sorted { $0.timestamp > $1.timestamp }
+        }
+        return menuItemSearches?.filter { $0.name.removeWhitespace().contains(searchText.removeWhitespace()) }.sorted { $0.timestamp > $1.timestamp }
     }
     
-    private func configureSearchHistoryResults() {
-        let results = sortMenuSearchQueries(storedSearches)?.compactMap { $0.name } ?? []
+    func configureSearchHistoryResults() {
+        let results = sortMenuSearchQueriesByTimestamp(storedSearches)?.compactMap { $0.name } ?? []
         
         if self.itemSearchHistoryResults.count == 1 && self.itemSearchHistoryResults.first == self.searchText {
             clearSearchResults()
@@ -638,7 +646,7 @@ class ProductsViewModel: ObservableObject {
     }
     
     func clearSearchResults() {
-//        itemSearchHistoryResults = []
+        itemSearchHistoryResults = []
     }
 
     func categoryTapped(with category: RetailStoreMenuCategory, fromState: ProductViewState? = nil) {
@@ -663,6 +671,7 @@ class ProductsViewModel: ObservableObject {
         container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
         if let latestSearchTerm = container.appState.value.searchHistoryData.latestProductSearch {
             Task {
+                // Store latest search term
                 await self.storeSearchQuery(latestSearchTerm)
             }
         }

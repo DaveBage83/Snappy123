@@ -35,6 +35,10 @@ class StoresViewModel: ObservableObject {
     @Published var isFocused = false
     @Published var showFulfilmentSlotSelection = false
     @Published var storeIsLoading = false
+    
+    @Published var storedPostcodes: [Postcode]?
+    @Published var postcodeSearchResults = [String]()
+
     private(set) var selectedStoreID: Int?
     let locationManager: LocationManager
     
@@ -91,6 +95,18 @@ class StoresViewModel: ObservableObject {
         setupPostcodeError()
     }
     
+    func clearPostcodeSearchResults() {
+        postcodeSearchResults = []
+    }
+
+    func postcodeTapped(postcode: String) {
+        postcodeSearchString = postcode
+    }
+    
+    func populateStoredPostcodes() async {
+        self.storedPostcodes = await self.container.services.searchHistoryService.getAllPostcodes()
+    }
+    
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
@@ -100,13 +116,32 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func configurePostcodeSearch(postcode: String) {
+        if postcode.isEmpty == false {
+            self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
+            
+            if self.postcodeSearchResults.count == 1 && self.postcodeSearchResults.first == self.postcodeSearchString {
+                self.postcodeSearchResults = []
+            }
+            
+        } else {
+            self.postcodeSearchResults = self.storedPostcodes?.compactMap { $0.postcode } ?? []
+        }
+    }
+    
     private func setupPostcodeError() {
         $postcodeSearchString
             .dropFirst()
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] postcode in
                 guard let self = self else { return }
                 self.invalidPostcodeError = false
+                
+                Task {
+                    await self.populateStoredPostcodes()
+                }
+
+                self.configurePostcodeSearch(postcode: postcode)
             }
             .store(in: &cancellables)
     }

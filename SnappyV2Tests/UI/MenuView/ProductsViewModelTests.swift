@@ -482,7 +482,8 @@ class ProductsViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(
             appState: AppState(),
@@ -1007,6 +1008,30 @@ class ProductsViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.showRootCategoriesCarousel)
         XCTAssertFalse(sut.showToolbarCategoryMenu)
+    }
+    
+    func test_whenPopulateSearchesCalled_thenSearchesFetched() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(searchHistoryService: [.getAllMenuItemSearches]))
+        
+        let sut = makeSUT(container: container)
+                                    
+        await sut.populateStoredSearches()
+        
+        container.services.verify(as: .searchHistoryService)
+    }
+    
+    func test_whenClearAppStateSearchHistory_thenSearchHistoryCleared() {
+        let sut = makeSUT()
+        sut.container.appState.value.searchHistoryData.latestProductSearch = "test"
+        sut.clearAppstateSearchQuery()
+        XCTAssertNil(sut.container.appState.value.searchHistoryData.latestProductSearch)
+    }
+    
+    func test_whenClearSearchResults_thenSearchResultsCleared() {
+        let sut = makeSUT()
+        sut.itemSearchHistoryResults = ["test"]
+        sut.clearSearchResults()
+        XCTAssertEqual(sut.itemSearchHistoryResults, [])
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {

@@ -46,6 +46,15 @@ struct ProductsNavigationAndSearch: View {
         VStack {
             HStack {
                 SearchBarView(container: productsViewModel.container, label: Strings.ProductsView.searchStore.localized, text: $text, isEditing: $isEditing)
+                    .withSearchHistory(
+                        container: productsViewModel.container,
+                        searchResults: $productsViewModel.itemSearchHistoryResults,
+                        textfieldTextSetter: { searchTerm in
+                            productsViewModel.selectedSearchTerm = searchTerm
+                        })
+                    .onTapGesture {
+                        productsViewModel.configureSearchHistoryResults()
+                    }
                 
                 if productsViewModel.showFilterButton {
                     Menu {
@@ -85,8 +94,14 @@ struct ProductsNavigationAndSearch: View {
             }
             .padding(.bottom, Constants.SearchBar.padding)
         }
+        .onAppear {
+            Task {
+                await productsViewModel.populateStoredSearches()
+            }
+        }
         .padding(.horizontal)
         .background(colorPalette.typefaceInvert)
+        .zIndex(1)
     }
 }
 

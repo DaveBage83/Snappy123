@@ -873,6 +873,14 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertTrue(sut.locationManager.showLocationUnknownAlert)
     }
     
+    func test_whenPostcodeTapped_thenPostcodeSearchStringPopulatedAndSearchResultsIsEmptyAndShowPostcodeDropdownIsFalse() {
+        let sut = makeSUT()
+        sut.postcodeSearchResults = ["GU99EP"]
+        sut.postcodeTapped(postcode: "PG43AG")
+        
+        XCTAssertEqual(sut.postcodeSearchString, "PG43AG")
+    }
+    
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),

@@ -51,6 +51,7 @@
 "general.start" = "Start";
 "general.from" = "From";
 "general.min" = "Min";
+"general.shop" = "Shop";
 
 // MARK: - General - custom
 

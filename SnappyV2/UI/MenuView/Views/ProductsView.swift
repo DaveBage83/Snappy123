@@ -94,6 +94,10 @@ struct ProductsView: View {
         NavigationView {
             if #available(iOS 15.0, *) {
                 mainContent
+                    .onTapGesture {
+                        hideKeyboard()
+                        viewModel.clearSearchResults()
+                    }
                     .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, windowSize: mainWindowSize) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
@@ -101,6 +105,10 @@ struct ProductsView: View {
                     }
             } else {
                 mainContent
+                    .onTapGesture {
+                        hideKeyboard()
+                        viewModel.clearSearchResults()
+                    }
                     .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
@@ -108,14 +116,14 @@ struct ProductsView: View {
                     }
             }
         }
+        .onDisappear {
+            viewModel.clearAppstateSearchQuery()
+        }
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
                 SettingsButton(viewModel: .init(container: viewModel.container))
             }
         })
-        .onTapGesture {
-            hideKeyboard()
-        }
         .withLoadingToast(loading: .constant(viewModel.isSearching))
     }
     
@@ -403,6 +411,9 @@ struct ProductsView: View {
                                 associatedSearchTerm: viewModel.associatedSearchTerm,
                                 productSelected: { product in
                                     viewModel.selectItem(product)
+                                    Task {
+                                        await viewModel.storeSearchQuery(viewModel.searchText)
+                                    }
                                 }
                             ),
                             productsViewModel: viewModel

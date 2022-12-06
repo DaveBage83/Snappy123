@@ -20,6 +20,7 @@ class RetailStoreMenuServiceTests: XCTestCase {
     var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedRetailStoreMenuWebRepository!
     var mockedDBRepo: MockedRetailStoreMenuDBRepository!
+    var mockedSearchHistoryDB: MockedSearchHistoryDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: RetailStoreMenuService!
 
@@ -27,6 +28,7 @@ class RetailStoreMenuServiceTests: XCTestCase {
         mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedRetailStoreMenuWebRepository()
         mockedDBRepo = MockedRetailStoreMenuDBRepository()
+        mockedSearchHistoryDB = MockedSearchHistoryDBRepository()
         sut = RetailStoreMenuService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,

@@ -16,6 +16,7 @@ protocol PersistentStore {
     
     func count<T>(_ fetchRequest: NSFetchRequest<T>) -> AnyPublisher<Int, Error>
     func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>, map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
+    func fetch<T>(_ fetchRequest: NSFetchRequest<T>) throws -> [T]?
     @discardableResult func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error>
     
     // More efficient but not suited to unit testing
@@ -94,6 +95,15 @@ struct CoreDataStack: PersistentStore {
         return onStoreIsReady
             .flatMap { fetch }
             .eraseToAnyPublisher()
+    }
+    
+    // Simple fetch method to return all objects as an array. Can be used when no mapping is required.
+    func fetch<T>(_ fetchRequest: NSFetchRequest<T>) throws -> [T]? {
+        do {
+            return try container.viewContext.fetch(fetchRequest)
+        } catch {
+            throw error
+        }
     }
     
     func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error> {

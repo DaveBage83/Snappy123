@@ -15,7 +15,6 @@ import Combine
 @testable import SnappyV2
 
 final class MockedPersistentStore: Mock, PersistentStore {
-
     struct ContextSnapshot: Equatable {
         let inserted: Int
         let updated: Int
@@ -60,6 +59,10 @@ final class MockedPersistentStore: Mock, PersistentStore {
         } catch {
             return Fail<LazyList<V>, Error>(error: error).publish()
         }
+    }
+    
+    func fetch<T>(_ fetchRequest: NSFetchRequest<T>) -> [T]? where T : NSFetchRequestResult {
+        return nil
     }
     
     // MARK: - update

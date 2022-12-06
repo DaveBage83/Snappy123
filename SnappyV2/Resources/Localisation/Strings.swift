@@ -60,6 +60,7 @@ public enum Strings {
         case start = "general.start"
         case from = "general.from"
         case min = "general.min"
+        case shop = "general.shop"
         
         public enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"

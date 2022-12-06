@@ -21,6 +21,7 @@ extension DIContainer.Services {
         case image
         case notifications
         case userPermissions
+        case searchHistoryService
     }
     
     static func mocked(
@@ -34,7 +35,8 @@ extension DIContainer.Services {
         utilityService: [MockedUtilityService.Action] = [],
         imageService: [MockedAsyncImageService.Action] = [],
         notificationService: [MockedNotificationService.Action] = [],
-        userPermissionsService: [MockedUserPermissionsService.Action] = []
+        userPermissionsService: [MockedUserPermissionsService.Action] = [],
+        searchHistoryService: [MockedSearchHistoryService.Action] = []
     ) -> DIContainer.Services {
         .init(
             businessProfileService: MockedBusinessProfileService(expected: businessProfileService),
@@ -47,7 +49,8 @@ extension DIContainer.Services {
             utilityService: MockedUtilityService(expected: utilityService),
             imageService: MockedAsyncImageService(expected: imageService),
             notificationService: MockedNotificationService(expected: notificationService),
-            userPermissionsService: MockedUserPermissionsService(expected: userPermissionsService)
+            userPermissionsService: MockedUserPermissionsService(expected: userPermissionsService),
+            searchHistoryService: MockedSearchHistoryService(expected: searchHistoryService)
         )
     }
     
@@ -85,6 +88,9 @@ extension DIContainer.Services {
                 .verify(file: file, line: line)
         case .userPermissions:
             (userPermissionsService as? MockedUserPermissionsService)?
+                .verify(file: file, line: line)
+        case .searchHistoryService:
+            (searchHistoryService as? MockedSearchHistoryService)?
                 .verify(file: file, line: line)
         }
     }

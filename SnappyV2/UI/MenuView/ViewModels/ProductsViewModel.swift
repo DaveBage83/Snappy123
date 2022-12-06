@@ -47,6 +47,7 @@ class ProductsViewModel: ObservableObject {
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
+    @Published var selectedSearchTerm: String?
     
     // Search variables
     @Published var searchText: String
@@ -55,7 +56,9 @@ class ProductsViewModel: ObservableObject {
     @Published var searchResultCategories: [GlobalSearchResultRecord]
     @Published var searchResultItems: [RetailStoreMenuItem]
     @Published var navigationWithIsSearchActive: Int
-    
+    @Published var storedSearches: [MenuItemSearch]?
+    @Published var itemSearchHistoryResults = [String]()
+
     // Titles
     @Published var subCategoryNavigationTitle: [String]
     @Published var itemNavigationTitle: String?
@@ -271,6 +274,7 @@ class ProductsViewModel: ObservableObject {
         setupSpecialOffers()
         setupIsSearchActive()
         setupBindingsToStoreDisplayedStates(with: appState)
+        setupSelectedSearchTerm()
         
         if let missedOffer = missedOffer {
             getMissedPromotion(offer: missedOffer)
@@ -279,6 +283,15 @@ class ProductsViewModel: ObservableObject {
                 getCategories()
             }
         }
+    }
+    
+    // Triggered from the view .onAppear method
+    func onAppear() async {
+        await populateStoredSearches()
+    }
+    
+    func populateStoredSearches() async {
+        self.storedSearches = await self.container.services.searchHistoryService.getAllMenuItemSearches()
     }
     
     func setupBindingsToStoreDisplayedStates(with appState: Store<AppState>) {
@@ -373,6 +386,17 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    private func setupSelectedSearchTerm() {
+        $selectedSearchTerm
+            .receive(on: RunLoop.main)
+            .sink { [weak self] term in
+                guard let self = self, let term else { return }
+                self.searchText = term
+                self.clearSearchResults()
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedStore)
@@ -454,12 +478,43 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func sortMenuSearchQueriesByTimestamp(_ menuItemSearches: [MenuItemSearch]?) -> [MenuItemSearch]? {
+        guard searchText.isEmpty == false else {
+            return menuItemSearches?.sorted { $0.timestamp > $1.timestamp }
+        }
+        return menuItemSearches?.filter { $0.name.removeWhitespace().contains(searchText.removeWhitespace()) }.sorted { $0.timestamp > $1.timestamp }
+    }
+    
+    func configureSearchHistoryResults() {
+        let results = sortMenuSearchQueriesByTimestamp(storedSearches)?.compactMap { $0.name } ?? []
+        
+        if self.itemSearchHistoryResults.count == 1 && self.itemSearchHistoryResults.first == self.searchText {
+            clearSearchResults()
+        } else {
+            self.itemSearchHistoryResults = results
+        }
+    }
+    
+    private func showAllSearchHistoryResults() {
+        let allStoredSearches = storedSearches?.sorted { $0.timestamp > $1.timestamp }
+        self.itemSearchHistoryResults = allStoredSearches?.compactMap { $0.name } ?? []
+    }
+    
+    func clearSelectedSearchTerm() {
+        selectedSearchTerm = nil
+    }
+    
     private func setupSearchText() {
         $searchText
+            .dropFirst()
             .removeDuplicates()
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 guard let self = self else { return }
+                
+                Task {
+                    await self.populateStoredSearches()
+                }
                 
                 if searchText.count == 1 {
                     self.showEnterMoreCharactersView = true
@@ -468,7 +523,14 @@ class ProductsViewModel: ObservableObject {
                     self.showEnterMoreCharactersView = false
                     self.search(text: searchText)
                     self.isSearchActive = true
+                    // Store search text
+                    self.container.appState.value.searchHistoryData.latestProductSearch = searchText
+                    if self.selectedSearchTerm == nil {
+                        self.configureSearchHistoryResults()
+                    }
+                    
                 } else {
+                    self.showAllSearchHistoryResults()
                     self.showEnterMoreCharactersView = false
                     self.isSearchActive = false
                 }
@@ -578,6 +640,14 @@ class ProductsViewModel: ObservableObject {
         clearState()
         categoryTapped(with: category, fromState: .rootCategories)
     }
+    
+    func clearAppstateSearchQuery() {
+        container.appState.value.searchHistoryData.latestProductSearch = nil
+    }
+    
+    func clearSearchResults() {
+        itemSearchHistoryResults = []
+    }
 
     func categoryTapped(with category: RetailStoreMenuCategory, fromState: ProductViewState? = nil) {
         switch fromState {
@@ -594,11 +664,21 @@ class ProductsViewModel: ObservableObject {
             container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
         }
     }
-
+    
     func searchCategoryTapped(category: GlobalSearchResultRecord) {
         sendSearchResultSelectionEvent(categoryId: category.id, name: category.name)
         fetchingGlobalSearchResultRecord = category
         container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
+        if let latestSearchTerm = container.appState.value.searchHistoryData.latestProductSearch {
+            Task {
+                // Store latest search term
+                await self.storeSearchQuery(latestSearchTerm)
+            }
+        }
+    }
+    
+    func storeSearchQuery(_ query: String) async {
+        await container.services.searchHistoryService.storeMenuItemSearch(menuItemSearchString: query)
     }
     
     func logItemIteraction(with item: RetailStoreMenuItem) {

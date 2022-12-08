@@ -94,6 +94,10 @@ class ProductCardViewModel: ObservableObject {
             return
         }
         
+        if let searchTerm = container.appState.value.searchHistoryData.latestProductSearch {
+            await container.services.searchHistoryService.storeMenuItemSearch(menuItemSearchString: searchTerm)
+        }
+        
         sendSearchResultSelectionEvent()
         
         isGettingProductDetails = true

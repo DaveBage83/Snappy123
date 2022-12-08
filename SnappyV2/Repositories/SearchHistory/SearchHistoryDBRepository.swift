@@ -152,10 +152,6 @@ struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
     func store(searchedMenuItem: String) -> AnyPublisher<MenuItemSearch?, Error> {
         let searchedMenuItems = fetchAllMenuItemSearches()
         
-        let trimmedSearchStrings = searchedMenuItems?.compactMap({ $0.name.removeWhitespace() })
-        
-        let searchedTrimmedString = searchedMenuItem.removeWhitespace()
-        
         // If there are no matching menu item searches then we will save this one
         if let searchedMenuItems, let matchingSearchQuery = searchedMenuItems.filter({ $0.name == searchedMenuItem }).first {
             let _ = deleteMenuItemSearch(menuItemSearchString: matchingSearchQuery.name)
@@ -169,7 +165,7 @@ struct SearchHistoryDBRepository: SearchHistoryDBRepositoryProtocol {
         } else {
             
             // First check if we have more than the allowed number of searches in the db as specified by the AppConstants
-            if let searchedMenuItems, searchedMenuItems.count > AppV2Constants.Business.maximumPostcodes {
+            if let searchedMenuItems, searchedMenuItems.count > AppV2Constants.Business.maximumSearchHistoryResults {
                 // If so, get the earliest saved one...
                 let searchedMenuItemToDelete = searchedMenuItems.min(by: { $0.timestamp < $1.timestamp })?.name
                 

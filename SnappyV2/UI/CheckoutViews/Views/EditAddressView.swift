@@ -80,8 +80,6 @@ struct EditAddressView: View {
                             container: viewModel.container,
                             savedAddressType: viewModel.addressType,
                             addresses: viewModel.savedAddresses,
-                            firstName: viewModel.contactFirstName,
-                            lastName: viewModel.contactLastName,
                             email: viewModel.contactEmail,
                             phone:viewModel.contactPhone), didSetAddress: { address in
                                 viewModel.populateFields(address: address)

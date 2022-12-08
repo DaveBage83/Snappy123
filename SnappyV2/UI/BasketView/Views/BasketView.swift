@@ -22,15 +22,12 @@ struct BasketView: View {
             static let spacing: CGFloat = 16
             static let iconHeight: CGFloat = 16
             static let fontPadding: CGFloat = 12
-            static let externalPadding: CGFloat = 32
             static let lineLimit = 5
         }
         
         struct VerifiedAccountRequiredWarning {
-            static let spacing: CGFloat = 16
             static let iconHeight: CGFloat = 16
             static let fontPadding: CGFloat = 12
-            static let externalPadding: CGFloat = 32
             static let lineLimit = 5
         }
         
@@ -48,7 +45,6 @@ struct BasketView: View {
         }
         
         struct ListEntry {
-            static let height: CGFloat = 12
             static let maxPadding: CGFloat = 8
         }
         

@@ -33,7 +33,7 @@ extension AppEnvironment {
         )
         let userDefaults = configuredUserDefaults()
         let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
-        let dbRepositories = configuredDBRepositories(appState: appState) // Why is appState required?
+        let dbRepositories = configuredDBRepositories()
         let userDefaultsRepositories = configuredUserDefaultsRepositories(userDefaults: userDefaults)
         
         let eventLogger = configuredEventLogger(
@@ -159,7 +159,7 @@ extension AppEnvironment {
         )
     }
     
-    private static func configuredDBRepositories(appState: Store<AppState>) -> DIContainer.DBRepositories {
+    private static func configuredDBRepositories() -> DIContainer.DBRepositories {
         
         let persistentStore = CoreDataStack(version: CoreDataStack.Version.actual)
         let businessProfileDBRepository = BusinessProfileDBRepository(persistentStore: persistentStore)

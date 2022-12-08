@@ -15,8 +15,6 @@ struct PaymentCard: View {
     
     struct Constants {
         static let padding: CGFloat = 16
-        static let height: CGFloat = 72
-        static let width: CGFloat = 343
         static let stackSpacing: CGFloat = 16.68
         static let textHeight: CGFloat = 24
     }

@@ -15,24 +15,6 @@ class StoreCardInfoViewModel: ObservableObject {
     var orderDeliveryMethod: RetailStoreOrderMethod? {
         storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
     }
-        
-    var fulfilmentTimeTitle: String {
-        if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
-            return GeneralStrings.deliveryTime.localized
-        }
-        return GeneralStrings.collectionTime.localized
-    }
-    
-    var fulfilmentTimeTitleShort: String {
-        if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
-            return GeneralStrings.deliveryTimeShort.localized
-        }
-        return GeneralStrings.collectionTimeShort.localized
-    }
-    
-    var showDeliveryOfferIfApplicable: Bool {
-        container.appState.value.userData.selectedFulfilmentMethod == .delivery
-    }
     
     var fulfilmentTime: String? {
         if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
@@ -58,12 +40,6 @@ class StoreCardInfoViewModel: ObservableObject {
             return minSpend > 0 ? "\(GeneralStrings.min.localized) \(minSpend.toCurrencyString(using: storeDetails.currency, roundWholeNumbers: true))" : Strings.StoresView.DeliveryTiers.noMinOrder.localized
         }
         return Strings.StoresView.DeliveryTiers.noMinOrder.localized
-    }
-    
-    var defaultDeliveryCost: Double? {
-        guard let deliveryOrderMethod = orderDeliveryMethod else { return nil }
-
-        return deliveryOrderMethod.cost
     }
     
     var freeDeliveryText: String? {

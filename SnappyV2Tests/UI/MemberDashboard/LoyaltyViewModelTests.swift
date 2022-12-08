@@ -31,8 +31,7 @@ class LoyaltyViewModelTests: XCTestCase {
         let sut = makeSUT(profile: member)
         
         XCTAssertEqual(sut.profile, member)
-        XCTAssertEqual(sut.referralCode, "TESTCODE")
-        XCTAssertEqual(sut.numberOfReferrals, "1")
+        
         // Decimal removed as value is Int
         XCTAssertEqual(sut.referralBalance, "£5.00")
     }
@@ -62,8 +61,6 @@ class LoyaltyViewModelTests: XCTestCase {
     func test_whenProfileIsNil_thenReferralsAndBalanceAre0AndReferFriendErrorShown() {
         let sut = makeSUT(profile: nil)
         XCTAssertEqual(sut.referralBalance, "0")
-        XCTAssertEqual(sut.numberOfReferrals, "0")
-        XCTAssertEqual(sut.referralCode, Strings.MemberDashboard.Loyalty.noCode.localized)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile?) -> MemberDashboardLoyaltyViewModel {

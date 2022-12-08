@@ -7,20 +7,16 @@
 
 import Foundation
 import Network
-import Combine
 
 class NetworkMonitor {
-    @Published var isConnected: Bool?
     var monitor = NWPathMonitor()
     private let container: DIContainer
-    
-    var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
         self.container = container
     }
     
-    public func startMonitoring() {
+    func startMonitoring() {
         monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
             guaranteeMainThread { [weak self] in
@@ -32,7 +28,7 @@ class NetworkMonitor {
         monitor.start(queue: queue)
     }
     
-    public func stopMonitoring() {
+    func stopMonitoring() {
         monitor.cancel()
     }
 }

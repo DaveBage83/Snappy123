@@ -30,15 +30,6 @@ struct ProductsView: View {
     struct Constants {
         static let standardViewPadding: CGFloat = 10
         
-        struct RootGrid {
-            static let spacing: CGFloat = 20
-        }
-        
-        struct ItemsGrid {
-            static let spacing: CGFloat = 14
-            static let padding: CGFloat = 4
-        }
-        
         struct EnterMoreCharacters {
             static let spacing: CGFloat = 16
             static let imageHeight: CGFloat = 100
@@ -56,11 +47,6 @@ struct ProductsView: View {
             static let topPadding: CGFloat = 56
         }
         
-        struct Logo {
-            static let width: CGFloat = 207.25
-            static let largeScreenWidthMultiplier: CGFloat = 1.5
-        }
-        
         struct RootCatagoryPills {
             static let hSpacing: CGFloat = 6
             static let vPadding: CGFloat = 4
@@ -72,9 +58,6 @@ struct ProductsView: View {
     
     // MARK: - View model
     @StateObject var viewModel: ProductsViewModel
-    
-    // MARK: - Properties
-    private let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10, alignment: .top)]
     
     // MARK: - Computed variables
     private var colorPalette: ColorPalette {
@@ -634,23 +617,3 @@ extension MockData {
 }
 
 #endif
-
-
-struct DeviceRotationViewModifier: ViewModifier {
-    let action: (UIDeviceOrientation) -> Void
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear()
-            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-                action(UIDevice.current.orientation)
-            }
-    }
-}
-
-// A View wrapper to make the modifier easier to use
-extension View {
-    func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
-        self.modifier(DeviceRotationViewModifier(action: action))
-    }
-}

@@ -9,9 +9,6 @@ import SwiftUI
 
 struct PushNotificationsEnablePromptView: View {
     
-    // MARK: - Typealiases
-    typealias PushNotificationsStrings = Strings.PushNotifications
-    
     // MARK: - Environment objects
     @Environment(\.colorScheme) private var colorScheme
     
@@ -22,8 +19,6 @@ struct PushNotificationsEnablePromptView: View {
             static let cornerRadius: CGFloat = 20
             static let vStackSpacing: CGFloat = 11
             static let opacity: CGFloat = 0.2
-            static let buttonPadding: CGFloat = -10
-            static let dividerHeight: CGFloat = 50
         }
     }
     

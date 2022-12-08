@@ -12,7 +12,7 @@ import UIKit
  https://github.com/gymshark/shark-stack-kit
  **/
 
-public extension UIStackView {
+extension UIStackView {
     
     class func make(
         _ axis: NSLayoutConstraint.Axis,

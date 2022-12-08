@@ -17,9 +17,9 @@ private class KeySource {
     }
 }
 
-public protocol Associatable: AnyObject {}
+protocol Associatable: AnyObject {}
 
-public extension Associatable {
+extension Associatable {
     func associatedObject<T: AnyObject>(name: String = #function, makeDefault: () -> T) -> T {
         let key = KeySource.pointer(for: name)
         if let result = objc_getAssociatedObject(self, key) as? T {

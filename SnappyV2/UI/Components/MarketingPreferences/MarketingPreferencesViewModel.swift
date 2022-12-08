@@ -19,8 +19,6 @@ class MarketingPreferencesViewModel: ObservableObject {
     let container: DIContainer
     private let hideAcceptedMarketingOptions: Bool
     
-    @Published var marketingPreferencesUpdate: UserMarketingOptionsUpdateResponse?
-    
     @Published var emailMarketingEnabled = false
     @Published var directMailMarketingEnabled = false
     @Published var notificationMarketingEnabled = false
@@ -167,7 +165,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         ]
         
         do {
-            marketingPreferencesUpdate = try await container.services.memberService.updateMarketingOptions(options: preferences, channel: channelId)
+            let _ = try await container.services.memberService.updateMarketingOptions(options: preferences, channel: channelId)
             
             if marketingPrefsAllDeselected == false {
                 saveAllowMarketingOverridePreference(allow: true)

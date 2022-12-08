@@ -16,7 +16,6 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         
-        XCTAssertEqual(sut.viewState, .updateProfile)
         XCTAssertEqual(sut.firstName, "")
         XCTAssertEqual(sut.lastName, "")
         XCTAssertEqual(sut.phoneNumber, "")

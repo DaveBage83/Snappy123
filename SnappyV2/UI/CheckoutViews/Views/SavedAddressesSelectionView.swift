@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct SavedAddressesSelectionView: View {
-    // MARK: - TypeAliases
-    typealias SavedAddressesStrings = Strings.CheckoutDetails.SavedAddressesSelectionView
     
     // MARK: - Environment objects
     @Environment(\.colorScheme) var colorScheme
@@ -146,7 +144,7 @@ struct SavedAddressesSelectionView_Previews: PreviewProvider {
                 county: "Surrey",
                 countryCode: "UK",
                 type: .delivery, location: nil, email: nil, telephone: nil)
-        ], firstName: "Test", lastName: "Test", email: "djjd@xlk.com", phone: "123456"), didSetAddress: {_ in })
+        ], email: "djjd@xlk.com", phone: "123456"), didSetAddress: {_ in })
     }
 }
 #endif

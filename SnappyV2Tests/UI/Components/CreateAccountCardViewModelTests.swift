@@ -26,9 +26,7 @@ class CreateAccountCardViewModelTests: XCTestCase {
         let sut = makeSUT()
         sut.password = "test"
         await sut.createAccountTapped()
-        XCTAssertFalse(sut.passwordHasError)
-        XCTAssertEqual(sut.error?.localizedDescription, GenericError.somethingWrong.localizedDescription)
-    }
+        XCTAssertFalse(sut.passwordHasError)    }
     
     func test_whenCreateAccountTapped_givenPasswordIsNotEmptyAndSuccessCheckoutBasketIsNotNil_thenPasswordHasErrorIsFalseAndCreateAccount() async {
         

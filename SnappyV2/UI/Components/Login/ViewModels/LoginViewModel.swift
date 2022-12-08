@@ -28,8 +28,6 @@ extension LoginError: LocalizedError {
 class LoginViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
-    @Published var passwordRevealed = false // Used for show/hide password functionality
-    @Published var showSettingsView = false
     
     // Used to trigger navigation view
     @Published var showCreateAccountView = false
@@ -41,18 +39,11 @@ class LoginViewModel: ObservableObject {
     @Published var successMessage: String?
     
     private var cancellables = Set<AnyCancellable>()
-       
-    // We set to true once login is tapped once. This avoids field errors being shown when view is first loaded
-    private var submitted = false
     
     // Field errors
     @Published var emailHasError = false
     @Published var showInvalidEmailError = false
     @Published var passwordHasError = false
-    
-    var orderTotal: Double? {
-        container.appState.value.userData.basket?.orderTotal
-    }
     
     let isInCheckout: Bool
     
@@ -126,7 +117,6 @@ class LoginViewModel: ObservableObject {
         guard !emailHasError, !passwordHasError else { return }
         
         isLoading = true
-        submitted = true
         
         var loginError: Error?
         do {

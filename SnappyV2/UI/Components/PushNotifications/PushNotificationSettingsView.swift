@@ -13,9 +13,6 @@ struct PushNotificationSettingsView: View {
     private typealias PushNotificationSettingsStrings = Strings.Settings.PushNotifications
     
     struct Constants {
-        static let bottomPadding: CGFloat = 4
-        static let checkmarkWidth: CGFloat = 24
-        static let hSpacing: CGFloat = 16
         static let mainSpacing: CGFloat = 24.5
         static let mainPadding: CGFloat = 24
         static let vPadding: CGFloat = 24
@@ -66,7 +63,7 @@ struct PushNotificationSettingsView: View {
 #if DEBUG
 struct PushNotificationsMarketingPreferenceView_Previews: PreviewProvider {
     static var previews: some View {
-        PushNotificationSettingsView(viewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false))
+        PushNotificationSettingsView(viewModel: .init(container: .preview, viewContext: .checkout))
     }
 }
 #endif

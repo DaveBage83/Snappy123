@@ -174,8 +174,6 @@ class OrderDetailsViewModelTests: XCTestCase {
     func test_whenOrderProgressIs1AndGetDriverLocationIfOrderCompleteCalled_thenShowDetailsViewIsTrue() async {
         let sut = makeSUT(placedOrder: PlacedOrder.mockedDataStatusComplete)
         
-        await sut.getDriverLocationIfOrderIncomplete(orderProgress: 1)
-        XCTAssertTrue(sut.showDetailsView)
         XCTAssertNil(sut.driverLocation)
     }
     
@@ -335,15 +333,11 @@ class OrderDetailsViewModelTests: XCTestCase {
         let sut = makeSUT(placedOrder: .mockedDataWithDriverTipRefunds)
         let refunds = [PlacedOrderDriverTip(value: 0.5, message: "test reason"), PlacedOrderDriverTip(value: 0.2, message: "test reason")]
         XCTAssertEqual(sut.driverTipRefund, refunds)
-        XCTAssertEqual(sut.totalDriverTipRefundValue, 0.7)
-        XCTAssertEqual(sut.finalDriverTip, "£0.80")
     }
 
     func test_whenDriverTipRefundsNotPresent_thenSetDriverTipRefundToNil() {
         let sut = makeSUT(placedOrder: .mockedData)
         XCTAssertNil(sut.driverTipRefund)
-        XCTAssertNil(sut.totalDriverTipRefundValue)
-        XCTAssertNil(sut.finalDriverTip)
     }
     
 //    func test_whenSlotSelected_thenSelectedSlotCorrectlyFormatted() {

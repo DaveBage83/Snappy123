@@ -21,24 +21,8 @@ class ItemDetailsViewModel: ObservableObject {
         itemDetails.header
     }
     
-    var bulletElements: [ItemDetailElement]? {
-        itemDetails.elements?.filter { $0.type == ItemDetailsElementType.bullet.rawValue || $0.type == nil }
-    }
-    
-    var tableElements: [ItemDetailElement]? {
-        itemDetails.elements?.filter { $0.type == ItemDetailsElementType.table.rawValue }
-    }
-    
-    var textElements: [ItemDetailElement]? {
-        itemDetails.elements?.filter { $0.type == ItemDetailsElementType.text.rawValue }
-    }
-    
     var elements: [ItemDetailElement]? {
         itemDetails.elements
-    }
-
-    var hasElements: Bool {
-        elements != nil && elements?.isEmpty == false
     }
     
     init(container: DIContainer, itemDetails: ItemDetails) {
@@ -54,7 +38,6 @@ struct ItemDetailsView: View {
     private struct Constants {
         static let mainSpacing: CGFloat = 16
         static let gridSpacing: CGFloat = 20
-        static let bulletWidth: CGFloat = 3
     }
     
     let columns = [

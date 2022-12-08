@@ -71,7 +71,6 @@ struct SavedPaymentCardCard: View {
     
     private struct Constants {
         static let hSpacing: CGFloat = 33
-        static let height: CGFloat = 94
         static let cardTypeLogoHeight: CGFloat = 20
         static let cardWidth: CGFloat = 32
     }

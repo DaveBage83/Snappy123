@@ -11,10 +11,6 @@ import OSLog
 
 class LocationManager: NSObject, ObservableObject {
     
-    enum LocationManagerError: Swift.Error {
-        case noLocationFound
-    }
-    
     let locationManager = CLLocationManager()
     var locationStatus: CLAuthorizationStatus?
     var isRequestingLocation = false
@@ -88,6 +84,7 @@ extension LocationManager: CLLocationManagerDelegate {
         Logger.locationService.info("Last location: \(location)")
     }
     
+    #warning("Improve error handling, utilising AppState")
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         if let error = error as? CLError {
             self.error = error

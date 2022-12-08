@@ -10,14 +10,9 @@ import SwiftUI
 struct CheckoutFulfilmentInfoView: View {
     @Environment(\.colorScheme) var colorScheme
     struct Constants {
-        static let cornerRadius: CGFloat = 6
-        static let progressViewScale: Double = 2
         static let cardSpacing: CGFloat = 16
         static let internalCardPadding: CGFloat = 24
     }
-    
-    typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
-    typealias CheckoutStrings = Strings.CheckoutView
     
     @StateObject var viewModel:  CheckoutFulfilmentInfoViewModel
     

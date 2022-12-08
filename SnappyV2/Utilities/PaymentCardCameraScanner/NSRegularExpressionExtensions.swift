@@ -8,7 +8,7 @@
 
 import Foundation
 
-public extension NSRegularExpression {
+extension NSRegularExpression {
     func matches(in content: String) -> [NSTextCheckingResult] {
         matches(in: content, range: content.fullNSRange)
     }
@@ -18,7 +18,7 @@ public extension NSRegularExpression {
     }
 }
 
-public struct RegexHandle: ExpressibleByStringLiteral {
+struct RegexHandle: ExpressibleByStringLiteral {
     public let regex: NSRegularExpression
     public init(stringLiteral value: StringLiteralType) {
         do {
@@ -30,7 +30,7 @@ public struct RegexHandle: ExpressibleByStringLiteral {
     }
 }
 
-public extension String {
+extension String {
     var fullNSRange: NSRange {
         NSRange(location: 0, length: count)
     }
@@ -41,7 +41,7 @@ public extension String {
     }
 }
 
-public extension Array where Element == NSTextCheckingResult {
+extension Array where Element == NSTextCheckingResult {
     func extractStrings(from content: String) -> [String] {
         flatMap { result in
             (0..<result.numberOfRanges).compactMap { i in

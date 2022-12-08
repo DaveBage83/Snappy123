@@ -62,7 +62,6 @@ struct EditableCardContainer<Content: View>: View {
     }
     
     // Unable to use static properties in view with injected content so constants listed as standard properties
-    private let cardHeight: CGFloat = 80
     private let iconWidth: CGFloat = 24
     private let iconPadding: CGFloat = 8
     private let buttonWidth: CGFloat = 38

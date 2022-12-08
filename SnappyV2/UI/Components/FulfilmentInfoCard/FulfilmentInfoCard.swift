@@ -21,8 +21,6 @@ struct FulfilmentInfoCard: View {
         struct Logo {
             static let size: CGFloat = 56
             static let cornerRadius: CGFloat = 8
-            static let lineWidth: CGFloat = 1
-            static let padding: CGFloat = 4
         }
         
         struct Main {
@@ -40,10 +38,6 @@ struct FulfilmentInfoCard: View {
         
         struct FulfilmentSlot {
             static let spacing: CGFloat = 8
-        }
-        
-        struct EditButton {
-            static let width: CGFloat = 60
         }
     }
     
@@ -154,20 +148,6 @@ struct FulfilmentInfoCard: View {
                     }
                 }
             }
-    }
-
-    // MARK: - Edit time slot button
-    private var editTimeSlotButton: some View {
-        SnappyButton(
-            container: viewModel.container,
-            type: .outline,
-            size: .medium,
-            title: GeneralStrings.edit.localized,
-            largeTextTitle: nil,
-            icon: nil) {
-                viewModel.showFulfilmentSelectView()
-            }
-            .frame(width: Constants.EditButton.width)
     }
 }
 

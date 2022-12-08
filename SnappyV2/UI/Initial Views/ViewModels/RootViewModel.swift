@@ -13,9 +13,7 @@ class RootViewModel: ObservableObject {
     let container: DIContainer
     
     @Published var selectedTab: Tab
-    @Published var basketTotal: String?
     
-    private var showing = false
     private var cancellables = Set<AnyCancellable>()
 
     init(container: DIContainer) {
@@ -24,7 +22,6 @@ class RootViewModel: ObservableObject {
         _selectedTab = .init(initialValue: appState.value.routing.selectedTab)
         
         setupBindToSelectedTab(with: appState)
-        setupBasketTotal(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
     }
     
@@ -37,25 +34,6 @@ class RootViewModel: ObservableObject {
             .map(\.routing.selectedTab)
             .removeDuplicates()
             .assignWeak(to: \.selectedTab, on: self)
-            .store(in: &cancellables)
-    }
-    
-    private func setupBasketTotal(with appState: Store<AppState>) {
-        appState
-            .map(\.userData.basket)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] basket in
-                guard let self = self else { return }
-                guard
-                    let selectedStore = self.container.appState.value.userData.selectedStore.value,
-                    let orderTotal = basket?.orderTotal,
-                    orderTotal != 0
-                else {
-                    self.basketTotal = nil
-                    return
-                }
-                self.basketTotal = orderTotal.toCurrencyString(using: selectedStore.currency)
-            }
             .store(in: &cancellables)
     }
     
@@ -72,14 +50,6 @@ class RootViewModel: ObservableObject {
                 else { return }
                 self.selectedTab = .account
             }.store(in: &cancellables)
-    }
-    
-    func viewShown() {
-        showing = true
-    }
-
-    func viewRemoved() {
-        showing = false
     }
 
 }

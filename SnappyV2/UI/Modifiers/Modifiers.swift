@@ -58,20 +58,11 @@ struct MeasureSizeModifier: ViewModifier {
 
 struct StandardAlertToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.tabViewHeight) var tabViewHeight
     
     @Binding var error: Swift.Error?
     @State var showAlert = false
     let container: DIContainer
     let viewID: UUID
-    
-    var text: String {
-        guard let error = container.appState.value.latestError else { return "" }
-        if let err = error as? APIErrorResult {
-            return err.errorDisplay
-        }
-        return error.localizedDescription
-    }
     
     @State var errorText = ""
     
@@ -138,7 +129,6 @@ struct HighlightedItem: ViewModifier {
     
     struct Constants {
         static let cornerRadius: CGFloat = 8
-        static let itemPadding: CGFloat = 8
         static let bottomPadding: CGFloat = 5
     }
     
@@ -198,7 +188,6 @@ struct BasketAndPastOrderImage: ViewModifier {
     struct Constants {
         static let size: CGFloat = 40
         static let cornerRadius: CGFloat = 8
-        static let lineWidth: CGFloat = 1
         static let padding: CGFloat = 4
     }
     
@@ -225,7 +214,6 @@ struct BasketAndPastOrderImage: ViewModifier {
 
 struct StandardSuccessToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.tabViewHeight) var tabViewHeight
     
     @Binding var toastText: String?
     @State var showAlert = false

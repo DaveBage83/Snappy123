@@ -11,7 +11,7 @@ import AVFoundation
 import Vision
 import CoreImage
 
-public protocol PixelBufferStream: AnyObject {
+protocol PixelBufferStream: AnyObject {
     var output: (CVPixelBuffer, CGImagePropertyOrientation) -> Void { get set }
     var running: Bool { get set }
     var previewView: UIView { get }
@@ -19,16 +19,16 @@ public protocol PixelBufferStream: AnyObject {
     func cameraRegion(forPreviewRegion previewRegion: CGRect) -> CGRect
 }
 
-public class CameraPixelBufferStream: NSObject, PixelBufferStream, AVCaptureVideoDataOutputSampleBufferDelegate {
+class CameraPixelBufferStream: NSObject, PixelBufferStream, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private let session = AVCaptureSession()
     private let writeSafe: WriteSafe
     private let contentView = LayerContentView(contentLayer: AVCaptureVideoPreviewLayer()).withAspectRatio(9.0 / 16.0)
-    public let previewView = UIView()
+    let previewView = UIView()
     @ThreadSafe public var output: (CVPixelBuffer, CGImagePropertyOrientation) -> Void
     
     private var runningBacking = false
-    public var running: Bool {
+    var running: Bool {
         get { writeSafe.perform { runningBacking } }
         set {
             writeSafe.perform {
@@ -46,7 +46,7 @@ public class CameraPixelBufferStream: NSObject, PixelBufferStream, AVCaptureVide
         }
     }
     
-    public override init() {
+    override init() {
         let writeSafe = WriteSafe()
         self.writeSafe = writeSafe
         self._output = ThreadSafe(wrappedValue: { _, _ in }, writeSafe: writeSafe)
@@ -118,7 +118,7 @@ public class CameraPixelBufferStream: NSObject, PixelBufferStream, AVCaptureVide
         running = false
     }
     
-    public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let imageBuffer = sampleBuffer.imageBuffer else { return }
         writeSafe.perform {
             if runningBacking {
@@ -127,7 +127,7 @@ public class CameraPixelBufferStream: NSObject, PixelBufferStream, AVCaptureVide
         }
     }
     
-    public func cameraRegion(forPreviewRegion previewRegion: CGRect) -> CGRect {
+    func cameraRegion(forPreviewRegion previewRegion: CGRect) -> CGRect {
         let contentSize = contentView.bounds.size
         let contentRegion = contentView.convert(previewRegion, from: previewView)
         return CGRect(

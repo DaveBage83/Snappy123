@@ -15,7 +15,6 @@ class ProductsViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         XCTAssertEqual(sut.container.appState.value, AppState())
-        XCTAssertNil(sut.productDetail)
         XCTAssertEqual(sut.viewState, .rootCategories)
         XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
         XCTAssertEqual(sut.selectedFulfilmentMethod, .delivery)
@@ -624,7 +623,6 @@ class ProductsViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getItems(menuItemIds: nil, discountId: 123, discountSectionId: nil)]))
         let sut = makeSUT(container: container, missedOffer: BasketItemMissedPromotion(id: 123, name: "Test missed promo", type: .multiSectionDiscount, missedSections: nil))
         XCTAssertEqual(sut.missedOffer?.id, 123)
-        XCTAssertEqual(sut.offerText, "Test missed promo")
         
         container.services.verify(as: .retailStoreMenu)
     }
@@ -639,8 +637,6 @@ class ProductsViewModelTests: XCTestCase {
             offer: RetailStoreMenuItemAvailableDeal(id: 321, name: "Test offer", type: ""),
             fromItem: RetailStoreMenuItem.mockedData
         )
-        
-        XCTAssertEqual(sut.offerText, "Test offer")
 
         container.services.verify(as: .retailStoreMenu)
     }
@@ -711,15 +707,6 @@ class ProductsViewModelTests: XCTestCase {
         sut.subCategories = [[RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil, description: "", action: nil)]]
         
         XCTAssertTrue(sut.showBackButton)
-    }
-    
-    func test_whenCancelSearchButtonTapped_thenSearchResultCleared() {
-        let sut = makeSUT()
-        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
-        
-        sut.cancelSearchButtonTapped()
-        
-        XCTAssertEqual(sut.searchResult, .notRequested)
     }
     
     func test_whenSearchResultCategoriesAndSearchTextArePopulated_thenShowSearchResultCategoriesReturnsTrue() {

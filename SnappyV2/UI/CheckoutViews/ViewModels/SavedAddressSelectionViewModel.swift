@@ -21,12 +21,8 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     @Published var selectedAddress: Address?
     @Published var settingDeliveryAddress = false
     @Published var basket: Basket?
-    @Published var showDeliveryAddressSetterError = false
-    @Published var showNoSelectedAddressError = false
     
     // MARK: - Required values
-    let firstName: String
-    let lastName: String
     let email: String // needed in order to set delivery/billing so must be injected here and is not optional
     let phone: String // needed in order to set delivery/billing so must be injected here and is not optional
     
@@ -55,12 +51,10 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     }
     
     // MARK: - Init
-    init(container: DIContainer, savedAddressType: AddressType, addresses: [Address], firstName: String, lastName: String, email: String, phone: String) {
+    init(container: DIContainer, savedAddressType: AddressType, addresses: [Address], email: String, phone: String) {
         self.container = container
         self.savedAddressType = savedAddressType
         self.addresses = addresses
-        self.firstName = firstName
-        self.lastName = lastName
         self.email = email
         self.phone = phone
         let appState = container.appState
@@ -97,10 +91,7 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     
     // MARK: - Set delivery address
     func setAddress(address: Address?, didSetAddress: (FoundAddress) -> ()) async {
-        guard let address = selectedAddress else {
-            showNoSelectedAddressError = true
-            return
-        }
+        guard let address = selectedAddress else { return }
                 
         self.selectedAddress = address
         
@@ -139,7 +130,6 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
         } catch {
             self.container.appState.value.errors.append(error)
             
-            self.showDeliveryAddressSetterError = true
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             self.settingDeliveryAddress = false
         }

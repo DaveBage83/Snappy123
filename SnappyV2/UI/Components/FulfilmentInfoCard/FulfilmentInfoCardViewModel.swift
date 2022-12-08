@@ -73,8 +73,6 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         return Strings.SlotSelection.noTimeSelected.localized
     }
     
-    var fulfilmentTypeString: String { selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }
-    
     init(container: DIContainer, isInCheckout: Bool = false) {
         self.container = container
         let appState = container.appState
@@ -102,9 +100,5 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     
     func showFulfilmentSelectView() {
         isFulfilmentSlotSelectShown = true
-    }
-    
-    func changeFulfilmentTypeTapped() {
-        showFulfilmentSelectView()
     }
 }

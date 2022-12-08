@@ -436,7 +436,7 @@ public struct AlertToast: Equatable, View{
 }
 
 @available(iOS 13, macOS 11, *)
-public struct AlertToastModifier: ViewModifier{
+struct AlertToastModifier: ViewModifier{
     
     ///Presentation `Binding<Bool>`
     @Binding var isPresenting: Bool
@@ -481,7 +481,7 @@ public struct AlertToastModifier: ViewModifier{
     }
     
     @ViewBuilder
-    public func main() -> some View{
+    func main() -> some View{
         if isPresenting{
             
             switch alert(subtitle, tapToDismiss).displayMode{
@@ -557,7 +557,7 @@ public struct AlertToastModifier: ViewModifier{
     }
     
     @ViewBuilder
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         switch alert(subtitle, tapToDismiss).displayMode{
         case .banner:
             content
@@ -698,7 +698,7 @@ fileprivate extension Image{
     }
 }
 
-public extension View{
+extension View{
     
     /// Return some view w/o frame depends on the condition.
     /// This view modifier function is set by default to:

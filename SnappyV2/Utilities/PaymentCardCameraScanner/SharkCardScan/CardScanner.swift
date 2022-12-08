@@ -9,20 +9,20 @@
 import Foundation
 import Vision
 
-public struct CardScannerResponse: Equatable {
-    public init(number: String, expiry: String?, holder: String?) {
+struct CardScannerResponse: Equatable {
+    init(number: String, expiry: String?, holder: String?) {
         self.number = number
         self.expiry = expiry
         self.holder = holder
     }
     
-    public let number: String
-    public let expiry: String?
-    public let holder: String?
+    let number: String
+    let expiry: String?
+    let holder: String?
     
 }
 
-public protocol CardScannerProtocol: AnyObject {
+protocol CardScannerProtocol: AnyObject {
     var output: (CardScannerResponse?) -> Void { get set }
     var regionOfInterest: CGRect { get set }
     func read(buffer: CVPixelBuffer, orientation: CGImagePropertyOrientation)
@@ -31,7 +31,7 @@ public protocol CardScannerProtocol: AnyObject {
 
 private let regionOfInterestDefault = CGRect(origin: .zero, size: CGSize(width: 1, height: 1))
 
-public final class CardScanner: CardScannerProtocol {
+final class CardScanner: CardScannerProtocol {
     
     @ThreadSafe public var output: (CardScannerResponse?) -> Void
     @ThreadSafe public var regionOfInterest: CGRect
@@ -44,13 +44,13 @@ public final class CardScanner: CardScannerProtocol {
     private var requestsInFlight: Int = 0
     private let queue = DispatchQueue(label: "com.gymshark.cardscan.CardScanner", qos: .userInteractive, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
     
-    public init(now: Date = Date()) {
+    init(now: Date = Date()) {
         self._regionOfInterest = ThreadSafe(wrappedValue: CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), writeSafe: self.writeSafe)
         self.nowInMonthsSince2000 = now.monthsSince2000
         self._output = ThreadSafe(wrappedValue: { _ in }, writeSafe: self.writeSafe)
     }
     
-    public func read(buffer: CVPixelBuffer, orientation: CGImagePropertyOrientation) {
+    func read(buffer: CVPixelBuffer, orientation: CGImagePropertyOrientation) {
         writeSafe.perform {
             guard requestsInFlight <= 1 else {
                 return
@@ -87,7 +87,7 @@ public final class CardScanner: CardScannerProtocol {
         }
     }
     
-    public func reset() {
+    func reset() {
         writeSafe.perform {
             number.reset()
             numberDigitsOnly.reset()

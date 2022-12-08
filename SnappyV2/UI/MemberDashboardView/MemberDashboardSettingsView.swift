@@ -79,7 +79,6 @@ struct MemberDashboardSettingsView: View {
         
         struct MainStack {
             static let vSpacing: CGFloat = 36
-            static let vPadding: CGFloat = 24
         }
         
         struct UsefulInfo {
@@ -88,7 +87,6 @@ struct MemberDashboardSettingsView: View {
         
         struct Terms {
             static let spacing: CGFloat = 8
-            static let hPadding: CGFloat = 32
         }
     }
     
@@ -209,7 +207,7 @@ struct MemberDashboardSettingsView_Previews: PreviewProvider {
         MemberDashboardSettingsView(
             viewModel: .init(container: .preview),
             marketingPreferencesViewModel: .init(container: .preview, viewContext: .settings, hideAcceptedMarketingOptions: false),
-            pushNotificationsMarketingPreferenceViewModel: .init(container: .preview, viewContext: .settings, hideAcceptedMarketingOptions: false),
+            pushNotificationsMarketingPreferenceViewModel: .init(container: .preview, viewContext: .settings),
             dismissViewHandler: {}
         )
     }

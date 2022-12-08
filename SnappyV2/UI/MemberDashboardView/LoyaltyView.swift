@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct LoyaltyView: View {
-    typealias ReferFriendStrings = Strings.MemberDashboard.Loyalty.ReferFriend
-    typealias ReferralStrings = Strings.MemberDashboard.Loyalty.Referrals
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
     @Environment(\.mainWindowSize) var mainWindowSize
@@ -19,11 +17,6 @@ struct LoyaltyView: View {
             static let vSpacing: CGFloat = 20
         }
         
-        struct Cards {
-            static let minCornerRadius: CGFloat = 8
-            static let maxCornerRadius: CGFloat = 15
-        }
-        
         struct Credit {
             static let iconWidth: CGFloat = 32
             static let cardWidthMultiplier: CGFloat = 0.5
@@ -31,7 +24,6 @@ struct LoyaltyView: View {
         
         struct MentionMe {
             static let spacing: CGFloat = 20
-            static let bottomPadding: CGFloat = 34
             static let hPadding: CGFloat = 40.5
         }
     }

@@ -11,7 +11,6 @@ import SwiftUI
 import DriverInterface
 
 struct MemberDashboardView: View {
-    typealias MemberStrings = Strings.MemberDashboard
     typealias CustomMemberStrings = Strings.CustomMemberDashboard
     
     @Environment(\.horizontalSizeClass) var sizeClass
@@ -20,22 +19,10 @@ struct MemberDashboardView: View {
     @Environment(\.presentationMode) var presentation
 
     struct Constants {
-        struct LogoutButton {
-            static let padding: CGFloat = 10
-        }
-        
-        struct Logo {
-            static let width: CGFloat = 207.25
-            static let largeScreenWidthMultiplier: CGFloat = 1.5
-        }
-        
         struct InternalView {
             static let topSpacing: CGFloat = 27
         }
         
-        struct Settings {
-            static let buttonHeight: CGFloat = 24
-        }
         struct MinimalLayoutView {
             static let topPadding: CGFloat = 30
         }

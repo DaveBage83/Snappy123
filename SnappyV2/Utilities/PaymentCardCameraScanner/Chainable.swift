@@ -7,9 +7,9 @@
 
 import Foundation
 
-public protocol Chainable {}
+protocol Chainable {}
 
-public extension Chainable {
+extension Chainable {
     
         @discardableResult func with(_ block: (Self) throws -> Void) rethrows -> Self {
         try block(self)

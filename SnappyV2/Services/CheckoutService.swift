@@ -134,7 +134,6 @@ final class CheckoutService: CheckoutServiceProtocol {
     let eventLogger: EventLoggerProtocol
     
     private var cancelBag = CancelBag()
-    private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
     private var draftOrderId: Int?
     private var lastBusinessOrderId: Int?

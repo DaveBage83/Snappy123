@@ -18,7 +18,6 @@ class ProductCardViewModel: ObservableObject {
     
     @Published var showSearchProductCard = false
     @Published var isGettingProductDetails = false
-    @Published var showItemDetails = false
     let isInBasket: Bool
     let isOffer: Bool
     let associatedSearchTerm: String?
@@ -37,10 +36,6 @@ class ProductCardViewModel: ObservableObject {
     
     var showSpecialOfferPillAsButton: Bool {
         isInBasket == false
-    }
-    
-    var calorieInfo: String? {
-        itemDetail.itemCaptions?.portionSize
     }
     
     var isComplexItem: Bool {
@@ -121,7 +116,6 @@ class ProductCardViewModel: ObservableObject {
             self.itemDetail = try await container.services.retailStoreMenuService.getItem(request: request)
             isGettingProductDetails = false
             productSelected(itemDetail)
-            self.showItemDetails = true
         } catch {
             isGettingProductDetails = false
             throw error

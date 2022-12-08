@@ -19,17 +19,11 @@ struct ProductCardView: View {
         static let padding: CGFloat = 16
         static let cornerRadius: CGFloat = 8
         static let offerProductCardScale: CGFloat = 0.6
-        static let offerProductImagePadding: CGFloat = 4
         
         struct Card {
-            struct Search {
-                static let spacing: CGFloat = 5
-            }
-        
             struct ProductImage {
                 static let standardHeight: CGFloat = 124
                 static let searchHeight: CGFloat = 98
-                static let offerHeight: CGFloat = 60
                 static let cornerRadius: CGFloat = 8
                 static let lineWidth: CGFloat = 1
             }
@@ -40,7 +34,6 @@ struct ProductCardView: View {
             }
             
             struct StandardCard {
-                static let bottomPadding: CGFloat = 9
                 static let buttonHeight: CGFloat = 36
                 static let internalStackHeight: CGFloat = 100
                 static let imagePadding: CGFloat = 8

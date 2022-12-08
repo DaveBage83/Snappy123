@@ -10,10 +10,16 @@ import Combine
 
 struct StandardCardFormat: ViewModifier {
     @Binding var isDisabled: Bool
+    let corners: UIRectCorner
+    
+    init(isDisabled: Binding<Bool>, corners: UIRectCorner) {
+        self._isDisabled = isDisabled
+        self.corners = corners
+    }
 
     func body(content: Content) -> some View {
         content
-            .cornerRadius(8)
+            .cornerRadius(8, corners: corners)
             .shadow(color: isDisabled ? .clear : .cardShadow, radius: 9, x: 0, y: 0) // When in disabled state we do not want to apply shadow
     }
 }
@@ -374,8 +380,8 @@ extension View {
 }
 
 extension View {
-    func standardCardFormat(isDisabled: Binding<Bool> = .constant(false)) -> some View {
-        modifier(StandardCardFormat(isDisabled: isDisabled))
+    func standardCardFormat(isDisabled: Binding<Bool> = .constant(false), corners: UIRectCorner = .allCorners) -> some View {
+        modifier(StandardCardFormat(isDisabled: isDisabled, corners: corners))
     }
 }
 
@@ -482,12 +488,16 @@ extension View {
 
 struct WithSearchHistory: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-        
+    @Environment(\.mainWindowSize) var mainWindowSize
     // MARK: - Constants
     let spacing: CGFloat = 10
     let hPadding: CGFloat = 16
     let vPadding: CGFloat = 6
     let width: CGFloat = 250
+    let clockIconHeight: CGFloat = 15
+    let topPadding: CGFloat = 10
+    let xOffset: CGFloat = 5
+    let yOffset: CGFloat = 1
     let container: DIContainer
     let textfieldTextSetter: (String) -> Void
     
@@ -528,6 +538,13 @@ struct WithSearchHistory: ViewModifier {
                                 .font(.Body2.semiBold())
                                 .foregroundColor(colorPalette.typefacePrimary)
                             Spacer()
+                            Image.Icons.Clock.heavy
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: clockIconHeight)
+                                .foregroundColor(colorPalette.textGrey2)
+                            
                         }.frame(maxWidth: .infinity)
                     }
                     .padding(.horizontal, hPadding)
@@ -536,9 +553,11 @@ struct WithSearchHistory: ViewModifier {
                     Divider()
                 }
             }
+            .padding(.top, topPadding)
             .frame(width: width)
             .background(colorPalette.typefaceInvert)
-            .standardCardFormat()
+            .standardCardFormat(corners: [.bottomLeft, .bottomRight])
+            .offset(x: xOffset, y: yOffset)
         }
     }
 }

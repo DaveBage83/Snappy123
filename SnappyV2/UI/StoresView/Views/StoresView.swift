@@ -161,6 +161,9 @@ struct StoresView: View {
                 .frame(maxHeight: .infinity)
                 .background(colorPalette.backgroundMain)
             }
+            .onTapGesture {
+                viewModel.clearPostcodeSearchResults()
+            }
             .frame(maxHeight: .infinity)
         }
         .onAppear {
@@ -170,9 +173,6 @@ struct StoresView: View {
             Task {
                 await viewModel.populateStoredPostcodes()
             }
-        }
-        .onTapGesture {
-            viewModel.clearPostcodeSearchResults()
         }
     }
     

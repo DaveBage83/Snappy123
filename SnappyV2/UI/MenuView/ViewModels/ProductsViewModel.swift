@@ -511,7 +511,7 @@ class ProductsViewModel: ObservableObject {
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 guard let self = self else { return }
-                
+                                
                 Task {
                     await self.populateStoredSearches()
                 }
@@ -527,6 +527,8 @@ class ProductsViewModel: ObservableObject {
                     self.container.appState.value.searchHistoryData.latestProductSearch = searchText
                     if self.selectedSearchTerm == nil {
                         self.configureSearchHistoryResults()
+                    } else {
+                        self.selectedSearchTerm = nil
                     }
                     
                 } else {

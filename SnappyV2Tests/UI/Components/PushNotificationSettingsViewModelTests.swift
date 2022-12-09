@@ -221,8 +221,7 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
         
         let sut = PushNotificationSettingsViewModel(
             container: DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(userPermissionsService: userPermissionsService)),
-            viewContext: viewContext,
-            hideAcceptedMarketingOptions: hideAcceptedMarketingOptions
+            viewContext: viewContext
         )
         trackForMemoryLeaks(sut)
         return sut

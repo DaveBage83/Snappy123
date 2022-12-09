@@ -9,11 +9,11 @@
 import Foundation
 import AVFoundation
 
-public protocol CameraAccessProtocol {
+protocol CameraAccessProtocol {
     func request(_ compltion: @escaping (Bool) -> Void)
 }
 
-public struct CameraAccess: CameraAccessProtocol {
+struct CameraAccess: CameraAccessProtocol {
     public init () { }
     public func request(_ compltion: @escaping (Bool) -> Void) {
         if AVCaptureDevice.authorizationStatus(for: .video) == .authorized {

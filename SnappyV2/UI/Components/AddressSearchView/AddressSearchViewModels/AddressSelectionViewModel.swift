@@ -17,8 +17,6 @@ class AddressSelectionViewModel: ObservableObject {
     @Published var postcodeHasError = false
     @Published var selectedAddress: FoundAddress?
     @Published var settingDeliveryAddress = false
-    @Published var showNoSelectedAddressError = false
-    @Published var showDeliveryAddressSetterError = false
     @Published var searchingForAddresses = false
     @Published var showManualAddressView = false
     

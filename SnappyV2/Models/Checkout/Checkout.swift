@@ -126,16 +126,6 @@ enum PaymentType: String, Codable, Equatable {
     case hpp
 }
 
-struct MakePaymentRequest: Codable, Equatable {
-    let businessId: Int
-    let draftOrderId: Int
-    let paymentMethod: String // e.g. card
-    let type: PaymentType
-    let token: String?
-    let cardId: String? // required if paymentMethod == saved_card
-    let cvv: Int? // required if paymentMethod == saved_card
-}
-
 struct MakePaymentResponse: Codable, Equatable {
     let gatewayData: GatewayData
     let order: Order?
@@ -181,11 +171,6 @@ enum MakePaymentStatus: String, Codable {
     case pending = "Pending"
     case cardVerified = "Card Verified"
     case declined = "Declined"
-}
-
-struct ShimmedVerifyPaymentRequest: Codable, Equatable {
-    let orderId: Int // draft order ID
-    
 }
 
 struct PlacedOrderStatus: Codable, Equatable {

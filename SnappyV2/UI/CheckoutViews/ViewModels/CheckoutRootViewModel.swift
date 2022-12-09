@@ -170,10 +170,7 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Presentation publishers
     @Published var fulfilmentTimeSlotSelectionPresented = false
-    @Published var showCantSetContactDetailsAlert = false
-    @Published var showMissingDetailsWarning = false
     @Published var showEmailInvalidWarning = false
-    @Published var showFieldErrorsAlert = false
     
     // MARK: - Registration properties
     var registrationChecked: Bool = false
@@ -206,24 +203,13 @@ class CheckoutRootViewModel: ObservableObject {
     
     @Published var timeSlotHasWarning = false
     
-    @Published var showFormSubmissionError = false
-    
     @Published var selectedChannelHasWarning = false
     
     @Published var postcodeHasWarning = false
     @Published var addressLine1HasWarning = false
     @Published var cityHasWarning = false
     
-    var formSubmissionError: String?
-    
-    // Using this tuple, we can set the title and body of the toast alert with a suitable error message
-    var addressWarning: (title: String, body: String) = ("", "")
-    
     // Marketing
-    @Published var marketingSelected = false
-    @Published var termsAgreed = false
-    @Published var marketingPreferencesFetch: UserMarketingOptionsFetch?
-    @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
     @Published var allowedMarketingChannelText = Strings.CheckoutDetails.WhereDidYouHear.placeholder.localized
     @Published var selectedChannel: AllowedMarketingChannel?
     @Published var hideSelectedChannel: Bool = false
@@ -261,26 +247,6 @@ class CheckoutRootViewModel: ObservableObject {
     
     var fulfilmentType: BasketFulfilmentMethod? {
         container.appState.value.userData.basket?.fulfilmentMethod
-    }
-    
-    // MARK: - Required user details
-    // The following 4 computed variables are all required to set a delivery address. We therefore pass these into the address selection views
-    // to avoid hitting an error once inside the views themselves.
-    
-    var deliveryEmail: String? {
-        checkForUserDetail(valueToCheck: email, memberProfileValueToCheck: memberProfile?.emailAddress)
-    }
-    
-    var deliveryFirstName: String? {
-        checkForUserDetail(valueToCheck: firstname, memberProfileValueToCheck: memberProfile?.firstname)
-    }
-    
-    var deliveryLastName: String? {
-        checkForUserDetail(valueToCheck: lastname, memberProfileValueToCheck: memberProfile?.lastname)
-    }
-    
-    var deliveryTelephone: String? {
-        checkForUserDetail(valueToCheck: phoneNumber, memberProfileValueToCheck: memberProfile?.mobileContactNumber)
     }
     
     // MARK: - Allowed marketing
@@ -902,11 +868,6 @@ class CheckoutRootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - Payment
-    func payByCardTapped() {
-        checkoutState = .card
-    }
-    
     func resetNewErrorsExist() {
         newErrorsExist = false
     }
@@ -946,31 +907,11 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     // MARK: - Helper functions
-    /// Check whether field is populated, if not default to memberProfile equivalent of this value. Otherwise return nil
-    private func checkForUserDetail(valueToCheck: String, memberProfileValueToCheck: String?) -> String? {
-        // Is field empty? If not return value
-        if valueToCheck.isEmpty == false {
-            return valueToCheck
-        }
-        
-        // If field is empty, check for equivalent value in memberProfile. If present, use this value ...
-        if let memberProfileValueToCheck = memberProfileValueToCheck, memberProfileValueToCheck.isEmpty == false {
-            return memberProfileValueToCheck
-        }
-        
-        // ... else return nil
-        return nil
-    }
-    
     func filterPhoneNumber(newValue: String) {
         let filtered = newValue.filter { "0123456789+".contains($0) }
         if filtered != newValue {
             self.phoneNumber = filtered
         }
-    }
-    
-    func noErrors() -> Bool {
-        return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning
     }
     
     func setCheckoutState(state: CheckoutRootViewModel.CheckoutState) {

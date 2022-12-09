@@ -17,10 +17,6 @@ struct MemberDashboardProfileView: View {
     // MARK: - Constants
     
     struct Constants {
-        struct MarketingPreferences {
-            static let spacing: CGFloat = 10
-        }
-        
         struct SubViewStacks {
             static let spacing: CGFloat = 20
         }
@@ -28,10 +24,6 @@ struct MemberDashboardProfileView: View {
         struct General {
             static let stackSpacing: CGFloat = 30
             static let topPadding: CGFloat = 28
-        }
-        
-        struct Buttons {
-            static let height: CGFloat = 30
         }
         
         struct DetailFields {

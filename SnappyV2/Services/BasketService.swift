@@ -213,8 +213,6 @@ actor BasketService: BasketServiceProtocol {
                 try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                 
                 sendAddToBasketEvents(item: item, quantity: basketItemRequest.quantity ?? 1)
-                
-                notificationService.addItemToBasket(itemName: String(basketItemRequest.menuItemId), quantity: basketItemRequest.quantity ?? 1)
             } catch {
                 throw error
             }
@@ -229,8 +227,6 @@ actor BasketService: BasketServiceProtocol {
                         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                         
                         sendAddToBasketEvents(item: item, quantity: basketItemRequest.quantity ?? 1)
-                        
-                        notificationService.addItemToBasket(itemName: String(basketItemRequest.menuItemId), quantity: basketItemRequest.quantity ?? 1)
                     }
                 } catch {
                     throw error

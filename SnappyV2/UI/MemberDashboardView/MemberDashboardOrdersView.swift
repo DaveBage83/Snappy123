@@ -21,14 +21,6 @@ struct MemberDashboardOrdersView: View {
             static let vSpacing: CGFloat = 16
         }
         
-        struct ViewMoreOrders {
-            static let padding: CGFloat = 4
-        }
-        
-        struct LoadingView {
-            static let height: CGFloat = 200
-        }
-        
         struct FirstOrderView {
             static let spacing: CGFloat = 16
         }

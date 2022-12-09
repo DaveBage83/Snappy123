@@ -32,7 +32,6 @@ class ProductsViewModel: ObservableObject {
     }
     
     // MARK: - Publishers
-    @Published var productDetail: RetailStoreMenuItem?
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
     @Published var rootCategoriesMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
@@ -44,7 +43,6 @@ class ProductsViewModel: ObservableObject {
     @Published var sortedItems = [RetailStoreMenuItem]()
     @Published var specialOfferItems: [RetailStoreMenuItem]
     @Published var missedOfferMenus = [MissedOfferMenu]()
-    @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
     @Published var selectedSearchTerm: String?
@@ -67,7 +65,6 @@ class ProductsViewModel: ObservableObject {
     let container: DIContainer
     var selectedOffer: RetailStoreMenuItemAvailableDeal?
     var missedOffer: BasketItemMissedPromotion?
-    var offerText: String? // Text used for the banner in missed offers / special offers summary view
     private var cancellables = Set<AnyCancellable>()
     private var fetchingGlobalSearchResultRecord: GlobalSearchResultRecord?
     
@@ -629,7 +626,6 @@ class ProductsViewModel: ObservableObject {
         subCategories = []
         specialOfferItems = []
         selectedOffer = nil
-        offerText = nil
         navigationWithIsSearchActive = 0
         searchText = ""
     }
@@ -717,7 +713,6 @@ class ProductsViewModel: ObservableObject {
             name: offer.name
         )
         selectedOffer = offer
-        offerText = selectedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
         if let offersRetrieved = offersRetrieved {
             offersRetrieved()
@@ -726,12 +721,7 @@ class ProductsViewModel: ObservableObject {
     
     func getMissedPromotion(offer: BasketItemMissedPromotion) {
         missedOffer = offer
-        offerText = missedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
-    }
-    
-    func cancelSearchButtonTapped() {
-        searchResult = .notRequested
     }
     
     /// Splits an array of RetailStoreMenuItem into an array of [RetailStoreMenuItem],

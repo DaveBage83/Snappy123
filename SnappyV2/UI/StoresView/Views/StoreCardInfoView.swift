@@ -28,8 +28,6 @@ struct StoreCardInfoView: View {
         
         struct General {
             static let minimalLayoutThreshold: Int = 7
-            static let spacing: CGFloat = 24
-            static let minFontScale: CGFloat = 0.6
             static let maxPadding: CGFloat = 12
             static let minPadding: CGFloat = 5
         }

@@ -20,14 +20,6 @@ struct ForgotPasswordView: View {
     typealias LoginStrings = Strings.General.Login
     
     struct Constants {
-        static let padding: CGFloat = 30
-        static let cornerRadius: CGFloat = 15
-        static let vSpacing: CGFloat = 15
-        
-        struct Success {
-            static let cornerRadius: CGFloat = 5
-        }
-        
         struct EmailStack {
             static let emailStackHeight: CGFloat = 150
         }

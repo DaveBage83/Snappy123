@@ -22,9 +22,6 @@ class CreateAccountViewModel: ObservableObject {
     @Published var password = ""
     @Published var showAlreadyRegisteredAlert = false
     
-    // Controls show / hide password functionality
-    @Published var passwordRevealed = false
-    
     // MARK: - Marketing preferences
     @Published var emailMarketingEnabled = false
     @Published var directMailMarketingEnabled = false
@@ -46,15 +43,9 @@ class CreateAccountViewModel: ObservableObject {
     
     @Published var passwordHasError = false
     
-    var orderTotal: Double? {
-        container.appState.value.userData.basket?.orderTotal
-    }
-    
     @Published var termsAndConditionsHasError = false
         
     @Published var isLoading = false
-    
-    private var submitted = false
     
     let isInCheckout: Bool
     var isFromInitialView: Bool {

@@ -29,13 +29,6 @@ struct CheckoutDetailsView: View {
             static let vPadding: CGFloat = 30
         }
         
-        struct ContactDetails {
-            struct EmailFieldWarning {
-                static let xOffset: CGFloat = -6
-                static let yOffset: CGFloat = 4
-            }
-        }
-        
         struct ExpiryPill {
             static let vPadding: CGFloat = 4
             static let hPadding: CGFloat = 8
@@ -49,7 +42,6 @@ struct CheckoutDetailsView: View {
         
         struct DeliveryNote {
             static let spacing: CGFloat = 24
-            static let minHeight: CGFloat = 100
         }
 
         struct AllowedMarketingChannels {

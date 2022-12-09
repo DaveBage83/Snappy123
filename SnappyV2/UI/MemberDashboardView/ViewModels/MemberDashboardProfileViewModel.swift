@@ -11,16 +11,6 @@ import OSLog
 
 @MainActor
 class MemberDashboardProfileViewModel: ObservableObject {
-    
-    // MARK: - View State
-    
-    enum ViewState {
-        case updateProfile
-        case changePassword
-    }
-    
-    @Published var viewState: ViewState = .updateProfile
-    
     let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
     

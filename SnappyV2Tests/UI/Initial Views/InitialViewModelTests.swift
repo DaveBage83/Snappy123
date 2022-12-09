@@ -22,8 +22,6 @@ class InitialViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.container.appState.value, AppState())
-        XCTAssertFalse(sut.loginButtonPressed)
-        XCTAssertFalse(sut.hasStore)
         XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertFalse(sut.isLoading)
         XCTAssertNil(sut.viewState)
@@ -100,21 +98,6 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertEqual(sut.showDriverStartShift, true)
     }
     
-    func test_whenLoginTapped_thenShowLoginScreenSetToTrue() {
-        let sut = makeSUT()
-        
-        sut.loginTapped()
-        XCTAssertEqual(sut.viewState, .login)
-    }
-    
-    func test_whenSignupTapped_thenShowRegistrationScreenSetToTrue() {
-        let sut = makeSUT()
-        
-        sut.signUpTapped()
-        
-        XCTAssertEqual(sut.viewState, .create)
-    }
-    
     func test_whenStartDriverShiftTapped_thenSetDriverSettings() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getDriverSessionSettings]))
         let mockedSettings = DriverSessionSettings.mockedData
@@ -170,7 +153,6 @@ class InitialViewModelTests: XCTestCase {
 
         await sut.loadBusinessProfile()
         
-        XCTAssertTrue(sut.showFirstView)
         container.services.verify(as: .businessProfile)
     }
     
@@ -200,7 +182,6 @@ class InitialViewModelTests: XCTestCase {
         
         await sut.loadBusinessProfile()
         
-        XCTAssertTrue(sut.showFirstView)
         container.services.verify(as: .member)
     }
     

@@ -54,11 +54,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     private let tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var paymentOutcome: PaymentOutcome?
     @Published var savedCardsDetails = [MemberCardDetails]()
-    
-    @Published var deliveryAddress: String = ""
-    @Published var settingBillingAddress: Bool = false
-    @Published var useSameBillingAddressAsDelivery = true
-    var prefilledAddressName: Name?
     let instructions: String?
     var draftOrderFulfilmentDetails: DraftOrderFulfilmentDetailsRequest?
     
@@ -134,7 +129,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         timeZone = selectedStore?.storeTimeZone
         _basket = .init(initialValue: appState.value.userData.basket)
         tempTodayTimeSlot = appState.value.userData.tempTodayTimeSlot
-        setupDetailsFromBasket(with: appState)
+        setupDetailsFromBasket()
         setupPaymentOutcome()
         setupCreditCardNumber()
         setupCreditCardCVV()
@@ -265,7 +260,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setupDetailsFromBasket(with appState: Store<AppState>) {
+    private func setupDetailsFromBasket() {
         $basket
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
@@ -280,36 +275,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-    }
-    
-    func setBilling(address: Address) async {
-        settingBillingAddress = true
-        
-        let basketAddressRequest = BasketAddressRequest(
-            firstName: address.firstName ?? "",
-            lastName: address.lastName ?? "",
-            addressLine1: address.addressLine1,
-            addressLine2: address.addressLine2 ?? "",
-            town: address.town,
-            postcode: address.postcode,
-            countryCode: address.countryCode ?? "" ,
-            type: AddressType.billing.rawValue,
-            email: basketContactDetails?.email ?? "",
-            telephone: basketContactDetails?.telephone ?? "",
-            state: nil,
-            county: address.county,
-            location: nil)
-        
-        do {
-            try await container.services.basketService.setBillingAddress(to: basketAddressRequest)
-            
-            self.settingBillingAddress = false
-        } catch {
-            self.setError(error)
-        
-            Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")
-            self.settingBillingAddress = false
-        }
     }
     
     private func sendPaymentCardError(gateway: String, applePay: Bool, description: String) {

@@ -15,11 +15,6 @@ struct ProductsNavigationAndSearch: View {
     
     // MARK: - Constants
     private struct Constants {
-        struct Logo {
-            static let width: CGFloat = 207.25
-            static let largeScreenWidthMultiplier: CGFloat = 1.5
-        }
-        
         struct SearchBar {
             static let padding: CGFloat = 10
         }
@@ -35,10 +30,6 @@ struct ProductsNavigationAndSearch: View {
     // MARK: - Computed variables
     private var colorPalette: ColorPalette {
         ColorPalette(container: productsViewModel.container, colorScheme: colorScheme)
-    }
-    
-    private var adoptMinimalLayout: Bool {
-        sizeCategory.size > 7 && sizeClass == .compact
     }
     
     // MARK: - Main view

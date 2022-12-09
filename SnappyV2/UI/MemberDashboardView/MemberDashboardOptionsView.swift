@@ -17,8 +17,6 @@ struct MemberDashboardOptionsView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
     
     struct Constants {
-        static let hPadding: CGFloat = 10
-        static let tileSpacing: CGFloat = 17
         static let gridSpacing: CGFloat = 10
         static let itemWidthAdjustment: CGFloat = 32 // 2 x padding (leading + trailing)
     }

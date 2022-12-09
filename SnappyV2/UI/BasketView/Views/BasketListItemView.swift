@@ -16,18 +16,7 @@ struct BasketListItemView: View {
         static let cornerRadius: CGFloat = 4
         
         struct ProductInfo {
-            static let height: CGFloat = 40
-            static let padding: CGFloat = 4
             static let spacing: CGFloat = 8
-        }
-        
-        struct Container {
-            static let missingOfferColor = Color.snappyOfferBasket.opacity(0.3)
-        }
-        
-        struct ItemImage {
-            static let size: CGFloat = 56
-            static let cornerRadius: CGFloat = 8
         }
         
         struct Main {

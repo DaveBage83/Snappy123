@@ -20,16 +20,12 @@ class BasketAndPastOrderItemBannerViewModel: ObservableObject {
     var curveBottomCorners: Bool {
         isBottomBanner
     }
-    
-    var text: String {
-        banner.text
-    }
 
     var tapAction: (() -> Void)? {
         banner.action
     }
     
-    init(container: DIContainer, banner: BannerDetails, isBottomBanner: Bool, bannerTapAction: (() -> Void)? = nil) {
+    init(container: DIContainer, banner: BannerDetails, isBottomBanner: Bool) {
         self.container = container
         self.banner = banner
         self.isBottomBanner = isBottomBanner

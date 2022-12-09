@@ -13,8 +13,6 @@ struct CheckoutPaymentHandlingView: View {
     @Environment(\.tabViewHeight) var tabViewHeight
     
     struct Constants {
-        static let padding: CGFloat = 10
-        static let cornerRadius: CGFloat = 10
         
         struct PayByCardHeader {
             static let hSpacing: CGFloat = 16
@@ -22,28 +20,17 @@ struct CheckoutPaymentHandlingView: View {
             static let vSpacing: CGFloat = 4
         }
         
-        struct Card {
-            static let cardWidth: CGFloat = 32
-        }
-        
         struct Camera {
             static let height: CGFloat = 35
         }
         
         struct BillingAddress {
-            static let hSpacing: CGFloat = 16
             static let buttonIconWidth: CGFloat = 24
-            static let vSpacing: CGFloat = 5
-        }
-        
-        struct DetailsStack {
-            static let hSpacing: CGFloat = 10
         }
         
         static let scrollToID = 1
     }
     
-    typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias CheckoutStrings = Strings.CheckoutView
     
     @StateObject var viewModel: CheckoutPaymentHandlingViewModel

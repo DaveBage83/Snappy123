@@ -8,14 +8,14 @@
 
 import UIKit
 
-public final class BasicUIActionHandler: NSObject {
+final class BasicUIActionHandler: NSObject {
     public var action: (() -> Void)?
     @objc public func performAction() {
         action?()
     }
 }
 
-public extension UIControl {
+extension UIControl {
     var touchUpInside: BasicUIActionHandler {
         associatedObject {
             BasicUIActionHandler().with {
@@ -33,7 +33,7 @@ public extension UIControl {
     }
 }
 
-public extension UIGestureRecognizer {
+extension UIGestureRecognizer {
     var handler: BasicUIActionHandler {
         associatedObject {
             BasicUIActionHandler().with {
@@ -43,7 +43,7 @@ public extension UIGestureRecognizer {
     }
 }
 
-public extension UIBarButtonItem {
+extension UIBarButtonItem {
     var handler: BasicUIActionHandler {
         associatedObject {
             BasicUIActionHandler().with {

@@ -24,32 +24,5 @@ class NotificationServiceTests: XCTestCase {
     override func tearDown() {
         sut = nil
     }
-    
-    func test_addingTwoItemsToBasket() {
-        let itemName = "Absolut Vodka"
-        let itemQuantity = 2
-        sut.addItemToBasket(itemName: itemName, quantity: itemQuantity)
-        
-        XCTAssertTrue(appState.value.notifications.showAddItemToBasketToast, file: #file, line: #line)
-        XCTAssertEqual(appState.value.notifications.addItemToBasketAlertToast, AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Item Added", subTitle: .constant("Absolut Vodka x 2 have been added to basket"), tapToDismiss: false), file: #file, line: #line)
-    }
-    
-    func test_addingOneItemToBasket() {
-        let itemName = "Absolut Vodka"
-        let itemQuantity = 1
-        sut.addItemToBasket(itemName: itemName, quantity: itemQuantity)
-        
-        XCTAssertTrue(appState.value.notifications.showAddItemToBasketToast, file: #file, line: #line)
-        XCTAssertEqual(appState.value.notifications.addItemToBasketAlertToast, AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Item Added", subTitle: .constant("Absolut Vodka has been added to basket"), tapToDismiss: false), file: #file, line: #line)
-    }
-    
-    func test_changingOneItemToBasket() {
-        let itemName = "Absolut Vodka"
-        let itemQuantity = 1
-        sut.addItemToBasket(itemName: itemName, quantity: itemQuantity)
-        
-        XCTAssertTrue(appState.value.notifications.showAddItemToBasketToast, file: #file, line: #line)
-        XCTAssertEqual(appState.value.notifications.addItemToBasketAlertToast, AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Item Added", subTitle: .constant("Absolut Vodka has been added to basket"), tapToDismiss: false), file: #file, line: #line)
-    }
 }
 

@@ -24,8 +24,6 @@ class PushNotificationSettingsViewModel: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
     private let viewContext: ViewContext
-    
-    @Published var marketingPreferencesAreLoading = false
         
     var useLargeTitles: Bool {
         viewContext == .settings
@@ -35,7 +33,7 @@ class PushNotificationSettingsViewModel: ObservableObject {
         return container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationIncludingMarketingButton ?? Strings.Settings.MarketingPrefs.overrideTitle.localized
     }
         
-    init(container: DIContainer, viewContext: ViewContext, hideAcceptedMarketingOptions: Bool) {
+    init(container: DIContainer, viewContext: ViewContext) {
         self.container = container
         self.viewContext = viewContext
         
@@ -47,10 +45,6 @@ class PushNotificationSettingsViewModel: ObservableObject {
         
         setupPushNotificationBinding()
         setupMarketingPreferenceBinding()
-    }
-    
-    private func saveAllowMarketingOverridePreference(allow: Bool) {
-        UserDefaults.standard.set(allow, forKey: AppV2Constants.Business.allowMarketingKey)
     }
         
     private func setupPushNotificationBinding() {

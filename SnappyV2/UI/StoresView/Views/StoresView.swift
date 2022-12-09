@@ -51,17 +51,6 @@ struct StoresView: View {
     
     // MARK: - Constants
     private struct Constants {
-        struct LogoAndSearch {
-            struct Logo {
-                static let width: CGFloat = 207.25
-                static let largeScreenWidthMultiplier: CGFloat = 1.5
-            }
-            
-            struct Stack {
-                static let spacing: CGFloat = 16
-            }
-        }
-        
         struct HorizontalStoreTypeScroll {
             static let topPadding: CGFloat = 23
         }
@@ -356,20 +345,20 @@ struct StoresView: View {
     // MARK: - Stores available list
     @ViewBuilder private var storesAvailableListView: some View {
         if viewModel.showOpenStores.isEmpty == false {
-            storeCardList(stores: viewModel.showOpenStores, headerText: StoreStatusStrings.openStores.localized, status: .open)
+            storeCardList(stores: viewModel.showOpenStores, status: .open)
         }
         
         if viewModel.showPreorderStores.isEmpty == false {
-            storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized, status: .preOrder)
+            storeCardList(stores: viewModel.showPreorderStores, status: .preOrder)
         }
         
         if viewModel.showClosedStores.isEmpty == false {
-            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized, status: .closed)
+            storeCardList(stores: viewModel.showClosedStores, status: .closed)
         }
     }
 
     // MARK: - Store card list
-    @ViewBuilder private func storeCardList(stores: [RetailStore], headerText: String, status: StoreStatus) -> some View {
+    @ViewBuilder private func storeCardList(stores: [RetailStore], status: StoreStatus) -> some View {
         if sizeClass == .compact {
             VStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
                 Section(header: storeStatusHeader(status: status)) {

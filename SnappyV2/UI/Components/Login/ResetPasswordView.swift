@@ -22,14 +22,6 @@ struct ResetPasswordView: View {
     @StateObject var viewModel: ResetPasswordViewModel
     
     struct Constants {
-        static let padding: CGFloat = 30
-        static let cornerRadius: CGFloat = 15
-        static let vSpacing: CGFloat = 15
-        
-        struct Success {
-            static let cornerRadius: CGFloat = 5
-        }
-        
         struct PasswordsStack {
             static let passwordStackHeight: CGFloat = 174
         }
@@ -43,7 +35,6 @@ struct ResetPasswordView: View {
             static let spacing: CGFloat = 16
             static let iconHeight: CGFloat = 16
             static let fontPadding: CGFloat = 12
-            static let externalPadding: CGFloat = 32
             static let lineLimit = 5
         }
     }

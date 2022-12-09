@@ -26,7 +26,6 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.itemDetail, menuItem)
         XCTAssertFalse(sut.showSearchProductCard)
         XCTAssertFalse(sut.isReduced)
-        XCTAssertNil(sut.calorieInfo)
         XCTAssertNil(sut.fromPriceString)
         XCTAssertFalse(sut.isOffer)
     }
@@ -40,14 +39,6 @@ class ProductCardViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.isReduced)
         XCTAssertEqual(sut.wasPriceString, "£22.00")
-    }
-    
-    func test_whenCalorieInfoPresent_thenCalorieStringPopulated() {
-        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)
-        let sut = makeSUT(menuItem: menuItem)
-        
-        XCTAssertEqual(sut.calorieInfo, "450 kcal per 100g")
     }
     
     func test_whenFromPriceIs0_thenHasNoFromPrice() {

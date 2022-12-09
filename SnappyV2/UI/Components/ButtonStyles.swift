@@ -22,34 +22,3 @@ struct SnappyPrimaryButtonStyle: ButtonStyle {
             )
     }
 }
-
-struct SnappySecondaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.snappyFootnote)
-            .foregroundColor(.black)
-            .padding(.vertical, 6)
-            .padding(.horizontal, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(Color.black, lineWidth: 1)
-            )            
-    }
-}
-
-struct SnappyMainActionButtonStyle: ButtonStyle {
-    let isEnabled: Bool
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.snappyTitle)
-            .foregroundColor(.white)
-            .padding(10)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(isEnabled ? Color.snappyDark : Color.gray)
-                    .padding(.horizontal)
-            )
-    }
-}

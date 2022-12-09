@@ -15,12 +15,6 @@ class MemberDashboardViewModelTests: XCTestCase {
         let sut = makeSUT()
         XCTAssertEqual(sut.viewState, .dashboard)
         XCTAssertFalse(sut.firstNamePresent)
-        XCTAssertTrue(sut.isDashboardSelected)
-        XCTAssertFalse(sut.isOrdersSelected)
-        XCTAssertFalse(sut.isAddressesSelected)
-        XCTAssertFalse(sut.isProfileSelected)
-        XCTAssertFalse(sut.isLoyaltySelected)
-        XCTAssertFalse(sut.isLogOutSelected)
         XCTAssertNil(sut.profile)
         XCTAssertTrue(sut.noMemberFound)
         XCTAssertFalse(sut.showVerifyAccountOption)
@@ -29,47 +23,13 @@ class MemberDashboardViewModelTests: XCTestCase {
     func test_init_whenProfileIsPresent_thenProfileDetailsArePopulated() {
         let sut = makeSUT(profile: MemberProfile.mockedData)
         XCTAssertEqual(sut.viewState, .dashboard)
-        XCTAssertTrue(sut.isDashboardSelected)
-        XCTAssertFalse(sut.isOrdersSelected)
-        XCTAssertFalse(sut.isAddressesSelected)
-        XCTAssertFalse(sut.isProfileSelected)
-        XCTAssertFalse(sut.isLoyaltySelected)
-        XCTAssertFalse(sut.isLogOutSelected)
         XCTAssertFalse(sut.showVerifyAccountOption)
     }
     
     func test_init_whenProfileIsPresentWithoutVerifiedNumber_thenProfileDetailsArePopulatedWithVerifyOption() {
         let sut = makeSUT(profile: MemberProfile.mockedDataMobileNotVerified)
         XCTAssertEqual(sut.viewState, .dashboard)
-        XCTAssertTrue(sut.isDashboardSelected)
-        XCTAssertFalse(sut.isOrdersSelected)
-        XCTAssertFalse(sut.isAddressesSelected)
-        XCTAssertFalse(sut.isProfileSelected)
-        XCTAssertFalse(sut.isLoyaltySelected)
-        XCTAssertFalse(sut.isLogOutSelected)
         XCTAssertTrue(sut.showVerifyAccountOption)
-    }
-
-    func test_whenAddAddressTapped_thenAddressAdded() async {
-        let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
-
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.addAddress(address: address)]))
-        
-        let sut = makeSUT(container: container)
-        await sut.addAddress(address: address)
-
-        sut.container.services.verify(as: .member)
-    }
-    
-    func test_whenUpdateAddressTapped_thenAddressUpdated() async {
-        let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
-
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateAddress(address: address)]))
-        
-        let sut = makeSUT(container: container)
-        await sut.updateAddress(address: address)
-
-        sut.container.services.verify(as: .member)
     }
 
     func test_init_whenNormalMemberProfilePresent_thenMemberDetailsPopulatedWithoutStartShift() {
@@ -94,52 +54,6 @@ class MemberDashboardViewModelTests: XCTestCase {
     func test_init_whenDriverMemberProfilePresent_thenMemberDetailsPopulated() {
         let sut = makeSUT(profile: MemberProfile.mockedDataIsDriver)
         XCTAssertTrue(sut.showDriverStartShiftOption)
-    }
-    
-    func test_whenDashboardTapped_thenViewStateIsDashboardAndIsDashboardSelectedIsTrue() {
-        let sut = makeSUT()
-        
-        // As the default init viewState is .dashboard, for this test first
-        // we set viewState to .orders and then we reset to .dashboard
-
-        sut.ordersTapped()
-        XCTAssertFalse(sut.isDashboardSelected)
-        XCTAssertNotEqual(sut.viewState, .dashboard)
-        sut.dashboardTapped()
-        XCTAssertTrue(sut.isDashboardSelected)
-        XCTAssertEqual(sut.viewState, .dashboard)
-    }
-    
-    func test_whenOrdersTapped_thenViewStateIsOrdersAndIsOrdersSelectedIsTrue() {
-        let sut = makeSUT()
-
-        sut.ordersTapped()
-        XCTAssertTrue(sut.isOrdersSelected)
-        XCTAssertEqual(sut.viewState, .orders)
-    }
-    
-    func test_whenAddressesTapped_thenViewStateIsAddressesAndIsAddressesSelectedIsTrue() {
-        let sut = makeSUT()
-
-        sut.myDetailsTapped()
-        XCTAssertTrue(sut.isAddressesSelected)
-        XCTAssertEqual(sut.viewState, .myDetails)
-    }
-    
-    func test_whenProfileTapped_thenViewStateIsProfileAndIsProfileSelectedIsTrue() {
-        let sut = makeSUT()
-
-        sut.profileTapped()
-        XCTAssertTrue(sut.isProfileSelected)
-        XCTAssertEqual(sut.viewState, .profile)
-    }
-    
-    func test_whenLoyaltyTapped_thenViewStateIsLoyaltyAndIsLoyaltySelectedIsTrue() {
-        let sut = makeSUT()
-
-        sut.loyaltyTapped()
-        XCTAssertTrue(sut.isLoyaltySelected)
-        XCTAssertEqual(sut.viewState, .loyalty)
     }
     
     func test_whenVerifyAccountTappedAndOpenViewResultTrue_thenSetRoutingShowVerifyMobileViewToTrue() async {
@@ -284,14 +198,6 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
     }
     
-    func test_whenLogoutTapped_thenViewStateIsLogoutAndIsLogoutSelectedIsTrue() {
-        let sut = makeSUT()
-
-        sut.logOutTapped()
-        XCTAssertTrue(sut.isLogOutSelected)
-        XCTAssertEqual(sut.viewState, .logOut)
-    }
-    
     func test_whenMemberLogsOut_thenLogoutIsSuccessful() async {
         let sut = makeSUT()
         
@@ -318,25 +224,6 @@ class MemberDashboardViewModelTests: XCTestCase {
         sut.onAppearAddressViewSendEvent()
         
         eventLogger.verify()
-    }
-    
-    func test_whenSettingsTapped_thenShowSettingsIsTrue() {
-        let sut = makeSUT()
-        sut.settingsTapped()
-        XCTAssertTrue(sut.showSettings)
-    }
-    
-    func test_whenSettingsDismissed_thenShowSettingsIsFalse() {
-        let sut = makeSUT()
-        sut.dismissSettings()
-        XCTAssertFalse(sut.showSettings)
-    }
-    
-    func test_resetPasswordDismissed_thenErrorSet() {
-        let sut = makeSUT()
-        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
-        sut.resetPasswordDismissed(withError: networkError)
-        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
     }
     
     func test_setupResetPaswordDeepLinkNavigation_givenPasswordResetCode_thenSetResetToken() {

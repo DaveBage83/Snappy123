@@ -24,8 +24,6 @@ class ProductIncrementButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.hasAgeRestriction)
         XCTAssertFalse(sut.isUpdatingQuantity)
         XCTAssertEqual(sut.basketQuantity, 0)
-        XCTAssertFalse(sut.itemHasOptionsOrSizes)
-        XCTAssertTrue(sut.showStandardButton)
         XCTAssertNil(sut.optionsShown)
         XCTAssertFalse(sut.quantityLimitReached)
     }
@@ -46,27 +44,11 @@ class ProductIncrementButtonViewModelTests: XCTestCase {
         XCTAssertEqual(handlerCallCount, 2)
     }
     
-    func test_whenMenuSizesIsNotNil_thenItemHasOptionOrSizesIsTrue() {
-        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [], menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil, deal: nil)
-        let sut = makeSUT(menuItem: menuItem)
-        
-        XCTAssertTrue(sut.itemHasOptionsOrSizes)
-    }
-    
     func test_whenBasketQuantityIs1_thenShowDeleteButtonIsTrue() {
         let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
         sut.basketQuantity = 1
         
         XCTAssertTrue(sut.showDeleteButton)
-    }
-    
-    func test_whenMenuItemOptionsIsNotNil_thenItemHasOptionOrSizesIsTrue() {
-        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: [], availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil, deal: nil)
-        let sut = makeSUT(menuItem: menuItem)
-        
-        XCTAssertTrue(sut.itemHasOptionsOrSizes)
     }
     
     func test_whenAgeIsMoreThanZero_thenHasAgeRestrictionIsTrue() {

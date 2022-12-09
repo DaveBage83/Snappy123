@@ -9,12 +9,8 @@ import SwiftUI
 
 struct StoreReviewView: View {
     
-    // MARK: - Typealiases
-    typealias StoreReviewStrings = Strings.StoreReview
-    
     // MARK: - Environment objects
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.openURL) private var openURL
     
     // MARK: - Constants
     struct Constants {
@@ -22,7 +18,6 @@ struct StoreReviewView: View {
         struct Logo {
             static let size: CGFloat = 96
             static let cornerRadius: CGFloat = 8
-            static let reviewPillYOffset: CGFloat = 9
         }
         
         struct Address {
@@ -40,7 +35,6 @@ struct StoreReviewView: View {
             static let cornerRadius: CGFloat = 10
             static let vStackSpacing: CGFloat = 11
             static let opacity: CGFloat = 0.2
-            static let starWidth: CGFloat = 38
             static let commentsMinHeight: CGFloat = 100
         }
         
@@ -48,8 +42,6 @@ struct StoreReviewView: View {
             static let spacing: CGFloat = 16
             static let iconHeight: CGFloat = 16
             static let fontPadding: CGFloat = 12
-            static let externalPadding: CGFloat = 32
-            static let lineLimit = 5
         }
         
         struct CloseButton {

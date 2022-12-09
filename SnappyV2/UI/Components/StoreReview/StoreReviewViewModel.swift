@@ -31,7 +31,6 @@ class StoreReviewViewModel: ObservableObject {
     // MARK: - Typealiases
     typealias StoreReviewStrings = Strings.StoreReview
     
-    private(set) var showTelephoneNumber = ""
     private var cancellables = Set<AnyCancellable>()
 
     init(container: DIContainer, review: RetailStoreReview, dismissStoreReviewViewHandler: @escaping (String?)->()) {

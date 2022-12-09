@@ -6,7 +6,7 @@
 //
 
 import UIKit
-public extension UIView {
+extension UIView {
     
     @discardableResult
     func withSquare(_ value: CGFloat, priority: UILayoutPriority = .required) -> Self {

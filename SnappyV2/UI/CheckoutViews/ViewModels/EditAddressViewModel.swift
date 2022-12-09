@@ -24,10 +24,8 @@ class EditAddressViewModel: ObservableObject {
     @Published var lastNameHasWarning = false
     
     @Published var emailText = ""
-    @Published var emailHasWarning = false
     
     @Published var phoneText = ""
-    @Published var phoneHasWarning = false
     
     @Published var postcodeText = ""
     @Published var postcodeHasWarning = false
@@ -50,11 +48,8 @@ class EditAddressViewModel: ObservableObject {
     // MARK: - Address search publishers / properties
     @Published var searchingForAddresses = false
     @Published var searchingForSavedAddresses = false
-    @Published var showNoAddressesFoundError = false
     @Published var showAddressSelector = false // triggers the postcode search view
     @Published var showSavedAddressSelector = false // triggers the saved address selection view
-    @Published var settingAddress = false
-    @Published var showEnterAddressManuallyError = false
     
     var foundAddresses = [FoundAddress]()
     let includeSavedAddressButton: Bool
@@ -95,17 +90,6 @@ class EditAddressViewModel: ObservableObject {
     
     var showUseDefaultBillingAddressForCardButton: Bool {
         addressType == .card
-    }
-    
-    var firstError: CheckoutRootViewModel.DetailsFormElements? {
-        if postcodeHasWarning {
-            return CheckoutRootViewModel.DetailsFormElements.postcode
-        } else if addressLine1HasWarning {
-            return CheckoutRootViewModel.DetailsFormElements.addressLine1
-        } else if cityHasWarning {
-            return CheckoutRootViewModel.DetailsFormElements.city
-        }
-        return nil
     }
     
     @Published var useSameCardAddressAsDefaultBilling: Bool = true
@@ -285,7 +269,6 @@ class EditAddressViewModel: ObservableObject {
                 self.showAddressSelector = true
             } else {
                 self.postcodeHasWarning = true
-                self.showNoAddressesFoundError = true
             }
             
             searchingForAddresses = false
@@ -328,8 +311,6 @@ class EditAddressViewModel: ObservableObject {
     }
     
     func setAddress(firstName: String? = nil, lastName: String? = nil, email: String? = nil, phone: String? = nil) async throws {
-
-        self.settingAddress = true
         
         let deliveryAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "delivery" })
         
@@ -373,18 +354,15 @@ class EditAddressViewModel: ObservableObject {
                 try await container.services.basketService.setBillingAddress(to: useSameBillingAddressAsDelivery ? billingSameAsDeliveryAddressRequest : basketAddressRequest)
             }
             
-            self.settingAddress = false
             Logger.checkout.info("Successfully added delivery address")
             
         } catch {
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             
             if addressType == .billing {
-                showEnterAddressManuallyError = true
                 useSameBillingAddressAsDelivery = false
             }
             
-            self.settingAddress = false
             throw error
         }
     }
@@ -450,10 +428,6 @@ class EditAddressViewModel: ObservableObject {
     
     func checkField(stringToCheck: String, fieldHasWarning: inout Bool) {
         fieldHasWarning = stringToCheck.isEmpty
-    }
-    
-    func dismissAddressSelector() {
-        showAddressSelector = false
     }
     
     func showSavedAddressSelectorView() {

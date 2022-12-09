@@ -11,7 +11,7 @@ import UIKit
 import Combine
 
 // this has all been imported from https://github.com/gymshark/ios-card-scan and fixed
-public class SharkCardScanViewController: UIViewController {
+class SharkCardScanViewController: UIViewController {
 
     private var viewModel: CardScanViewModel
     private var styling: CardScanStyling
@@ -37,7 +37,7 @@ public class SharkCardScanViewController: UIViewController {
         $0.setContentHuggingPriority(.defaultLow, for: .vertical)
     }
     
-    public init(viewModel: CardScanViewModel, styling: CardScanStyling = DefaultStyling()) {
+    init(viewModel: CardScanViewModel, styling: CardScanStyling = DefaultStyling()) {
         self.viewModel = viewModel
         self.styling = styling
         super.init(nibName: nil, bundle: nil)
@@ -49,7 +49,7 @@ public class SharkCardScanViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
         
@@ -86,7 +86,7 @@ public class SharkCardScanViewController: UIViewController {
         ]}
     }
     
-    public override func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         // Give time for everthing to layout. Will maybe come back to but it will work fine
         DispatchQueue.main.async {
@@ -103,12 +103,12 @@ public class SharkCardScanViewController: UIViewController {
         }
     }
     
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.startCamera()
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewModel.stopCamera()
     }

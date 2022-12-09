@@ -12,7 +12,6 @@ struct ProductDetailBottomSheetView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.mainWindowSize) var mainWindowSize
     
-    typealias ProductCardStrings = Strings.ProductsView.ProductCard
     typealias ProductDetailStrings = Strings.ProductsView.ProductDetail
     
     struct Constants {

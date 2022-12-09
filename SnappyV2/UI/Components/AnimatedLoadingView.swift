@@ -11,11 +11,6 @@ struct AnimatedLoadingView: View {
 
     let message: String
     
-    let rectangleRadius: CGFloat = 5
-    let topSpacerLength: CGFloat = 25
-    let midSpacerLength: CGFloat = 20
-    let paddingAmount: CGFloat = 50
-    
     // MARK: - Constants
     struct Constants {
         struct Rectangle {

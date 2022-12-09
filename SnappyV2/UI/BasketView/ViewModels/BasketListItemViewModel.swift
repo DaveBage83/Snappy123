@@ -14,11 +14,8 @@ final class BasketListItemViewModel: ObservableObject {
     let container: DIContainer
     @Published var basket: Basket?
     @Published var item: BasketItem
-    @Published var quantity: String = ""
     var changeQuantity: (_ basketItem: BasketItem, _ quantity: Int) -> Void
     @Published var hasMissedPromotions = false
-    var latestMissedPromotion: BasketItemMissedPromotion?
-    @Published var selectionOptionsDict: [Int: [Int]]?
     @Published var bannerDetails = [BannerDetails]()
     @Published var missedPromoShown: BasketItemMissedPromotion?
     @Published var complexItemShown: RetailStoreMenuItem?
@@ -124,15 +121,6 @@ final class BasketListItemViewModel: ObservableObject {
         return []
     }
     
-    func onSubmit() {
-        changeQuantity(item, Int(quantity) ?? 0)
-        quantity = ""
-    }
-    
-    func showMissed(promo: BasketItemMissedPromotion) {
-        missedPromoShown = promo
-    }
-    
     private func setupMissedPromotions(promos: [BasketItemMissedPromotion]) {
         self.hasMissedPromotions = true
         for promo in promos {
@@ -140,14 +128,6 @@ final class BasketListItemViewModel: ObservableObject {
                 guard let self = self else { return }
                 self.showPromoTapped(promo: promo)
             }))
-        }
-    }
-    
-    func filterQuantityToStringNumber(stringValue: String) {
-        let filtered = stringValue.filter { $0.isNumber }
-        
-        if quantity != filtered {
-            quantity = filtered
         }
     }
     

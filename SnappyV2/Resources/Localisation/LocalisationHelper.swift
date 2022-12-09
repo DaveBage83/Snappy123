@@ -7,22 +7,22 @@
 
 import Foundation
 
-public protocol SnappyString {
+protocol SnappyString {
     var localized: String { get }
 }
 
-public protocol SnappyStringCustomisable {
+protocol SnappyStringCustomisable {
     func localizedFormat(_ arguments: CVarArg...) -> String
 }
 
-public extension SnappyString where Self: RawRepresentable, Self.RawValue == String {
+extension SnappyString where Self: RawRepresentable, Self.RawValue == String {
     
     var localized: String {
         return NSLocalizedString(rawValue, value: "**\(self)**", comment: "")
     }
 }
 
-public extension SnappyStringCustomisable where Self: RawRepresentable, Self.RawValue == String {
+extension SnappyStringCustomisable where Self: RawRepresentable, Self.RawValue == String {
     func localizedFormat(_ arguments: CVarArg...) -> String {
         let localizedString = NSLocalizedString(rawValue, value: "**\(self)**", comment: "")
         return String(format: localizedString, arguments: arguments)

@@ -42,7 +42,7 @@ class ProductsViewModel: ObservableObject {
     @Published var unsortedItems: [RetailStoreMenuItem]
     @Published var sortedItems = [RetailStoreMenuItem]()
     @Published var specialOfferItems: [RetailStoreMenuItem]
-    @Published var missedOfferMenus = [MissedOfferMenu]()
+    @Published var missedOfferMenu: MissedOfferMenu?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
     @Published var selectedSearchTerm: String?
@@ -232,6 +232,8 @@ class ProductsViewModel: ObservableObject {
     var showCaloriesSort: Bool {
         unsortedItems.contains(where: { $0.itemCaptions?.portionSize != nil })
     }
+    
+    var showSpecialOfferItems: Bool { missedOfferMenu == nil }
 
     // MARK: - Init
     init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {
@@ -245,6 +247,7 @@ class ProductsViewModel: ObservableObject {
         _subCategories = .init(initialValue: appState.value.storeMenu.subCategories)
         _unsortedItems = .init(initialValue: appState.value.storeMenu.unsortedItems)
         _specialOfferItems = .init(initialValue: appState.value.storeMenu.specialOfferItems)
+        _missedOfferMenu = .init(initialValue: appState.value.storeMenu.missedOfferMenu)
         
         // menu search navigation
         _searchText = .init(initialValue: appState.value.storeMenu.searchText)
@@ -318,6 +321,11 @@ class ProductsViewModel: ObservableObject {
             .sink { appState.value.storeMenu.specialOfferItems = $0 }
             .store(in: &cancellables)
         
+        $missedOfferMenu
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.missedOfferMenu = $0 }
+            .store(in: &cancellables)
+        
         $searchResultCategories
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.searchResultCategories = $0 }
@@ -365,6 +373,7 @@ class ProductsViewModel: ObservableObject {
             }
         case .offers:
             specialOfferItems = []
+            missedOfferMenu = nil
             specialOffersMenuFetch = .notRequested
         default:
             if subCategories.isEmpty == false {
@@ -380,6 +389,7 @@ class ProductsViewModel: ObservableObject {
             unsortedItems = []
             sortedItems = []
             specialOfferItems = []
+            missedOfferMenu = nil
         }
     }
     
@@ -602,20 +612,28 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    struct MissedOfferMenu: Identifiable {
+    struct MissedOfferMenuSection: Identifiable, Equatable {
         let id: Int
         let name: String
         let items: [RetailStoreMenuItem]
     }
     
+    struct MissedOfferMenu: Equatable {
+        let discountText: String?
+        let missedOfferSections: [MissedOfferMenuSection]
+    }
+    
     func assignSpecialOfferMenu(dealSections: [MenuItemCategory]) {
         // go through dealSections and find items that belong and assign to MissedOfferMenu
-        var missedOfferMenus = [MissedOfferMenu]()
+        var missedOfferMenus = [MissedOfferMenuSection]()
         for dealSection in dealSections {
             let missedItems = specialOfferItems.filter { $0.deal?.section?.id == dealSection.id }
-            missedOfferMenus.append(MissedOfferMenu(id: dealSection.id, name: dealSection.name, items: missedItems))
+            missedOfferMenus.append(MissedOfferMenuSection(id: dealSection.id, name: dealSection.name, items: missedItems))
         }
-        self.missedOfferMenus = missedOfferMenus
+        self.missedOfferMenu = MissedOfferMenu(
+            discountText: specialOffersMenuFetch.value?.discountText,
+            missedOfferSections: missedOfferMenus
+        )
     }
     
     func clearState() {
@@ -625,6 +643,7 @@ class ProductsViewModel: ObservableObject {
         unsortedItems = []
         subCategories = []
         specialOfferItems = []
+        missedOfferMenu = nil
         selectedOffer = nil
         navigationWithIsSearchActive = 0
         searchText = ""

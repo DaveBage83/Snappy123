@@ -72,6 +72,7 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
                     let fetchWithTimeStamp = RetailStoreMenuFetch(
                         id: fetch.id ?? 0,
                         name: fetch.name ?? "",
+                        discountText: nil,
                         categories: fetch.categories,
                         menuItems: fetch.menuItems,
                         dealSections: fetch.dealSections,
@@ -253,6 +254,7 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
                     let fetchWithTimeStamp = RetailStoreMenuFetch(
                         id: fetch.id ?? 0,
                         name: fetch.name ?? "",
+                        discountText: nil,
                         categories: fetch.categories,
                         menuItems: fetch.menuItems,
                         dealSections: fetch.dealSections,

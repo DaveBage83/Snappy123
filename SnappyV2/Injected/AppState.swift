@@ -61,6 +61,7 @@ extension AppState {
         var subCategories = [[RetailStoreMenuCategory]]()
         var unsortedItems = [RetailStoreMenuItem]()
         var specialOfferItems = [RetailStoreMenuItem]()
+        var missedOfferMenu: ProductsViewModel.MissedOfferMenu?
         // for the search state restore:
         var searchText = ""
         var searchResultCategories = [GlobalSearchResultRecord]()

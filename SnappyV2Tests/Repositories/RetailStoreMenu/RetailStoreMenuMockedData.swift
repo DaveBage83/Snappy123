@@ -13,6 +13,7 @@ extension RetailStoreMenuFetch {
     static let mockedDataFromAPI = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
+        discountText: nil,
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: RetailStoreMenuItem.mockedArrayData,
         dealSections: nil,
@@ -26,6 +27,7 @@ extension RetailStoreMenuFetch {
     static let mockedData = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
+        discountText: nil,
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: RetailStoreMenuItem.mockedArrayData,
         dealSections: nil,
@@ -39,6 +41,7 @@ extension RetailStoreMenuFetch {
     static let mockedDataCategories = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
+        discountText: nil,
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: nil,
         dealSections: nil,
@@ -52,6 +55,7 @@ extension RetailStoreMenuFetch {
     static let mockedDataCategoriesFromAPI = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
+        discountText: nil,
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: nil,
         dealSections: nil,
@@ -65,6 +69,7 @@ extension RetailStoreMenuFetch {
     static let mockedDataItems = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
+        discountText: nil,
         categories: nil,
         menuItems: RetailStoreMenuItem.mockedArrayData,
         dealSections: nil,
@@ -78,6 +83,7 @@ extension RetailStoreMenuFetch {
     static let mockedDataItemsFromAPI = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
+        discountText: nil,
         categories: nil,
         menuItems: RetailStoreMenuItem.mockedArrayData,
         dealSections: nil,
@@ -91,6 +97,7 @@ extension RetailStoreMenuFetch {
     static let mockedDataItemsWithDealSectionsFromAPI = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
+        discountText: nil,
         categories: nil,
         menuItems: RetailStoreMenuItem.mockedArrayData,
         dealSections: [MenuItemCategory.mockedData],

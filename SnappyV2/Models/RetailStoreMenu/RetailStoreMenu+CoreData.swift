@@ -79,6 +79,7 @@ extension RetailStoreMenuFetch {
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
+            discountText: managedObject.discountText,
             categories: categories,
             menuItems: menuItems,
             dealSections: dealSections,
@@ -100,6 +101,7 @@ extension RetailStoreMenuFetch {
             fetch.id = Int64(id)
         }
         fetch.name = name
+        fetch.discountText = discountText
         
         if let categories = categories {
             fetch.categories = NSOrderedSet(array: categories.compactMap({ category -> RetailStoreMenuCategoryMO? in

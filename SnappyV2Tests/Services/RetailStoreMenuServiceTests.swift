@@ -61,6 +61,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -143,6 +144,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -248,6 +250,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -324,6 +327,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -710,6 +714,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -803,6 +808,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -920,6 +926,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -1008,6 +1015,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -1130,6 +1138,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -1220,6 +1229,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -1434,6 +1444,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,
@@ -1518,6 +1529,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
+            discountText: nil,
             categories: menuFetchResult.categories,
             menuItems: menuFetchResult.menuItems,
             dealSections: menuFetchResult.dealSections,

@@ -29,6 +29,7 @@ struct ProductsView: View {
     // MARK: - Constants
     struct Constants {
         static let standardViewPadding: CGFloat = 10
+        static let specialItemsTopPadding: CGFloat = 6
         
         struct EnterMoreCharacters {
             static let spacing: CGFloat = 16
@@ -446,7 +447,7 @@ struct ProductsView: View {
     }
     
     @ViewBuilder func missedOffersView() -> some View {
-        if viewModel.missedOfferMenus.isEmpty {
+        if viewModel.showSpecialOfferItems {
             ForEach(viewModel.specialOfferItems) { item in
                 ProductCardView(
                     viewModel: .init(
@@ -462,24 +463,31 @@ struct ProductsView: View {
                 .padding([.top, .horizontal])
             }
         } else {
-            ForEach(viewModel.missedOfferMenus) { menu in
-                ExpandableContentView(viewModel: .init(container: viewModel.container, title: menu.name, shortTitle: nil, showExpandableContent: true)) {
-                    ForEach(menu.items) { item in
-                        ProductCardView(
-                            viewModel: .init(
-                                container: viewModel.container,
-                                menuItem: item,
-                                isOffer: true,
-                                associatedSearchTerm: viewModel.associatedSearchTerm,
-                                productSelected: { product in
-                                    viewModel.selectItem(product)
-                                }
-                            ),
-                            productsViewModel: viewModel
-                        )
+            if let discountText = viewModel.missedOfferMenu?.discountText {
+                ExpandableText(viewModel: .init(container: viewModel.container, title: "Description", shortTitle: nil, text: discountText, shortText: nil, isComplexItem: true, showExpandableText: true))
+                    .padding(.top, Constants.specialItemsTopPadding)
+            }
+            
+            if let missedOfferSections = viewModel.missedOfferMenu?.missedOfferSections {
+                ForEach(missedOfferSections) { section in
+                    ExpandableContentView(viewModel: .init(container: viewModel.container, title: section.name, shortTitle: nil, showExpandableContent: true)) {
+                        ForEach(section.items) { item in
+                            ProductCardView(
+                                viewModel: .init(
+                                    container: viewModel.container,
+                                    menuItem: item,
+                                    isOffer: true,
+                                    associatedSearchTerm: viewModel.associatedSearchTerm,
+                                    productSelected: { product in
+                                        viewModel.selectItem(product)
+                                    }
+                                ),
+                                productsViewModel: viewModel
+                            )
+                        }
                     }
+                    .padding(.top)
                 }
-                .padding(.top)
             }
         }
     }

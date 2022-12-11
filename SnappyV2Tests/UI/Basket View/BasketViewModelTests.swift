@@ -876,14 +876,14 @@ class BasketViewModelTests: XCTestCase {
     func test_whenSelectedStoreCurrencyPresent_thenCurrencyPopulated() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
-        sut.selectedStore = RetailStoreDetails.mockedData
-        XCTAssertEqual(sut.currency, RetailStoreCurrency.mockedGBPData)
+        sut.selectedStore = RetailStoreDetails.mockedDataWithEuroCurrency
+        XCTAssertEqual(sut.currency, sut.selectedStore?.currency)
     }
     
-    func test_whenNoSelectedStore_thenCurrencyNil() {
+    func test_whenNoSelectedStore_thenDefaultStoreCurrency() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
-        XCTAssertNil(sut.currency)
+        XCTAssertEqual(sut.currency, AppV2Constants.Business.defaultStoreCurrency)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), runMemoryLeakTracking: Bool = true) -> BasketViewModel {

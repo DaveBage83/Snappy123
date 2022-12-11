@@ -123,8 +123,8 @@ class BasketViewModel: ObservableObject {
         selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
     }
     
-    var currency: RetailStoreCurrency? {
-        selectedStore?.currency
+    var currency: RetailStoreCurrency {
+        selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency
     }
     
     private var cancellables = Set<AnyCancellable>()

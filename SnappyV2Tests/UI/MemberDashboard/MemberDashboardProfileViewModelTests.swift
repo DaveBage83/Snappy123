@@ -79,7 +79,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
     }
     
     func test_whenChangePasswordTappedAndVerifyPasswordMatches_thenPasswordChanged() async throws {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: "password2", currentPassword: "password1", atCheckout: false)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.changePassword(logoutFromAll: false, password: "password2", currentPassword: "password1")]))
 
         let sut = makeSUT(container: container)
         

@@ -98,7 +98,7 @@ class RetailStoreDeliveryTiersViewModelTests: XCTestCase {
     func test_whenMinSpendIsNotNilAndMinSpendIsNotGreaterThan0_givenCurrencyIsNil_thenReturnCorrectString() {
         let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10), currency: nil)
 
-        let expectedSpend = sut.deliveryOrderMethod?.minSpend?.toCurrencyString()
+        let expectedSpend = sut.deliveryOrderMethod?.minSpend?.toCurrencyString(using: .init(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "Great British Pount"))
         
         XCTAssertEqual(sut.minSpend, CustomTiersString.minSpend.localizedFormat(expectedSpend!))
     }

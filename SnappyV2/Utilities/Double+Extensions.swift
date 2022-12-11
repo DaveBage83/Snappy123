@@ -8,12 +8,12 @@
 import Foundation
 
 extension Double {
-    func toCurrencyString() -> String {
-        let formatter = NumberFormatter()
-        formatter.currencyCode = AppV2Constants.Business.currencyCode
-        formatter.numberStyle = .currency
-        return formatter.string(from: self as NSNumber) ?? "\(self)"
-    }
+//    func toCurrencyString() -> String {
+//        let formatter = NumberFormatter()
+//        formatter.currencyCode = AppV2Constants.Business.currencyCode
+//        formatter.numberStyle = .currency
+//        return formatter.string(from: self as NSNumber) ?? "NaN"
+//    }
     
     // reason we are not passing currencyCode instead of RetailStoreCurrency
     // is because in the future RetailStoreCurrency might have more formatting
@@ -34,7 +34,7 @@ extension Double {
         // formatter.minimumFractionDigits = 2
         // formatter.maximumFractionDigits = 2
         // formatter.numberStyle = .decimal
-        return formatter.string(from: self as NSNumber) ?? "\(self)"
+        return formatter.string(from: self as NSNumber) ?? "NaN"
     }
 
     // Rounds double to nearest specified decimal
@@ -42,11 +42,5 @@ extension Double {
         let n = 1/nearest
         let numberToRound = self * n
         return numberToRound.rounded() / n
-    }
-}
-
-extension Double {
-    var pricePerItemString: String {
-        Strings.General.Custom.perItem.localizedFormat(self.toCurrencyString())
     }
 }

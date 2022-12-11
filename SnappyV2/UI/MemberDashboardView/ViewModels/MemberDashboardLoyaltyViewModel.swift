@@ -33,7 +33,9 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
     var referralBalance: String {
         guard let profile = profile else { return "0" }
 
-        return profile.referFriendBalance.toCurrencyString()
+        // Not using store currency because a store might not be selected and this concept
+        // is independent from any selected store.
+        return profile.referFriendBalance.toCurrencyString(using: AppV2Constants.Business.defaultStoreCurrency)
     }
     
     init(container: DIContainer, profile: MemberProfile?) {

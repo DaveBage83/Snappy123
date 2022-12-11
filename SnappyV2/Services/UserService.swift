@@ -28,7 +28,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case unknownGoogleLoginProblem
     case memberRequiredToBeSignedIn
     case memberDriverTypeRequired
-    case unableToRegisterWhileMemberSignIn
+    case memberRequiredToBeSignedOut
     case unableToLogin
     case unableToRegister
     case unableToResetPasswordRequest([String: [String]])
@@ -85,7 +85,7 @@ extension UserServiceError: LocalizedError {
             return "function requires member to be signed in"
         case .memberDriverTypeRequired:
             return "function requires a driver member"
-        case .unableToRegisterWhileMemberSignIn:
+        case .memberRequiredToBeSignedOut:
             return "function requires member to be signed out"
         case .unableToLogin:
             return "unsuccessful response or missing token"
@@ -161,7 +161,7 @@ protocol MemberServiceProtocol {
     
     //* methods that require a member to be signed in *//
     
-    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String, atCheckout: Bool) async throws
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String) async throws
     
     func logout() async throws
     
@@ -549,14 +549,14 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
-    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String, atCheckout: Bool) async throws  {
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String) async throws  {
         
         if appState.value.userData.memberProfile == nil {
             throw UserServiceError.memberRequiredToBeSignedIn
         }
         
         let webResult = try await webRepository
-            .resetPassword(
+            .changePassword(
                 logoutFromAll: logoutFromAll,
                 password: password,
                 currentPassword: currentPassword
@@ -568,6 +568,10 @@ struct UserService: MemberServiceProtocol {
     }
     
     func resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String, atCheckout: Bool) async throws {
+        
+        if appState.value.userData.memberProfile != nil {
+            throw UserServiceError.memberRequiredToBeSignedOut
+        }
         
         let success = try await webRepository
             .resetPasswordAndSignIn(
@@ -601,7 +605,7 @@ struct UserService: MemberServiceProtocol {
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool) async throws -> Bool {
         
         if appState.value.userData.memberProfile != nil {
-            throw UserServiceError.unableToRegisterWhileMemberSignIn
+            throw UserServiceError.memberRequiredToBeSignedOut
         }
         
         do {
@@ -740,6 +744,8 @@ struct UserService: MemberServiceProtocol {
                     // failed to fetch from the API so try to get a
                     // result from the persistent store
                     if
+                        // never try restoring from the database when signing in
+                        loginContext == nil,
                         let memberResult = try await dbRepository.memberProfile(storeId: storeId).singleOutput(),
                         // check that the data is not too old
                         let fetchTimestamp = memberResult.fetchTimestamp,
@@ -1266,7 +1272,7 @@ struct StubUserService: MemberServiceProtocol {
         return false
     }
     
-    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String, atCheckout: Bool) async throws { }
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String) async throws { }
 
     func logout() async throws { }
 

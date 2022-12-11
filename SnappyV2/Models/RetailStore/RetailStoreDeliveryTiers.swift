@@ -54,8 +54,8 @@ struct RetailStoreDeliveryTiers: View {
                             .font(.Body1.regular())
                         } else {
                             ForEach(deliveryTiers.deliveryTiers, id: \.self) { tier in
-                                Text(tier.minBasketSpend.toCurrencyString())
-                                Text(tier.deliveryFee.toCurrencyString())
+                                Text(tier.minBasketSpend.toCurrencyString(using: AppV2Constants.Business.defaultStoreCurrency))
+                                Text(tier.deliveryFee.toCurrencyString(using: AppV2Constants.Business.defaultStoreCurrency))
                             }
                             .font(.Body1.regular())
                         }

@@ -329,7 +329,8 @@ class NetworkAuthenticator {
         let publisher: AnyPublisher<ApiResetPasswordAndSignInResult, Error> = requestURL(
                 resetPasswordURL,
                 connectionTimeout: connectionTimeout,
-                parameters: requestParameters
+                parameters: requestParameters,
+                includeAccessToken: true
             )
             .share()
             .eraseToAnyPublisher()

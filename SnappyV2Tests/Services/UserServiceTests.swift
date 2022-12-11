@@ -103,7 +103,6 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
     
     func test_successfulLoginByEmailPassword_whenAtCheckoutAndDeviceTokenNotEstablished_thenAtCheckoutEvents() async throws {
 
-        let atCheckout = true
         let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
         appState.value.system.notificationDeviceToken = nil
@@ -124,8 +123,8 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         ])
         mockedEventLogger.actions = .init(expected: [
             .setCustomerID(profileUUID: member.uuid),
-            .sendEvent(for: .login(.outside), with: .appsFlyer, params: [:]),
-            .sendEvent(for: .login(.outside), with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+            .sendEvent(for: .login(.in), with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login(.in), with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
         ])
         
         // Configuring responses from repositories
@@ -136,7 +135,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
         do {
-            try await sut.login(email: "h.dover@gmail.com", password: "password321!", atCheckout: atCheckout)
+            try await sut.login(email: "h.dover@gmail.com", password: "password321!", atCheckout: true)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
@@ -502,186 +501,163 @@ final class ResetPasswordRequestTests: UserServiceTests {
     
 }
 
-final class ResetPasswordTests: UserServiceTests {
+final class PasswordAndSignInTests: UserServiceTests {
     
-    // MARK: - resetPassword(resetToken:logoutFromAll:password:currentPassword:)
+    // MARK: - resetPasswordAndSignIn(resetToken:logoutFromAll:password:atCheckout:)
     
-    func test_succesfulResetPassword_whenMemberNotSignedInAndNoEmail_resetSucces() async throws {
-        
-        let data = UserSuccessResult.mockedSuccessData
-        
-        // Configuring app prexisting states
-        appState.value.userData.memberProfile = nil
-        
-        // Configuring expected actions on repositories
-        mockedWebRepo.actions = .init(expected: [
-            .resetPassword(
-                resetToken: "123456789abcdef",
-                logoutFromAll: false,
-                password: "password1",
-                currentPassword: nil
-            )
-        ])
-        
-        // Configuring responses from repositories
-        mockedWebRepo.resetPasswordResponse = .success(data)
-                
-        try await sut
-            .resetPassword(
-                resetToken: "123456789abcdef",
-                logoutFromAll: false,
-                email: nil,
-                password: "password1",
-                currentPassword: nil,
-                atCheckout: false
-            )
-        
-        self.mockedWebRepo.verify()
-        self.mockedDBRepo.verify()
-    }
-    
-    func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSuccess() async throws {
-        
+    func test_succesfulResetPasswordAndSignIn_whenMemberNotSignedIn_resetSucces() async {
+        let data = true
         let member = MemberProfile.mockedData
-        let data = UserSuccessResult.mockedSuccessData
-        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
-        appState.value.system.notificationDeviceToken = "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .resetPassword(
+            .resetPasswordAndSignIn(
                 resetToken: "123456789abcdef",
                 logoutFromAll: false,
-                password: "password1",
-                currentPassword: nil
+                password: "password1"
             ),
-            .login(email: "kevin.palser@gmail.com", password: "password1", basketToken: nil, notificationDeviceToken: appState.value.system.notificationDeviceToken),
-            .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
-        
         mockedDBRepo.actions = .init(expected: [
             .clearAllFetchedUserMarketingOptions,
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [
+            .setCustomerID(profileUUID: member.uuid),
+            .sendEvent(for: .login(.outside), with: .appsFlyer, params: [:]),
+            .sendEvent(for: .login(.outside), with: .firebaseAnalytics, params: [AnalyticsParameterMethod : LoginType.email.rawValue])
+        ])
         
         // Configuring responses from repositories
-        mockedWebRepo.resetPasswordResponse = .success(data)
-        mockedWebRepo.loginByEmailPasswordResponse = .success(loginData)
+        mockedWebRepo.resetPasswordAndSignInResponse = .success(data)
         mockedWebRepo.getProfileResponse = .success(member)
-        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(member)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
-        try await sut
-            .resetPassword(
-                resetToken: "123456789abcdef",
-                logoutFromAll: false,
-                email: "kevin.palser@gmail.com",
-                password: "password1",
-                currentPassword: nil,
-                atCheckout: false
-            )
-        
-        XCTAssertEqual(appState.value.userData.memberProfile, member, file: #file, line: #line)
-        
-        self.mockedWebRepo.verify()
-        self.mockedDBRepo.verify()
+        do {
+            try await sut
+                .resetPasswordAndSignIn(
+                    resetToken: "123456789abcdef",
+                    logoutFromAll: false,
+                    password: "password1",
+                    atCheckout: false
+                )
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+        }
     }
     
-    func test_succesfulResetPassword_whenMemberSignedInAndEmail_resetSucces() async throws {
-        
-        let data = UserSuccessResult.mockedSuccessData
-        
+    func test_unsuccesfulResetPasswordAndSignIn_whenMemberAlreadySignedIn_returnError() async {
+
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
-        // Configuring expected actions on repositories
-        mockedWebRepo.actions = .init(expected: [
-            .resetPassword(
-                resetToken: nil,
+        
+        do {
+            try await sut.resetPasswordAndSignIn(
+                resetToken: "123456789abcdef",
                 logoutFromAll: false,
                 password: "password1",
-                currentPassword: "oldpassword1"
+                atCheckout: false
+            )
+            XCTFail("Expected error", file: #file, line: #line)
+        } catch {
+            if let loginError = error as? UserServiceError {
+                XCTAssertEqual(loginError, UserServiceError.memberRequiredToBeSignedOut, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+        }
+    }
+    
+    func test_unsuccesfulResetPasswordAndSignIn_whenMemberNotSignedInButErrorReturned_returnError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .resetPasswordAndSignIn(
+                resetToken: "123456789abcdef",
+                logoutFromAll: false,
+                password: "password1"
             )
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.resetPasswordResponse = .success(data)
+        mockedWebRepo.resetPasswordAndSignInResponse = .failure(networkError)
         
-        try await sut
-            .resetPassword(
-                resetToken: nil,
-                logoutFromAll: false,
-                email: "kevin.palser@gmail.com",
-                password: "password1",
-                currentPassword: "oldpassword1",
-                atCheckout: false
-            )
-        
-        self.mockedWebRepo.verify()
-        self.mockedDBRepo.verify()
-    }
-    
-    func test_unsuccesfulResetPassword_whenMemberNotSignedInAndNoResetToken_returnError() async throws {
-        
-        // Configuring app prexisting states
-        appState.value.userData.memberProfile = nil
-
         do {
             try await sut
-                .resetPassword(
-                    resetToken: nil,
+                .resetPasswordAndSignIn(
+                    resetToken: "123456789abcdef",
                     logoutFromAll: false,
-                    email: "kevin.palser@gmail.com",
                     password: "password1",
-                    currentPassword: "oldpassword1",
                     atCheckout: false
                 )
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
-            if let resetPasswordError = error as? UserServiceError {
-                XCTAssertEqual(resetPasswordError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
-            } else {
-                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-            }
+            XCTAssertEqual(error as NSError, networkError)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
         }
-        
-        self.mockedWebRepo.verify()
-        self.mockedDBRepo.verify()
     }
     
-    func test_unsuccesfulResetPassword_whenMemberNotSignedInAndFail_returnError() async throws {
-                
+    func test_unsuccesfulResetPasswordAndSignIn_whenMemberNotSignedInWhenErrorReturnedFetchingMember_returnError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let data = true
+        
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
+        
         // Configuring expected actions on repositories
-        mockedWebRepo.actions = .init(expected: [])
+        mockedWebRepo.actions = .init(expected: [
+            .resetPasswordAndSignIn(
+                resetToken: "123456789abcdef",
+                logoutFromAll: false,
+                password: "password1"
+            ),
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.resetPasswordAndSignInResponse = .success(data)
+        mockedWebRepo.getProfileResponse = .failure(networkError)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
         
         do {
             try await sut
-                .resetPassword(
-                    resetToken: nil,
+                .resetPasswordAndSignIn(
+                    resetToken: "123456789abcdef",
                     logoutFromAll: false,
-                    email: "kevin.palser@gmail.com",
                     password: "password1",
-                    currentPassword: "oldpassword1",
                     atCheckout: false
                 )
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
-            if let resetPasswordError = error as? UserServiceError {
-                XCTAssertEqual(resetPasswordError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
-            } else {
-                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-            }
+            XCTAssertEqual(error as NSError, networkError)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
         }
-        
-        self.mockedWebRepo.verify()
-        self.mockedDBRepo.verify()
     }
 }
 
@@ -837,7 +813,7 @@ final class RegisterTests: UserServiceTests {
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
             if let loginError = error as? UserServiceError {
-                XCTAssertEqual(loginError, UserServiceError.unableToRegisterWhileMemberSignIn, file: #file, line: #line)
+                XCTAssertEqual(loginError, UserServiceError.memberRequiredToBeSignedOut, file: #file, line: #line)
             } else {
                 XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
@@ -845,6 +821,87 @@ final class RegisterTests: UserServiceTests {
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
         self.mockedEventLogger.verify()
+    }
+    
+}
+
+final class ChangePasswordTests: UserServiceTests {
+
+    func test_succesfulChangePassword_whenMemberSignedIn() async {
+
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .changePassword(logoutFromAll: false, password: "password1", currentPassword: "oldpassword1")
+        ])
+        mockedWebRepo.changePasswordResponse = .success(UserSuccessResult.mockedSuccessData)
+
+        do {
+            try await sut.changePassword(
+                logoutFromAll: false,
+                password: "password1",
+                currentPassword: "oldpassword1"
+            )
+        } catch {
+            XCTFail("Unexpected error \(error)", file: #file, line: #line)
+        }
+
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_unsuccesfulChangePassword_whenMemberNotSigned_returnError() async {
+
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+
+        do {
+            try await sut.changePassword(
+                logoutFromAll: false,
+                password: "password1",
+                currentPassword: "oldpassword1"
+            )
+            XCTFail("Expected error", file: #file, line: #line)
+        } catch {
+            if let resetPasswordError = error as? UserServiceError {
+                XCTAssertEqual(resetPasswordError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_unsuccesfulChangePassword_whenMemberSignedIn_thenReturnError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .changePassword(logoutFromAll: false, password: "password1", currentPassword: "oldpassword1")
+        ])
+        mockedWebRepo.changePasswordResponse = .failure(networkError)
+
+        do {
+            try await sut.changePassword(
+                logoutFromAll: false,
+                password: "password1",
+                currentPassword: "oldpassword1"
+            )
+            XCTFail("Expected error", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+        }
+
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
 }

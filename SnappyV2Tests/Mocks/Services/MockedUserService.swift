@@ -11,7 +11,7 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, MemberServiceProtocol {
-    
+
     var getPlacedOrderResult = PlacedOrder.mockedData
     
     enum Action: Equatable {
@@ -21,8 +21,9 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         case loginWithFacebook(registeringFromScreen: RegisteringFromScreenType)
         case loginWithGoogle(registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
-        case resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool)
+        case resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String, atCheckout: Bool)
         case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool)
+        case changePassword(logoutFromAll: Bool, password: String, currentPassword: String)
         case logout
         case getProfile(filterDeliveryAddresses: Bool, loginContext: LoginContext?)
         case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
@@ -86,13 +87,17 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         register(.resetPasswordRequest(email: email))
     }
     
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?, atCheckout: Bool) async throws {
-        register(.resetPassword(resetToken: resetToken, logoutFromAll: logoutFromAll, email: email, password: password, currentPassword: currentPassword, atCheckout: atCheckout))
+    func resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String, atCheckout: Bool) async throws {
+        register(.resetPasswordAndSignIn(resetToken: resetToken, logoutFromAll: logoutFromAll, password: password, atCheckout: atCheckout))
     }
     
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?, atCheckout: Bool) async throws -> Bool {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions, atCheckout: atCheckout))
         return false
+    }
+    
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String) async throws {
+        register(.changePassword(logoutFromAll: logoutFromAll, password: password, currentPassword: currentPassword))
     }
     
     func logout() async throws {

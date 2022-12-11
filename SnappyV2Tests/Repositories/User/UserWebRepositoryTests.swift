@@ -218,9 +218,14 @@ final class UserWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
-    // MARK: - resetPassword(resetToken:logoutFromAll:password:currentPassword:)
+    // MARK: - resetPasswordAndSignIn(resetToken:logoutFromAll:password)
     
-    func test_resetPassword_whenTokenPresent_returnSuccess() throws {
+    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
+    // func resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String) -> AnyPublisher<Bool, Error>
+    
+    // MARK: - changePassword(logoutFromAll:password:currentPassword:)
+    
+    func test_changePassword_returnSuccess() throws {
         
         let data = UserSuccessResult.mockedSuccessData
         
@@ -234,23 +239,9 @@ final class UserWebRepositoryTests: XCTestCase {
         let exp = XCTestExpectation(description: "Completion")
 
         sut
-            .resetPassword(resetToken: "123456789abcdef", logoutFromAll: false, password: "password1", currentPassword: nil)
+            .changePassword(logoutFromAll: false, password: "newpassword", currentPassword: "oldpassword")
             .sinkToResult { result in
                 result.assertSuccess(value: data)
-                exp.fulfill()
-            }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_resetPassword_whenNeitherTokenNorCurrentPasswordPresent_returnError() throws {
-        
-        let exp = XCTestExpectation(description: "Completion")
-
-        sut
-            .resetPassword(resetToken: nil, logoutFromAll: false, password: "password1", currentPassword: nil)
-            .sinkToResult { result in
-                result.assertFailure(UserServiceError.invalidParameters(["either resetToken or currentPassword must be set"]).localizedDescription)
                 exp.fulfill()
             }.store(in: &subscriptions)
 

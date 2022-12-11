@@ -53,7 +53,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
     ) async throws -> LoginResult
     
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
-    func resetPassword(
+    func changePassword(
         logoutFromAll: Bool,
         password: String,
         currentPassword: String
@@ -316,7 +316,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         )
     }
     
-    func resetPassword(
+    func changePassword(
         logoutFromAll: Bool,
         password: String,
         currentPassword: String

@@ -8,16 +8,7 @@
 import XCTest
 @testable import SnappyV2
 
-class Double_ExtensionsTests: XCTestCase {
-
-    func test_doubleToCurrencyString() {
-        let doubleValue = 2.24
-        
-        let stringCurrencyValue = doubleValue.toCurrencyString()
-        
-        XCTAssertEqual(stringCurrencyValue, "£2.24")
-    }
-    
+class Double_ExtensionsTests: XCTestCase {    
     func test_doubleToCurrencyStringWithRetailStoreCurrency() {
         let doubleValue = 2.24
         let currency = RetailStoreCurrency.mockedGBPData
@@ -25,10 +16,5 @@ class Double_ExtensionsTests: XCTestCase {
         let stringCurrencyValue = doubleValue.toCurrencyString(using: currency)
         
         XCTAssertEqual(stringCurrencyValue, "£2.24")
-    }
-    
-    func test_whenPricePerItemStringCalled_thenCorrectStringReturned() {
-        let doubleValue = 10.99
-        XCTAssertEqual(doubleValue.pricePerItemString, "£10.99 each")
     }
 }

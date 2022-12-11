@@ -53,8 +53,6 @@ struct AddressService: AddressServiceProtocol {
     
     let eventLogger: EventLoggerProtocol
     
-    private var cancelBag = CancelBag()
-    
     init(webRepository: AddressWebRepositoryProtocol, dbRepository: AddressDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository

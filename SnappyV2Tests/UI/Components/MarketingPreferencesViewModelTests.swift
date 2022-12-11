@@ -16,7 +16,6 @@ class MarketingPreferencesViewModelTests: XCTestCase {
     func test_init() async {
         let sut = makeSUT(viewContext: .checkout, hideAcceptedMarketingOptions: false)
         
-        XCTAssertNil(sut.marketingPreferencesUpdate)
         XCTAssertFalse(sut.emailMarketingEnabled)
         XCTAssertFalse(sut.directMailMarketingEnabled)
         XCTAssertFalse(sut.notificationMarketingEnabled)

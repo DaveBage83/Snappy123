@@ -16,7 +16,6 @@ class RootViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.selectedTab, .stores)
-        XCTAssertNil(sut.basketTotal)
     }
     
     func test_givenInit_whenAppStateSelectedTabSetToAccount_thenLocalSelectedTabIsAccount() {
@@ -55,28 +54,6 @@ class RootViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
-    }
-    
-    func test_setupBasketTotal() {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 12.34, storeId: nil, basketItemRemoved: nil)
-        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .loaded(RetailStoreDetails.mockedData), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container)
-        
-        let expectation = expectation(description: "setupBasket")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$basketTotal
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 5)
-        
-        XCTAssertEqual(sut.basketTotal, "£12.34")
     }
     
     func test_setupResetPaswordDeepLinkNavigation_givenPasswordResetCode_thenChangeToAccountTab() {

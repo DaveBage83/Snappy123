@@ -71,7 +71,7 @@ class ProductOptionSectionViewModel: ObservableObject {
         self.optionController = optionController
     }
     
-    func setOptionValueType() {
+    private func setOptionValueType() {
         if mutuallyExclusive == false && maximumSelected > 1 {
             optionsType = .stepper
         } else if mutuallyExclusive == true && maximumSelected > 1 {
@@ -90,7 +90,7 @@ class ProductOptionSectionViewModel: ObservableObject {
         bottomSheetValues = nil
     }
     
-    func setupSelectedOptionValues() {
+    private func setupSelectedOptionValues() {
         optionController.$selectedOptionAndValueIDs
             .map { [weak self] dict -> [Int] in
                 guard let self = self else { return [] }
@@ -138,7 +138,7 @@ class ProductOptionSectionViewModel: ObservableObject {
     
     var showOptionLimitationsSubtitle: Bool { optionLimitationsSubtitle.isEmpty == false }
     
-    func setupMaximumReached() {
+    private func setupMaximumReached() {
         optionController.$selectedOptionAndValueIDs
             .map { [weak self] dict -> [Int] in
                 guard let self = self else { return [] }
@@ -158,7 +158,7 @@ class ProductOptionSectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupMinimumReached() {
+    private func setupMinimumReached() {
         optionController.$selectedOptionAndValueIDs
             .receive(on: RunLoop.main)
             .map { [weak self] dict -> [Int] in
@@ -178,7 +178,7 @@ class ProductOptionSectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupMinimumReachedInOptionsController() {
+    private func setupMinimumReachedInOptionsController() {
         $minimumReached
             .receive(on: RunLoop.main)
             .sink { [weak self] minReachedBool in

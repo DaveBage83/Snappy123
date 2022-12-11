@@ -51,6 +51,7 @@
 "general.start" = "Start";
 "general.from" = "From";
 "general.min" = "Min";
+"general.shop" = "Shop";
 
 // MARK: - General - custom
 
@@ -142,17 +143,6 @@
 "checkoutview.adddetails.title" = "Your Details";
 "checkoutview.detailsalerttitle" = "Can't continue";
 "checkoutview.detailsalertmessage" = "There was a problem connecting to our server. %@ Please try again.";
-"checkoutview.addaddress.titledelivery" = "Add your delivery address";
-"checkoutview.addaddress.titlebilling" = "Add your billing address";
-"checkoutview.addaddress.findaddress" = "Add your postcode to quickly find your address";
-"checkoutview.addaddress.line1" = "Address line 1";
-"checkoutview.addaddress.line2" = "Address line 2";
-"checkoutview.addaddress.postcode" = "Postcode";
-"checkoutview.addaddress.city" = "City";
-"checkoutview.addaddress.country" = "Country";
-"checkoutview.tsandcs.emailmarketing" = "I wish to receive email marketing with the latest offers from Snappy Shopper";
-"checkoutview.tsandcs.confirm" = "I confirm with the ";
-"checkoutview.tsandcs.title" = "terms and conditions";
 "checkoutview.payment.unsuccessful" = "Your payment was unsuccessful";
 "checkoutview.payment.paymentsuccess" = "Your order is successful";
 "checkoutview.payment.checkandchoosealternativepayment" = "Please check that the details below are correct or choose an alternative payment method";
@@ -175,7 +165,6 @@
 "checkoutview.payment.addcard" = "Add Card";
 "checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
 "checkoutview.paymentcustom.button.title" = "Pay %@";
-"checkoutview.general.addinstructions" = "Add Instructions";
 "checkoutview.payment.needhelp" = "Need help with your order?";
 "checkoutview.payment.calldirect" = "Call the store direct or check out our FAQs section for more information.";
 "checkoutview.payment.securecheckout" = "Secure Checkout";
@@ -218,7 +207,6 @@
 "basketview.listentry.gotit" = "Got it";
 "basketview.listentry.missed" = "MISSED: ";
 "basketview.total" = "Order Total";
-"basketview.promotions.missed" = "%@ offer missed";
 "basketview.drivertips" = "Delivery Driver Tips";
 "basketview.title" = "Basket";
 "basketview.noitems" = "You haven't added any items to your basket";
@@ -254,8 +242,6 @@
 "storesview.storestatus.preorderstores" = "Preorder";
 "storesview.storestatus.nearyou" = "near you";
 "storesview.storestatus.stores" = "stores";
-"storesview.noslots.title" = "No slots available";
-"storesview.noslotscustom.subtitle" = "No available %@ slots for this store";
 "storesview.searchcustom.nostores" = "No %@ available for %@ right now.";
 "storesview.deliverytiers.custom.minspend" = "%@ minimum spend";
 "storesview.deliverytiers.ordervalue" = "Order Value*";
@@ -399,8 +385,6 @@
 "checkoutdetails.addressdisplaycard.default" = "(Default)";
 "checkoutdetails.checkoutprogress.details" = "Your details";
 "checkoutdetails.checkoutprogress.payment" = "Payment";
-"checkoutdetails.editaddress.error.title" = "Unable to proceed with address!";
-"checkoutdetails.editaddress.error.subtitle" = "Some details are missing in your address. Please enter address manually";
 
 // MARK: - Checkout details
 "checkoutdetails.marketingpreferences.email" = "Email";
@@ -427,12 +411,8 @@
 "checkoutdetails.wheredidyouhear.choose" = "Choose";
 "checkoutdetails.errors.missing.title" = "Missing details";
 "checkoutdetails.errors.missing.subtitle" = "Some required details are missing. Please complete these before continuing.";
-"checkoutdetails.errors.field.title" = "Field errors";
-"checkoutdetails.errors.field.subtitle" = "Please check the highlighted fields and amend any erros.";
 "checkoutdetails.submit.title" = "Payment Method";
 "checkoutdetails.submit.title.large" = "Payment";
-"checkoutdetails.errors.submit" = "Unable to submit";
-"checkoutdetails.errors.genericsubtitle" = "There was a problem with the form. Please check and try again.";
 "checkoutdetails.errors.noslots" = "No time slots available today. Please change slot above.";
 "checkoutdetails.errors.cardpayment.missingcheckoutcompaymentgateway" = "Card payment failed - Missing Checkoutcom Payment Gateway";
 "checkoutdetails.errors.cardpayment.processcardorderresultempty" = "Card payment failed - processCardPaymentOrder result empty";
@@ -467,9 +447,6 @@
 "terms.and" = "and";
 "terms.privacy" = "privacy policy";
 "terms.contactus" = "Contact us";
-
-// MARK: - Marketing preferences
-"marketingpreferences.title" = "Marketing preferences";
 
 // MARK: - Forget password
 "forgetpassword.title" = "Forgot your password?";
@@ -550,16 +527,11 @@
 "placedorders.orderdetailsview.substituted" = "Substituted";
 "placedorders.orderstoreview.store" = "Store";
 "placedorders.orderstoreview.unknown" = "Unknown";
-"placedorders.orderlistitemview.items" = "Items";
-"placedorders.orderlistitemview.quantity" = "Qty";
-"placedorders.orderlistitemview.price" = "Price";
 "placedorders.customorderlistitem.each" = "%@ each";
 "placedorders.errors.nodeliveryaddressonorder" = "No delivery address was found on the order";
 "placedorders.errors.nomatchingstorefound" = "No store found in the search which matches the order store";
 "placedorders.errors.nostorefound" = "No store found";
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
-"placedorders.orderline.quantitychanged" = "Quantity Changed";
-"placedorders.orderline.substituteditem" = "Substituted Item";
 "placedorders.orderdetailsview.refund" = "Refund";
 "placedorders.orderdetailsview.originaltotal" = "Original Total Cost";
 "placedorders.orderdetailsview.totaladjustment" = "Total Cost Adjustment";
@@ -572,8 +544,6 @@
 "drivermap.informationbar.driverenroutewithnameprefix" = "Your driver, ";
 "drivermap.informationbar.driverenroutewithnamesuffix" = ", is now en route to you and should be with you shortly.";
 "drivermap.informationbar.driverenroutewithoutname" = "Your driver is now en route to you and should be with you shortly.";
-"drivermap.error.title" = "Map not available";
-"drivermap.error.body" = "Unable to get driver location.";
 
 // MARK: - Toast notifications
 "toastnotifications.basketchangetitle.itemadded" = "Item Added";
@@ -585,8 +555,6 @@
 "toastnotifications.basketchangesitem.addedmoreitemstobasket" = "%@ x %@ have been added to basket";
 "toastnotifications.basketchangesitem.updatediteminbasket" = "%@ has been updated in basket";
 "toastnotifications.basketchangesitem.removeditemfrombasket" = "%@ has been removed from basket";
-"toastnotifications.storesearch.title" = "Success";
-"toastnotifications.storesearch.subtitle" = "We will let you know by email once we are in your area.";
 
 // MARK: - Alerts
 "alerts.camerapermission.title" = "Oops, No camera access";
@@ -618,8 +586,6 @@
 "fulfilmenttimetlotselection.storeunavailable.closed.short" = "Closed";
 "fulfilmenttimetlotselection.paused.defaultmessage" = "This store is temporarily unavailable.";
 "fulfilmenttimetlotselection.holiday.defaultmessage" = "The store is closed for holidays.";
-"fulfilmenttimetlotselection.update.success" = "Success!";
-"fulfilmenttimetlotselection.update.success.subtitle" = "Successfully updated time slot.";
 
 // MARK: - CheckoutService errors
 "checkoutserviceerrors.selferror" = "Unable to unwrap self instance";
@@ -629,12 +595,6 @@
 "checkoutserviceerrors.paymentgatewaynotavaibletostore" = "Selected store does not support payment gateway";
 "checkoutserviceerrors.paymentgatewaynotavaibleforfulfilmentmethod" = "Selected store does not support payment gateway and fulfilment method combination";
 "checkoutserviceerrors.unablepersistlastdeliverorder" = "Unable to save the last delivery order";
-
-// MARK: - Fulfilment info card
-"fulfilmentinfocard.editdelivery" = "Edit delivery time";
-"fulfilmentinfocard.editcollection" = "Edit collection time";
-"fulfilmentinfocard.changetodeliver" = "Change to deliver";
-"fulfilmentinfocard.changetocollect" = "Change to collect";
 
 // MARK: - Mention Me
 "mentionme.webview.loading" = "Loading...";

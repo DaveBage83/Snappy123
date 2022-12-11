@@ -17,7 +17,6 @@ class StoresViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         
-        XCTAssertTrue(sut.isDeliverySelected)
         XCTAssertEqual(sut.selectedOrderMethod, .delivery)
         XCTAssertEqual(sut.emailToNotify, "")
         XCTAssertEqual(sut.container.appState.value, AppState())
@@ -405,52 +404,6 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertFalse(sut.storesSearchIsLoading)
     }
     
-    func test_whenSelectedOrderMethodIsDelivery_thenIsDeliverySelectedReturnsTrue() {
-        let sut = makeSUT()
-        sut.selectedOrderMethod = .collection
-        
-        XCTAssertFalse(sut.isDeliverySelected)
-    }
-    
-    func test_whenFulfilmentMethodButtonTapped_thenUserFulfilmentMethodSet() {
-        let sut = makeSUT()
-        
-        let expectation1 = expectation(description: #function)
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.container.appState
-            .map(\.userData.selectedFulfilmentMethod)
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation1.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.fulfilmentMethodButtonTapped(.collection)
-        
-        wait(for: [expectation1], timeout: 2)
-            
-        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
-        
-        let expectation2 = expectation(description: #function)
-        
-        sut.container.appState
-            .map(\.userData.selectedFulfilmentMethod)
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation2.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.fulfilmentMethodButtonTapped(.delivery)
-        
-        wait(for: [expectation2], timeout: 2)
-        
-        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .delivery)
-    }
-    
     func test_whenSelectedRetailStoreDetailsSet_givenFulfilmentIsDeliveryAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() async {
         let sut = makeSUT()
 
@@ -765,7 +718,6 @@ class StoresViewModelTests: XCTestCase {
         
         await sut.sendNotificationEmail()
         
-        XCTAssertTrue(sut.successfullyRegisteredForNotifications)
         container.services.verify(as: .retailStore)
     }
     
@@ -871,6 +823,14 @@ class StoresViewModelTests: XCTestCase {
         await sut.searchViaLocationTapped()
         
         XCTAssertTrue(sut.locationManager.showLocationUnknownAlert)
+    }
+    
+    func test_whenPostcodeTapped_thenPostcodeSearchStringPopulatedAndSearchResultsIsEmptyAndShowPostcodeDropdownIsFalse() {
+        let sut = makeSUT()
+        sut.postcodeSearchResults = ["GU99EP"]
+        sut.postcodeTapped(postcode: "PG43AG")
+        
+        XCTAssertEqual(sut.postcodeSearchString, "PG43AG")
     }
     
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager

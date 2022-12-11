@@ -34,9 +34,6 @@ public extension Color {
     static let snappyWarning = Color(red: 233/255, green: 35/255, blue: 24/255)
     static let snappyHighlight = Color(red: 64/255, green: 68/255, blue: 252/255)
     
-    #warning("to be replaced with proper snappy grey")
-    static let snappyGrey = Color.gray
-    
     // MARK: Backgrounds
     
     static let snappyBGMain = Color(red: 245/255, green: 248/255, blue: 251/255)

@@ -75,7 +75,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -132,7 +133,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -189,7 +191,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -490,30 +493,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.container.appState.value.userData.basket = Basket.mockedDataCollection
         XCTAssertEqual(sut.fulfilmentType?.type, .collection)
     }
-
-    func test_whenEmailFieldIsNotEmpty_thenDeliveryEmailMatchesField() {
-        let sut = makeSUT()
-        sut.email = "test@test.com"
-        XCTAssertEqual(sut.deliveryEmail, "test@test.com")
-    }
-    
-    func test_whenEmailFieldIsEmpty_givenMemberProfileIsNotNilAndEmailValueIsPresent_thenDeliveryEmailMatchesMemberProfileVersion() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        let sut = makeSUT(container: container)
-        XCTAssertEqual(sut.deliveryEmail, "h.brown@gmail.com")
-    }
-    
-    func test_whenEmailFieldIsEmpty_givenMemberProfileIsNil_thenDeliveryEmailIsNil() {
-        let sut = makeSUT()
-        XCTAssertNil(sut.deliveryEmail)
-    }
-    
-    func test_whenFirstNameFieldIsNotEmpty_thenFirstNameMatchesField() {
-        let sut = makeSUT()
-        sut.firstname = "Johnny"
-        XCTAssertEqual(sut.deliveryFirstName, "Johnny")
-    }
     
     func test_whenFirstNameIsEmpty_givenMemberProfileIsNotNilAndFirstNameValueIsPresent_thenDeliveryFirstNameMatchesMemberProfileVersion() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
@@ -522,45 +501,11 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.firstname, "Harold")
     }
     
-    func test_whenFirstNameFieldIsEmpty_givenMemberProfileIsNil_thenDeliveryFirstNameIsNil() {
-        let sut = makeSUT()
-        XCTAssertNil(sut.deliveryFirstName)
-    }
-    
-    func test_whenLastNameFieldIsNotEmpty_thenDeliveryLastNameMatchesField() {
-        let sut = makeSUT()
-        sut.lastname = "Bloggs"
-        XCTAssertEqual(sut.deliveryLastName, "Bloggs")
-    }
-    
     func test_whenLastNameIsEmpty_givenMemberProfileIsNotNilAndLastNameValueIsPresent_thenDeliveryLastNameMatchesMemberProfileVersion() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
         let sut = makeSUT(container: container)
         XCTAssertEqual(sut.lastname, "Brown")
-    }
-    
-    func test_whenLastNameFieldIsEmpty_givenMemberProfileIsNil_thenDeliveryLastNameIsNil() {
-        let sut = makeSUT()
-        XCTAssertNil(sut.deliveryLastName)
-    }
-    
-    func test_whenPhoneFieldIsNotEmpty_thenDeliveryPhoneMatchesField() {
-        let sut = makeSUT()
-        sut.phoneNumber = "01234567"
-        XCTAssertEqual(sut.deliveryTelephone, "01234567")
-    }
-    
-    func test_whenPhoneIsEmpty_givenMemberProfileIsNotNilAndPhoneValueIsPresent_thenDeliveryPhoneMatchesMemberProfileVersion() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        let sut = makeSUT(container: container)
-        XCTAssertEqual(sut.deliveryTelephone, "0792334112")
-    }
-    
-    func test_whenPhoneFieldIsEmpty_givenMemberProfileIsNil_thenDeliveryPhoneIsNil() {
-        let sut = makeSUT()
-        XCTAssertNil(sut.deliveryTelephone)
     }
     
     func test_whenAllowedMarketingChannelsPresentInAppState_thenAllowedMarketingChannelsPopulated() {
@@ -1150,21 +1095,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isSubmitting)
     }
     
-    func test_whenGoToPaymentTapped_givenFulfimentIsCollectionAndONLYAddressInfoIsMissing_thenShowFieldErrorsAlertIsFalse() async {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        
-        container.appState.value.userData.basket = Basket.mockedDataCollection
-        
-        let sut = makeSUT(container: container)
-        sut.firstname = "test"
-        sut.lastname = "test"
-        sut.email = "test@test.com"
-        sut.phoneNumber = "1234556"
-        
-        await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {}, updateMarketingPreferences: {})
-        XCTAssertFalse(sut.showFieldErrorsAlert)
-    }
-    
     func test_whenMemberProfileSet_givenBillingAddressExistsAndFirstNameEmpty_thenFirstNameSetToMemberFirstName() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         container.appState.value.userData.basket = Basket.mockedDataWithAddressesEmptyContacts
@@ -1516,7 +1446,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1626,7 +1557,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1731,7 +1663,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         container.appState.value.userData.basket = Basket.mockedData
@@ -1803,12 +1736,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         container.services.verify(as: .member)
         XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
         XCTAssertTrue(sut.retailMembershipIdHasWarning)
-    }
-
-    func test_whenPayByCardTapped_thenCheckoutStateIsCard() {
-        let sut = makeSUT()
-        sut.payByCardTapped()
-        XCTAssertEqual(sut.checkoutState, .card)
     }
 
     func test_whenResetNewErrorsExist_thennewErrorsExistIsFalse() {

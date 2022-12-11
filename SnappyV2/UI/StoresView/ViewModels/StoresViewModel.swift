@@ -25,16 +25,18 @@ class StoresViewModel: ObservableObject {
     @Published var filteredRetailStoreType: Int?
     @Published var locationIsLoading: Bool = false
     @Published var invalidPostcodeError: Bool = false
-    @Published var successfullyRegisteredForNotifications: Bool = false
     @Published var storeLoadingId: Int? // Used to identify which store we apply the activity indicator to
     
     @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
     @Published var showPreorderStores = [RetailStore]()
     
-    @Published var isFocused = false
     @Published var showFulfilmentSlotSelection = false
     @Published var storeIsLoading = false
+    
+    @Published var storedPostcodes: [Postcode]?
+    @Published var postcodeSearchResults = [String]()
+
     private(set) var selectedStoreID: Int?
     let locationManager: LocationManager
     
@@ -67,8 +69,6 @@ class StoresViewModel: ObservableObject {
         }
         return nil
     }
-
-    var isDeliverySelected: Bool { selectedOrderMethod == .delivery }
     
     init(container: DIContainer,
          locationManager: LocationManager = LocationManager()) {
@@ -91,6 +91,18 @@ class StoresViewModel: ObservableObject {
         setupPostcodeError()
     }
     
+    func clearPostcodeSearchResults() {
+        postcodeSearchResults = []
+    }
+
+    func postcodeTapped(postcode: String) {
+        postcodeSearchString = postcode
+    }
+    
+    func populateStoredPostcodes() async {
+        self.storedPostcodes = await self.container.services.searchHistoryService.getAllPostcodes()
+    }
+    
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
@@ -100,13 +112,32 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func configurePostcodeSearch(postcode: String) {
+        if postcode.isEmpty == false {
+            self.postcodeSearchResults = self.storedPostcodes?.filter { $0.postcode.removeWhitespace().contains(postcode.removeWhitespace()) }.compactMap { $0.postcode } ?? []
+            
+            if self.postcodeSearchResults.count == 1 && self.postcodeSearchResults.first == self.postcodeSearchString {
+                self.postcodeSearchResults = []
+            }
+            
+        } else {
+            self.postcodeSearchResults = self.storedPostcodes?.compactMap { $0.postcode } ?? []
+        }
+    }
+    
     private func setupPostcodeError() {
         $postcodeSearchString
             .dropFirst()
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] postcode in
                 guard let self = self else { return }
                 self.invalidPostcodeError = false
+                
+                Task {
+                    await self.populateStoredPostcodes()
+                }
+
+                self.configurePostcodeSearch(postcode: postcode)
             }
             .store(in: &cancellables)
     }
@@ -147,10 +178,6 @@ class StoresViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .assignWeak(to: \.selectedOrderMethod, on: self)
             .store(in: &cancellables)
-    }
-    
-    func fulfilmentMethodButtonTapped(_ method: RetailStoreOrderMethodType) {
-        selectedOrderMethod = method
     }
     
     private func setupRetailStoreTypes() {
@@ -219,7 +246,7 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setNextView(fulfilmentDays: [RetailStoreFulfilmentDay], storeTimeZone: TimeZone?) async {
+    private func setNextView(fulfilmentDays: [RetailStoreFulfilmentDay]) async {
         // Use store start date to avoid converting string date (i.e. date property) to Date
         guard container.appState.value.userData.selectedStore.value?.orderMethods?[selectedOrderMethod.rawValue]?.status != .closed else {
             navigateToProductsView()
@@ -278,14 +305,12 @@ class StoresViewModel: ObservableObject {
             #warning("Should the returned message be shown/handled?")
             let _ = try await container.services.retailStoresService.futureContactRequest(email: emailToNotify)
             
-            successfullyRegisteredForNotifications = true
         } catch {
             self.container.appState.value.errors.append(error)
         }
     }
     
     func searchPostcode() async throws {
-        isFocused = false
         try await container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString).singleOutput()
     }
     
@@ -319,12 +344,12 @@ class StoresViewModel: ObservableObject {
                 switch self.selectedOrderMethod {
                 case .delivery:
                     if let deliveryDays = selectedRetailStoreDetails.value?.deliveryDays {
-                        await self.setNextView(fulfilmentDays: deliveryDays, storeTimeZone: selectedRetailStoreDetails.value?.storeTimeZone)
+                        await self.setNextView(fulfilmentDays: deliveryDays)
                         self.storeIsLoading = false
                     }
                 case .collection:
                     if let collectionDays = selectedRetailStoreDetails.value?.collectionDays {
-                        await self.setNextView(fulfilmentDays: collectionDays, storeTimeZone: selectedRetailStoreDetails.value?.storeTimeZone)
+                        await self.setNextView(fulfilmentDays: collectionDays)
                         self.storeIsLoading = false
                     }
                 default:

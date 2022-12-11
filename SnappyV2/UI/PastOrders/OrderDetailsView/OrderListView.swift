@@ -15,7 +15,6 @@ struct OrderListView: View {
     // MARK: - Constants
     struct Constants {
         struct ItemImage {
-            static let size: CGFloat = 40
             static let cornerRadius: CGFloat = 5
         }
         

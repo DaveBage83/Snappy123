@@ -23,8 +23,6 @@ struct PushNotificationView: View {
             static let cornerRadius: CGFloat = 20
             static let vStackSpacing: CGFloat = 11
             static let opacity: CGFloat = 0.2
-            static let buttonPadding: CGFloat = -10
-            static let dividerHeight: CGFloat = 50
         }
     }
     

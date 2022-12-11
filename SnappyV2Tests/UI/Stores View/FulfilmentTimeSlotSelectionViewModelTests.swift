@@ -28,7 +28,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isTimeSlotsLoading)
         XCTAssertFalse(sut.isFulfilmentSlotSelected)
         XCTAssertFalse(sut.isReservingTimeSlot)
-        XCTAssertFalse(sut.viewDismissed)
         XCTAssertEqual(sut.slotDescription, GeneralStrings.delivery.localized)
         XCTAssertNil(sut.basket)
         XCTAssertFalse(sut.isInCheckout)
@@ -113,7 +112,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isTimeSlotsLoading)
         XCTAssertFalse(sut.isFulfilmentSlotSelected)
         XCTAssertFalse(sut.isReservingTimeSlot)
-        XCTAssertFalse(sut.viewDismissed)
         XCTAssertEqual(sut.slotDescription, GeneralStrings.collection.localized)
         XCTAssertNil(sut.basket)
         XCTAssertFalse(sut.isInCheckout)
@@ -334,7 +332,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         await sut.shopNowButtonTapped()
         
-        XCTAssertTrue(sut.viewDismissed)
         container.services.verify(as: .basket)
     }
 
@@ -369,7 +366,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         await sut.shopNowButtonTapped()
         
-        XCTAssertTrue(sut.viewDismissed)
         container.services.verify(as: .basket)
     }
     
@@ -388,8 +384,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         await sut.shopNowButtonTapped()
         
-        XCTAssertTrue(sut.viewDismissed)
-        
         container.services.verify(as: .basket)
     }
     
@@ -402,7 +396,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         await sut.shopNowButtonTapped()
         
-        XCTAssertTrue(sut.viewDismissed)
         XCTAssertEqual(sut.container.appState.value.userData.tempTodayTimeSlot, selectedTimeSlot)
     }
     

@@ -25,22 +25,14 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     let selectedStore: RetailStoreDetails?
     private let fulfilmentType: RetailStoreOrderMethodType
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
-    var deliveryLocation: Location?
     @Published var basket: Basket?
-    @Published var postcode = ""
     var instructions: String?
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
-    let wasPaymentUnsuccessful: Bool
-    private let memberSignedIn: Bool
-    var isDeliveryAddressSet: Bool { selectedDeliveryAddress != nil }
-    @Published var settingDeliveryAddress: Bool = false
     @Published var selectedDeliveryAddress: Address?
-    var prefilledAddressName: Name?
     @Published var processingPayByCash: Bool = false
     @Published var handleGlobalPayment: Bool = false
     var draftOrderFulfilmentDetails: DraftOrderFulfilmentDetailsRequest?
     let setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void
-    var businessOrderId: Int?
     var hasConfirmedCashPayment = false
     @Published var showConfirmCashPaymentAlert = false
     var paymentMethodsOrder = [PaymentMethod]()
@@ -123,18 +115,12 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         fulfilmentType = appState.value.userData.selectedFulfilmentMethod
         selectedStore = appState.value.userData.selectedStore.value
         _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
-        self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
-        self.memberSignedIn = appState.value.userData.memberProfile == nil
         self.instructions = instructions
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         
-        if let basket = basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
-            self.prefilledAddressName = Name(firstName: details.firstName ?? "", secondName: details.lastName ?? "")
-        }
         setPaymentTypeOrder()
         setupBasket(with: appState)
-        setupDeliveryLocation()
         setupSelectedDeliveryAddressBinding(with: appState)
         setupTempTodayTimeSlot(with: appState)
         setupAutoAssignASAPTimeSlot()
@@ -145,19 +131,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             .map(\.userData.basket)
             .receive(on: RunLoop.main)
             .assignWeak(to: \.basket, on: self)
-            .store(in: &cancellables)
-    }
-    
-    private func setupDeliveryLocation() {
-        $basket
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] basket in
-                guard let self = self else { return }
-                if let address = basket?.addresses?.first(where: { $0.type == RetailStoreOrderMethodType.delivery.rawValue }) {
-                    self.deliveryLocation = address.location
-                }
-            }
             .store(in: &cancellables)
     }
     
@@ -219,41 +192,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         }
     }
     
-    #warning("Do we need to cater for email and telephone number missing?")
-    func setDelivery(address: Address) async {
-        settingDeliveryAddress = true
-        
-        let basketAddressRequest = BasketAddressRequest(
-            firstName: address.firstName ?? "",
-            lastName: address.lastName ?? "",
-            addressLine1: address.addressLine1,
-            addressLine2: address.addressLine2 ?? "",
-            town: address.town,
-            postcode: address.postcode,
-            countryCode: address.countryCode ?? "",
-            type: AddressType.delivery.rawValue,
-            email: basket?.addresses?.first(where: { $0.type == AddressType.billing.rawValue })?.email ?? "",
-            telephone: basket?.addresses?.first(where: { $0.type == AddressType.billing.rawValue })?.telephone ?? "",
-            state: nil,
-            county: address.county,
-            location: nil
-        )
-        
-        do {
-            try await container.services.basketService.setDeliveryAddress(to: basketAddressRequest)
-            
-            Logger.checkout.info("Successfully added delivery address")
-            #warning("Might want to clear selectedDeliveryAddress at some point")
-            self.selectedDeliveryAddress = address
-            self.settingDeliveryAddress = false
-            self.checkAndAssignASAP()
-        } catch {
-            self.setError(error)
-            Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
-            self.settingDeliveryAddress = false
-        }
-    }
-    
     private func sendPaymentCardError(gateway: PaymentGatewayType, applePay: Bool, description: String) {
         
         var gatewayDescription: String
@@ -298,23 +236,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     private func setError(_ err: Error) {
         container.appState.value.errors.append(err)
-    }
-    
-    #warning("Replace store location with one returned from basket addresses")
-    private func checkAndAssignASAP() {
-        if basket?.selectedSlot?.todaySelected == true, tempTodayTimeSlot == nil, let selectedStore = selectedStore {
-            let todayDate = Date().trueDate
-            
-            if fulfilmentType == .delivery, let fulfilmentLocation = container.appState.value.userData.searchResult.value?.fulfilmentLocation {
-                container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(fulfilmentLocation.location.latitude)), longitude: CLLocationDegrees(Float(fulfilmentLocation.location.longitude))))
-            } else if fulfilmentType == .collection {
-                container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay)
-            } else {
-                Logger.checkout.fault("'checkoutAndAssignASAP' failed - Fulfilment method: \(self.fulfilmentType.rawValue)")
-            }
-        } else {
-            Logger.checkout.fault("'checkoutAndAssignASAP' failed checks")
-        }
     }
     
     func payByCardTapped() {
@@ -461,12 +382,3 @@ extension CheckoutFulfilmentInfoViewModel {
         }
     }
 }
-
-#if DEBUG
-// This hack is neccessary in order to expose 'checkAndAssignASAP' and enable Apple Pay for testing. These cannot easily be tested without.
-extension CheckoutFulfilmentInfoViewModel {
-    func exposeCheckAndAssignASAP() {
-        return self.checkAndAssignASAP()
-    }
-}
-#endif

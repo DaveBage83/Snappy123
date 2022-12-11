@@ -17,8 +17,6 @@ struct OrderSummaryCard: View {
     
     struct Constants {
         struct General {
-            static let cornerRadius: CGFloat = 15
-            static let height: CGFloat = 130
             static let padding: CGFloat = 16
             static let hSpacing: CGFloat = 16
         }
@@ -29,9 +27,6 @@ struct OrderSummaryCard: View {
         }
         
         struct DeliveryStatus {
-            static let hPadding: CGFloat = 12
-            static let cornerRadiung: CGFloat = 15
-            static let height: CGFloat = 18
             static let bottomPadding: CGFloat = 12
         }
         

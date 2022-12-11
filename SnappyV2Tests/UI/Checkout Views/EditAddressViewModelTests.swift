@@ -315,24 +315,6 @@ class EditAddressViewModelTests: XCTestCase {
         XCTAssertFalse(sut.fieldErrorsPresent)
     }
     
-    func test_whenCheckFieldCalled_givenFieldIsEmpty_thenRelevantWarningSet() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        
-        container.appState.value.userData.basket = Basket.mockedData
-        
-        let sut = makeSUT(container: container, addressType: .billing)
-        
-        sut.checkField(stringToCheck: sut.emailText, fieldHasWarning: &sut.emailHasWarning)
-        
-        XCTAssertTrue(sut.emailHasWarning)
-        
-        sut.emailText = "test@test.com"
-        
-        sut.checkField(stringToCheck: sut.emailText, fieldHasWarning: &sut.emailHasWarning)
-        
-        XCTAssertFalse(sut.emailHasWarning)
-    }
-    
     func test_whenAppStateHasBillingAddressInBasket_thenPopulateContactDetails() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         container.appState.value.userData.basket = .mockedData
@@ -437,36 +419,6 @@ class EditAddressViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container, addressType: .delivery)
         XCTAssertFalse(sut.showUseDefaultBillingAddressForCardButton)
-    }
-    
-    func test_whenPostcodeHasWarning_thenFirstErrorIsPostcode() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container, addressType: .delivery)
-        sut.postcodeHasWarning = true
-        sut.addressLine1HasWarning = true
-        sut.cityHasWarning = true
-        XCTAssertEqual(sut.firstError, .postcode)
-    }
-    
-    func test_whenAddressLine1HasWarning_givenPostcodeDoesNotHaveWarning_thenFirstErrorIsAddressLine1() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container, addressType: .delivery)
-        sut.addressLine1HasWarning = true
-        sut.cityHasWarning = true
-        XCTAssertEqual(sut.firstError, .addressLine1)
-    }
-    
-    func test_whenCityHasWarning_givenNeitherPostcodeORAddressLine1HaveWarnings_thenFirstErrorIsCity() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container, addressType: .delivery)
-        sut.cityHasWarning = true
-        XCTAssertEqual(sut.firstError, .city)
-    }
-    
-    func test_whenNoFieldsHaveWarnings_thenFirstErrorIsNil() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container, addressType: .delivery)
-        XCTAssertNil(sut.firstError)
     }
     
     func test_whenAddressTypeIsCard_thenShowBillingOrDeliveryFieldsIsFalse() {

@@ -29,15 +29,7 @@ struct ProductsView: View {
     // MARK: - Constants
     struct Constants {
         static let standardViewPadding: CGFloat = 10
-        
-        struct RootGrid {
-            static let spacing: CGFloat = 20
-        }
-        
-        struct ItemsGrid {
-            static let spacing: CGFloat = 14
-            static let padding: CGFloat = 4
-        }
+        static let specialItemsTopPadding: CGFloat = 6
         
         struct EnterMoreCharacters {
             static let spacing: CGFloat = 16
@@ -56,11 +48,6 @@ struct ProductsView: View {
             static let topPadding: CGFloat = 56
         }
         
-        struct Logo {
-            static let width: CGFloat = 207.25
-            static let largeScreenWidthMultiplier: CGFloat = 1.5
-        }
-        
         struct RootCatagoryPills {
             static let hSpacing: CGFloat = 6
             static let vPadding: CGFloat = 4
@@ -72,9 +59,6 @@ struct ProductsView: View {
     
     // MARK: - View model
     @StateObject var viewModel: ProductsViewModel
-    
-    // MARK: - Properties
-    private let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10, alignment: .top)]
     
     // MARK: - Computed variables
     private var colorPalette: ColorPalette {
@@ -94,6 +78,10 @@ struct ProductsView: View {
         NavigationView {
             if #available(iOS 15.0, *) {
                 mainContent
+                    .onTapGesture {
+                        hideKeyboard()
+                        viewModel.clearSearchResults()
+                    }
                     .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, windowSize: mainWindowSize) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
@@ -101,6 +89,10 @@ struct ProductsView: View {
                     }
             } else {
                 mainContent
+                    .onTapGesture {
+                        hideKeyboard()
+                        viewModel.clearSearchResults()
+                    }
                     .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
                         ToastableViewContainer(content: {
                             bottomSheet(selectedItem: item)
@@ -108,14 +100,14 @@ struct ProductsView: View {
                     }
             }
         }
+        .onDisappear {
+            viewModel.clearAppstateSearchQuery()
+        }
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
                 SettingsButton(viewModel: .init(container: viewModel.container))
             }
         })
-        .onTapGesture {
-            hideKeyboard()
-        }
         .withLoadingToast(loading: .constant(viewModel.isSearching))
     }
     
@@ -403,6 +395,9 @@ struct ProductsView: View {
                                 associatedSearchTerm: viewModel.associatedSearchTerm,
                                 productSelected: { product in
                                     viewModel.selectItem(product)
+                                    Task {
+                                        await viewModel.storeSearchQuery(viewModel.searchText)
+                                    }
                                 }
                             ),
                             productsViewModel: viewModel
@@ -452,7 +447,7 @@ struct ProductsView: View {
     }
     
     @ViewBuilder func missedOffersView() -> some View {
-        if viewModel.missedOfferMenus.isEmpty {
+        if viewModel.showSpecialOfferItems {
             ForEach(viewModel.specialOfferItems) { item in
                 ProductCardView(
                     viewModel: .init(
@@ -468,24 +463,31 @@ struct ProductsView: View {
                 .padding([.top, .horizontal])
             }
         } else {
-            ForEach(viewModel.missedOfferMenus) { menu in
-                ExpandableContentView(viewModel: .init(container: viewModel.container, title: menu.name, shortTitle: nil, showExpandableContent: true)) {
-                    ForEach(menu.items) { item in
-                        ProductCardView(
-                            viewModel: .init(
-                                container: viewModel.container,
-                                menuItem: item,
-                                isOffer: true,
-                                associatedSearchTerm: viewModel.associatedSearchTerm,
-                                productSelected: { product in
-                                    viewModel.selectItem(product)
-                                }
-                            ),
-                            productsViewModel: viewModel
-                        )
+            if let discountText = viewModel.missedOfferMenu?.discountText {
+                ExpandableText(viewModel: .init(container: viewModel.container, title: "Description", shortTitle: nil, text: discountText, shortText: nil, isComplexItem: true, showExpandableText: true))
+                    .padding(.top, Constants.specialItemsTopPadding)
+            }
+            
+            if let missedOfferSections = viewModel.missedOfferMenu?.missedOfferSections {
+                ForEach(missedOfferSections) { section in
+                    ExpandableContentView(viewModel: .init(container: viewModel.container, title: section.name, shortTitle: nil, showExpandableContent: true)) {
+                        ForEach(section.items) { item in
+                            ProductCardView(
+                                viewModel: .init(
+                                    container: viewModel.container,
+                                    menuItem: item,
+                                    isOffer: true,
+                                    associatedSearchTerm: viewModel.associatedSearchTerm,
+                                    productSelected: { product in
+                                        viewModel.selectItem(product)
+                                    }
+                                ),
+                                productsViewModel: viewModel
+                            )
+                        }
                     }
+                    .padding(.top)
                 }
-                .padding(.top)
             }
         }
     }
@@ -623,23 +625,3 @@ extension MockData {
 }
 
 #endif
-
-
-struct DeviceRotationViewModifier: ViewModifier {
-    let action: (UIDeviceOrientation) -> Void
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear()
-            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-                action(UIDevice.current.orientation)
-            }
-    }
-}
-
-// A View wrapper to make the modifier easier to use
-extension View {
-    func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
-        self.modifier(DeviceRotationViewModifier(action: action))
-    }
-}

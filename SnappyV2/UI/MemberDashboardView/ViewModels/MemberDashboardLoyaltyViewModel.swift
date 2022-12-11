@@ -20,16 +20,6 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
     @Published var mentionMeDashboardRequestResult = MentionMeRequestResult(success: false, type: .dashboard, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
     @Published var webViewURL: URL?
     
-    var referralCode: String {
-        profile?.referFriendCode ?? Strings.MemberDashboard.Loyalty.noCode.localized
-    }
-    
-    var numberOfReferrals: String {
-        guard let profile = profile else { return "0" }
-
-        return String(profile.numberOfReferrals)
-    }
-    
     var referralBalance: String {
         guard let profile = profile else { return "0" }
 

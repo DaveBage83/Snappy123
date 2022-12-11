@@ -23,4 +23,5 @@ extension Logger {
     static let driverMap = Logger(subsystem: subsystem, category: "DriverMap")
     static let pushNotification = Logger(subsystem: subsystem, category: "PushNotification")
     static let imageCache = Logger(subsystem: subsystem, category: "Image Cache")
+    static let searchHistoryStorage = Logger(subsystem: subsystem, category: "Postcode storage")
 }

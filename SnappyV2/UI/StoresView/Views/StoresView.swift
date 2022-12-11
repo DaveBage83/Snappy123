@@ -51,17 +51,6 @@ struct StoresView: View {
     
     // MARK: - Constants
     private struct Constants {
-        struct LogoAndSearch {
-            struct Logo {
-                static let width: CGFloat = 207.25
-                static let largeScreenWidthMultiplier: CGFloat = 1.5
-            }
-            
-            struct Stack {
-                static let spacing: CGFloat = 16
-            }
-        }
-        
         struct HorizontalStoreTypeScroll {
             static let topPadding: CGFloat = 23
         }
@@ -103,6 +92,13 @@ struct StoresView: View {
                 static let largeScreenWidthMultiplier: CGFloat = 0.5
             }
         }
+        
+        struct PostcodesDropDown {
+            static let spacing: CGFloat = 10
+            static let hPadding: CGFloat = 16
+            static let vPadding: CGFloat = 6
+            static let width: CGFloat = 250
+        }
     }
     
     // MARK: - View Model
@@ -125,11 +121,13 @@ struct StoresView: View {
                 ScrollView(showsIndicators: false) {
                     HStack {
                         postcodeSearch
+                        
                         if sizeClass != .compact {
                             FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
                                 .frame(maxWidth: Constants.FulfilmentSelectionToggle.largeScreenWidth, maxHeight: .infinity)
                         }
                     }
+                    .zIndex(1) // Ensures drop down is on top of other views
                     .padding()
                     VStack(alignment: .leading) {
                         if sizeClass == .compact {
@@ -152,40 +150,55 @@ struct StoresView: View {
                 .frame(maxHeight: .infinity)
                 .background(colorPalette.backgroundMain)
             }
+            .onTapGesture {
+                viewModel.clearPostcodeSearchResults()
+            }
             .frame(maxHeight: .infinity)
         }
         .onAppear {
             viewModel.onAppearSendEvent()
         }
-        .onTapGesture {
-            hideKeyboard()
+        .onAppear { // Need to avoid task in init
+            Task {
+                await viewModel.populateStoredPostcodes()
+            }
         }
     }
     
     // MARK: - Postcode search bar and button
     private var postcodeSearch: some View {
-        SnappyTextFieldWithButton(
-            container: viewModel.container,
-            text: $viewModel.postcodeSearchString,
-            hasError: $viewModel.invalidPostcodeError,
-            isLoading: .constant(viewModel.storesSearchIsLoading),
-            showInvalidFieldWarning: .constant(false),
-            autoCaps: .allCharacters,
-            labelText: GeneralStrings.Search.searchPostcode.localized,
-            largeLabelText: GeneralStrings.Search.search.localized,
-            warningText: nil,
-            keyboardType: nil,
-            mainButton: (GeneralStrings.Search.search.localized, {
-                Task {
-                    try await viewModel.postcodeSearchTapped()
-                }
-            }),
-            mainButtonLargeTextLogo: Image.Icons.MagnifyingGlass.standard,
-            internalButton: (Image.Icons.LocationCrosshairs.standard, {
-                Task {
-                    await viewModel.searchViaLocationTapped()
-                }
-            }))
+        VStack(spacing: 0) {
+            SnappyTextFieldWithButton(
+                container: viewModel.container,
+                text: $viewModel.postcodeSearchString,
+                hasError: $viewModel.invalidPostcodeError,
+                isLoading: .constant(viewModel.storesSearchIsLoading),
+                showInvalidFieldWarning: .constant(false),
+                autoCaps: .allCharacters,
+                labelText: GeneralStrings.Search.searchPostcode.localized,
+                largeLabelText: GeneralStrings.Search.search.localized,
+                warningText: nil,
+                keyboardType: nil,
+                mainButton: (GeneralStrings.Search.search.localized, {
+                    Task {
+                        try await viewModel.postcodeSearchTapped()
+                    }
+                }),
+                mainButtonLargeTextLogo: Image.Icons.MagnifyingGlass.standard,
+                internalButton: (Image.Icons.LocationCrosshairs.standard, {
+                    Task {
+                        await viewModel.searchViaLocationTapped()
+                    }
+                }))
+            .onTapGesture {
+                viewModel.configurePostcodeSearch(postcode: viewModel.postcodeSearchString)
+            }
+            .withSearchHistory(
+                container: viewModel.container,
+                searchResults: $viewModel.postcodeSearchResults, textfieldTextSetter: { postcode in
+                    viewModel.postcodeTapped(postcode: postcode)
+                })
+        }
     }
     
     // MARK: - Horizontal store type scroll view
@@ -332,20 +345,20 @@ struct StoresView: View {
     // MARK: - Stores available list
     @ViewBuilder private var storesAvailableListView: some View {
         if viewModel.showOpenStores.isEmpty == false {
-            storeCardList(stores: viewModel.showOpenStores, headerText: StoreStatusStrings.openStores.localized, status: .open)
+            storeCardList(stores: viewModel.showOpenStores, status: .open)
         }
         
         if viewModel.showPreorderStores.isEmpty == false {
-            storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized, status: .preOrder)
+            storeCardList(stores: viewModel.showPreorderStores, status: .preOrder)
         }
         
         if viewModel.showClosedStores.isEmpty == false {
-            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized, status: .closed)
+            storeCardList(stores: viewModel.showClosedStores, status: .closed)
         }
     }
 
     // MARK: - Store card list
-    @ViewBuilder private func storeCardList(stores: [RetailStore], headerText: String, status: StoreStatus) -> some View {
+    @ViewBuilder private func storeCardList(stores: [RetailStore], status: StoreStatus) -> some View {
         if sizeClass == .compact {
             VStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
                 Section(header: storeStatusHeader(status: status)) {

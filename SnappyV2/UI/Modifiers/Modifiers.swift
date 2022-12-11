@@ -6,13 +6,20 @@
 //
 
 import SwiftUI
+import Combine
 
 struct StandardCardFormat: ViewModifier {
     @Binding var isDisabled: Bool
+    let corners: UIRectCorner
+    
+    init(isDisabled: Binding<Bool>, corners: UIRectCorner) {
+        self._isDisabled = isDisabled
+        self.corners = corners
+    }
 
     func body(content: Content) -> some View {
         content
-            .cornerRadius(8)
+            .cornerRadius(8, corners: corners)
             .shadow(color: isDisabled ? .clear : .cardShadow, radius: 9, x: 0, y: 0) // When in disabled state we do not want to apply shadow
     }
 }
@@ -51,20 +58,11 @@ struct MeasureSizeModifier: ViewModifier {
 
 struct StandardAlertToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.tabViewHeight) var tabViewHeight
     
     @Binding var error: Swift.Error?
     @State var showAlert = false
     let container: DIContainer
     let viewID: UUID
-    
-    var text: String {
-        guard let error = container.appState.value.latestError else { return "" }
-        if let err = error as? APIErrorResult {
-            return err.errorDisplay
-        }
-        return error.localizedDescription
-    }
     
     @State var errorText = ""
     
@@ -131,7 +129,6 @@ struct HighlightedItem: ViewModifier {
     
     struct Constants {
         static let cornerRadius: CGFloat = 8
-        static let itemPadding: CGFloat = 8
         static let bottomPadding: CGFloat = 5
     }
     
@@ -191,7 +188,6 @@ struct BasketAndPastOrderImage: ViewModifier {
     struct Constants {
         static let size: CGFloat = 40
         static let cornerRadius: CGFloat = 8
-        static let lineWidth: CGFloat = 1
         static let padding: CGFloat = 4
     }
     
@@ -218,7 +214,6 @@ struct BasketAndPastOrderImage: ViewModifier {
 
 struct StandardSuccessToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.tabViewHeight) var tabViewHeight
     
     @Binding var toastText: String?
     @State var showAlert = false
@@ -373,8 +368,8 @@ extension View {
 }
 
 extension View {
-    func standardCardFormat(isDisabled: Binding<Bool> = .constant(false)) -> some View {
-        modifier(StandardCardFormat(isDisabled: isDisabled))
+    func standardCardFormat(isDisabled: Binding<Bool> = .constant(false), corners: UIRectCorner = .allCorners) -> some View {
+        modifier(StandardCardFormat(isDisabled: isDisabled, corners: corners))
     }
 }
 
@@ -476,6 +471,88 @@ extension View {
                     sheetContent
                 }, viewModel: .init(container: container, isModal: true))
             }
+    }
+}
+
+struct WithSearchHistory: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.mainWindowSize) var mainWindowSize
+    // MARK: - Constants
+    let spacing: CGFloat = 10
+    let hPadding: CGFloat = 16
+    let vPadding: CGFloat = 6
+    let width: CGFloat = 250
+    let clockIconHeight: CGFloat = 15
+    let topPadding: CGFloat = 10
+    let xOffset: CGFloat = 5
+    let yOffset: CGFloat = 1
+    let container: DIContainer
+    let textfieldTextSetter: (String) -> Void
+    
+    // MARK: - View model
+    
+    @Binding var searchResults: [String]
+    
+    var showPostcodeDropDown: Bool {
+        searchResults.isEmpty == false
+    }
+    
+    private var colorPalette: ColorPalette {
+        .init(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        VStack(spacing: 0) {
+            content
+            
+            Rectangle() // Used to attach the overlay beneath the textfield
+                .frame(height: 0)
+                .overlay(
+                    searchHistoryDropdown,
+                    alignment: .topLeading)
+        }
+    }
+    
+    @ViewBuilder private var searchHistoryDropdown: some View {
+        if showPostcodeDropDown {
+            VStack(alignment: .leading, spacing: spacing) {
+                ForEach($searchResults, id: \.self) { searchTerm in
+                    Button {
+                        textfieldTextSetter(searchTerm.wrappedValue)
+                        searchResults = []
+                    } label: {
+                        HStack {
+                            Text(searchTerm.wrappedValue)
+                                .font(.Body2.semiBold())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                            Spacer()
+                            Image.Icons.Clock.heavy
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: clockIconHeight)
+                                .foregroundColor(colorPalette.textGrey2)
+                            
+                        }.frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, hPadding)
+                    .padding(.vertical, vPadding)
+                    
+                    Divider()
+                }
+            }
+            .padding(.top, topPadding)
+            .frame(width: width)
+            .background(colorPalette.typefaceInvert)
+            .standardCardFormat(corners: [.bottomLeft, .bottomRight])
+            .offset(x: xOffset, y: yOffset)
+        }
+    }
+}
+
+extension View {
+    func withSearchHistory(container: DIContainer, searchResults: Binding<[String]>, textfieldTextSetter: @escaping (String) -> Void) -> some View {
+        modifier(WithSearchHistory(container: container, textfieldTextSetter: textfieldTextSetter, searchResults: searchResults))
     }
 }
 

@@ -19,7 +19,6 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isRequestingOrSendingVerificationCode, file: #file, line: #line)
         XCTAssertEqual(sut.verifyCode, "", file: #file, line: #line)
         XCTAssertTrue(sut.submitDisabled, file: #file, line: #line)
-        XCTAssertNil(sut.toastMessage, file: #file, line: #line)
     }
     
     func test_instructions_whenCouponWithVerificationRequired() {
@@ -138,7 +137,6 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
         
         XCTAssertTrue(isRequestingOrSendingVerificationCodeWasTrue, file: #file, line: #line)
         XCTAssertFalse(sut.isRequestingOrSendingVerificationCode, file: #file, line: #line)
-        XCTAssertEqual(sut.toastMessage, VerifyMobileNumberStrings.EnterCodeViewStaticText.resendMessage.localized, file: #file, line: #line)
         XCTAssertNil(sut.container.appState.value.latestError, file: #file, line: #line)
         XCTAssertNil(dismissViewHandlerResult, file: #file, line: #line)
         memberService.verify()
@@ -170,7 +168,6 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
         await sut.resendCodeTapped()
         
         XCTAssertTrue(isRequestingOrSendingVerificationCodeWasTrue, file: #file, line: #line)
-        XCTAssertNil(sut.toastMessage, file: #file, line: #line)
         XCTAssertNil(sut.container.appState.value.latestError, file: #file, line: #line)
         XCTAssertNotNil(dismissViewHandlerResult, file: #file, line: #line)
         if let dismissViewHandlerResult = dismissViewHandlerResult {
@@ -209,7 +206,6 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
         
         XCTAssertTrue(isRequestingOrSendingVerificationCodeWasTrue, file: #file, line: #line)
         XCTAssertFalse(sut.isRequestingOrSendingVerificationCode, file: #file, line: #line)
-        XCTAssertNil(sut.toastMessage, file: #file, line: #line)
         XCTAssertNil(dismissViewHandlerResult, file: #file, line: #line)
         XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError, file: #file, line: #line)
         memberService.verify()
@@ -244,7 +240,6 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
         await sut.submitCodeTapped()
         
         XCTAssertTrue(isRequestingOrSendingVerificationCodeWasTrue, file: #file, line: #line)
-        XCTAssertNil(sut.toastMessage, file: #file, line: #line)
         XCTAssertNil(sut.container.appState.value.latestError, file: #file, line: #line)
         XCTAssertNotNil(dismissViewHandlerResult, file: #file, line: #line)
         if let dismissViewHandlerResult = dismissViewHandlerResult {
@@ -285,7 +280,6 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
         
         XCTAssertTrue(isRequestingOrSendingVerificationCodeWasTrue, file: #file, line: #line)
         XCTAssertFalse(sut.isRequestingOrSendingVerificationCode, file: #file, line: #line)
-        XCTAssertNil(sut.toastMessage, file: #file, line: #line)
         XCTAssertNil(dismissViewHandlerResult, file: #file, line: #line)
         XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError, file: #file, line: #line)
         memberService.verify()
@@ -323,7 +317,8 @@ final class VerifyMobileNumberViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
 
         let sut = VerifyMobileNumberViewModel(

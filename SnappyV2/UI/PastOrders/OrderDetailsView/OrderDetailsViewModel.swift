@@ -46,17 +46,13 @@ class OrderDetailsViewModel: ObservableObject {
     let order: PlacedOrder
     let dismissViewHandler: (()->())?
     @Published var repeatOrderRequested = false
-    @Published var showDetailsView = false
     @Published var showMapError = false
     @Published var showTrackOrderButtonOverride = false
     @Published var mapLoading = false
-    @Published var showText = false
 
     private let showTrackOrderButton: Bool
     
     var driverLocation: DriverLocation?
-    
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Calculated variables
     
@@ -133,16 +129,6 @@ class OrderDetailsViewModel: ObservableObject {
     var driverTipRefund: [PlacedOrderDriverTip]? {
         guard let driverTipRefunds = order.fulfilmentMethod.driverTipRefunds, driverTipRefunds.isEmpty == false else { return nil }
         return driverTipRefunds
-    }
-    
-    var totalDriverTipRefundValue: Double? {
-        guard let driverTipRefunds = order.fulfilmentMethod.driverTipRefunds, driverTipRefunds.isEmpty == false else { return nil }
-        return driverTipRefunds.map { $0.value }.reduce(0, +)
-    }
-    
-    var finalDriverTip: String? {
-        guard let driverTip = initialDriverTip, let driverTipRefundTotal = totalDriverTipRefundValue else { return nil }
-        return (driverTip - driverTipRefundTotal).toCurrencyString(using: order.currency)
     }
         
     // In order to get total number of items in the order, we need to take the total from each
@@ -277,11 +263,6 @@ class OrderDetailsViewModel: ObservableObject {
                     throw error
                 }
                 
-                guaranteeMainThread { [weak self] in
-                    guard let self = self else { return }
-                    self.showDetailsView = false
-                }
-                
             } else {
                 Logger.member.error("No matching store found")
                 throw OrderDetailsError.noMatchingStoreFound
@@ -305,20 +286,6 @@ class OrderDetailsViewModel: ObservableObject {
             try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: order.businessOrderId)
         } catch {
             self.showMapError = true
-        }
-    }
-    
-    func getDriverLocationIfOrderIncomplete(orderProgress: Double) async {
-        if orderProgress != 1 {
-            do {
-                try await setDriverLocation()
-                showDetailsView = true
-            } catch {
-                // If we get error on driver location we still want to show the details view
-                showDetailsView = true
-            }
-        } else {
-            showDetailsView = true
         }
     }
     

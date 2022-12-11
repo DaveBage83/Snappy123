@@ -5,7 +5,6 @@
 //  Created by Kevin Palser on 26/09/2022.
 //
 
-import Combine
 import OSLog
 
 @MainActor
@@ -17,7 +16,6 @@ final class ForgotPasswordViewModel: ObservableObject {
     let container: DIContainer
     let isInCheckout: Bool
     let dismissHandler: (String?) -> Void
-    private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer, isInCheckout: Bool, dismissHandler: @escaping (String?) -> Void) {
         self.container = container

@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-extension EnvironmentValues {
-    var imageCache: ImageCache {
-        get { self[ImageCacheKey.self] }
-        set { self[ImageCacheKey.self] = newValue }
-    }
-}
-
 // From https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
 extension EnvironmentValues {
     var mainWindowSize: CGSize {

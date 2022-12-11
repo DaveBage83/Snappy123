@@ -15,9 +15,6 @@ private struct TabViewHeightKey: EnvironmentKey {
 }
 
 struct RootView: View {
-    typealias TabStrings = Strings.RootView.Tabs
-    typealias ChangeStoreStrings = Strings.RootView.ChangeStore
-    
     struct Constants {
         static let additionalTabBarPadding: CGFloat = 16
     }
@@ -55,12 +52,6 @@ struct RootView: View {
         .navigationViewStyle(.stack)
         .environment(\.tabViewHeight, tabViewHeight)
         .edgesIgnoringSafeArea(.bottom)
-        .onAppear() {
-            viewModel.viewShown()
-        }
-        .onDisappear() {
-            viewModel.viewRemoved()
-        }
         .onTapGesture {
             hideKeyboard()
         }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct Pinning {
+struct Pinning {
     public var top: CGFloat?
     public var leading: CGFloat?
     public var bottom: CGFloat?
@@ -20,7 +20,7 @@ public struct Pinning {
     }
 }
 
-public extension Pinning {
+extension Pinning {
     static func all(_ value: CGFloat?) -> Self {
         Pinning(top: value, trailing: value, bottom: value, leading: value)
     }
@@ -70,7 +70,7 @@ public extension Pinning {
  Subviews are added and constaints are applied at the same time; althought here adding as subview is optional to avoid method duplication.
  It is NOT a layout API, and is expected to be used in combination with some manual constraints less general basice stuff.
  */
-public extension UIView {
+extension UIView {
     
     @discardableResult
     func withSubviews(_ content: () -> [UIView]) -> Self {

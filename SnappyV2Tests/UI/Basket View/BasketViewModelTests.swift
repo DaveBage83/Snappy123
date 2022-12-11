@@ -24,11 +24,8 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertTrue(sut.couponCode.isEmpty)
         XCTAssertFalse(sut.applyingCoupon)
         XCTAssertFalse(sut.removingCoupon)
-        XCTAssertNil(sut.successfulCouponText)
         XCTAssertFalse(sut.couponFieldHasError)
         XCTAssertFalse(sut.isUpdatingItem)
-        XCTAssertFalse(sut.showingServiceFeeAlert)
-        XCTAssertFalse(sut.isMemberSignedIn)
         XCTAssertFalse(sut.showDriverTips)
         XCTAssertFalse(sut.showBasketItems)
         XCTAssertEqual(sut.driverTip, 0)
@@ -299,7 +296,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
 
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
@@ -335,7 +333,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
 
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
@@ -375,7 +374,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         
         let eventLogger = MockedEventLogger(expected: [
@@ -392,7 +392,6 @@ class BasketViewModelTests: XCTestCase {
         await sut.submitCoupon()
         
         XCTAssertFalse(sut.applyingCoupon)
-        XCTAssertEqual(sut.successfulCouponText, Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(trimmedCode))
         XCTAssertTrue(sut.couponCode.isEmpty)
         eventLogger.verify()
         container.services.verify(as: .basket)
@@ -420,7 +419,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         
         let eventLogger = MockedEventLogger(expected: [
@@ -471,7 +471,8 @@ class BasketViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
@@ -481,7 +482,6 @@ class BasketViewModelTests: XCTestCase {
         await sut.submitCoupon()
         
         XCTAssertFalse(sut.applyingCoupon)
-        XCTAssertEqual(sut.successfulCouponText, Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(code))
         XCTAssertTrue(sut.couponCode.isEmpty)
         XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
         
@@ -501,23 +501,6 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.removingCoupon)
         
         container.services.verify(as: .basket)
-    }
-    
-    func test_whenShowServiceFeeAlertIsTapped_thenShowingFeeInfoAlertIsTrue() {
-        let sut = makeSUT()
-        
-        sut.showServiceFeeAlert(title: "Test title", description: "Test description")
-        
-        XCTAssertTrue(sut.showingServiceFeeAlert)
-    }
-    
-    func test_whenDismissAlertIsTapped_thenShowingFeeInfoAlertIsFalse() {
-        let sut = makeSUT()
-        sut.showingServiceFeeAlert = true
-        
-        sut.dismissAlert()
-        
-        XCTAssertFalse(sut.showingServiceFeeAlert)
     }
     
     func test_givenBasketWithItem_whenUpdatebasketItem_thenIsUpdatingItemTriggers() async {
@@ -543,7 +526,6 @@ class BasketViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.showDriverTips)
         XCTAssertEqual(sut.driverTip, 0)
-        XCTAssertTrue(sut.disableDecreaseTipButton)
     }
     
     func test_givenDriverTipsEnabledAndCorrectTypeButIsCollection_thenBasketDriverTipsDOesNotDisplay() {

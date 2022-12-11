@@ -8,7 +8,7 @@
 import SwiftUI
 
 // Imported from some other project
-public struct BottomSheet<Content: View>: View {
+struct BottomSheet<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme
     
     // MARK: - Constants
@@ -22,12 +22,10 @@ public struct BottomSheet<Content: View>: View {
     @Binding var isPresented: Bool
     
     @State private var draggedOffset: CGFloat = 0
-    @State private var previousDragValue: DragGesture.Value?
     
     @State private var shouldDismiss: Bool = false
     @State private var height: CGFloat = 0
     @State private var contentFrame: CGRect = .zero
-    @State private var didSetScrollView: Bool = false
     
     private let content: Content
     private var onDismiss: () -> Void
@@ -84,7 +82,7 @@ public struct BottomSheet<Content: View>: View {
             })
     }
     
-    public var body: some View {
+    var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
                 self.fullScreenLightGrayOverlay()
@@ -156,14 +154,6 @@ public struct BottomSheet<Content: View>: View {
             }
         } else {
             return contentHeight + geometry.safeAreaInsets.bottom + geometry.safeAreaInsets.top
-        }
-    }
-    
-    func screenHeight(geometry: GeometryProxy) -> CGFloat {
-        if geometry.size.height >= UIScreen.main.bounds.height - (geometry.safeAreaInsets.bottom + geometry.safeAreaInsets.top) {
-            return UIScreen.main.bounds.height
-        } else {
-            return geometry.size.height
         }
     }
     

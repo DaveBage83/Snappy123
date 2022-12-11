@@ -38,15 +38,6 @@ struct DriverTipsButton: View {
                 return 24
             }
         }
-        
-        var font: Font {
-            switch self {
-            case .standard:
-                return .heading4()
-            case .large:
-                return .heading3()
-            }
-        }
     }
     
     enum ButtonType {
@@ -139,13 +130,3 @@ struct DriverTipsButton_Previews: PreviewProvider {
     }
 }
 #endif
-
-extension Animation {
-    func `repeat`(while expression: Bool, autoreverses: Bool = true) -> Animation {
-        if expression {
-            return self.repeatForever(autoreverses: autoreverses)
-        } else {
-            return self
-        }
-    }
-}

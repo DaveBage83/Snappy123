@@ -31,10 +31,6 @@ struct CreateAccountView: View {
             static let maxSpacing: CGFloat = 20
             static let minSpacing: CGFloat = 8
         }
-        
-        struct BackgroundImage {
-            static let yOffset: CGFloat = -100
-        }
 
         struct Checkbox {
             static let width: CGFloat = 24

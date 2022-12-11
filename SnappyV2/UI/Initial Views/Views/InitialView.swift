@@ -104,25 +104,17 @@ struct InitialView: View {
             static let hPadding: CGFloat = 5
         }
         
-        struct SearchButton {
-            static let width: CGFloat = 300
-            static let height: CGFloat = 55
-            static let cornerRadius: CGFloat = 15
-        }
-        
         struct Background {
             static let animation = Animation.linear(duration: 0.3).delay(0.5)
             static let ovalHeight: CGFloat = UIScreen.screenHeight * 0.65
         }
         
         struct General {
-            static let largeDeviceImageMultiplier: CGFloat = 1.5
             static let minimalDisplayThreshold: Int = 7
         }
         
         struct Logo {
             static let width: CGFloat = UIScreen.screenWidth / 2.5
-            static let largeDeviceSnappyLogoMultiplier: CGFloat = 2
         }
         
         struct Tagline {
@@ -159,10 +151,6 @@ struct InitialView: View {
     
     private var logoBottomPadding: CGFloat {
         mainWindowSize.height / 20
-    }
-    
-    private var imageSizeMultiplier: CGFloat {
-        sizeClass == .compact ? 1 : Constants.General.largeDeviceImageMultiplier
     }
     
     private var colorPalette: ColorPalette {

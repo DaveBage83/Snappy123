@@ -53,7 +53,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     @Published var isReservingTimeSlot = false
-    @Published var viewDismissed: Bool = false
     @Published var availableFulfilmentDays = [RetailStoreFulfilmentDay]()
     @Published var selectedDate: Date?
     @Published var selectedDaySlot: RetailStoreSlotDay?
@@ -66,7 +65,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var earliestFulfilmentTimeString: String?
     @Published var basket: Basket?
     @Published var isPaused = false
-    @Published var showSuccessfullyUpdateTimeSlotAlert = false
     @Published var noSlotsAvailable = false
     
     // MARK: - Properties
@@ -372,7 +370,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     
     private func dismissView() {
         timeslotSelectedAction()
-        viewDismissed = true
     }
     
     func resetFulfilment() {

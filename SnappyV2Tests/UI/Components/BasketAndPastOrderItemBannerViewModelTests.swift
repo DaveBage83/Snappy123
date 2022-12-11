@@ -34,12 +34,6 @@ class BasketAndPastOrderItemBannerViewModelTests: XCTestCase {
         XCTAssertTrue(sut.curveBottomCorners)
     }
     
-    func test_whenTextPassedIn_thenTextPopulated() {
-        let details = BannerDetails(type: .substitutedItem, text: "Test", action: { print("Test") })
-        let sut = makeSUT(details: details, isBottomBanner: false)
-        XCTAssertEqual(sut.text, "Test")
-    }
-    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), details: BannerDetails, isBottomBanner: Bool) -> BasketAndPastOrderItemBannerViewModel {
         let sut = BasketAndPastOrderItemBannerViewModel(container: container, banner: details, isBottomBanner: isBottomBanner)
         

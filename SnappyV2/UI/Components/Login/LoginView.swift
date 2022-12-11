@@ -8,28 +8,12 @@
 import SwiftUI
 
 struct LoginView: View {
-    typealias LoginStrings = Strings.General.Login
-    typealias CustomLoginStrings = Strings.General.Login.Customisable
-    
     @Environment(\.presentationMode) var presentation
-    @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
     
     // MARK: - Constants
     struct Constants {
-        struct Buttons {
-            static let size: CGFloat = 15
-            static let vPadding: CGFloat = 3
-        }
-        
-        struct BackgroundImage {
-            static let yOffset: CGFloat = -100
-        }
-        
-        struct LoginStack { 
-            static let topPadding: CGFloat = 50
-            static let largeDeviceTopPadding: CGFloat = 200
-            static let hPadding: CGFloat = 16
+        struct LoginStack {
             static let blurred: CGFloat = 20
             static let notBlurred: CGFloat = 0
         }

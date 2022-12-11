@@ -23,7 +23,6 @@ class VerifyMobileNumberViewModel: ObservableObject {
     @Published var isRequestingOrSendingVerificationCode: Bool = false
     @Published var verifyCode: String = ""
     @Published var submitDisabled = true
-    @Published var toastMessage: String?
     
     var instructions: String {
         let mobileContactNumber = container.appState.value.userData.memberProfile?.mobileContactNumber ?? ""
@@ -71,7 +70,6 @@ class VerifyMobileNumberViewModel: ObservableObject {
                 dismissAction(nil, nil)
             } else {
                 isRequestingOrSendingVerificationCode = false
-                toastMessage = VerifyMobileNumberStrings.EnterCodeViewStaticText.resendMessage.localized
             }
         } catch {
             self.container.appState.value.errors.append(error)

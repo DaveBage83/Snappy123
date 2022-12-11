@@ -24,6 +24,7 @@ struct AppState: Equatable {
     var storeMenu = StoreMenu()
     var retailStoreReview: RetailStoreReview?
     var passwordResetCode: String?
+    var searchHistoryData = SearchHistoryData()
     
     // Toast properties
     var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
@@ -60,6 +61,7 @@ extension AppState {
         var subCategories = [[RetailStoreMenuCategory]]()
         var unsortedItems = [RetailStoreMenuItem]()
         var specialOfferItems = [RetailStoreMenuItem]()
+        var missedOfferMenu: ProductsViewModel.MissedOfferMenu?
         // for the search state restore:
         var searchText = ""
         var searchResultCategories = [GlobalSearchResultRecord]()
@@ -115,16 +117,13 @@ extension AppState {
 }
 
 extension AppState {
-    struct Notifications: Equatable {
-        // Add/change/remove item to/in/from basket toasts
-        var showAddItemToBasketToast = false
-        var addItemToBasketAlertToast: AlertToast = AlertToast(
-            displayMode: .banner(.pop),
-            type: .complete(.snappyRed),
-            title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
-            subTitle: .constant(Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized), tapToDismiss: false
-        )
+    struct SearchHistoryData: Equatable {
+        var latestProductSearch: String?
     }
+}
+
+extension AppState {
+    struct Notifications: Equatable {}
 }
 
 extension AppState {

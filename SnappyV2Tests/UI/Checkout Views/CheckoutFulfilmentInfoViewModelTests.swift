@@ -19,15 +19,10 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.selectedRetailStoreFulfilmentTimeSlots, .notRequested)
-        XCTAssertNil(sut.deliveryLocation)
         XCTAssertNil(sut.basket)
-        XCTAssertTrue(sut.postcode.isEmpty)
         XCTAssertNil(sut.instructions)
         XCTAssertNil(sut.tempTodayTimeSlot)
-        XCTAssertFalse(sut.wasPaymentUnsuccessful)
-        XCTAssertFalse(sut.isDeliveryAddressSet)
         XCTAssertNil(sut.selectedDeliveryAddress)
-        XCTAssertNil(sut.prefilledAddressName)
         XCTAssertFalse(sut.showPayByCard)
         XCTAssertFalse(sut.showPayByApple)
         XCTAssertFalse(sut.showPayByCash)
@@ -54,74 +49,6 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         await sut.confirmCashPayment()
         
         XCTAssertEqual(checkoutState, .paymentSuccess)
-    }
-    
-    func test_givenBasketContactDetails_thenPrefilledAddressNameIsFilled() {
-        let firstName = "Boris"
-        let surname = "Johnson"
-        let basketAddress = BasketAddressResponse(
-            firstName: firstName,
-            lastName: surname,
-            addressLine1: "",
-            addressLine2: nil,
-            town: "",
-            postcode: "",
-            countryCode: nil,
-            type: "billing",
-            email: "alone@tendowningstreet.gov.uk",
-            telephone: "666",
-            state: nil,
-            county: nil,
-            location: nil
-        )
-        let basket = Basket(
-            basketToken: "",
-            isNewBasket: true,
-            items: [],
-            fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 0, minSpend: 0),
-            selectedSlot: nil,
-            savings: nil,
-            coupon: nil,
-            fees: nil,
-            tips: nil,
-            addresses: [basketAddress],
-            orderSubtotal: 0,
-            orderTotal: 0,
-            storeId: nil,
-            basketItemRemoved: nil
-        )
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container)
-        
-        XCTAssertEqual(sut.prefilledAddressName, Name(firstName: firstName, secondName: surname))
-    }
-    
-    func test_givenBasketAddressesAndMatchingFulfilmentType_thenDeliveryLocationFilled() {
-        let locationDelivery = Location(latitude: 12, longitude: 34)
-        let address1 = BasketAddressResponse(firstName: nil, lastName: nil, addressLine1: "addressLine1", addressLine2: "addressLine2", town: "town", postcode: "PA344AG", countryCode: nil, type: "collection", email: nil, telephone: nil, state: nil, county: nil, location: nil)
-        let address2 = BasketAddressResponse(firstName: nil, lastName: nil, addressLine1: "addressLine1", addressLine2: "addressLine2", town: "town", postcode: "PA344AG", countryCode: nil, type: "delivery", email: nil, telephone: nil, state: nil, county: nil, location: locationDelivery)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: RetailStoreOrderMethodType.delivery, cost: 1.5, minSpend: 0), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: [address1, address2], orderSubtotal: 10, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container)
-        
-        let expectation = expectation(description: #function)
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$basket
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 2)
-        
-        XCTAssertEqual(sut.deliveryLocation, locationDelivery)
     }
     
     func test_givenBasketSelectedSlotTodaySelectedTrueAndNoTempTodayTimeSlotAssigned_thenFirstAvailableTimeSlotTodayAssigned() {
@@ -151,82 +78,6 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.tempTodayTimeSlot, timeSlot1)
-    }
-    
-    func test_whenSetDeliveryAddressTriggered_thenSetDeliveryAddressIsCalled() async {
-        let deliveryAddress = BasketAddressRequest(firstName: "first", lastName: "last", addressLine1: "line1", addressLine2: "line2", town: "town", postcode: "postcode", countryCode: "UK", type: "delivery", email: "email@email.com", telephone: "01929", state: nil, county: "county", location: nil)
-        let basketAddress = BasketAddressResponse(
-            firstName: deliveryAddress.firstName,
-            lastName: deliveryAddress.lastName,
-            addressLine1: deliveryAddress.addressLine1,
-            addressLine2: deliveryAddress.addressLine2,
-            town: deliveryAddress.town,
-            postcode: deliveryAddress.postcode,
-            countryCode: deliveryAddress.countryCode,
-            type: "billing",
-            email: deliveryAddress.email,
-            telephone: deliveryAddress.telephone,
-            state: deliveryAddress.state,
-            county: deliveryAddress.county,
-            location: deliveryAddress.location
-        )
-        let basket = Basket(
-            basketToken: "",
-            isNewBasket: true,
-            items: [],
-            fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 0, minSpend: 0),
-            selectedSlot: nil,
-            savings: nil,
-            coupon: nil,
-            fees: nil,
-            tips: nil,
-            addresses: [basketAddress],
-            orderSubtotal: 0,
-            orderTotal: 0,
-            storeId: nil,
-            basketItemRemoved: nil
-        )
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setDeliveryAddress(address: deliveryAddress)]))
-        let sut = makeSUT(container: container)
-        
-        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, addressLine1: deliveryAddress.addressLine1, addressLine2: deliveryAddress.addressLine2, town: deliveryAddress.town, postcode: deliveryAddress.postcode, county: deliveryAddress.county, countryCode: deliveryAddress.countryCode, type: .delivery, location: nil, email: "test@email.com", telephone: "08878882888")
-
-        await sut.setDelivery(address: selectedAddress)
-        
-        XCTAssertEqual(sut.selectedDeliveryAddress, selectedAddress)
-        XCTAssertFalse(sut.settingDeliveryAddress)
-        container.services.verify(as: .basket)
-    }
-    
-    func test_givenFulfilmentTypeIsDelivery_whenCheckAndAssignASAPIsTriggered_thenCorrectServiceIsCalled() {
-        let today = Date().startOfDay
-        let location = Location(latitude: 0, longitude: 0)
-        let selectedStoreDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "TN223HY", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, retailCustomer: nil, searchPostcode: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: nil, end: nil, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
-        let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(CheckoutFulfilmentInfoViewModelTests.storeSearch), basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(location.latitude)), longitude: CLLocationDegrees(Float(location.longitude))))]))
-        let sut = makeSUT(container: container)
-
-        sut.exposeCheckAndAssignASAP()
-        
-        container.services.verify(as: .retailStore)
-    }
-    
-    func test_givenFulfilmentTypeIsCollection_whenCheckAndAssignASAPIsTriggered_thenCorrectServiceIsCalled() {
-        let today = Date().startOfDay
-        let selectedStoreDetails = RetailStoreDetails.mockedData
-        let basket = Basket.mockedDataCollection
-        let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .collection, searchResult: .loaded(CheckoutFulfilmentInfoViewModelTests.storeSearch), basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreCollectionTimeSlots(storeId: selectedStoreDetails.id, startDate: today.startOfDay, endDate: today.endOfDay)]))
-        let sut = makeSUT(container: container)
-
-        sut.exposeCheckAndAssignASAP()
-        
-        container.services.verify(as: .retailStore)
     }
     
     func test_givenSelectedStoreWithCheckoutComPaymentGateway_whenPayByCardTapped_thenNavigateToPaymentHandlingIsCorrectAndSendEvent() {
@@ -288,7 +139,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
@@ -330,7 +182,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .payByApplePaySelected, with: .firebaseAnalytics, params: [:])])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
@@ -395,7 +248,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
 
@@ -460,7 +314,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)
         var checkoutState: CheckoutRootViewModel.CheckoutState?
@@ -706,7 +561,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: services)

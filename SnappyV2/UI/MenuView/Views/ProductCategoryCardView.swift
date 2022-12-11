@@ -14,9 +14,6 @@ struct ProductCategoryCardView: View {
     
     // MARK: - Constants
     struct Constants {
-        static let cornerRadius: CGFloat = 8
-        static let clipShapeCornerRadius: CGFloat = 8
-        static let width: CGFloat = 350
         static let height: CGFloat = 72
         static let spacing: CGFloat = 10
         static let hPadding: CGFloat = 10

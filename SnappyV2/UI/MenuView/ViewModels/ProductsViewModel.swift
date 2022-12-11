@@ -32,7 +32,6 @@ class ProductsViewModel: ObservableObject {
     }
     
     // MARK: - Publishers
-    @Published var productDetail: RetailStoreMenuItem?
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
     @Published var rootCategoriesMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
@@ -43,10 +42,10 @@ class ProductsViewModel: ObservableObject {
     @Published var unsortedItems: [RetailStoreMenuItem]
     @Published var sortedItems = [RetailStoreMenuItem]()
     @Published var specialOfferItems: [RetailStoreMenuItem]
-    @Published var missedOfferMenus = [MissedOfferMenu]()
-    @Published var itemOptions: RetailStoreMenuItem?
+    @Published var missedOfferMenu: MissedOfferMenu?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
+    @Published var selectedSearchTerm: String?
     
     // Search variables
     @Published var searchText: String
@@ -55,7 +54,9 @@ class ProductsViewModel: ObservableObject {
     @Published var searchResultCategories: [GlobalSearchResultRecord]
     @Published var searchResultItems: [RetailStoreMenuItem]
     @Published var navigationWithIsSearchActive: Int
-    
+    @Published var storedSearches: [MenuItemSearch]?
+    @Published var itemSearchHistoryResults = [String]()
+
     // Titles
     @Published var subCategoryNavigationTitle: [String]
     @Published var itemNavigationTitle: String?
@@ -64,7 +65,6 @@ class ProductsViewModel: ObservableObject {
     let container: DIContainer
     var selectedOffer: RetailStoreMenuItemAvailableDeal?
     var missedOffer: BasketItemMissedPromotion?
-    var offerText: String? // Text used for the banner in missed offers / special offers summary view
     private var cancellables = Set<AnyCancellable>()
     private var fetchingGlobalSearchResultRecord: GlobalSearchResultRecord?
     
@@ -232,6 +232,8 @@ class ProductsViewModel: ObservableObject {
     var showCaloriesSort: Bool {
         unsortedItems.contains(where: { $0.itemCaptions?.portionSize != nil })
     }
+    
+    var showSpecialOfferItems: Bool { missedOfferMenu == nil }
 
     // MARK: - Init
     init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {
@@ -245,6 +247,7 @@ class ProductsViewModel: ObservableObject {
         _subCategories = .init(initialValue: appState.value.storeMenu.subCategories)
         _unsortedItems = .init(initialValue: appState.value.storeMenu.unsortedItems)
         _specialOfferItems = .init(initialValue: appState.value.storeMenu.specialOfferItems)
+        _missedOfferMenu = .init(initialValue: appState.value.storeMenu.missedOfferMenu)
         
         // menu search navigation
         _searchText = .init(initialValue: appState.value.storeMenu.searchText)
@@ -271,6 +274,7 @@ class ProductsViewModel: ObservableObject {
         setupSpecialOffers()
         setupIsSearchActive()
         setupBindingsToStoreDisplayedStates(with: appState)
+        setupSelectedSearchTerm()
         
         if let missedOffer = missedOffer {
             getMissedPromotion(offer: missedOffer)
@@ -279,6 +283,15 @@ class ProductsViewModel: ObservableObject {
                 getCategories()
             }
         }
+    }
+    
+    // Triggered from the view .onAppear method
+    func onAppear() async {
+        await populateStoredSearches()
+    }
+    
+    func populateStoredSearches() async {
+        self.storedSearches = await self.container.services.searchHistoryService.getAllMenuItemSearches()
     }
     
     func setupBindingsToStoreDisplayedStates(with appState: Store<AppState>) {
@@ -306,6 +319,11 @@ class ProductsViewModel: ObservableObject {
         $specialOfferItems
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.specialOfferItems = $0 }
+            .store(in: &cancellables)
+        
+        $missedOfferMenu
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.missedOfferMenu = $0 }
             .store(in: &cancellables)
         
         $searchResultCategories
@@ -355,6 +373,7 @@ class ProductsViewModel: ObservableObject {
             }
         case .offers:
             specialOfferItems = []
+            missedOfferMenu = nil
             specialOffersMenuFetch = .notRequested
         default:
             if subCategories.isEmpty == false {
@@ -370,7 +389,19 @@ class ProductsViewModel: ObservableObject {
             unsortedItems = []
             sortedItems = []
             specialOfferItems = []
+            missedOfferMenu = nil
         }
+    }
+    
+    private func setupSelectedSearchTerm() {
+        $selectedSearchTerm
+            .receive(on: RunLoop.main)
+            .sink { [weak self] term in
+                guard let self = self, let term else { return }
+                self.searchText = term
+                self.clearSearchResults()
+            }
+            .store(in: &cancellables)
     }
     
     private func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
@@ -454,12 +485,43 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func sortMenuSearchQueriesByTimestamp(_ menuItemSearches: [MenuItemSearch]?) -> [MenuItemSearch]? {
+        guard searchText.isEmpty == false else {
+            return menuItemSearches?.sorted { $0.timestamp > $1.timestamp }
+        }
+        return menuItemSearches?.filter { $0.name.removeWhitespace().contains(searchText.removeWhitespace()) }.sorted { $0.timestamp > $1.timestamp }
+    }
+    
+    func configureSearchHistoryResults() {
+        let results = sortMenuSearchQueriesByTimestamp(storedSearches)?.compactMap { $0.name } ?? []
+        
+        if self.itemSearchHistoryResults.count == 1 && self.itemSearchHistoryResults.first == self.searchText {
+            clearSearchResults()
+        } else {
+            self.itemSearchHistoryResults = results
+        }
+    }
+    
+    private func showAllSearchHistoryResults() {
+        let allStoredSearches = storedSearches?.sorted { $0.timestamp > $1.timestamp }
+        self.itemSearchHistoryResults = allStoredSearches?.compactMap { $0.name } ?? []
+    }
+    
+    func clearSelectedSearchTerm() {
+        selectedSearchTerm = nil
+    }
+    
     private func setupSearchText() {
         $searchText
+            .dropFirst()
             .removeDuplicates()
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 guard let self = self else { return }
+                                
+                Task {
+                    await self.populateStoredSearches()
+                }
                 
                 if searchText.count == 1 {
                     self.showEnterMoreCharactersView = true
@@ -468,7 +530,16 @@ class ProductsViewModel: ObservableObject {
                     self.showEnterMoreCharactersView = false
                     self.search(text: searchText)
                     self.isSearchActive = true
+                    // Store search text
+                    self.container.appState.value.searchHistoryData.latestProductSearch = searchText
+                    if self.selectedSearchTerm == nil {
+                        self.configureSearchHistoryResults()
+                    } else {
+                        self.selectedSearchTerm = nil
+                    }
+                    
                 } else {
+                    self.showAllSearchHistoryResults()
                     self.showEnterMoreCharactersView = false
                     self.isSearchActive = false
                 }
@@ -541,20 +612,28 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    struct MissedOfferMenu: Identifiable {
+    struct MissedOfferMenuSection: Identifiable, Equatable {
         let id: Int
         let name: String
         let items: [RetailStoreMenuItem]
     }
     
+    struct MissedOfferMenu: Equatable {
+        let discountText: String?
+        let missedOfferSections: [MissedOfferMenuSection]
+    }
+    
     func assignSpecialOfferMenu(dealSections: [MenuItemCategory]) {
         // go through dealSections and find items that belong and assign to MissedOfferMenu
-        var missedOfferMenus = [MissedOfferMenu]()
+        var missedOfferMenus = [MissedOfferMenuSection]()
         for dealSection in dealSections {
             let missedItems = specialOfferItems.filter { $0.deal?.section?.id == dealSection.id }
-            missedOfferMenus.append(MissedOfferMenu(id: dealSection.id, name: dealSection.name, items: missedItems))
+            missedOfferMenus.append(MissedOfferMenuSection(id: dealSection.id, name: dealSection.name, items: missedItems))
         }
-        self.missedOfferMenus = missedOfferMenus
+        self.missedOfferMenu = MissedOfferMenu(
+            discountText: specialOffersMenuFetch.value?.discountText,
+            missedOfferSections: missedOfferMenus
+        )
     }
     
     func clearState() {
@@ -564,8 +643,8 @@ class ProductsViewModel: ObservableObject {
         unsortedItems = []
         subCategories = []
         specialOfferItems = []
+        missedOfferMenu = nil
         selectedOffer = nil
-        offerText = nil
         navigationWithIsSearchActive = 0
         searchText = ""
     }
@@ -577,6 +656,14 @@ class ProductsViewModel: ObservableObject {
     func carouselCategoryTapped(with category: RetailStoreMenuCategory) {
         clearState()
         categoryTapped(with: category, fromState: .rootCategories)
+    }
+    
+    func clearAppstateSearchQuery() {
+        container.appState.value.searchHistoryData.latestProductSearch = nil
+    }
+    
+    func clearSearchResults() {
+        itemSearchHistoryResults = []
     }
 
     func categoryTapped(with category: RetailStoreMenuCategory, fromState: ProductViewState? = nil) {
@@ -594,11 +681,21 @@ class ProductsViewModel: ObservableObject {
             container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
         }
     }
-
+    
     func searchCategoryTapped(category: GlobalSearchResultRecord) {
         sendSearchResultSelectionEvent(categoryId: category.id, name: category.name)
         fetchingGlobalSearchResultRecord = category
         container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
+        if let latestSearchTerm = container.appState.value.searchHistoryData.latestProductSearch {
+            Task {
+                // Store latest search term
+                await self.storeSearchQuery(latestSearchTerm)
+            }
+        }
+    }
+    
+    func storeSearchQuery(_ query: String) async {
+        await container.services.searchHistoryService.storeMenuItemSearch(menuItemSearchString: query)
     }
     
     func logItemIteraction(with item: RetailStoreMenuItem) {
@@ -635,7 +732,6 @@ class ProductsViewModel: ObservableObject {
             name: offer.name
         )
         selectedOffer = offer
-        offerText = selectedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
         if let offersRetrieved = offersRetrieved {
             offersRetrieved()
@@ -644,12 +740,7 @@ class ProductsViewModel: ObservableObject {
     
     func getMissedPromotion(offer: BasketItemMissedPromotion) {
         missedOffer = offer
-        offerText = missedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
-    }
-    
-    func cancelSearchButtonTapped() {
-        searchResult = .notRequested
     }
     
     /// Splits an array of RetailStoreMenuItem into an array of [RetailStoreMenuItem],

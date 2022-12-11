@@ -76,27 +76,18 @@ class BasketViewModel: ObservableObject {
     let driverTipIncrement: Double
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
-    @Published var serviceFeeDescription: (title: String, description: String)?
     @Published var couponFieldHasError = false
-    @Published var showingServiceFeeAlert = false
     @Published var showCouponAlert = false
-    @Published var successfulCouponText: String?
     @Published var mentionMeButtonText: String?
     @Published var showMentionMeLoading = false
     @Published var showMentionMeWebView = false
     @Published var mentionMeRefereeRequestResult = MentionMeRequestResult(success: false, type: .referee, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
     
     @Published var isContinueToCheckoutTapped = false
-    
-    @Published var profile: MemberProfile?
         
     var hasTiers: Bool {
         guard let tiers = selectedStore?.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.deliveryTiers, tiers.count > 0 else { return false }
         return true
-    }
-    
-    var isMemberSignedIn: Bool {
-        profile != nil
     }
     
     var showCheckoutButton: Bool {
@@ -144,8 +135,6 @@ class BasketViewModel: ObservableObject {
         setupSelectedStore(with: appState)
         setupDriverTip()
         setupChangeTipBy()
-        
-        setupBindToProfile(with: appState)
     }
     
     deinit {
@@ -228,17 +217,6 @@ class BasketViewModel: ObservableObject {
         
         return false
     }
-
-    private func setupBindToProfile(with appState: Store<AppState>) {
-        appState
-            .map(\.userData.memberProfile)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] profile in
-                guard let self = self else { return }
-                self.profile = profile
-            }
-            .store(in: &cancellables)
-    }
     
     var tipLevel: TipLevel {
         if let tipLevel = tipLevels?.first(where: { $0.level == 4 }), driverTip >= tipLevel.amount {
@@ -259,8 +237,6 @@ class BasketViewModel: ObservableObject {
         }
         return basket.items.isEmpty
     }
-    
-    var disableDecreaseTipButton: Bool { driverTip == 0 }
     
     var showBasketItems: Bool { basket?.items.isEmpty == false }
     
@@ -374,7 +350,6 @@ class BasketViewModel: ObservableObject {
                 
                 Logger.basket.info("Added coupon: \(self.couponCode)")
                 applyingCoupon = false
-                successfulCouponText = Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(self.couponCode)
                 couponCode = ""
                 couponFieldHasError = false
                 
@@ -513,15 +488,6 @@ class BasketViewModel: ObservableObject {
         } else {
             showCouponAlert = true
         }
-    }
-    
-    func showServiceFeeAlert(title: String, description: String) {
-        self.serviceFeeDescription = (title, description)
-        showingServiceFeeAlert = true
-    }
-    
-    func dismissAlert() {
-        showingServiceFeeAlert = false
     }
 
     func updateBasketItem(basketItem: BasketItem, quantity: Int) async {

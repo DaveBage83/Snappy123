@@ -50,7 +50,6 @@ struct AppV2Constants {
         static var userDeviceIdentifier: String? = {
             return UIDevice.current.identifierForVendor?.uuidString
         }()
-        static let appleAppIdentifier = "1089652370"
     }
     
     // Settings that can vary between busineses and app deployments
@@ -108,6 +107,8 @@ struct AppV2Constants {
         static let contactUsURL = URL(string: "https://app-dev.snappyshopper.co.uk/contact")
         static let maxAlertCharacterLengthForAutoDismiss = 60 // When alerts have greater character length than this, they will be set automatically to be tap to dismiss alerts and include an xmark button
         static let placeholderImage = "productPlaceholder"
+        static let maximumPostcodes = 5
+        static let maximumSearchHistoryResults = 10
     }
     
     struct Driver {

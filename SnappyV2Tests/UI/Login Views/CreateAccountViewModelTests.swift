@@ -20,7 +20,6 @@ class CreateAccountViewModelTests: XCTestCase {
         XCTAssertEqual(sut.email, "")
         XCTAssertEqual(sut.phone, "")
         XCTAssertEqual(sut.password, "")
-        XCTAssertFalse(sut.passwordRevealed)
         XCTAssertFalse(sut.emailMarketingEnabled)
         XCTAssertFalse(sut.directMailMarketingEnabled)
         XCTAssertFalse(sut.notificationMarketingEnabled)
@@ -35,14 +34,6 @@ class CreateAccountViewModelTests: XCTestCase {
         XCTAssertFalse(sut.termsAndConditionsHasError)
         XCTAssertFalse(sut.isLoading)
         XCTAssertFalse(sut.isInCheckout)
-    }
-    
-    func test_basketTotalHasValue_thenOrderTotalPopulated() async throws {
-        let container = DIContainer.preview
-        container.appState.value.userData.basket = Basket.mockedData
-        let sut = makeSUT(container: container)
-        
-        XCTAssertEqual(sut.orderTotal, 23.3)
     }
     
     func test_whenCreateAccountTapped_givenFieldsAreValid_thenCreateUser() async throws {

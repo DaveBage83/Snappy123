@@ -22,13 +22,10 @@ class ProductIncrementButtonViewModel: ObservableObject {
     @Published var optionsShown: RetailStoreMenuItem?
     @Published var showMultipleComplexItemsAlert: Bool = false
     private let isInBasket: Bool
-    @Published var itemForOptions: RetailStoreMenuItem?
     @Published var isGettingProductDetails = false
     @Published var isUpdatingQuantity = false
     @Published var isDisplayingAgeAlert = false
     var updateBasketTask: Task<Void, Never>?
-    
-    @Published private(set) var error: Error?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -36,12 +33,6 @@ class ProductIncrementButtonViewModel: ObservableObject {
         if isInBasket { return true }
         return item.quickAdd
     }
-
-    var itemHasOptionsOrSizes: Bool {
-        item.menuItemSizes != nil || item.menuItemOptions != nil
-    }
-    
-    var showStandardButton: Bool { basketQuantity == 0 }
     
     var showDeleteButton: Bool { basketQuantity == 1 }
     
@@ -123,6 +114,12 @@ class ProductIncrementButtonViewModel: ObservableObject {
     private func updateBasket(newValue: Int) async {
         self.isUpdatingQuantity = true
         
+        if let latestSearchTerm = container.appState.value.searchHistoryData.latestProductSearch {
+            // Store latest search term
+            await container.services.searchHistoryService.storeMenuItemSearch(menuItemSearchString: latestSearchTerm)
+            container.appState.value.searchHistoryData.latestProductSearch = nil
+        }
+        
         // Add item
         if self.basketQuantity == 0 {
             let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, sizeId: nil, bannerAdvertId: nil, options: nil, instructions: nil)
@@ -133,7 +130,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             } catch {
-                self.error = error
+                container.appState.value.errors.append(error)
                 Logger.product.error("Error adding \(String(describing: self.item.name)) to basket - \(error.localizedDescription)")
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
@@ -147,7 +144,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             } catch {
-                self.error = error
+                container.appState.value.errors.append(error)
                 Logger.product.error("Error updating \(String(describing: self.item.name)) in basket - \(error.localizedDescription)")
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
@@ -162,7 +159,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             } catch {
-                self.error = error
+                container.appState.value.errors.append(error)
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             }
@@ -225,7 +222,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
             self.optionsShown = item
         } catch {
             isGettingProductDetails = false
-            self.error = error
+            container.appState.value.errors.append(error)
         }
     }
     

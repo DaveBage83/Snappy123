@@ -24,7 +24,7 @@ struct CardScanViewModelState: Equatable {
     }
 }
 
-public class CardScanViewModel: ObservableObject {
+class CardScanViewModel: ObservableObject {
     private let cameraAccess: CameraAccessProtocol
     private let cameraStream: PixelBufferStream
     private let cardReader: CardScannerProtocol
@@ -33,7 +33,7 @@ public class CardScanViewModel: ObservableObject {
     private let successHandler: (CardScannerResponse) -> Void
     private var timerActive = false
     
-    public var insturctionText: String = "Position your card within the box \nand we'll scan it for you"
+    var insturctionText: String = "Position your card within the box \nand we'll scan it for you"
     
     var previewView: UIView {
         cameraStream.previewView
@@ -49,7 +49,7 @@ public class CardScanViewModel: ObservableObject {
         }
     }
     
-    public init(cameraAccess: CameraAccessProtocol = CameraAccess(),
+    init(cameraAccess: CameraAccessProtocol = CameraAccess(),
          cameraStream: PixelBufferStream = CameraPixelBufferStream(),
          cardReader: CardScannerProtocol = CardScanner(),
          successHandler: @escaping (CardScannerResponse) -> Void) {

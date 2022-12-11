@@ -61,7 +61,6 @@ struct UserStatusCard: View {
         }
         
         struct Text {
-            static let height: CGFloat = 24
             static let spacing: CGFloat = 5
         }
     

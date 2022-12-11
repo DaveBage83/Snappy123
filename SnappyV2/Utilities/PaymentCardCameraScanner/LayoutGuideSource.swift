@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol LayoutGuideSource {
+protocol LayoutGuideSource {
     var leadingAnchor: NSLayoutXAxisAnchor { get }
     var trailingAnchor: NSLayoutXAxisAnchor { get }
     var leftAnchor: NSLayoutXAxisAnchor { get }

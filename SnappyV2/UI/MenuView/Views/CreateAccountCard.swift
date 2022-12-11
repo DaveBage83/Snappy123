@@ -29,7 +29,6 @@ class CreateAccountCardViewModel: ObservableObject {
     @Published var password = ""
     @Published var passwordHasError = false
     @Published var creatingAccount = false
-    @Published var error: Swift.Error?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -54,7 +53,7 @@ class CreateAccountCardViewModel: ObservableObject {
         passwordHasError = password.isEmpty
         
         guard passwordHasError == false else {
-            self.error = QuickCreateAccountError.passwordEmpty
+            container.appState.value.errors.append(QuickCreateAccountError.passwordEmpty)
             return
         }
         
@@ -66,7 +65,7 @@ class CreateAccountCardViewModel: ObservableObject {
               let phone = address.telephone
         else {
             // We should never get here as all above params are required to complete an order
-            self.error = GenericError.somethingWrong
+            container.appState.value.errors.append(GenericError.somethingWrong)
             return
         }
         
@@ -95,7 +94,7 @@ class CreateAccountCardViewModel: ObservableObject {
             container.appState.value.routing.selectedTab = .account
             Logger.member.log("Successfully registered member")
         } catch {
-            self.error = error
+            container.appState.value.errors.append(error)
             creatingAccount = false
             Logger.member.error("Failed to register member.")
         }
@@ -110,14 +109,12 @@ struct CreateAccountCard: View {
     
     struct Constants {
         struct General {
-            static let cornerRadius: CGFloat = 15
             static let padding: CGFloat = 24
         }
         
         struct Option {
             static let iconSize: CGFloat = 24
             static let iconPadding: CGFloat = 10
-            static let width: CGFloat = 120
         }
         
         struct Title {

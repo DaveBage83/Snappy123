@@ -54,11 +54,6 @@ struct OrderStoreView: View {
         static let hSpacing: CGFloat = 30
         static let cornerRadius: CGFloat = 6
         
-        struct Logo {
-            static let cornerRadius: CGFloat = 10
-            static let size: CGFloat = 88
-        }
-        
         struct StoreInfo {
             static let spacing: CGFloat = 10
             static let locationIconWidth: CGFloat = 12

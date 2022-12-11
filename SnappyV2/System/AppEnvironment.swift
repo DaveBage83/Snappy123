@@ -33,7 +33,7 @@ extension AppEnvironment {
         )
         let userDefaults = configuredUserDefaults()
         let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
-        let dbRepositories = configuredDBRepositories(appState: appState) // Why is appState required?
+        let dbRepositories = configuredDBRepositories()
         let userDefaultsRepositories = configuredUserDefaultsRepositories(userDefaults: userDefaults)
         
         let eventLogger = configuredEventLogger(
@@ -159,7 +159,7 @@ extension AppEnvironment {
         )
     }
     
-    private static func configuredDBRepositories(appState: Store<AppState>) -> DIContainer.DBRepositories {
+    private static func configuredDBRepositories() -> DIContainer.DBRepositories {
         
         let persistentStore = CoreDataStack(version: CoreDataStack.Version.actual)
         let businessProfileDBRepository = BusinessProfileDBRepository(persistentStore: persistentStore)
@@ -170,6 +170,7 @@ extension AppEnvironment {
         let checkoutDBRepository = CheckoutDBRepository(persistentStore: persistentStore)
         let addressDBRepository = AddressDBRepository(persistentStore: persistentStore)
         let asyncImageDBRepository = AsyncImageDBRepository(persistentStore: persistentStore)
+        let searchHistoryDBRepository = SearchHistoryDBRepository(persistentStore: persistentStore)
         
         return .init(
             businessProfileRepository: businessProfileDBRepository,
@@ -179,7 +180,8 @@ extension AppEnvironment {
             memberRepository: memberDBRepository,
             checkoutRepository: checkoutDBRepository,
             addressRepository: addressDBRepository,
-            asyncImageRepository: asyncImageDBRepository
+            asyncImageRepository: asyncImageDBRepository,
+            searchHistoryRepository: searchHistoryDBRepository
         )
     }
     
@@ -212,6 +214,7 @@ extension AppEnvironment {
         let retailStoreService = RetailStoresService(
             webRepository: webRepositories.retailStoresRepository,
             dbRepository: dbRepositories.retailStoresRepository,
+            searchHistoryDBRepository: dbRepositories.searchHistoryRepository,
             appState: appState,
             eventLogger: eventLogger
         )
@@ -263,6 +266,8 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         
+        let searchHistoryService = SearchHistoryService(dbRepository: dbRepositories.searchHistoryRepository)
+        
         let userPermissionsService = UserPermissionsService(
             userDefaultsRepository: userDefaultsRepositories.userPermissionsRepository,
             appState: appState,
@@ -284,7 +289,8 @@ extension AppEnvironment {
             utilityService: utilityService,
             imageService: imageService,
             notificationService: notificationService,
-            userPermissionsService: userPermissionsService
+            userPermissionsService: userPermissionsService,
+            searchHistoryService: searchHistoryService
         )
     }
 }
@@ -313,6 +319,7 @@ extension DIContainer {
         let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
         let asyncImageRepository: AsyncImageDBRepository
+        let searchHistoryRepository: SearchHistoryDBRepository
     }
     
     struct UserDefaultsRepositories {

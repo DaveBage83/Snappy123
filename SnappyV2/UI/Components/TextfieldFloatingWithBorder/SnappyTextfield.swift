@@ -86,7 +86,6 @@ struct SnappyTextfield: View {
     @State var labelWidth: CGFloat = 0
     @State var borderWidth: CGFloat = 0
     @State var borderHeight: CGFloat = 0
-    @State var labelFontSize: CGFloat = 14
     @State var labelYOffset: CGFloat = 0
     @State var font: Font = .Body1.regular()
     @State var isRevealed = true // Only used for secure field and should be set to true as default

@@ -16,11 +16,6 @@ struct OrderDetailsView: View {
     // MARK: - Constants
     
     struct Constants {
-        struct DragCapsule {
-            static let width: CGFloat = 35
-            static let height: CGFloat = 5
-        }
-        
         struct ProgressBar {
             static let height: CGFloat = 6
         }
@@ -35,7 +30,6 @@ struct OrderDetailsView: View {
         }
         
         struct TopView {
-            static let vPadding: CGFloat = 10
             static let spacing: CGFloat = 24
         }
         

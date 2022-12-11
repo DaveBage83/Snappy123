@@ -1,34 +1,34 @@
 import Foundation
 
-public func weakClosure<WeakValue: AnyObject>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue) -> Void) -> () -> Void { { [weak weakValue] in
+func weakClosure<WeakValue: AnyObject>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue) -> Void) -> () -> Void { { [weak weakValue] in
         asyncQueue.asyncWithNowFallback {
             guard let value = weakValue else { return }
             closure(value)
         }
     }
 }
-public func weakClosure<WeakValue: AnyObject, T1>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1) -> Void) -> (T1) -> Void { { [weak weakValue] t1 in
+func weakClosure<WeakValue: AnyObject, T1>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1) -> Void) -> (T1) -> Void { { [weak weakValue] t1 in
         asyncQueue.asyncWithNowFallback {
             guard let value = weakValue else { return }
             closure(value, t1)
         }
     }
 }
-public func weakClosure<WeakValue: AnyObject, T1, T2>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1, T2) -> Void) -> (T1, T2) -> Void { { [weak weakValue] t1, t2 in
+func weakClosure<WeakValue: AnyObject, T1, T2>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1, T2) -> Void) -> (T1, T2) -> Void { { [weak weakValue] t1, t2 in
         asyncQueue.asyncWithNowFallback {
             guard let value = weakValue else { return }
             closure(value, t1, t2)
         }
     }
 }
-public func weakClosure<WeakValue: AnyObject, T1, T2, T3>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1, T2, T3) -> Void) -> (T1, T2, T3) -> Void { { [weak weakValue] t1, t2, t3 in
+func weakClosure<WeakValue: AnyObject, T1, T2, T3>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1, T2, T3) -> Void) -> (T1, T2, T3) -> Void { { [weak weakValue] t1, t2, t3 in
         asyncQueue.asyncWithNowFallback {
             guard let value = weakValue else { return }
             closure(value, t1, t2, t3)
         }
     }
 }
-public func weakClosure<WeakValue: AnyObject, T1, T2, T3, T4>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1, T2, T3, T4) -> Void) -> (T1, T2, T3, T4) -> Void { { [weak weakValue] t1, t2, t3, t4 in
+func weakClosure<WeakValue: AnyObject, T1, T2, T3, T4>(_ weakValue: WeakValue, on asyncQueue: DispatchQueue? = nil, _ closure: @escaping (WeakValue, T1, T2, T3, T4) -> Void) -> (T1, T2, T3, T4) -> Void { { [weak weakValue] t1, t2, t3, t4 in
         asyncQueue.asyncWithNowFallback {
             guard let value = weakValue else { return }
             closure(value, t1, t2, t3, t4)
@@ -36,7 +36,7 @@ public func weakClosure<WeakValue: AnyObject, T1, T2, T3, T4>(_ weakValue: WeakV
     }
 }
 
-public extension DispatchQueue {
+extension DispatchQueue {
     func asyncWeakClosure<WeakValue: AnyObject>(_ weakValue: WeakValue, _ closure: @escaping (WeakValue) -> Void) {
         async(execute: weakClosure(weakValue, closure))
     }

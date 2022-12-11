@@ -41,8 +41,6 @@ class OrderSummaryCardViewModel: ObservableObject {
     
     var order: PlacedOrderSummary?
     
-    @Published var showDetailsView = false
-    
     // MARK: - Init
     init(container: DIContainer, order: PlacedOrderSummary?, basket: Basket?) {
         self.container = container

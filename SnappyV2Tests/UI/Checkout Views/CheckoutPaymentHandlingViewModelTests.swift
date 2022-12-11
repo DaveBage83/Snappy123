@@ -19,9 +19,6 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertNil(sut.paymentOutcome)
-        XCTAssertTrue(sut.deliveryAddress.isEmpty)
-        XCTAssertFalse(sut.settingBillingAddress)
-        XCTAssertNil(sut.prefilledAddressName)
         XCTAssertNil(sut.instructions)
         XCTAssertNil(sut.draftOrderFulfilmentDetails)
         XCTAssertTrue(sut.creditCardNumber.isEmpty)
@@ -455,62 +452,6 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertNil(sut.basketTotal)
     }
     
-    func test_whenSetBillingAddressTriggered_thenSetBillingAddressIsCalled() async {
-        let firstName = "first"
-        let lastName = "last"
-        let addressLine1 = "line1"
-        let addressLine2 = "line2"
-        let town = "town"
-        let postcode = "postcode"
-        let countryCode = "UK"
-        let type = "billing"
-        let email = "email@email.com"
-        let telephone = "01929"
-        let county = "county"
-        let billingAddressResponse = BasketAddressResponse(firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, countryCode: countryCode, type: type, email: email, telephone: telephone, state: nil, county: county, location: nil)
-        let billingAddressRequest = BasketAddressRequest(firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, countryCode: countryCode, type: type, email: email, telephone: telephone, state: nil, county: county, location: nil)
-        let basket = Basket(
-            basketToken: "",
-            isNewBasket: true,
-            items: [],
-            fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 0, minSpend: 0),
-            selectedSlot: nil,
-            savings: nil,
-            coupon: nil,
-            fees: nil,
-            tips: nil,
-            addresses: [billingAddressResponse],
-            orderSubtotal: 0,
-            orderTotal: 0,
-            storeId: nil,
-            basketItemRemoved: nil
-        )
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setBillingAddress(address: billingAddressRequest)]))
-        let sut = makeSUT(container: container)
-        
-        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, county: county, countryCode: countryCode, type: .delivery, location: nil, email: nil, telephone: nil)
-        
-        let expectation = expectation(description: "selectedDeliveryAddress")
-        var cancellables = Set<AnyCancellable>()
-
-        sut.$basket
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        wait(for: [expectation], timeout: 2)
-        
-        await sut.setBilling(address: selectedAddress)
-        
-        XCTAssertFalse(sut.settingBillingAddress)
-        container.services.verify(as: .basket)
-    }
-    
     func test_givenTempTimeSlot_whenContinueButtonTapped_thenSetBillingIsTriggered() async {
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
@@ -582,7 +523,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false
@@ -625,7 +567,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false
@@ -669,7 +612,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false
@@ -717,7 +661,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false
@@ -764,7 +709,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false
@@ -821,7 +767,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedAsyncImageService(expected: []),
             notificationService: MockedNotificationService(expected: []),
-            userPermissionsService: MockedUserPermissionsService(expected: [])
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false

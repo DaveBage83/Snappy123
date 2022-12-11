@@ -14,26 +14,12 @@ struct CheckoutSuccessView: View {
     @Environment(\.mainWindowSize) var mainWindowSize
     @Environment(\.tabViewHeight) var tabViewHeight
     
-    typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias PaymentStrings = Strings.CheckoutView.Payment
     
     struct Constants {
-        struct Main {
-            static let hPadding: CGFloat = 30
-        }
-        
         struct HelpStack {
             static let spacing: CGFloat = 16
             static let textWidthMultiplier: CGFloat = 0.7
-        }
-        
-        struct Button {
-            static let spacing: CGFloat = 16
-        }
-        
-        struct SuccessBanner {
-            static let spacing: CGFloat = 16
-            static let height: CGFloat = 75
         }
         
         struct SuccessImage {
@@ -185,20 +171,6 @@ struct CheckoutSuccessView: View {
         .padding(.bottom, Constants.MentionMe.bottomPadding)
         .padding(.top)
         .padding(.horizontal, Constants.MentionMe.hPadding)
-    }
-    
-    func successBanner() -> some View {
-        HStack(spacing: Constants.SuccessBanner.spacing) {
-            Image.CheckoutView.success
-                .resizable()
-                .scaledToFit()
-                .frame(height: Constants.SuccessBanner.height)
-            
-            Text(PaymentStrings.paymentSuccess.localized)
-                .font(.heading2)
-                .foregroundColor(colorPalette.alertSuccess)
-                .multilineTextAlignment(.center)
-        }
     }
 }
 

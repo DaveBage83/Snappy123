@@ -55,7 +55,7 @@ struct SettingsButton: View {
             MemberDashboardSettingsView(
                 viewModel: .init(container: viewModel.container),
                 marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
-                pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
+                pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings),
                 dismissViewHandler: {
                     viewModel.settingsDismissed()
                 })

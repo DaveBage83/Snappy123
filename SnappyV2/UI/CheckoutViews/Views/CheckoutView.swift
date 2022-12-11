@@ -8,12 +8,9 @@
 import SwiftUI
 
 struct CheckoutView: View {
-    @Environment(\.presentationMode) var presentation
     @Environment(\.colorScheme) var colorScheme
     
     typealias RetailMembershipIdWarningStrings = Strings.CheckoutView.RetailMembershipIdWarning
-    typealias AccountLoginStrings = Strings.CheckoutView.LoginToAccount
-    typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias PaymentStrings = Strings.CheckoutView.Payment
     
     @ObservedObject var viewModel: CheckoutRootViewModel
@@ -22,10 +19,8 @@ struct CheckoutView: View {
         static let buttonSpacing: CGFloat = 16
         
         struct RetailMembershipIdWarning {
-            static let spacing: CGFloat = 16
             static let iconHeight: CGFloat = 16
             static let fontPadding: CGFloat = 12
-            static let bottomPadding: CGFloat = 4
             static let lineLimit = 6
         }
     }

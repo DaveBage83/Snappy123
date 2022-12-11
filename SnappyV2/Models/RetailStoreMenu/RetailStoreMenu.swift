@@ -12,6 +12,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     // Codable - populated by API response
     let id: Int?
     let name: String?
+    let discountText: String?
     let categories: [RetailStoreMenuCategory]?
     let menuItems: [RetailStoreMenuItem]?
     let dealSections: [MenuItemCategory]?
@@ -26,6 +27,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     private enum CodingKeys: String, CodingKey {
         case id
         case name
+        case discountText
         case categories
         case menuItems
         case dealSections
@@ -36,6 +38,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(Int.self, forKey: .id)
         name = try container.decodeIfPresent(String.self, forKey: .name)
+        discountText = try container.decodeIfPresent(String.self, forKey: .discountText)
         categories = try container.decodeIfPresent([RetailStoreMenuCategory].self, forKey: .categories)
         menuItems = try container.decodeIfPresent([RetailStoreMenuItem].self, forKey: .menuItems)
         dealSections = try container.decodeIfPresent([MenuItemCategory].self, forKey: .dealSections)
@@ -51,6 +54,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     init(
         id: Int,
         name: String,
+        discountText: String?,
         categories: [RetailStoreMenuCategory]?,
         menuItems: [RetailStoreMenuItem]?,
         dealSections: [MenuItemCategory]?,
@@ -62,6 +66,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     ) {
         self.id = id
         self.name = name
+        self.discountText = discountText
         self.categories = categories
         self.menuItems = menuItems
         self.dealSections = dealSections

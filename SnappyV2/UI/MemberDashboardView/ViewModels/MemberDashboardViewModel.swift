@@ -85,30 +85,6 @@ class MemberDashboardViewModel: ObservableObject {
     var firstNamePresent: Bool {
         profile?.firstname != nil
     }
-
-    var isDashboardSelected: Bool {
-        viewState == .dashboard
-    }
-    
-    var isOrdersSelected: Bool {
-        viewState == .orders
-    }
-    
-    var isAddressesSelected: Bool {
-        viewState == .myDetails
-    }
-    
-    var isProfileSelected: Bool {
-        viewState == .profile
-    }
-    
-    var isLoyaltySelected: Bool {
-        viewState == .loyalty
-    }
-    
-    var isLogOutSelected: Bool {
-        viewState == .logOut
-    }
     
     var noMemberFound: Bool {
         profile == nil
@@ -132,7 +108,6 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var viewState: OptionType = .dashboard
     @Published var loggingOut = false
     @Published var loading = false
-    @Published var showSettings = false
     @Published var driverSettingsLoading = false
     @Published var driverDependencies: DriverDependencyInjectionContainer?
     @Published var driverPushNotification: [AnyHashable : Any]
@@ -254,27 +229,6 @@ class MemberDashboardViewModel: ObservableObject {
     private func setError(_ err: Error) {
         container.appState.value.errors.append(err)
     }
-    
-    func addAddress(address: Address) async {
-        do {
-            try await self.container.services.memberService.addAddress(address: address)
-            Logger.member.log("Successfully added address with ID \(String(address.id ?? 0))")
-        } catch {
-            self.setError(error)
-            
-            Logger.member.error("Failed to add address with ID \(String(address.id ?? 0)): \(error.localizedDescription)")
-        }
-    }
-    
-   func updateAddress(address: Address) async {
-        do {
-            try await self.container.services.memberService.updateAddress(address: address)
-            Logger.member.log("Successfully update address with ID \(String(address.id ?? 0))")
-        } catch {
-            self.setError(error)
-            Logger.member.error("Failed to update address with ID \(String(address.id ?? 0)): \(error.localizedDescription)")
-        }
-    }
 
     func logOut() async {
         loggingOut = true
@@ -286,42 +240,6 @@ class MemberDashboardViewModel: ObservableObject {
             self.setError(error)
             Logger.member.error("Failed to log user out: \(error.localizedDescription)")
         }
-    }
-
-    func dashboardTapped() {
-        viewState = .dashboard
-    }
-    
-    func ordersTapped() {
-        viewState = .orders
-    }
-    
-    func myDetailsTapped() {
-        viewState = .myDetails
-    }
-    
-    func profileTapped() {
-        viewState = .profile
-    }
-    
-    func loyaltyTapped() {
-        viewState = .loyalty
-    }
-    
-    func logOutTapped() {
-        viewState = .logOut
-    }
-    
-    func settingsTapped() {
-        showSettings = true
-    }
-    
-    func dismissSettings() {
-        showSettings = false
-    }
-    
-    func resetPasswordDismissed(withError error: Error) {
-        self.setError(error)
     }
     
     func startDriverShiftTapped() async {

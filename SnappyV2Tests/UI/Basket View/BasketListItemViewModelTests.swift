@@ -18,8 +18,6 @@ class BasketListItemViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.sizeText.isEmpty)
         XCTAssertFalse(sut.hasMissedPromotions)
-        XCTAssertTrue(sut.quantity.isEmpty)
-        XCTAssertNil(sut.selectionOptionsDict)
         XCTAssertNil(sut.basket)
         XCTAssertTrue(sut.bannerDetails.isEmpty)
         XCTAssertNil(sut.missedPromoShown)
@@ -34,36 +32,7 @@ class BasketListItemViewModelTests: XCTestCase {
         let sut = makeSUT(item: basketItem, changeQuantity: {_, _ in})
         
         XCTAssertEqual(sut.item, basketItem)
-        XCTAssertTrue(sut.quantity.isEmpty)
-        XCTAssertNil(sut.latestMissedPromotion)
         XCTAssertFalse(sut.hasMissedPromotions)
-    }
-    
-    func test_givenBasketItem_whenOnSubmit_thenQuantityIsResetAndClosureReturns() {
-        let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)
-        let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
-        let sut = makeSUT(item: basketItem) { basketItem, quantity in
-            XCTAssertEqual(basketItem.menuItem.id, 123)
-            XCTAssertEqual(quantity, 2)
-            XCTAssertEqual(basketItem.basketLineId, 321)
-        }
-        sut.quantity = "2"
-        
-        sut.onSubmit()
-        
-        XCTAssertTrue(sut.quantity.isEmpty)
-    }
-    
-    func test_whenFilterQuantityToStringNumberIsTriggered_thenOnlyNumberIsStored() {
-        let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)
-        let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
-        let sut = makeSUT(item: basketItem, changeQuantity: {_, _ in})
-        
-        sut.filterQuantityToStringNumber(stringValue: "OneTwo12")
-        
-        XCTAssertEqual(sut.quantity, "12")
     }
     
     func test_givenBasketItemWithPromos_whenInit_thenHasMissedPromotions() {
@@ -120,16 +89,6 @@ class BasketListItemViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.totalPriceString, "£10.00")
         XCTAssertEqual(sut.priceString, "£10.00")
-    }
-    
-    func test_givenMissedPromo_whenShowMissedPromoTapped_thenMissedPromoShownIsPopulated() {
-        let basketItem = BasketItem.mockedDataComplex
-        let promo = BasketItemMissedPromotion.mockedData
-        let sut = makeSUT(item: basketItem, changeQuantity: {_,_ in})
-        
-        sut.showMissed(promo: promo)
-        
-        XCTAssertEqual(sut.missedPromoShown, promo)
     }
     
     func test_givenItemWithOptions_whenInit_thenPromoBannerAddedToBannerDetails() {

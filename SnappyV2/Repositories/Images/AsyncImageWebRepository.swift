@@ -17,7 +17,7 @@ struct AsyncImageWebRepository: AsyncImageWebRepositoryProtocol {
     
     var images: [URLRequest: LoaderStatus] = [:]
     
-    public func fetch(_ url: URL) async throws -> UIImage? {
+    func fetch(_ url: URL) async throws -> UIImage? {
         let request = URLRequest(url: url)
         return try await fetch(request)
     }

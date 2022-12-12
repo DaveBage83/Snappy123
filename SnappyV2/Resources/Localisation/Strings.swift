@@ -61,6 +61,8 @@ public enum Strings {
         case from = "general.from"
         case min = "general.min"
         case shop = "general.shop"
+        case hour = "general.hour"
+        case hours = "general.hours"
         
         public enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
@@ -255,6 +257,18 @@ public enum Strings {
                 case otpSentEmailText = "checkoutview.otp.optsentemailtext"
                 case otpSentMobileText = "checkoutview.otp.optsentmobiletext"
             }
+        }
+        
+        public enum SlotExpiry: String, IterableSnappyString {
+            case error = "checkoutview.slotexpiry.error"
+            case tapForNewSlot = "checkoutview.slotexpiry.tapfornewslot"
+            case slotExpiresIn = "checkoutview.slotexpiry.slotexpiresin"
+        }
+        
+        public enum SlotExpiryCustom: String, IterableSnappyStringCustomisable {
+            case expiresInHrsAndMins = "checkoutview.slotexpirycustom.expiresinhrsandmins"
+            case expiresInMins = "checkoutview.slotexpirycustom.expiresinmins"
+            case expiresInSecs = "checkoutview.slotexpirycustom.expiresinsecs"
         }
     }
     

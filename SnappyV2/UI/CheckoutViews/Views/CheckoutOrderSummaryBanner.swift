@@ -36,14 +36,24 @@ struct CheckoutOrderSummaryBanner: View {
             Divider()
             
             if let orderTotalPriceString = checkoutRootViewModel.orderTotalPriceString {
-                HStack(spacing: Constants.hSpacing) {
-                    Text(Strings.CheckoutView.Progress.orderTotal.localized.capitalizingFirstLetterOnly())
-                    Text("|")
-                    Text(orderTotalPriceString)
+                HStack {
+                    HStack(spacing: Constants.hSpacing) {
+                        Text(Strings.CheckoutView.Progress.orderTotal.localized.capitalizingFirstLetterOnly())
+                        Text("|")
+                        Text(orderTotalPriceString)
+                    }
+                    
+                    Spacer()
+                    
+                    if let basketSlot = checkoutRootViewModel.basket?.selectedSlot {
+                        CheckoutSlotExpiryView(viewModel: .init(
+                            container: checkoutRootViewModel.container,
+                            basketSlot: basketSlot))
+                    }  
                 }
                 .font(.button2())
                 .foregroundColor(colorPalette.primaryBlue)
-                .padding(Constants.padding)
+                .padding(.horizontal)
                 .frame(maxWidth: .infinity)
                 Divider()
             }

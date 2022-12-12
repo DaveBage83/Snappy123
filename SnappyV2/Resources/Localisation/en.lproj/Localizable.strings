@@ -52,6 +52,8 @@
 "general.from" = "From";
 "general.min" = "Min";
 "general.shop" = "Shop";
+"general.hour" = "hr";
+"general.hours" = "hrs";
 
 // MARK: - General - custom
 
@@ -196,6 +198,11 @@
 "checkoutview.otp.optsentemailtext" = "Please enter the one time password sent to %@. Enter the password code below. If you do not see the email, then please check any junk/spam in boxes.";
 "checkoutview.otp.optsentmobiletext" = "Please enter the one time password sent to %@. Enter the password code below.";
 "checkoutview.otp.enterpassword" = "Enter Password";
+"checkoutview.slotexpiry.error" = "Your time slot has expired! Please select a new one to continue.";
+"checkoutview.slotexpiry.tapfornewslot" = "Tap to select a new slot";
+"checkoutview.slotexpirycustom.expiresinhrsandmins" = "Slot expires in: %@ %@, %@ mins";
+"checkoutview.slotexpirycustom.expiresinmins" = "Slot expires in: %@ mins";
+"checkoutview.slotexpirycustom.expiresinsecs" = "Slot expires in: %@ secs";
 
 // MARK: - BasketView
 

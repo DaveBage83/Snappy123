@@ -428,6 +428,9 @@
 		55F957D0288011B900A99BA3 /* EditAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */; };
 		55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */; };
 		55FCDCB72938EE870000E53A /* MenuItemSearch+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FCDCB62938EE870000E53A /* MenuItemSearch+CoreData.swift */; };
+		55FCDCB9294348250000E53A /* CheckoutSlotExpiryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FCDCB8294348250000E53A /* CheckoutSlotExpiryView.swift */; };
+		55FCDCBB29475DF10000E53A /* CheckoutSlotExpiryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FCDCBA29475DF10000E53A /* CheckoutSlotExpiryViewModel.swift */; };
+		55FCDCBF29476B7B0000E53A /* CheckoutSlotExpiryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FCDCBE29476B7B0000E53A /* CheckoutSlotExpiryViewModelTests.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
 		AF00E20F28D38928001B8184 /* ExpandableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF00E20E28D38928001B8184 /* ExpandableContentView.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
@@ -1074,6 +1077,9 @@
 		55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressViewModel.swift; sourceTree = "<group>"; };
 		55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDisplayCardTests.swift; sourceTree = "<group>"; };
 		55FCDCB62938EE870000E53A /* MenuItemSearch+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MenuItemSearch+CoreData.swift"; sourceTree = "<group>"; };
+		55FCDCB8294348250000E53A /* CheckoutSlotExpiryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSlotExpiryView.swift; sourceTree = "<group>"; };
+		55FCDCBA29475DF10000E53A /* CheckoutSlotExpiryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSlotExpiryViewModel.swift; sourceTree = "<group>"; };
+		55FCDCBE29476B7B0000E53A /* CheckoutSlotExpiryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSlotExpiryViewModelTests.swift; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
 		AF00E20E28D38928001B8184 /* ExpandableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContentView.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -2556,6 +2562,7 @@
 				0A7976C528C4D79A009B1FB6 /* PushNotificationSettingsViewModelTests.swift */,
 				0AD05B8028D19CB800A182FA /* StoreReviewViewModelTests.swift */,
 				0A27B98F28DDE12500D29DB5 /* VerifyMobileNumberViewModelTests.swift */,
+				55FCDCBE29476B7B0000E53A /* CheckoutSlotExpiryViewModelTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3166,6 +3173,8 @@
 				5566B0BC28F5CDA600114BBE /* ToastableViewContainer.swift */,
 				558579FE2908869C0017855B /* LoadingDotsView.swift */,
 				C140CB53291BBC2A0039AA65 /* AnimatedLoadingView.swift */,
+				55FCDCB8294348250000E53A /* CheckoutSlotExpiryView.swift */,
+				55FCDCBA29475DF10000E53A /* CheckoutSlotExpiryViewModel.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3768,6 +3777,7 @@
 				AFF1DE6428B507900026FFA2 /* UIStackViewConstructor.swift in Sources */,
 				AFF1DE5A28B503C30026FFA2 /* NSRegularExpressionExtensions.swift in Sources */,
 				55F957CC287E9E2700A99BA3 /* SnappyMultilineTextField.swift in Sources */,
+				55FCDCB9294348250000E53A /* CheckoutSlotExpiryView.swift in Sources */,
 				0AEA00D728A39E1900D48E10 /* DeepLinksHandler.swift in Sources */,
 				AF9A392C28047AB400A7B30F /* BlurView.swift in Sources */,
 				0AFE03ED28B4C7EC0036CCC9 /* UIApplication+Extensions.swift in Sources */,
@@ -3794,6 +3804,7 @@
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
 				AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */,
 				55F957C42878DCCA00A99BA3 /* AddressDisplayCard.swift in Sources */,
+				55FCDCBB29475DF10000E53A /* CheckoutSlotExpiryViewModel.swift in Sources */,
 				0A9F2ED728AEA12200F6B0BE /* PushNotificationsEnablePromptViewModel.swift in Sources */,
 				0AEA00FD28A500BD00D48E10 /* PushNotificationWebRepository.swift in Sources */,
 				AFF1DE4928B502B70026FFA2 /* CameraAccess.swift in Sources */,
@@ -3983,6 +3994,7 @@
 				AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */,
 				AFF90B44284A5FDB00DD77F5 /* MockedRetailStoreMenuDBRepository.swift in Sources */,
 				55E8051B27F2DAA500111D58 /* MarketingPreferencesViewModelTests.swift in Sources */,
+				55FCDCBF29476B7B0000E53A /* CheckoutSlotExpiryViewModelTests.swift in Sources */,
 				AFE5728028AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift in Sources */,
 				0A27480828CB57FF00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift in Sources */,
 				AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */,

@@ -110,6 +110,8 @@ struct AppV2Constants {
         static let placeholderImage = "productPlaceholder"
         static let maximumPostcodes = 5
         static let maximumSearchHistoryResults = 10
+        static let expiryWarningThreshold: Double = 300 // 5 mins
+        static let todayTimeslotDeadline: Double = 900 // 15 mins
     }
     
     struct Driver {

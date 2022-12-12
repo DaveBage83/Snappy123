@@ -324,6 +324,11 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
             self.isReservingTimeSlot = false
             self.container.appState.value.userData.tempTodayTimeSlot = tempTimeSlot
+            
+            if tempTimeSlot != nil {
+                self.container.appState.value.userData.todaySlotExpiry = Date().timeIntervalSince1970 + AppV2Constants.Business.todayTimeslotDeadline
+            }
+            
             self.dismissView()
         } catch {
             self.container.appState.value.errors.append(error)
@@ -345,8 +350,11 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         if isTodaySelectedWithSlotSelectionRestrictions {
             if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
                 await reserveTimeSlot(date: day, time: nil)
+                // If reserving today, we set an expiry ourselves according to AppState value
+                container.appState.value.userData.todaySlotExpiry = Date().timeIntervalSince1970 + AppV2Constants.Business.todayTimeslotDeadline
             }
         } else {
+            container.appState.value.userData.todaySlotExpiry = nil
             if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
                 if isSlotSelectedToday, isInCheckout == true {
                     await reserveTimeSlot(date: day, time: nil, tempTimeSlot: timeSlot)

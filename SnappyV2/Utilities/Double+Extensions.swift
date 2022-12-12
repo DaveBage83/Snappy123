@@ -8,13 +8,6 @@
 import Foundation
 
 extension Double {
-//    func toCurrencyString() -> String {
-//        let formatter = NumberFormatter()
-//        formatter.currencyCode = AppV2Constants.Business.currencyCode
-//        formatter.numberStyle = .currency
-//        return formatter.string(from: self as NSNumber) ?? "NaN"
-//    }
-    
     // reason we are not passing currencyCode instead of RetailStoreCurrency
     // is because in the future RetailStoreCurrency might have more formatting
     // settings

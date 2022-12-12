@@ -13,7 +13,7 @@ import AppsFlyerLib
 import FBSDKCoreKit
 import Firebase
 import Frames
-import Checkout
+@testable import Checkout
 
 @testable import SnappyV2
 import SwiftUI
@@ -55,6 +55,43 @@ class CheckoutServiceTests: XCTestCase {
     }
 }
 
+enum TokenCreator {
+    static func create(type: TokenDetails.TokenType,
+                       token: String = "SomeToken",
+                       expiresOn: String = "someDate",
+                       expiryDate: ExpiryDate = ExpiryDate(month: 05, year: 2055),
+                       scheme: Card.Scheme? = nil,
+                       last4: String = "",
+                       bin: String = "",
+                       cardType: String? = nil,
+                       cardCategory: String? = nil,
+                       issuer: String? = nil,
+                       issuerCountry: String? = nil,
+                       productId: String? = nil,
+                       productType: String? = nil,
+                       billingAddress: Checkout.Address? = nil,
+                       phone: TokenDetails.Phone? = nil,
+                       name: String? = nil) -> TokenDetails {
+        TokenDetails(type: type,
+                     token: token,
+                     expiresOn: expiresOn,
+                     expiryDate: expiryDate,
+                     scheme: scheme,
+                     last4: last4,
+                     bin: bin,
+                     cardType: cardType,
+                     cardCategory: cardCategory,
+                     issuer: issuer,
+                     issuerCountry: issuerCountry,
+                     productId: productId,
+                     productType: productType,
+                     billingAddress: billingAddress,
+                     phone: phone,
+                     name: name)
+    }
+
+}
+
 class MockCheckoutAPIClient: CheckoutAPIServiceProtocol {
     let publicKey: String
     let environment: Checkout.Environment
@@ -65,24 +102,7 @@ class MockCheckoutAPIClient: CheckoutAPIServiceProtocol {
     }
     
     func createCardToken(card: Card) async throws -> TokenDetails {
-        return TokenDetails(
-            type: .card,
-            token: "SomeToken",
-            expiresOn: "someDate",
-            expiryDate: ExpiryDate(month: 05, year: 30),
-            scheme: nil,
-            last4: "",
-            bin: "",
-            cardType: nil,
-            cardCategory: nil,
-            issuer: nil,
-            issuerCountry: nil,
-            productId: nil,
-            productType: nil,
-            billingAddress: nil,
-            phone: nil,
-            name: nil
-        )
+        return TokenCreator.create(type: .card)
     }
 }
 

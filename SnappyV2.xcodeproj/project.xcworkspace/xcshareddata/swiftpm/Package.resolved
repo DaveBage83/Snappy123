@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/checkout/frames-ios.git",
       "state" : {
-        "revision" : "107946088ed934d550a14afaedd4cfe217d3944d",
-        "version" : "4.0.2"
+        "revision" : "431a2bcc1792bfdc30906d8277e28b802285122d",
+        "version" : "4.0.3"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "143ea15033dc6fede5ec73d96d9296a54dad8fef",
-        "version" : "3.5.1"
+        "revision" : "1446735484440822ff3c11aed78989d70f39b5e8",
+        "version" : "3.5.2"
       }
     },
     {

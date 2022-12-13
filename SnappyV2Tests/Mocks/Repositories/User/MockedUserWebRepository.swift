@@ -18,8 +18,9 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case login(facebookAccessToken: String, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType)
         case login(googleAccessToken: String, basketToken: String?, notificationDeviceToken: String?, registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
-        case resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?)
+        case resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String)
         case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
+        case changePassword(logoutFromAll: Bool, password: String, currentPassword: String)
         case setToken(to: ApiAuthenticationResult)
         case logout(basketToken: String?, notificationDeviceToken: String?)
         case getProfile(storeId: Int?)
@@ -52,7 +53,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var loginByFacebookResponse: Result<LoginResult, Error> = .failure(MockError.valueNotSet)
     var loginByGoogleSignInResponse: Result<LoginResult, Error> = .failure(MockError.valueNotSet)
     var resetPasswordRequestResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
-    var resetPasswordResponse: Result<UserSuccessResult, Error> = .failure(MockError.valueNotSet)
+    var resetPasswordAndSignInResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var changePasswordResponse: Result<UserSuccessResult, Error> = .failure(MockError.valueNotSet)
     var registerResponse: Result<UserRegistrationResult, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
@@ -131,9 +133,14 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return resetPasswordRequestResponse.publish()
     }
     
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?) -> AnyPublisher<UserSuccessResult, Error> {
-        register(.resetPassword(resetToken: resetToken, logoutFromAll: logoutFromAll, password: password, currentPassword: currentPassword))
-        return resetPasswordResponse.publish()
+    func changePassword(logoutFromAll: Bool, password: String, currentPassword: String) -> AnyPublisher<UserSuccessResult, Error> {
+        register(.changePassword(logoutFromAll: logoutFromAll, password: password, currentPassword: currentPassword))
+        return changePasswordResponse.publish()
+    }
+    
+    func resetPasswordAndSignIn(resetToken: String, logoutFromAll: Bool, password: String) -> AnyPublisher<Bool, Error> {
+        register(.resetPasswordAndSignIn(resetToken: resetToken, logoutFromAll: logoutFromAll, password: password))
+        return resetPasswordAndSignInResponse.publish()
     }
     
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> UserRegistrationResult {

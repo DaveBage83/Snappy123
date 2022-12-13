@@ -29,6 +29,7 @@ struct ResetPasswordView: View {
         struct General {
             static let sizeThreshold = 7
             static let largeScreenWidthMultiplier: CGFloat = 0.6
+            static let vSpacing: CGFloat = 15
         }
         
         struct Warning {
@@ -86,10 +87,6 @@ struct ResetPasswordView: View {
                     memberAlreadySignedInWarning
                     
                 }
-
-                if sizeClass == .compact {
-                    Spacer()
-                }
                 
                 SnappyButton(
                     container: viewModel.container,
@@ -98,10 +95,14 @@ struct ResetPasswordView: View {
                     title: viewModel.noMemberFound ? ResetPasswordStrings.submit.localized : Strings.General.close.localized,
                     largeTextTitle: nil,
                     icon: nil) {
+                        hideKeyboard()
                         Task {
                             await viewModel.submitTapped()
                         }
                     }
+                    .padding(.top, Constants.General.vSpacing)
+                
+                Spacer()
             }
             .padding()
             
@@ -109,8 +110,9 @@ struct ResetPasswordView: View {
                 LoadingView()
             }
         }
-        .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
-        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: ResetPasswordStrings.title.localized)
+        .edgesIgnoringSafeArea(.bottom)
+        .background(colorPalette.backgroundMain)
+        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: ResetPasswordStrings.title.localized, navigationDismissType: .close)
         .onChange(of: viewModel.dismiss, perform: { dismiss in
             if dismiss {
                 presentation.wrappedValue.dismiss()

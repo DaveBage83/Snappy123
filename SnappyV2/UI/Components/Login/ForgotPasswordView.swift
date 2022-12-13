@@ -27,10 +27,7 @@ struct ForgotPasswordView: View {
         struct General {
             static let sizeThreshold = 7
             static let largeScreenWidthMultiplier: CGFloat = 0.6
-        }
-        
-        struct Button {
-            static let bottomPadding: CGFloat = 30
+            static let vSpacing: CGFloat = 15
         }
     }
     
@@ -54,17 +51,16 @@ struct ForgotPasswordView: View {
                     
                     SnappyTextfield(
                         container: viewModel.container,
-                    text: $viewModel.email,
-                    hasError: $viewModel.emailHasError,
-                    labelText: LoginStrings.emailAddress.localized,
-                        largeTextLabelText: LoginStrings.email.localized.capitalized)
+                        text: $viewModel.email,
+                        hasError: $viewModel.emailHasError,
+                        labelText: LoginStrings.emailAddress.localized,
+                        largeTextLabelText: LoginStrings.email.localized.capitalized,
+                        keyboardType: .emailAddress,
+                        spellCheckingEnabled: false
+                    )
                     .keyboardType(.emailAddress)
                 }
                 .frame(height: Constants.EmailStack.emailStackHeight * scale)
-                
-                if sizeClass == .compact {
-                    Spacer()
-                }
                 
                 SnappyButton(
                     container: viewModel.container,
@@ -77,10 +73,11 @@ struct ForgotPasswordView: View {
                             await viewModel.submitTapped()
                         }
                     }
-                    .padding(.bottom, Constants.Button.bottomPadding)
+                    .padding(.top, Constants.General.vSpacing)
+                
+                Spacer()
             }
             .padding()
-            .background(colorPalette.backgroundMain)
 
             if viewModel.isLoading {
                 LoadingView()
@@ -88,7 +85,6 @@ struct ForgotPasswordView: View {
         }
         .edgesIgnoringSafeArea(.bottom)
         .background(colorPalette.backgroundMain)
-        .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
         .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized, navigationDismissType: .close)
 		.onAppear {
             viewModel.onAppearSendEvent()

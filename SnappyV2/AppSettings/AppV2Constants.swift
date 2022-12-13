@@ -146,6 +146,7 @@ struct AppV2Constants {
         
         static let authenticationURL: String = "oauth/token"
         static let signOutURL: String = AppV2Constants.Client.languageCode + "/auth/logout.json"
+        static let resetPasswordURL: String = AppV2Constants.Client.languageCode + "/auth/resetPassword.json"
         static let clientId = "944d5b2d-a8d5-4fd0-ac40-91bd6cd2ad4d"
         static let clientSecret = "KPJQYTORajTsMJUUigX9MxtamIimNHdRNBrmKq9e"
         static let connectionTimeout: TimeInterval = 10.0

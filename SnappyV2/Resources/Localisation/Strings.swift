@@ -993,6 +993,14 @@ enum Strings {
         }
     }
     
+    enum NetworkAuthenticator {
+        enum Errors: String, IterableSnappyString {
+            case unableToUnwrapSelf = "networkAuthenticator.errors.unabletounwrapself"
+            case passwordResetFailure = "networkAuthenticator.errors.passwordresetfailure"
+            case unknown = "networkAuthenticator.errors.unknown"
+        }
+    }
+    
     enum AnimatedLoadingView: String, IterableSnappyString {
         case loggingIn = "loadingView.loggingin"
     }

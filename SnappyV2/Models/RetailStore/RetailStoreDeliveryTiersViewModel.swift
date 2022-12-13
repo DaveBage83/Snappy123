@@ -24,10 +24,7 @@ class RetailStoreDeliveryTiersViewModel: ObservableObject {
     var minSpend: String? {
         guard let minSpend = deliveryTiers?.minSpend, minSpend > 0 else { return nil }
         
-        if let currency = currency {
-            return CustomTiersString.minSpend.localizedFormat(minSpend.toCurrencyString(using: currency))
-        }
-        return CustomTiersString.minSpend.localizedFormat(minSpend.toCurrencyString())
+        return CustomTiersString.minSpend.localizedFormat(minSpend.toCurrencyString(using: currency ?? AppV2Constants.Business.defaultStoreCurrency))
     }
     
     #warning("The below will hopefully be replaced when backend amend the response to always return delivery tiers")

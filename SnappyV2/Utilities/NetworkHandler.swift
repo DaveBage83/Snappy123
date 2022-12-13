@@ -345,6 +345,14 @@ struct NetworkHandler {
         )
     }
     
+    func resetPasswordAndSignIn(connectionTimeout: TimeInterval = AppV2Constants.API.connectionTimeout, parameters: [String: Any]) -> AnyPublisher<Bool, Error> {
+        return authenticator.resetPasswordAndSignIn(
+            connectionTimeout: connectionTimeout,
+            parameters: parameters,
+            withDebugTrace: debugTrace
+        )
+    }
+    
     func signOut(connectionTimeout: TimeInterval = AppV2Constants.API.connectionTimeout, parameters: [String: Any]) -> AnyPublisher<Bool, Error> {
         return authenticator.signOut(
             connectionTimeout: connectionTimeout,

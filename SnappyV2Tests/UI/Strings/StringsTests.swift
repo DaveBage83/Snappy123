@@ -320,6 +320,10 @@ class StringsTests: XCTestCase {
         Strings.StoresView.DeliveryTiers.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.NetworkAuthenticator.Errors.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

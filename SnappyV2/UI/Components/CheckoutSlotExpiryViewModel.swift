@@ -77,7 +77,6 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
     let visible: Bool
     private let dateGenerator: () -> Date
     
-    private let currentTime = Date()
     var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var cancellables = Set<AnyCancellable>()

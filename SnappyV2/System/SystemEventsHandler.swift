@@ -42,7 +42,7 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
         self.pushNotificationsHandler = pushNotificationsHandler
         self.pushNotificationsWebRepository = pushNotificationsWebRepository
         
-        #if TEST
+        #if DEBUG_TEST
         // we want the installPushNotificationsSubscriberOnLaunch setup but we do not
         // want its binding triggered by previous states with a local simulator testing
         container.appState.value.permissions.push = .unknown

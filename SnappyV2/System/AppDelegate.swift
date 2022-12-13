@@ -22,7 +22,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
-        #if TEST
+        #if DEBUG_TEST
         #else
         // Firebase
         if AppV2Constants.EventsLogging.firebaseAnalyticsSettings.enabled {

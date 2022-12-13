@@ -66,7 +66,7 @@ class SnappyV2AppViewModel: ObservableObject {
         }
         #endif
         
-        #if TEST
+        #if DEBUG_TEST
         #else
         container.eventLogger.initialiseSentry()
         setupIsActive()
@@ -266,7 +266,7 @@ class SnappyV2AppViewModel: ObservableObject {
                     self.container.eventLogger.initialiseLoggers(container: self.container)
                     // If the app is active, we start monitoring connectiity changes
                     self.networkMonitor.startMonitoring()
-                    #if TEST
+                    #if DEBUG_TEST
                     #else
                     self.onetimeAfterActiveSetup()
                     #endif

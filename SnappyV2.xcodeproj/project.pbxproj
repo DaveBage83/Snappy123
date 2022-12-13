@@ -314,7 +314,6 @@
 		558620BD29326F7A005EB336 /* SearchHistoryDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BC29326F7A005EB336 /* SearchHistoryDBRepository.swift */; };
 		558620BF29327476005EB336 /* Postcode+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620BE29327476005EB336 /* Postcode+CoreData.swift */; };
 		558620C12932ABAC005EB336 /* SearchHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620C02932ABAC005EB336 /* SearchHistoryService.swift */; };
-		558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3D27A409CC0003756C /* ImageWebRepository.swift */; };
 		558CEC4027A40CEA0003756C /* AsyncImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3F27A40CEA0003756C /* AsyncImageService.swift */; };
 		55962B4B284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55962B4A284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift */; };
 		55962B4F284DFDE200C2A124 /* StoreReviewPillTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55962B4E284DFDE200C2A124 /* StoreReviewPillTests.swift */; };
@@ -960,7 +959,6 @@
 		558620BC29326F7A005EB336 /* SearchHistoryDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryDBRepository.swift; sourceTree = "<group>"; };
 		558620BE29327476005EB336 /* Postcode+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Postcode+CoreData.swift"; sourceTree = "<group>"; };
 		558620C02932ABAC005EB336 /* SearchHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryService.swift; sourceTree = "<group>"; };
-		558CEC3D27A409CC0003756C /* ImageWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWebRepository.swift; sourceTree = "<group>"; };
 		558CEC3F27A40CEA0003756C /* AsyncImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageService.swift; sourceTree = "<group>"; };
 		55962B4A284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextFieldWithButtonTests.swift; sourceTree = "<group>"; };
 		55962B4E284DFDE200C2A124 /* StoreReviewPillTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewPillTests.swift; sourceTree = "<group>"; };
@@ -4159,7 +4157,7 @@
 			};
 			name = Debug;
 		};
-		0AFE03FC28B8C7D70036CCC9 /* Test */ = {
+		0AFE03FC28B8C7D70036CCC9 /* Debug_Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -4185,7 +4183,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Test;
+			name = Debug_Test;
 		};
 		0AFE03FD28B8C7D70036CCC9 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -4243,7 +4241,7 @@
 			};
 			name = Debug;
 		};
-		0AFE042228B912680036CCC9 /* Test */ = {
+		0AFE042228B912680036CCC9 /* Debug_Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -4269,7 +4267,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Test;
+			name = Debug_Test;
 		};
 		0AFE042328B912680036CCC9 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -4299,7 +4297,7 @@
 			};
 			name = Release;
 		};
-		55F4E2F2282294480018E108 /* Test */ = {
+		55F4E2F2282294480018E108 /* Debug_Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -4356,12 +4354,12 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "TEST DEBUG";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG_TEST;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
-			name = Test;
+			name = Debug_Test;
 		};
-		55F4E2F3282294480018E108 /* Test */ = {
+		55F4E2F3282294480018E108 /* Debug_Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -4386,9 +4384,9 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Test;
+			name = Debug_Test;
 		};
-		55F4E2F4282294480018E108 /* Test */ = {
+		55F4E2F4282294480018E108 /* Debug_Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -4409,9 +4407,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2.app/SnappyV2";
 			};
-			name = Test;
+			name = Debug_Test;
 		};
-		55F4E2F5282294480018E108 /* Test */ = {
+		55F4E2F5282294480018E108 /* Debug_Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -4429,9 +4427,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = SnappyV2Study;
 			};
-			name = Test;
+			name = Debug_Test;
 		};
-		55F4E2F6282294480018E108 /* Test */ = {
+		55F4E2F6282294480018E108 /* Debug_Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -4454,7 +4452,7 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2.app/SnappyV2";
 			};
-			name = Test;
+			name = Debug_Test;
 		};
 		AF64750327591542004DE2C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -4771,7 +4769,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0AFE03FB28B8C7D70036CCC9 /* Debug */,
-				0AFE03FC28B8C7D70036CCC9 /* Test */,
+				0AFE03FC28B8C7D70036CCC9 /* Debug_Test */,
 				0AFE03FD28B8C7D70036CCC9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -4781,7 +4779,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0AFE042128B912680036CCC9 /* Debug */,
-				0AFE042228B912680036CCC9 /* Test */,
+				0AFE042228B912680036CCC9 /* Debug_Test */,
 				0AFE042328B912680036CCC9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -4791,7 +4789,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF64750327591542004DE2C4 /* Debug */,
-				55F4E2F6282294480018E108 /* Test */,
+				55F4E2F6282294480018E108 /* Debug_Test */,
 				AF64750427591542004DE2C4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -4801,7 +4799,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677A92673973600BB4DC9 /* Debug */,
-				55F4E2F2282294480018E108 /* Test */,
+				55F4E2F2282294480018E108 /* Debug_Test */,
 				AF9677AA2673973600BB4DC9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -4811,7 +4809,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677AC2673973600BB4DC9 /* Debug */,
-				55F4E2F3282294480018E108 /* Test */,
+				55F4E2F3282294480018E108 /* Debug_Test */,
 				AF9677AD2673973600BB4DC9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -4821,7 +4819,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677AF2673973600BB4DC9 /* Debug */,
-				55F4E2F4282294480018E108 /* Test */,
+				55F4E2F4282294480018E108 /* Debug_Test */,
 				AF9677B02673973600BB4DC9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -4831,7 +4829,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677B22673973600BB4DC9 /* Debug */,
-				55F4E2F5282294480018E108 /* Test */,
+				55F4E2F5282294480018E108 /* Debug_Test */,
 				AF9677B32673973600BB4DC9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;

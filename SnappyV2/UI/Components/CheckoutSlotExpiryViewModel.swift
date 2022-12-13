@@ -75,6 +75,8 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
     // MARK: - Properties
     let container: DIContainer
     let visible: Bool
+    private let dateGenerator: () -> Date
+    
     private let currentTime = Date()
     var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -108,20 +110,20 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
         
         return Strings.CheckoutView.SlotExpiry.tapForNewSlot.localized
     }
-    
+        
     // MARK: - Init
-    init(container: DIContainer, visible: Bool = true) {
+    init(container: DIContainer, visible: Bool = true, dateGenerator: @escaping () -> Date = Date.init) {
         self.container = container
         self.visible = visible
+        self.dateGenerator = dateGenerator
         let appState = container.appState
         self.setupBindToBasketSlotExpiry(with: appState)
         self.setupBindToTodayExpiry(with: appState)
     }
-    
+
     // MARK: - Bind to slot expiry in the appState
     private func setupBindToBasketSlotExpiry(with appState: Store<AppState>) {
         appState
-            .dropFirst()
             .map(\.userData.basket?.selectedSlot?.expires)
             .receive(on: RunLoop.main)
             .sink { [weak self] expires in
@@ -130,7 +132,7 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
                 if let expires {
                     self.timer.upstream.connect().cancel()
                     let expiresTimeInterval = expires.timeIntervalSince1970
-                    let currentDateTimeInterval = Date().timeIntervalSince1970
+                    let currentDateTimeInterval = self.dateGenerator().timeIntervalSince1970
                     
                     self.timeRemaining = expiresTimeInterval - currentDateTimeInterval
                     
@@ -151,12 +153,11 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
                 guard let self = self else { return }
                 if let todaySlotExpiry {
                     self.timer.upstream.connect().cancel()
-                    self.timeRemaining = todaySlotExpiry - Date().timeIntervalSince1970
+                    self.timeRemaining = todaySlotExpiry - self.dateGenerator().timeIntervalSince1970
                     
                     if self.timeRemaining > 0 {
                         self.timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
                     }
-                    
                 }
             }
             .store(in: &cancellables)

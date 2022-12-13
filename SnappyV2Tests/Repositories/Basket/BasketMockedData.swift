@@ -27,6 +27,42 @@ extension Basket {
         basketItemRemoved: nil
     )
     
+    static let mockedDataWithExpiry = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedFutureDataWithExpiry,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static func mockedDataWithFixedExpiry(expiry: Date) -> Basket {
+        Basket(
+            basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+            isNewBasket: false,
+            items: BasketItem.mockedArrayData,
+            fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+            selectedSlot: BasketSelectedSlot.mockedSelectedSlotWithFixedExpiry(expiry: expiry),
+            savings: BasketSaving.mockedArrayData,
+            coupon: BasketCoupon.mockedData,
+            fees: BasketFee.mockedArrayData,
+            tips: BasketTip.mockedArrayData,
+            addresses: BasketAddressResponse.mockedArrayData,
+            orderSubtotal: 18.1,
+            orderTotal: 23.3,
+            storeId: 1569,
+            basketItemRemoved: nil
+        )
+    }
+    
     static let mockedDataNoAddresses = Basket(
         basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
         isNewBasket: false,
@@ -477,6 +513,20 @@ extension BasketFulfilmentMethod {
 extension BasketSelectedSlot {
     
     static let mockedTodayData = BasketSelectedSlot(todaySelected: true, start: nil, end: nil, expires: nil)
+    
+    static let mockedFutureDataWithExpiry = BasketSelectedSlot(
+        todaySelected: false,
+        start: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*14),
+        end: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*15),
+        expires: Date().startOfDay.addingTimeInterval(60*60*15))
+    
+    static func mockedSelectedSlotWithFixedExpiry(expiry: Date) -> BasketSelectedSlot {
+        BasketSelectedSlot(
+            todaySelected: false,
+            start: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*14),
+            end: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*15),
+            expires: expiry)
+    }
     
     static let mockedTomorrowData = BasketSelectedSlot(todaySelected: nil, start: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*14), end: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*15), expires: nil)
     

@@ -25,6 +25,19 @@ struct CheckoutSlotExpiryView: View {
     }
     
     var body: some View {
+        VStack {
+            if viewModel.visible {
+                mainView
+            } else {
+                EmptyView()
+            }
+        }
+        .onReceive(viewModel.timer) { _ in
+            viewModel.configureTimeRemaining()
+        }
+    }
+    
+    @ViewBuilder private var mainView: some View {
         HStack {
             Spacer()
             HStack(spacing: Constants.hSpacing) {
@@ -47,15 +60,11 @@ struct CheckoutSlotExpiryView: View {
                     viewModel.fulfilmentTimeSlotSelectionPresented = false
                 }))
             }
-            
         }
         .frame(maxWidth: .infinity)
         .animation(.default)
         .onTapGesture {
             viewModel.fulfilmentTimeSlotSelectionPresented = true
-        }
-        .onReceive(viewModel.timer) { _ in
-            viewModel.configureTimeRemaining()
         }
     }
 }
@@ -64,12 +73,7 @@ struct CheckoutSlotExpiryView: View {
 struct CheckoutSlotExpiryView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutSlotExpiryView(viewModel: .init(
-            container: .preview,
-            basketSlot: .init(
-                todaySelected: nil,
-                start: Date(),
-                end: Date(),
-                expires: Date())))
+            container: .preview))
     }
 }
 #endif

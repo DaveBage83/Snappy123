@@ -74,7 +74,7 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
     
     // MARK: - Properties
     let container: DIContainer
-    private let basketSlot: BasketSelectedSlot
+    let visible: Bool
     private let currentTime = Date()
     var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -110,9 +110,9 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
     }
     
     // MARK: - Init
-    init(container: DIContainer, basketSlot: BasketSelectedSlot) {
+    init(container: DIContainer, visible: Bool = true) {
         self.container = container
-        self.basketSlot = basketSlot
+        self.visible = visible
         let appState = container.appState
         self.setupBindToBasketSlotExpiry(with: appState)
         self.setupBindToTodayExpiry(with: appState)
@@ -164,11 +164,13 @@ class CheckoutSlotExpiryViewModel: ObservableObject {
     
     // MARK: - Timer method
     func configureTimeRemaining() {
-        if timeRemaining > 0 {
+        if timeRemaining > 1 {
+            container.appState.value.userData.slotExpired = false
             timeRemaining -= 1
         } else {
             self.timer.upstream.connect().cancel()
             container.appState.value.errors.append(SlotExpiryError.slotExpired)
+            container.appState.value.userData.slotExpired = true
         }
     }
 }

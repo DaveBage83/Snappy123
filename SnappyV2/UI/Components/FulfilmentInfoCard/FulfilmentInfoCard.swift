@@ -81,20 +81,24 @@ struct FulfilmentInfoCard: View {
     }
     
     private var cardContents: some View {
-        HStack(spacing: Constants.Main.spacing) {
-            
-            if minimalLayout == false {
-                storeLogo
-            }
-            
-            fulfilmentSlot
-            
-            Spacer()
+        ZStack {
+            CheckoutSlotExpiryView(viewModel: .init(container: viewModel.container, visible: false))
 
-            NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
-                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout, state: .changeTimeSlot, timeslotSelectedAction: {
-                    viewModel.isFulfilmentSlotSelectShown = false
-                }))
+            HStack(spacing: Constants.Main.spacing) {
+                
+                if minimalLayout == false {
+                    storeLogo
+                }
+                
+                fulfilmentSlot
+                
+                Spacer()
+                
+                NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
+                    FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout, state: .changeTimeSlot, timeslotSelectedAction: {
+                        viewModel.isFulfilmentSlotSelectShown = false
+                    }))
+                }
             }
         }
         .background(Color.clear)

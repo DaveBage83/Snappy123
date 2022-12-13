@@ -45,11 +45,8 @@ struct CheckoutOrderSummaryBanner: View {
                     
                     Spacer()
                     
-                    if let basketSlot = checkoutRootViewModel.basket?.selectedSlot {
-                        CheckoutSlotExpiryView(viewModel: .init(
-                            container: checkoutRootViewModel.container,
-                            basketSlot: basketSlot))
-                    }  
+                    CheckoutSlotExpiryView(viewModel: .init(
+                        container: checkoutRootViewModel.container))
                 }
                 .font(.button2())
                 .foregroundColor(colorPalette.primaryBlue)

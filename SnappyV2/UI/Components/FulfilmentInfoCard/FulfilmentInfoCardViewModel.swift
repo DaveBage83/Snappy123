@@ -16,12 +16,15 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var selectedStore: RetailStoreDetails?
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
+    @Published var slotExpired = false
     
     private(set) var isInCheckout: Bool
     
     private var cancellables = Set<AnyCancellable>()
     
     var isSlotExpired: Bool {
+        guard slotExpired == false else { return true }
+        
         if let expires = basket?.selectedSlot?.expires {
             return expires.trueDate < Date().trueDate
         }
@@ -85,6 +88,16 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         self.isInCheckout = isInCheckout
         
         setupBasket(appState: appState)
+        setupBindToSlotExpired(appState: appState)
+    }
+    
+    private func setupBindToSlotExpired(appState: Store<AppState>) {
+        appState
+            .map(\.userData.slotExpired)
+            .receive(on: RunLoop.main)
+            .replaceNil(with: false)
+            .assignWeak(to: \.slotExpired, on: self)
+            .store(in: &cancellables)
     }
 
     private func setupBasket(appState: Store<AppState>) {

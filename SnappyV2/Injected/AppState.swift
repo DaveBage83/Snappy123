@@ -105,6 +105,8 @@ extension AppState {
         var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
         var basketDeliveryAddress: Address?
         var memberProfile: MemberProfile?
+        var todaySlotExpiry: TimeInterval?
+        var slotExpired: Bool?
     }
 }
 

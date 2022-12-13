@@ -15,7 +15,7 @@ struct SearchBarView: View {
     // MARK: - Constants
     struct Constants {
         static let textfieldIconSize: CGFloat = 16
-        static let xmarkWidth: CGFloat = 10
+        static let xmarkWidth: CGFloat = 13
         static let padding: CGFloat = 10
         static let cornerRadius: CGFloat = 8
         static let borderWidth: CGFloat = 1
@@ -66,7 +66,7 @@ struct SearchBarView: View {
                 spellCheckingEnabled: true)
             .font(.Body1.regular())
             .frame(height: Constants.textfieldHeight * scale)
-
+            
             Spacer()
             
             if isEditing {
@@ -78,8 +78,7 @@ struct SearchBarView: View {
                     Image.Icons.Xmark.standard
                         .resizable()
                         .renderingMode(.template)
-                        .scaledToFit()
-                        .frame(width: Constants.xmarkWidth)
+                        .frame(width: Constants.xmarkWidth, height: Constants.xmarkWidth)
                         .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
                 }
             }

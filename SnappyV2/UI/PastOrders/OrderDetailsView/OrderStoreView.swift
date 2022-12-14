@@ -58,6 +58,11 @@ struct OrderStoreView: View {
             static let spacing: CGFloat = 10
             static let locationIconWidth: CGFloat = 12
         }
+        
+        struct Logo {
+            static let cornerRadius: CGFloat = 10
+            static let size: CGFloat = 88
+        }
     }
     
     // MARK: - View model
@@ -84,6 +89,9 @@ struct OrderStoreView: View {
     
     @ViewBuilder private var storeLogo: some View {
         AsyncImage(container: viewModel.container, urlString: viewModel.storeLogo)
+            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+            .scaledToFit()
+            .cornerRadius(Constants.Logo.cornerRadius)
     }
     
     // MARK: - Store info view

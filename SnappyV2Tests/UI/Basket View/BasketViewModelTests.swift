@@ -806,10 +806,28 @@ class BasketViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
-    func test_whenSelectedSlotIsNotClosedOrExpired_thenShowCheckoutButtonIsTrue() {
+    func test_whenSelectedSlotIsNotClosedOrExpired_givenBasketNotEmpty_thenShowCheckoutButtonIsTrue() {
+        let sut = makeSUT()
+        sut.basket = Basket.mockedData
+        XCTAssertTrue(sut.showCheckoutButton)
+    }
+    
+    func test_whenSelectedSlotIsNotClosedOrExpired_givenBasketEmpty_thenShowCheckoutButtonIsTrue() {
         let sut = makeSUT()
         sut.selectedStore = RetailStoreDetails.mockedData
-        XCTAssertTrue(sut.showCheckoutButton)
+        XCTAssertFalse(sut.showCheckoutButton)
+    }
+    
+    func test_whenBasketEmpty_thenShopButtonTextSet() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.shopButtonText, Strings.BasketView.startShopping.localized)
+    }
+    
+    
+    func test_whenBasketNotEmpty_thenShopButtonTextSet() {
+        let sut = makeSUT()
+        sut.basket = Basket.mockedData
+        XCTAssertEqual(sut.shopButtonText, GeneralStrings.shop.localized)
     }
     
     func test_whenFulfilmentIsDeliveryAndDeliveryStatusIsClosed_thenShowCheckoutButtonIsTrue() {

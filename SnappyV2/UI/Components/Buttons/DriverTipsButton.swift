@@ -80,7 +80,6 @@ struct DriverTipsButton: View {
                     .onAppear {
                         isAnimating = true
                     }
-
             } else {
                 viewModel.tipLevel.image
                     .resizable()
@@ -94,6 +93,7 @@ struct DriverTipsButton: View {
             
             incrementDecrementButton(.increment)
         }
+        .fixedSize()
     }
     
     func incrementDecrementButton(_ type: ButtonType) -> some View {

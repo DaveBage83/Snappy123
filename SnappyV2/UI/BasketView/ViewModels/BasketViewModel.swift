@@ -91,7 +91,12 @@ class BasketViewModel: ObservableObject {
     }
     
     var showCheckoutButton: Bool {
+        guard basketIsEmpty == false else { return false }
         return selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.status != .closed && isSlotExpired == false
+    }
+    
+    var shopButtonText: String {
+        return basketIsEmpty ? BasketViewStrings.startShopping.localized : GeneralStrings.shop.localized
     }
 
     var freeFulfilmentMessage: String? {

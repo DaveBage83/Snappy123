@@ -25,10 +25,20 @@ struct StandardCardFormat: ViewModifier {
 }
 
 struct StandardPillFormat: ViewModifier {
+    let outlineColor: Color?
+    
+    init(outlineColor: Color?) {
+        self.outlineColor = outlineColor
+    }
+    
     func body(content: Content) -> some View {
         content
             .cornerRadius(34)
             .shadow(color: .cardShadow, radius: 9, x: 0, y: 0)
+            .overlay(
+                RoundedRectangle(cornerRadius: 34)
+                    .stroke(outlineColor ?? .clear, lineWidth: outlineColor != nil ? 0.5 : 0)
+            )
     }
 }
 
@@ -374,8 +384,8 @@ extension View {
 }
 
 extension View {
-    func standardPillFormat() -> some View {
-        modifier(StandardPillFormat())
+    func standardPillFormat(outlineColor: Color? = nil) -> some View {
+        modifier(StandardPillFormat(outlineColor: outlineColor))
     }
 }
 

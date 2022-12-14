@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       "state" : {
-        "revision" : "8caf67c0d8d784d59f8421ab0cb54fb4f4941aee",
-        "version" : "6.9.0"
+        "revision" : "7a3cd712a77b30e487e53102b101c5e9ff96a95e",
+        "version" : "6.9.1"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "c24031ad9410c746c49deddc739fdf311a386fc7",
-        "version" : "10.2.0"
+        "revision" : "dce2e1abc6c0d5e830ff1cffe3f8633fda64001e",
+        "version" : "10.3.0"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "ade48cc2d09c3180ac6e179577633b8c2660a8bf",
-        "version" : "3.5.0"
+        "revision" : "1446735484440822ff3c11aed78989d70f39b5e8",
+        "version" : "3.5.2"
       }
     },
     {
@@ -266,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "9cc3b7374bf96db5898562938c00a4f9f11023e7",
-        "version" : "7.31.2"
+        "revision" : "c3c19e29f775ee95b77aa3168f3e2fd6c20deba6",
+        "version" : "7.31.3"
       }
     },
     {

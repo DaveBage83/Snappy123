@@ -126,10 +126,10 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         self.instructions = instructions
         self.paymentSuccess = paymentSuccess
         self.paymentFailure = paymentFailure
-        if let paymentGateway = appState.value.userData.selectedStore.value?.paymentGateways?.first(where: { $0.name ==  "checkoutcom"}) {
+        if let paymentGateway = appState.value.userData.selectedStore.value?.paymentGateways?.first(where: { $0.name.lowercased() ==  "checkoutcom"}) {
             self.paymentEvironment = paymentGateway.mode
             self.cardUtils = CardValidator(environment: paymentEvironment == .live ? .production : .sandbox)
-        } else if let  paymentGateway = appState.value.businessData.businessProfile?.paymentGateways.first(where: { $0.name ==  "checkoutcom"}) {
+        } else if let  paymentGateway = appState.value.businessData.businessProfile?.paymentGateways.first(where: { $0.name.lowercased() ==  "checkoutcom"}) {
             self.paymentEvironment = paymentGateway.mode
             self.cardUtils = CardValidator(environment: paymentEvironment == .live ? .production : .sandbox)
         } else {

@@ -820,7 +820,7 @@ extension CheckoutAPIService {
     }
 }
 
-#if DEBUG || DEBUG_TEST
+#if DEBUG || TEST
 // This hack is neccessary in order to expose 'exposeProcessApplePaymentOrder' etc and enable for testing. These cannot easily be tested without.
 extension CheckoutService {
     func exposeProcessApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {

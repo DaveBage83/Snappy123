@@ -85,7 +85,7 @@ class InitialViewModel: ObservableObject {
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
 
-        #if DEBUG_TEST
+        #if TEST
         #else
             Task {
                 await loadBusinessProfile()
@@ -565,7 +565,7 @@ class InitialViewModel: ObservableObject {
     }
 }
 
-#if DEBUG || DEBUG_TEST
+#if DEBUG || TEST
 // This hack is neccessary in order to expose 'addDefaultParameter'. These cannot easily be tested without.
 extension InitialViewModel {
     func exposeRegisterForNotificationsHandler() async -> NotificationsEnabledStatus {

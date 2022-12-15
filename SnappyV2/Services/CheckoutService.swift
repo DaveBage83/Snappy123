@@ -704,7 +704,8 @@ extension CheckoutService {
         
         if let addresses = basket.addresses, let billing = addresses.first(where: {$0.type == "billing"}) {
             
-            let phoneNumber = Phone(number: billing.telephone, country: nil)
+            let predictedCountryCode = billing.telephone?.internationalCountryCallingCode(likelyCountry: billing.countryCode, defaultCountry: AppV2Constants.Business.operatingCountry) ?? "GB"
+            let phoneNumber = Phone(number: billing.telephone, country: Country(iso3166Alpha2: predictedCountryCode))
             let address = Checkout.Address(
                 addressLine1: billing.addressLine1,
                 addressLine2: billing.addressLine2,

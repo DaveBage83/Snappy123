@@ -172,7 +172,7 @@ extension AppState {
     }
 }
 
-#if DEBUG
+#if DEBUG || TEST
 extension AppState {
     static var preview: AppState {
         var state = AppState()

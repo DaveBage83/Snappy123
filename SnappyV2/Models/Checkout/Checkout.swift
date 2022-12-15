@@ -226,8 +226,8 @@ struct DriverLocationMapParameters: Equatable {
 
 struct CheckoutCardDetails: Equatable {
     let number: String
-    let expiryMonth: String
-    let expiryYear: String
+    let expiryMonth: Int
+    let expiryYear: Int
     let cvv: String
     let cardName: String
 }

@@ -565,7 +565,7 @@ class InitialViewModel: ObservableObject {
     }
 }
 
-#if DEBUG
+#if DEBUG || TEST
 // This hack is neccessary in order to expose 'addDefaultParameter'. These cannot easily be tested without.
 extension InitialViewModel {
     func exposeRegisterForNotificationsHandler() async -> NotificationsEnabledStatus {

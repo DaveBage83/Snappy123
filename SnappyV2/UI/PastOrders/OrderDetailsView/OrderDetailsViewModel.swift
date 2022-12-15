@@ -316,7 +316,7 @@ class OrderDetailsViewModel: ObservableObject {
     }
 }
 
-#if DEBUG
+#if DEBUG || TEST
 // This hack is neccessary in order to expose 'setDeliveryAddress' for testing which should remain private.
 extension OrderDetailsViewModel {
     func exposeSetDeliveryAddress() async throws  {

@@ -159,7 +159,7 @@ class PaymentCardEntryViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.creditCardNumber = "4242 4242 4242 4242"
+        sut.creditCardNumber = "2222 4242 4242 4242"
         
         wait(for: [expectation], timeout: 2)
         
@@ -310,33 +310,75 @@ class PaymentCardEntryViewModelTests: XCTestCase {
     
     func test_givenIncorrectNumberDetails_whenAreCardDetailsValidTriggered_thenReturnsFalse() {
         let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupCreditCardNumber")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$creditCardNumber
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.creditCardName = "Some Name"
-        sut.creditCardNumber = "4242 4242 4242 4242"
+        sut.creditCardNumber = "2222 4242 4242 4242"
         sut.creditCardExpiryMonth = "03"
         sut.creditCardExpiryYear = "24"
         sut.creditCardCVV = "100"
+        
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.areCardDetailsValid())
     }
     
     func test_givenIncorrectExpiryMonthDetails_whenAreCardDetailsValidTriggered_thenReturnsFalse() {
         let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupCreditCardExpiry")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$creditCardExpiryMonth
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.creditCardName = "Some Name"
         sut.creditCardNumber = "4242424242424242"
-        sut.creditCardExpiryMonth = "13"
-        sut.creditCardExpiryYear = "24"
+        sut.creditCardExpiryMonth = "00"
+        sut.creditCardExpiryYear = "30"
         sut.creditCardCVV = "100"
+        
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.areCardDetailsValid())
     }
     
     func test_givenIncorrectExpiryYearDetails_whenAreCardDetailsValidTriggered_thenReturnsFalse() {
         let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupCreditCardExpiry")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$creditCardExpiryYear
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.creditCardName = "Some Name"
         sut.creditCardNumber = "4242424242424242"
-        sut.creditCardExpiryMonth = "06"
-        sut.creditCardExpiryYear = "13"
+        sut.creditCardExpiryMonth = "09"
+        sut.creditCardExpiryYear = "04"
         sut.creditCardCVV = "100"
+        
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.areCardDetailsValid())
     }

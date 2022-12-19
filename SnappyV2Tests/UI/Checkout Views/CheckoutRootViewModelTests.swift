@@ -1525,7 +1525,7 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
-        XCTAssertNil(sut.container.appState.value.latestError)
+        XCTAssertNil(sut.container.appState.value.errors.first)
         XCTAssertFalse(sut.retailMembershipIdHasWarning)
     }
     
@@ -1628,7 +1628,7 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
-        XCTAssertNil(sut.container.appState.value.latestError)
+        XCTAssertNil(sut.container.appState.value.errors.first)
         XCTAssertFalse(sut.retailMembershipIdHasWarning)
     }
     
@@ -1698,7 +1698,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         wait(for: [expectation1], timeout: 2)
 
         sut.container.appState
-            .map(\.latestError)
+            .map(\.errors.first)
             .map { $0 != nil } // Convert into an Equatable type
             .filter { $0 }
             .removeDuplicates()
@@ -1734,7 +1734,7 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
-        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? NSError, networkError)
         XCTAssertTrue(sut.retailMembershipIdHasWarning)
     }
 

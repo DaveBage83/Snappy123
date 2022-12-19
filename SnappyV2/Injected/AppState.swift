@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+struct SuccessToast: Equatable {
+    let subtitle: String
+}
+
 struct AppState: Equatable {
     static func == (lhs: AppState, rhs: AppState) -> Bool { true }
     
@@ -29,17 +33,10 @@ struct AppState: Equatable {
     // Toast properties
     var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
     var errors: [Swift.Error] = []
-    var successToastStrings = [String]()
+    var successToasts: [SuccessToast] = []
+    
     var latestViewID: UUID? {
         viewIDs.last
-    }
-    
-    var latestSuccessToast: String? {
-        successToastStrings.first
-    }
-    
-    var latestError: Swift.Error? {
-        errors.first
     }
 }
 
@@ -143,6 +140,7 @@ extension AppState {
         var isInForeground = false
         var isConnected = false
         var notificationDeviceToken: String?
+        var errorsInQueue = false
     }
 }
 

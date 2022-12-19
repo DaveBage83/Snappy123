@@ -35,8 +35,13 @@ final class ForgotPasswordViewModel: ObservableObject {
         do {
             try await self.container.services.memberService.resetPasswordRequest(email: email)
             Logger.member.log("Email sent to reset password")
-            container.appState.value.successToastStrings.append(Strings.ForgetPasswordCustom.confirmation.localizedFormat(email))
+            let successToast = SuccessToast(subtitle: Strings.ForgetPasswordCustom.confirmation.localizedFormat(email))
             dismissHandler(email)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // Allow view to dismiss before firing success toast
+                self.container.appState.value.successToasts.append(successToast)
+            }
+
         } catch {
             self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to send password reset message with error: \(error.localizedDescription)")

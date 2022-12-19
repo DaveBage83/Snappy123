@@ -100,7 +100,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(requestingVerifyCodeWasTrue)
         XCTAssertFalse(sut.requestingVerifyCode)
         XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
-        XCTAssertNil(sut.container.appState.value.latestError)
+        XCTAssertNil(sut.container.appState.value.errors.first)
     }
     
     func test_whenVerifyAccountTappedAndOpenViewResultFalse_thenSetRoutingShowVerifyMobileViewToFalse() async {
@@ -147,7 +147,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(requestingVerifyCodeWasTrue)
         XCTAssertFalse(sut.requestingVerifyCode)
         XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
-        XCTAssertNil(sut.container.appState.value.latestError)
+        XCTAssertNil(sut.container.appState.value.errors.first)
     }
     
     func test_whenVerifyAccountTappedAndOpenViewIsErrorResult_thenSetError() async {
@@ -195,7 +195,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(requestingVerifyCodeWasTrue)
         XCTAssertFalse(sut.requestingVerifyCode)
         XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
-        XCTAssertEqual(sut.container.appState.value.latestError as? NSError, networkError)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? NSError, networkError)
     }
     
     func test_whenMemberLogsOut_thenLogoutIsSuccessful() async {

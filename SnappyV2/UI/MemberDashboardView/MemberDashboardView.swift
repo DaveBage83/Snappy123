@@ -154,7 +154,8 @@ struct MemberDashboardView: View {
             MemberDashboardProfileView(viewModel: .init(container: viewModel.container), didSetError: { error in
                 viewModel.container.appState.value.errors.append(error)
             }, didSucceed: { message in
-                viewModel.container.appState.value.successToastStrings.append(message)
+                let toast = SuccessToast(subtitle: message)
+                viewModel.container.appState.value.successToasts.append(toast)
             })
         case .loyalty:
             LoyaltyView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))

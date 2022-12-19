@@ -118,6 +118,7 @@ struct BasketView: View {
                                 viewModel.onBasketViewSendEvent()
                             }
                             .padding(.bottom, tabViewHeight)
+                            .padding(.bottom)
                         }
                         .background(colorPalette.backgroundMain)
                         .navigationTitle(BasketViewStrings.title.localized)
@@ -145,16 +146,12 @@ struct BasketView: View {
                     }
                 }
                 .background(colorPalette.backgroundMain)
-                
-                if #available(iOS 15.0, *) {
-                    mainButton
-                        .padding(.horizontal)
-                        .background(.ultraThinMaterial)
-                } else {
-                    mainButton
-                        .padding(.horizontal)
-                }
+
+                mainButton
+                    .padding(.horizontal)
+                    .background(colorPalette.backgroundMain.withOpacity(.eighty))
             }
+            .edgesIgnoringSafeArea(.bottom)
         }
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
                      sheetContent: MentionMeWebView(

@@ -288,6 +288,7 @@
 		55436C7827E229310055DB56 /* OrderSummaryCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */; };
 		55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */; };
 		55436C8027E263420055DB56 /* LoginButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7F27E263420055DB56 /* LoginButtonTests.swift */; };
+		554A72242950BB9800E24E72 /* StandardAlertToastViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554A72232950BB9800E24E72 /* StandardAlertToastViewModelTests.swift */; };
 		554BDD7928E4A77F006E34DB /* SettingsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554BDD7828E4A77F006E34DB /* SettingsButton.swift */; };
 		554F1FE527A89DEC00D24C6E /* MockedAsyncImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F1FE427A89DEC00D24C6E /* MockedAsyncImageService.swift */; };
 		5555CB14283C3A16005CB41F /* UIScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */; };
@@ -933,6 +934,7 @@
 		55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModel.swift; sourceTree = "<group>"; };
 		55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModelTests.swift; sourceTree = "<group>"; };
 		55436C7F27E263420055DB56 /* LoginButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButtonTests.swift; sourceTree = "<group>"; };
+		554A72232950BB9800E24E72 /* StandardAlertToastViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardAlertToastViewModelTests.swift; sourceTree = "<group>"; };
 		554BDD7828E4A77F006E34DB /* SettingsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsButton.swift; sourceTree = "<group>"; };
 		554F1FE427A89DEC00D24C6E /* MockedAsyncImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAsyncImageService.swift; sourceTree = "<group>"; };
 		5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extensions.swift"; sourceTree = "<group>"; };
@@ -2547,6 +2549,7 @@
 				0AD05B8028D19CB800A182FA /* StoreReviewViewModelTests.swift */,
 				0A27B98F28DDE12500D29DB5 /* VerifyMobileNumberViewModelTests.swift */,
 				55FCDCBE29476B7B0000E53A /* CheckoutSlotExpiryViewModelTests.swift */,
+				554A72232950BB9800E24E72 /* StandardAlertToastViewModelTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -4014,6 +4017,7 @@
 				55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */,
 				0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */,
 				0AF8E66E2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift in Sources */,
+				554A72242950BB9800E24E72 /* StandardAlertToastViewModelTests.swift in Sources */,
 				0A0DBB7727C3020100D99EDE /* Dictionary+ExtensionsTests.swift in Sources */,
 				0A7976B428BFBF79009B1FB6 /* SystemEventsHandlerTests.swift in Sources */,
 				0AD17BE928C5F6C900ED69B0 /* UserPermissionsServiceTests.swift in Sources */,

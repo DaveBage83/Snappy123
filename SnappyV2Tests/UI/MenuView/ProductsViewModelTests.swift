@@ -265,7 +265,7 @@ class ProductsViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.items.isEmpty)
         XCTAssertTrue(sut.subCategories.isEmpty)
-        XCTAssertEqual(sut.container.appState.value.latestError as? ProductsViewModel.Errors, ProductsViewModel.Errors.categoryEmpty)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? ProductsViewModel.Errors, ProductsViewModel.Errors.categoryEmpty)
     }
     
     func test_whenSearchResultHoldsCategoriesAndItems_thenSearchResultCategoriesAndSearchResultItemsArePopulated() {

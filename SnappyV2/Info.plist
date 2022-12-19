@@ -55,6 +55,7 @@
 	<string>Snappy Shopper</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>waze</string>
 		<string>whatsapp</string>
 		<string>comgooglemaps</string>
 		<string>fbapi</string>

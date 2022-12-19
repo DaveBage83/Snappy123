@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import OSLog
 import SwiftUI
-import Frames
+import Checkout
 
 enum CheckoutPaymentHandlingViewModelError: Error {
     case missingCheckoutcomPaymentGateway
@@ -59,19 +59,21 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     
     // MARK: - Credit card variables
     @Published var threeDSWebViewURLs: CheckoutCom3DSURLs?
-    let cardUtils = CardUtils()
+    private let cardUtils: CardValidator
+    private let paymentEvironment: PaymentGatewayMode
     @Published var creditCardName: String = ""
     @Published var creditCardNumber: String = ""
     @Published var creditCardExpiryMonth: String = ""
     @Published var creditCardExpiryYear: String = ""
+    var creditCardExpiry: ExpiryDate?
     @Published var creditCardCVV: String = ""
     @Published var saveCreditCard: Bool = false
     @Published var isUnvalidCardNumber: Bool = false
     @Published var isUnvalidCVV: Bool = false
     @Published var isUnvalidExpiry: Bool = false
-    @Published var cardType: CardType?
+    @Published var cardType: Card.Scheme?
     var shownCardType: PaymentCardType? {
-        switch cardType?.scheme {
+        switch cardType {
         case .visa:
             return .visa
         case .mastercard:
@@ -124,6 +126,17 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         self.instructions = instructions
         self.paymentSuccess = paymentSuccess
         self.paymentFailure = paymentFailure
+        if let paymentGateway = appState.value.userData.selectedStore.value?.paymentGateways?.first(where: { $0.name.lowercased() ==  "checkoutcom"}) {
+            self.paymentEvironment = paymentGateway.mode
+            self.cardUtils = CardValidator(environment: paymentEvironment == .live ? .production : .sandbox)
+        } else if let  paymentGateway = appState.value.businessData.businessProfile?.paymentGateways.first(where: { $0.name.lowercased() ==  "checkoutcom"}) {
+            self.paymentEvironment = paymentGateway.mode
+            self.cardUtils = CardValidator(environment: paymentEvironment == .live ? .production : .sandbox)
+        } else {
+            self.cardUtils = CardValidator(environment: .sandbox)
+            self.paymentEvironment = .sandbox
+        }
+        
         self._memberProfile = .init(wrappedValue: appState.value.userData.memberProfile)
         selectedStore = appState.value.userData.selectedStore.value
         timeZone = selectedStore?.storeTimeZone
@@ -144,8 +157,12 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 guard let self = self else { return }
                 if number.isEmpty { return }
                 if !number.isEmpty && self.isUnvalidCardNumber { self.isUnvalidCardNumber = false }
-                self.cardType = self.cardUtils.getTypeOf(cardNumber: number)
-                self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: number) == false
+                do {
+                    self.cardType = try? self.cardUtils.validateCompleteness(cardNumber: number).get().scheme
+                    self.isUnvalidCardNumber = try self.cardUtils.validateCompleteness(cardNumber: number).get().isComplete == false
+                } catch {
+                    self.container.appState.value.errors.append(error)
+                }
             }
             .store(in: &cancellables)
     }
@@ -157,7 +174,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 guard let self = self else { return }
                 if !cvv.isEmpty && self.isUnvalidCVV { self.isUnvalidCVV = false }
                 if let cardType = self.cardType {
-                    self.isUnvalidCVV = self.cardUtils.isValid(cvv: cvv, cardType: cardType) == false
+                    self.isUnvalidCVV = self.cardUtils.isValid(cvv: cvv, for: cardType) == false
                 }
             }
             .store(in: &cancellables)
@@ -170,7 +187,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 guard let self = self else { return }
                 if month.isEmpty && year.isEmpty { return }
                 if (!month.isEmpty && !year.isEmpty) && self.isUnvalidExpiry { self.isUnvalidExpiry = false }
-                self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: month, expirationYear: year) == false
+                self.creditCardExpiry = try? self.cardUtils.validate(expiryMonth: month, expiryYear: year).get()
+                self.isUnvalidExpiry = self.creditCardExpiry == nil
             }
             .store(in: &cancellables)
     }
@@ -181,8 +199,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .sink { [weak self] cvv in
                 guard let self = self else { return }
                 if cvv.isEmpty { self.isUnvalidSelectedCardCVV = true; return }
-                if let scheme = self.selectedSavedCard?.checkoutcomScheme, let cardType = self.cardUtils.getCardType(scheme: scheme) {
-                    self.isUnvalidSelectedCardCVV = self.cardUtils.isValid(cvv: cvv, cardType: cardType) == false
+                if let cardType = self.selectedSavedCard?.checkoutcomScheme {
+                    self.isUnvalidSelectedCardCVV = self.cardUtils.isValid(cvv: cvv, for: cardType) == false
                 }
             }
             .store(in: &cancellables)
@@ -192,11 +210,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         if selectedSavedCard != nil {
             return isUnvalidSelectedCardCVV == false
         } else {
-            self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: creditCardNumber) == false
-            self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: creditCardExpiryMonth, expirationYear: creditCardExpiryYear) == false
-            if let cardType = self.cardType {
-                self.isUnvalidCVV = self.cardUtils.isValid(cvv: creditCardCVV, cardType: cardType) == false
-            }
             return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
         }
     }
@@ -378,7 +391,7 @@ extension CheckoutPaymentHandlingViewModel {
                     processOrderResult = try await self.container.services.checkoutService.processSavedCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode == .live ? .live : .sandbox, instructions: instructions, publicKey: publicKey, cardId: selectedSavedCard.id, cvv: selectedSavedCardCVV)
                 } else {
                     // get new card details from entered data
-                    let cardDetails = CheckoutCardDetails(number: creditCardNumber, expiryMonth: creditCardExpiryMonth, expiryYear: creditCardExpiryYear, cvv: creditCardCVV, cardName: creditCardName)
+                    let cardDetails = CheckoutCardDetails(number: creditCardNumber, expiryMonth: Int(creditCardExpiryMonth) ?? 0, expiryYear: Int(creditCardExpiryYear) ?? 0, cvv: creditCardCVV, cardName: creditCardName)
                     
                     // if card is to be saved, pass in memberService.saveNewCard(token:)
                     let saveNewCardHandler: ((String) async throws -> ())? = saveCreditCard ? container.services.memberService.saveNewCard : nil

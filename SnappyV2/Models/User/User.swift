@@ -408,21 +408,19 @@ struct MemberCardDetails: Codable, Equatable, Identifiable {
     let scheme: String?
     let last4: String
     
-    var checkoutcomScheme: CardScheme? {
-        if scheme?.lowercased() == CardScheme.visa.rawValue {
+    var checkoutcomScheme: Card.Scheme? {
+        if scheme?.lowercased() == Card.Scheme.visa.rawValue {
             return .visa
-        } else if scheme?.lowercased() == CardScheme.mastercard.rawValue {
+        } else if scheme?.lowercased() == Card.Scheme.mastercard.rawValue {
             return .mastercard
-        } else if scheme?.lowercased() == CardScheme.discover.rawValue {
+        } else if scheme?.lowercased() == Card.Scheme.discover.rawValue {
             return .discover
-        } else if scheme?.lowercased() == CardScheme.jcb.rawValue {
+        } else if scheme?.lowercased() == Card.Scheme.jcb.rawValue {
             return .jcb
         }
         return nil
     }
 }
-
-extension CardScheme: Codable {}
 
 struct CardDeleteResponse: Codable, Equatable {
     let success: Bool

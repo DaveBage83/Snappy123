@@ -590,7 +590,7 @@ struct StubEventLogger: EventLoggerProtocol {
     static func getFirebaseItemsArray(from: [BasketItem]) -> [[String: Any]] { return [] }
 }
 
-#if DEBUG
+#if DEBUG || TEST
 // This hack is neccessary in order to expose 'addDefaultParameter'. These cannot easily be tested without.
 extension EventLogger {
     func exposeAddDefaultParameters(to parameters: [String : Any]) -> [String : Any] {

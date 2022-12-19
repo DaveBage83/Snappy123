@@ -10,7 +10,7 @@ import Foundation
 
 // 3rd Party
 import AppsFlyerLib
-import Frames
+import Checkout
 import FBSDKCoreKit
 import KeychainAccess
 import Firebase
@@ -193,7 +193,7 @@ final class CheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    typealias CheckoutComClient = (String, Environment) -> CheckoutAPIClientProtocol
+    typealias CheckoutComClient = (String, Environment) -> CheckoutAPIServiceProtocol
     private let checkoutComClient: CheckoutComClient
     
     init(
@@ -201,7 +201,7 @@ final class CheckoutService: CheckoutServiceProtocol {
         dbRepository: CheckoutDBRepositoryProtocol,
         appState: Store<AppState>,
         eventLogger: EventLoggerProtocol,
-        checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIClient(publicKey: $0, environment: $1)}
+        checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIService(publicKey: $0, environment: $1)}
     ) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
@@ -700,25 +700,28 @@ extension CheckoutService {
         let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, instructions: instructions).singleOutput()
         
         // process checkoutcom
-        let checkoutAPIClient = checkoutComClient(publicKey, paymentGatewayMode == .live ? .live : .sandbox)
+        let checkoutAPIClient = checkoutComClient(publicKey, paymentGatewayMode == .live ? .production : .sandbox)
         
         if let addresses = basket.addresses, let billing = addresses.first(where: {$0.type == "billing"}) {
             
-            let phoneNumber = CkoPhoneNumber(countryCode: nil, number: billing.telephone)
-            let address = CkoAddress(
+            let predictedCountryCode = billing.telephone?.internationalCountryCallingCode(likelyCountry: billing.countryCode, defaultCountry: AppV2Constants.Business.operatingCountry) ?? "GB"
+            let phoneNumber = Phone(number: billing.telephone, country: Country(iso3166Alpha2: predictedCountryCode))
+            let address = Checkout.Address(
                 addressLine1: billing.addressLine1,
                 addressLine2: billing.addressLine2,
                 city: billing.town,
                 state: billing.county,
                 zip: billing.postcode,
-                country: billing.countryCode
+                country: Country(iso3166Alpha2: billing.countryCode ?? "GB")
             )
-            let cardTokenRequest = CkoCardTokenRequest(
+            let cardTokenRequest = Card(
                 number: cardDetails.number,
-                expiryMonth: cardDetails.expiryMonth,
-                expiryYear: cardDetails.expiryYear,
-                cvv: cardDetails.cvv,
+                expiryDate: ExpiryDate(
+                    month: cardDetails.expiryMonth,
+                    year: cardDetails.expiryYear
+                ),
                 name: cardDetails.cardName,
+                cvv: cardDetails.cvv,
                 billingAddress: address,
                 phone: phoneNumber
             )
@@ -801,16 +804,16 @@ extension CheckoutService {
     }
 }
 
-protocol CheckoutAPIClientProtocol {
-    func createCardToken(card: CkoCardTokenRequest) async throws -> CkoCardTokenResponse
+protocol CheckoutAPIServiceProtocol {
+    func createCardToken(card: Card) async throws -> TokenDetails
 }
 
-extension CheckoutAPIClient: CheckoutAPIClientProtocol {}
+extension CheckoutAPIService: CheckoutAPIServiceProtocol {}
 
-extension CheckoutAPIClient {
-    func createCardToken(card: CkoCardTokenRequest) async throws -> CkoCardTokenResponse {
+extension CheckoutAPIService {
+    func createCardToken(card: Card) async throws -> TokenDetails {
         return try await withCheckedThrowingContinuation { continuation in
-            createCardToken(card: card) { result in
+            createToken(.card(card)) { result in
                 continuation.resume(with: result)
             }
             

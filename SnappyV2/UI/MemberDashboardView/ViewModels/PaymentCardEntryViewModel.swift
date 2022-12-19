@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Frames
+import Checkout
 import Combine
 
 enum PaymentCardEntryViewModelError: Error {
@@ -15,27 +15,29 @@ enum PaymentCardEntryViewModelError: Error {
 
 @MainActor
 final class PaymentCardEntryViewModel: ObservableObject {
-    typealias CheckoutComClient = (String, Environment) -> CheckoutAPIClientProtocol
+    typealias CheckoutComClient = (String, Checkout.Environment) -> CheckoutAPIServiceProtocol
     private let checkoutComClient: CheckoutComClient
     let container: DIContainer
     
-    private let cardUtils = CardUtils()
+    private let cardUtils: CardValidator
+    private let paymentEvironment: PaymentGatewayMode
     @Published var creditCardName: String = ""
     @Published var creditCardNumber: String = ""
     @Published var creditCardExpiryMonth: String = ""
     @Published var creditCardExpiryYear: String = ""
+    var creditCardExpiry: ExpiryDate?
     @Published var creditCardCVV: String = ""
     @Published var isUnvalidCardNumber: Bool = false
     @Published var isUnvalidCVV: Bool = false
     @Published var isUnvalidExpiry: Bool = false
-    @Published var cardType: CardType?
+    @Published var cardType: Card.Scheme?
     @Published var showCardCamera: Bool = false
     @Published var savingNewCard: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
 
     var shownCardType: PaymentCardType? {
-        switch cardType?.scheme {
+        switch cardType {
         case .visa:
             return .visa
         case .mastercard:
@@ -64,12 +66,23 @@ final class PaymentCardEntryViewModel: ObservableObject {
         (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV)
     }
     
-    init(container: DIContainer, checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIClient(publicKey: $0, environment: $1) }) {
+    init(container: DIContainer, checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIService(publicKey: $0, environment: $1) }) {
         self.checkoutComClient = checkoutComClient
         self.container = container
         self.memberProfile = container.appState.value.userData.memberProfile
         if let memberProfile = self.memberProfile {
             self.creditCardName = memberProfile.firstname + " " + memberProfile.lastname
+        }
+        
+        if let paymentGateway = container.appState.value.userData.selectedStore.value?.paymentGateways?.first(where: { $0.name ==  "checkoutcom"}) {
+            self.paymentEvironment = paymentGateway.mode
+            self.cardUtils = CardValidator(environment: paymentEvironment == .live ? .production : .sandbox)
+        } else if let  paymentGateway = self.container.appState.value.businessData.businessProfile?.paymentGateways.first(where: { $0.name ==  "checkoutcom"}) {
+            self.paymentEvironment = paymentGateway.mode
+            self.cardUtils = CardValidator(environment: paymentEvironment == .live ? .production : .sandbox)
+        } else {
+            self.cardUtils = CardValidator(environment: .sandbox)
+            self.paymentEvironment = .sandbox
         }
         
         setupCreditCardNumber()
@@ -84,8 +97,13 @@ final class PaymentCardEntryViewModel: ObservableObject {
                 guard let self = self else { return }
                 if number.isEmpty { return }
                 if !number.isEmpty && self.isUnvalidCardNumber { self.isUnvalidCardNumber = false }
-                self.cardType = self.cardUtils.getTypeOf(cardNumber: number)
-                self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: number) == false
+                do {
+                    self.cardType = try? self.cardUtils.validateCompleteness(cardNumber: number).get().scheme
+                    self.isUnvalidCardNumber = try self.cardUtils.validateCompleteness(cardNumber: number).get().isComplete == false
+                } catch {
+                    self.container.appState.value.errors.append(error)
+                }
+                
             }
             .store(in: &cancellables)
     }
@@ -97,7 +115,7 @@ final class PaymentCardEntryViewModel: ObservableObject {
                 guard let self = self else { return }
                 if !cvv.isEmpty && self.isUnvalidCVV { self.isUnvalidCVV = false }
                 if let cardType = self.cardType {
-                    self.isUnvalidCVV = self.cardUtils.isValid(cvv: cvv, cardType: cardType) == false
+                    self.isUnvalidCVV = self.cardUtils.isValid(cvv: cvv, for: cardType) == false
                 }
             }
             .store(in: &cancellables)
@@ -110,17 +128,13 @@ final class PaymentCardEntryViewModel: ObservableObject {
                 guard let self = self else { return }
                 if month.isEmpty && year.isEmpty { return }
                 if (!month.isEmpty && !year.isEmpty) && self.isUnvalidExpiry { self.isUnvalidExpiry = false }
-                self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: month, expirationYear: year) == false
+                self.creditCardExpiry = try? self.cardUtils.validate(expiryMonth: month, expiryYear: year).get()
+                self.isUnvalidExpiry = self.creditCardExpiry == nil
             }
             .store(in: &cancellables)
     }
     
     func areCardDetailsValid() -> Bool {
-        self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: creditCardNumber) == false
-        self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: creditCardExpiryMonth, expirationYear: creditCardExpiryYear) == false
-        if let cardType = self.cardType {
-            self.isUnvalidCVV = self.cardUtils.isValid(cvv: creditCardCVV, cardType: cardType) == false
-        }
         return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
     }
     
@@ -174,28 +188,30 @@ final class PaymentCardEntryViewModel: ObservableObject {
         {
             // Create a CheckoutAPIClient instance with the public key.
             let checkoutAPIClient = self.checkoutComClient(publicKeyString,
-                paymentGateway.mode == .live ? .live : .sandbox)
+                paymentGateway.mode == .live ? .production : .sandbox)
             
             // Add phone number from member profile
-            let phoneNumber = CkoPhoneNumber(
-                countryCode: nil,
-                number: memberProfile?.mobileContactNumber)
+            let phoneNumber = Phone(
+                number: memberProfile?.mobileContactNumber,
+                country: nil)
             
             // add address injected from EditAddressViewModel
-            let address = CkoAddress(
+            let address = Checkout.Address(
                 addressLine1: address.addressLine1,
                 addressLine2: nil,
                 city: nil,
                 state: nil,
                 zip: address.postcode,
-                country: address.countryCode)
+                country: Country(iso3166Alpha2: address.countryCode ?? "GB"))
             
-            let cardTokenRequest = CkoCardTokenRequest(
+            let cardTokenRequest = Card(
                 number: creditCardNumber,
-                expiryMonth: creditCardExpiryMonth,
-                expiryYear: creditCardExpiryYear,
-                cvv: creditCardCVV,
+                expiryDate: ExpiryDate(
+                    month: creditCardExpiry?.month ?? 0,
+                    year: creditCardExpiry?.year ?? 0
+                ),
                 name: creditCardName,
+                cvv: creditCardCVV,
                 billingAddress: address,
                 phone: phoneNumber)
             

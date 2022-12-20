@@ -217,7 +217,6 @@ public struct AlertToast: View {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 struct AlertToastModifier: ViewModifier {
     let container: DIContainer
 

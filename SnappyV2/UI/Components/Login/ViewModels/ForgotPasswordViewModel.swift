@@ -47,10 +47,13 @@ final class ForgotPasswordViewModel: ObservableObject {
         isLoading = false
     }
     
+    // Method triggered from onDisappear in ForgotPasswordView
     func setSuccessToast() {
-        let message = Strings.ForgetPasswordCustom.confirmation.localizedFormat(email)
-        self.container.appState.value.successToasts.append(SuccessToast(subtitle: message))
-        self.successfullySentEmail = false
+        if successfullySentEmail {
+            let message = Strings.ForgetPasswordCustom.confirmation.localizedFormat(email)
+            self.container.appState.value.successToasts.append(SuccessToast(subtitle: message))
+            self.successfullySentEmail = false
+        }
     }
     
     func onAppearSendEvent() {

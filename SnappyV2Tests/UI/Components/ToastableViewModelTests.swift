@@ -16,14 +16,14 @@ class ToastableViewModelTests: XCTestCase {
         sut.container.appState.value.errors = [error]
         let viewID = sut.id
         sut.container.appState.value.viewIDs = [viewID]
-        sut.container.appState.value.successToastStrings = ["Test"]
+        sut.container.appState.value.successToasts = [SuccessToast(subtitle: "Test")]
         
         sut.manageToastsOnDisappear()
         
         XCTAssertEqual(sut.container.appState.value.errors.count, 0)
         XCTAssertEqual(sut.container.appState.value.viewIDs, [])
-        XCTAssertEqual(sut.container.appState.value.successToastStrings, [])
-        XCTAssertNil(sut.container.appState.value.latestError)
+        XCTAssertEqual(sut.container.appState.value.successToasts, [])
+        XCTAssertNil(sut.container.appState.value.errors.first)
         XCTAssertNil(sut.container.appState.value.latestViewID)
     }
     
@@ -33,7 +33,7 @@ class ToastableViewModelTests: XCTestCase {
         sut.container.appState.value.errors = [error]
         let viewID = sut.id
         sut.container.appState.value.viewIDs = [viewID]
-        sut.container.appState.value.successToastStrings = ["Test"]
+        sut.container.appState.value.successToasts = [SuccessToast(subtitle: "Test")]
         
         sut.manageToastsOnDisappear()
         
@@ -44,7 +44,7 @@ class ToastableViewModelTests: XCTestCase {
         sut.container.appState
             .dropFirst()
             .first()
-            .map(\.latestError)
+            .map(\.errors.first)
             .sink { error in
                 expectation.fulfill()
             }
@@ -54,22 +54,22 @@ class ToastableViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.container.appState.value.errors.count, 1)
         XCTAssertEqual(sut.container.appState.value.viewIDs, [])
-        XCTAssertEqual(sut.container.appState.value.successToastStrings, ["Test"])
-        XCTAssertEqual(sut.container.appState.value.latestError?.localizedDescription, error.localizedDescription)
+        XCTAssertEqual(sut.container.appState.value.successToasts, [SuccessToast(subtitle: "Test")])
+        XCTAssertEqual(sut.container.appState.value.errors.first?.localizedDescription, error.localizedDescription)
         XCTAssertNil(sut.container.appState.value.latestViewID)
     }
     
     func test_whenManageToastsOnAppear_givenViewIDInAppStateDoesNotMatchCurrentViewID_thenClearToastsAndAppendViewID() {
         let sut = makeSUT(isModal: false)
         sut.container.appState.value.errors = [GenericError.somethingWrong]
-        sut.container.appState.value.successToastStrings = ["Test"]
+        sut.container.appState.value.successToasts = [SuccessToast(subtitle: "Test")]
         sut.manageToastsOnAppear()
         
         XCTAssertEqual(sut.container.appState.value.viewIDs, [sut.id])
         XCTAssertEqual(sut.container.appState.value.latestViewID, sut.id)
-        XCTAssertNil(sut.container.appState.value.latestError)
-        XCTAssertNil(sut.container.appState.value.latestSuccessToast)
-        XCTAssertEqual(sut.container.appState.value.successToastStrings, [])
+            XCTAssertNil(sut.container.appState.value.errors.first)
+            XCTAssertNil(sut.container.appState.value.successToasts.first)
+        XCTAssertEqual(sut.container.appState.value.successToasts, [])
         XCTAssertEqual(sut.container.appState.value.errors.count, 0)
     }
     

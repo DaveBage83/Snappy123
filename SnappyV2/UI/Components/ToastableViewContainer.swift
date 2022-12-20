@@ -20,18 +20,18 @@ class ToastableViewModel: ObservableObject {
     
     private func clearErrorsAndToasts() {
         container.appState.value.errors = []
-        container.appState.value.successToastStrings = []
+        container.appState.value.successToasts = []
     }
     
     func manageToastsOnDisappear() {
         let errors = container.appState.value.errors // keep local copy of errors
-        let successes = container.appState.value.successToastStrings
+        let successes = container.appState.value.successToasts
         clearErrorsAndToasts()
         
         if isModal { // if modal, we need to repopulate the errors so that the parent view can react
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.000000001) {
                 self.container.appState.value.errors = errors
-                self.container.appState.value.successToastStrings = successes
+                self.container.appState.value.successToasts = successes
             }
         }
         
@@ -55,8 +55,8 @@ struct ToastableViewContainer<Content: View>: View {
     
     var body: some View {
         VStack(content: content)
-            .withAlertToast(container: viewModel.container, error: .constant(viewModel.container.appState.value.latestError), viewID: viewModel.id)
-            .withSuccessToast(container: viewModel.container, viewID: viewModel.id, toastText: .constant(viewModel.container.appState.value.latestSuccessToast))
+            .withAlertToast(container: viewModel.container, toastType: .error, viewID: viewModel.id)
+            .withAlertToast(container: viewModel.container, toastType: .success, viewID: viewModel.id)
             .onDisappear {
                 viewModel.manageToastsOnDisappear()
             }

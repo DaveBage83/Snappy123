@@ -126,7 +126,7 @@ class CheckoutSlotExpiryViewModelTests: XCTestCase {
             XCTFail("Slot expired should not be nil")
         }
         
-        XCTAssertEqual(sut.container.appState.value.latestError?.localizedDescription, SlotExpiryError.slotExpired.localizedDescription)
+        XCTAssertEqual(sut.container.appState.value.errors.first?.localizedDescription, SlotExpiryError.slotExpired.localizedDescription)
     }
     
     func test_whenExpiryStateIsOK_thenColorAndEditIconColorAndTextColorAndPillOpacitySet() {

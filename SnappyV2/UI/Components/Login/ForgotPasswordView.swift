@@ -78,7 +78,7 @@ struct ForgotPasswordView: View {
                 Spacer()
             }
             .padding()
-
+            
             if viewModel.isLoading {
                 LoadingView()
             }
@@ -86,8 +86,11 @@ struct ForgotPasswordView: View {
         .edgesIgnoringSafeArea(.bottom)
         .background(colorPalette.backgroundMain)
         .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized, navigationDismissType: .close)
-		.onAppear {
+        .onAppear {
             viewModel.onAppearSendEvent()
+        }
+        .onDisappear {
+            viewModel.setSuccessToast()
         }
     }
 }

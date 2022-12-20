@@ -12,6 +12,7 @@ final class ForgotPasswordViewModel: ObservableObject {
     @Published var email = ""
     @Published var emailHasError = false
     @Published var isLoading = false
+    @Published var successfullySentEmail = false
         
     let container: DIContainer
     let isInCheckout: Bool
@@ -35,14 +36,24 @@ final class ForgotPasswordViewModel: ObservableObject {
         do {
             try await self.container.services.memberService.resetPasswordRequest(email: email)
             Logger.member.log("Email sent to reset password")
-            container.appState.value.successToastStrings.append(Strings.ForgetPasswordCustom.confirmation.localizedFormat(email))
+            successfullySentEmail = true
             dismissHandler(email)
+
         } catch {
             self.container.appState.value.errors.append(error)
             Logger.member.error("Failed to send password reset message with error: \(error.localizedDescription)")
         }
         
         isLoading = false
+    }
+    
+    // Method triggered from onDisappear in ForgotPasswordView
+    func setSuccessToast() {
+        if successfullySentEmail {
+            let message = Strings.ForgetPasswordCustom.confirmation.localizedFormat(email)
+            self.container.appState.value.successToasts.append(SuccessToast(subtitle: message))
+            self.successfullySentEmail = false
+        }
     }
     
     func onAppearSendEvent() {

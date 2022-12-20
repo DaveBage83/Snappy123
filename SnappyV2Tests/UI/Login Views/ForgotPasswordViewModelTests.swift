@@ -82,6 +82,26 @@ final class ForgotPasswordViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
+    func test_whenSetSuccessToast_givenSuccessfullySentEmailTrue_thenToastSetAndSetSuccessToastSetToFalse() {
+        let sut = makeSUT()
+        sut.email = "test@test.com"
+        sut.successfullySentEmail = true
+        let expectedString = Strings.ForgetPasswordCustom.confirmation.localizedFormat(sut.email)
+        sut.setSuccessToast()
+
+        XCTAssertEqual(sut.container.appState.value.successToasts.first?.subtitle, expectedString)
+        XCTAssertFalse(sut.successfullySentEmail)
+    }
+    
+    func test_whenSetSuccessToast_givenSuccessfullySentEmailFalse_thenToastNOTSet() {
+        let sut = makeSUT()
+        sut.email = "test@test.com"
+        sut.setSuccessToast()
+        sut.successfullySentEmail = false
+        
+        XCTAssertNil(sut.container.appState.value.successToasts.first)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, dismissHandler: @escaping (String?) -> Void = { _ in }) -> ForgotPasswordViewModel {
         let sut = ForgotPasswordViewModel(container: container, isInCheckout: isInCheckout, dismissHandler: dismissHandler)
         

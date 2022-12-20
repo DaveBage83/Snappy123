@@ -719,7 +719,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
-        XCTAssertEqual(sut.container.appState.value.latestError as! CheckoutPaymentHandlingViewModelError, CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty)
+        XCTAssertEqual(sut.container.appState.value.errors.first as! CheckoutPaymentHandlingViewModelError, CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty)
         XCTAssertNil(sut.threeDSWebViewURLs)
         container.services.verify(as: .checkout)
     }
@@ -859,7 +859,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.threeDSFail()
         
         XCTAssertNil(sut.threeDSWebViewURLs)
-        XCTAssertEqual(sut.container.appState.value.latestError as! CheckoutPaymentHandlingViewModelError, CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed)
+        XCTAssertEqual(sut.container.appState.value.errors.first as! CheckoutPaymentHandlingViewModelError, CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed)
     }
     
     func test_givenCardNameAndNumberAndCVVIsNotEmpty_thenIsUnvalidCardNameIsTrue() {

@@ -111,8 +111,8 @@ struct LoginHomeView: View {
                 viewModel: .init(
                     container: viewModel.container,
                     isInCheckout: viewModel.isInCheckout,
-                    dismissHandler: { email in
-                        viewModel.forgotPasswordDismissed(sendingEmail: email)
+                    dismissHandler: { _ in
+                        viewModel.forgotPasswordDismissed()
                     }
                 )
             )

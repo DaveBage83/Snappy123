@@ -112,35 +112,31 @@ class StandardAlertToastViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 guard let self else { return }
-                self.configureSuccess()
+                self.configureAlert()
             }
             .store(in: &cancellables)
     }
     
     private func configureAlert() {
-        if let error = container.appState.value.errors.first?.localizedDescription, error.isEmpty == false {
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                guard let self else { return }
-                self.alertText = error
-                self.showAlert = true
-            }
-           
-        } else {
-            self.alertText = ""
-            self.showAlert = false
+        switch toastType {
+        case .error:
+            let toastString = container.appState.value.errors.first?.localizedDescription
+            handleToast(toastString: toastString)
+        case .success:
+            let toastString = container.appState.value.successToasts.first?.subtitle
+            handleToast(toastString: toastString)
         }
     }
     
-    private func configureSuccess() {
-        if let success = container.appState.value.successToasts.first?.subtitle, success.isEmpty == false {
+    private func handleToast(toastString: String?) {
+        if let toastString, toastString.isEmpty == false {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                 guard let self else { return }
-                self.alertText = success
+                self.alertText = toastString
                 self.showAlert = true
             }
-           
+            
         } else {
             self.alertText = ""
             self.showAlert = false

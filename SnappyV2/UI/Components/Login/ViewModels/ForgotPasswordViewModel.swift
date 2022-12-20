@@ -12,6 +12,7 @@ final class ForgotPasswordViewModel: ObservableObject {
     @Published var email = ""
     @Published var emailHasError = false
     @Published var isLoading = false
+    @Published var successfullySentEmail = false
         
     let container: DIContainer
     let isInCheckout: Bool
@@ -35,12 +36,8 @@ final class ForgotPasswordViewModel: ObservableObject {
         do {
             try await self.container.services.memberService.resetPasswordRequest(email: email)
             Logger.member.log("Email sent to reset password")
-            let successToast = SuccessToast(subtitle: Strings.ForgetPasswordCustom.confirmation.localizedFormat(email))
+            successfullySentEmail = true
             dismissHandler(email)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // Allow view to dismiss before firing success toast
-                self.container.appState.value.successToasts.append(successToast)
-            }
 
         } catch {
             self.container.appState.value.errors.append(error)
@@ -48,6 +45,12 @@ final class ForgotPasswordViewModel: ObservableObject {
         }
         
         isLoading = false
+    }
+    
+    func setSuccessToast() {
+        let message = Strings.ForgetPasswordCustom.confirmation.localizedFormat(email)
+        self.container.appState.value.successToasts.append(SuccessToast(subtitle: message))
+        self.successfullySentEmail = false
     }
     
     func onAppearSendEvent() {

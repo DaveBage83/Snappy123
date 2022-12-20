@@ -8,10 +8,6 @@
 import Foundation
 import SwiftUI
 
-struct SuccessToast: Equatable {
-    let subtitle: String
-}
-
 struct AppState: Equatable {
     static func == (lhs: AppState, rhs: AppState) -> Bool { true }
     

@@ -289,6 +289,7 @@
 		55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */; };
 		55436C8027E263420055DB56 /* LoginButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7F27E263420055DB56 /* LoginButtonTests.swift */; };
 		554A72242950BB9800E24E72 /* StandardAlertToastViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554A72232950BB9800E24E72 /* StandardAlertToastViewModelTests.swift */; };
+		554A72272951EA4500E24E72 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554A72262951EA4500E24E72 /* Toast.swift */; };
 		554BDD7928E4A77F006E34DB /* SettingsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554BDD7828E4A77F006E34DB /* SettingsButton.swift */; };
 		554F1FE527A89DEC00D24C6E /* MockedAsyncImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F1FE427A89DEC00D24C6E /* MockedAsyncImageService.swift */; };
 		5555CB14283C3A16005CB41F /* UIScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */; };
@@ -935,6 +936,7 @@
 		55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModelTests.swift; sourceTree = "<group>"; };
 		55436C7F27E263420055DB56 /* LoginButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButtonTests.swift; sourceTree = "<group>"; };
 		554A72232950BB9800E24E72 /* StandardAlertToastViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardAlertToastViewModelTests.swift; sourceTree = "<group>"; };
+		554A72262951EA4500E24E72 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		554BDD7828E4A77F006E34DB /* SettingsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsButton.swift; sourceTree = "<group>"; };
 		554F1FE427A89DEC00D24C6E /* MockedAsyncImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAsyncImageService.swift; sourceTree = "<group>"; };
 		5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extensions.swift"; sourceTree = "<group>"; };
@@ -2173,6 +2175,14 @@
 			path = PastOrders;
 			sourceTree = "<group>";
 		};
+		554A72252951EA3300E24E72 /* Toasts */ = {
+			isa = PBXGroup;
+			children = (
+				554A72262951EA4500E24E72 /* Toast.swift */,
+			);
+			path = Toasts;
+			sourceTree = "<group>";
+		};
 		554F200827B2826E00D24C6E /* AddressSearchView */ = {
 			isa = PBXGroup;
 			children = (
@@ -2972,6 +2982,7 @@
 		AFAE478926F1EE0100B4FEC3 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				554A72252951EA3300E24E72 /* Toasts */,
 				558620B829326ECD005EB336 /* SearchHistory */,
 				0AF72F202791ACD20055ECFD /* Address */,
 				0AF16A75272718880020A2CF /* Basket */,
@@ -3887,6 +3898,7 @@
 				AFF1DE4A28B502B70026FFA2 /* PixelBufferStream.swift in Sources */,
 				0AAB40B2271F788C00C6153B /* RetailStoreMenu+CoreData.swift in Sources */,
 				AFF1DE4828B502B70026FFA2 /* CardScanViewModel.swift in Sources */,
+				554A72272951EA4500E24E72 /* Toast.swift in Sources */,
 				5531611927E4915200D55329 /* AccountButton.swift in Sources */,
 				551A638E2851EA4A007E0E78 /* MapIcons.swift in Sources */,
 			);

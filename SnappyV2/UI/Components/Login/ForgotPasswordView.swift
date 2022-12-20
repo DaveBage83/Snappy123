@@ -89,6 +89,11 @@ struct ForgotPasswordView: View {
 		.onAppear {
             viewModel.onAppearSendEvent()
         }
+        .onDisappear {
+            if viewModel.successfullySentEmail {
+                viewModel.setSuccessToast()
+            }
+        }
     }
 }
 

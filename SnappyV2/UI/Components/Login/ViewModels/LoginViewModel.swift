@@ -103,11 +103,8 @@ class LoginViewModel: ObservableObject {
         showForgotPassword = true
     }
     
-    func forgotPasswordDismissed(sendingEmail: String?) {
+    func forgotPasswordDismissed() {
         showForgotPassword = false
-        if let sendingEmail = sendingEmail {
-            successMessage = Strings.ForgetPasswordCustom.confirmation.localizedFormat(sendingEmail)
-        }
     }
     
     func loginTapped() async {

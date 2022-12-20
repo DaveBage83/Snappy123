@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/checkout/frames-ios.git",
       "state" : {
-        "revision" : "659b4c58b0987fc68d197e21dcb0ec90e55a4fc0",
-        "version" : "3.5.3"
+        "revision" : "431a2bcc1792bfdc30906d8277e28b802285122d",
+        "version" : "4.0.3"
       }
     },
     {
@@ -159,7 +159,7 @@
       "location" : "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package",
       "state" : {
         "branch" : "main",
-        "revision" : "e0e96459c36f9c499e8091440db7e83270e15a1b"
+        "revision" : "0b76b95ba1ee35292f76c126a4480f9e18f65502"
       }
     },
     {
@@ -266,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "c3c19e29f775ee95b77aa3168f3e2fd6c20deba6",
-        "version" : "7.31.3"
+        "revision" : "5238cc5f12c2b75027730a54ecf632cf103daf21",
+        "version" : "7.31.4"
       }
     },
     {

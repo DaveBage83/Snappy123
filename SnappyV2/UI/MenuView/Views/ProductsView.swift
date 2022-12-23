@@ -213,7 +213,7 @@ struct ProductsView: View {
         if viewModel.isSearching {
             // When searching, we do not want to show previously found items
             EmptyView()
-        } else if viewModel.rootCategoriesIsLoading {
+        } else if viewModel.showDummyProductCards {
             VStack {
                 // We use dummy content here in order to display a redacted view whilst loading
                 ForEach(1...20, id: \.self) { _ in
@@ -223,7 +223,6 @@ struct ProductsView: View {
                 }
             }
             .padding(.vertical)
-            
         } else if viewModel.showEnterMoreCharactersView {
             enterMoreCharacters
         } else if viewModel.showSearchView {

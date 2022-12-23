@@ -165,6 +165,12 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    var showDummyProductCards: Bool {
+        guard container.appState.value.storeMenu.searchResultItems.isEmpty,
+              container.appState.value.storeMenu.searchResultCategories.isEmpty else { return false }
+        return rootCategoriesIsLoading
+    }
+    
     var categoryLoading: Bool {
         rootCategoriesIsLoading || subCategoriesOrItemsIsLoading || specialOffersIsLoading
     }
@@ -351,7 +357,7 @@ class ProductsViewModel: ObservableObject {
             .sink { appState.value.storeMenu.itemNavigationTitle = $0 }
             .store(in: &cancellables)
     }
-
+    
     func backButtonTapped() {
         
         guard (isSearchActive && navigationWithIsSearchActive == 0) == false else {
@@ -422,6 +428,7 @@ class ProductsViewModel: ObservableObject {
     
     private func setupRootCategories() {
         $rootCategoriesMenuFetch
+            .dropFirst()
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
@@ -435,6 +442,7 @@ class ProductsViewModel: ObservableObject {
     
     private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
+            .dropFirst()
             .filter { $0 != .notRequested }
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -551,6 +559,7 @@ class ProductsViewModel: ObservableObject {
     
     private func setupIsSearchActive() {
         $isSearchActive
+            .dropFirst()
             .removeDuplicates()
             .filter { $0 == false }
             .sink { [weak self] _ in
@@ -571,6 +580,7 @@ class ProductsViewModel: ObservableObject {
     
     private func setupCategoriesOrItemSearchResult() {
         $searchResult
+            .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] result in
                 guard let self = self else { return }
@@ -598,6 +608,7 @@ class ProductsViewModel: ObservableObject {
 
     private func setupSpecialOffers() {
         $specialOffersMenuFetch
+            .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }

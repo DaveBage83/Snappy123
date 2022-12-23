@@ -1028,6 +1028,31 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showSpecialOfferItems)
     }
     
+    func test_whenSearchResultItemsNotEmpty_thenShowDummyProductCardsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.storeMenu.searchResultItems = [.mockedData]
+        XCTAssertFalse(sut.showDummyProductCards)
+    }
+    
+    func test_whenSearchResultCategoriesNotEmpty_thenShowDummyProductCardsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.storeMenu.searchResultCategories = [.init(id: 123, name: "test", image: nil, price: nil)]
+        XCTAssertFalse(sut.showDummyProductCards)
+    }
+    
+    func test_whenSearchResultCategoriesAndSearchResultItemsEmpty_givenRootCategoriesNotLoading_thenShowDummyProductCardsFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.showDummyProductCards)
+    }
+    
+    func test_whenSearchResultCategoriesAndSearchResultItemsEmpty_givenRootCategoriesIsLoading_thenShowDummyProductCardsTrue() {
+        let sut = makeSUT()
+        sut.rootCategoriesMenuFetch = .isLoading(last: .mockedData, cancelBag: .init())
+
+        sut.rootCategoriesMenuFetch = .isLoading(last: .mockedData, cancelBag: .init())
+        XCTAssertTrue(sut.showDummyProductCards)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {
         let sut = ProductsViewModel(container: container, missedOffer: missedOffer)
         

@@ -48,7 +48,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil
+            colors: nil,
+            orderingClientUpdateRequirements: [.mockedDataIOS]
         )
         
         mockedStore.actions = .init(expected: [
@@ -82,7 +83,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                 marketingText: nil,
                 fetchLocaleCode: profileWithLocaleCode.fetchLocaleCode,
                 fetchTimestamp: result?.fetchTimestamp,
-                colors: nil
+                colors: nil,
+                orderingClientUpdateRequirements: [.mockedDataIOS]
             )
             XCTAssertEqual(result, profileWithTimeStamp, file: #file, line: #line)
             mockedStore.verify()
@@ -130,7 +132,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil
+            colors: nil,
+            orderingClientUpdateRequirements: [.mockedDataIOS]
         )
         
         mockedStore.actions = .init(expected: [
@@ -178,7 +181,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil
+            colors: nil,
+            orderingClientUpdateRequirements: [.mockedDataIOS]
         )
         
         mockedStore.actions = .init(expected: [

@@ -413,7 +413,7 @@ class InitialViewModel: ObservableObject {
     
     var updateMessage: String {
         guard let profile = container.appState.value.businessData.businessProfile,
-              let orderingClientUpdateRequirements = profile.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first else { return "Please update" }
+              let orderingClientUpdateRequirements = profile.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first else { return Strings.VersionUpateAlert.defaultPrompt.localized }
         
         return orderingClientUpdateRequirements.updateDescription
     }
@@ -631,19 +631,3 @@ extension InitialViewModel {
     }
 }
 #endif
-
-extension Bundle {
-    var releaseVersionNumber: String? {
-        return infoDictionary?["CFBundleShortVersionString"] as? String
-    }
-    var buildVersionNumber: String? {
-        return infoDictionary?["CFBundleVersion"] as? String
-    }
-}
-
-extension String {
-    func versionUpToDate(_ otherVersion: String) -> Bool {
-        let comparisonResult = self.compare(otherVersion, options: .numeric)
-        return comparisonResult != .orderedAscending
-    }
-}

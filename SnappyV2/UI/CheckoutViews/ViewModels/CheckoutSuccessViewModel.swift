@@ -75,7 +75,7 @@ class CheckoutSuccessViewModel: ObservableObject {
                 
                 if let profile,
                    let orderingClientUpdateRequirements = profile.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first,
-                   AppV2Constants.Client.systemVersion.versionUpToDate(String(orderingClientUpdateRequirements.minimumOSVersion)) == true
+                   AppV2Constants.Client.systemVersion.versionUpToDate(String(orderingClientUpdateRequirements.minimumOSVersion)) == false
                 {
                     self.showOSUpdateAlert = true
                 } else {

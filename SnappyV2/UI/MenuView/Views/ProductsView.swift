@@ -108,7 +108,7 @@ struct ProductsView: View {
                 SettingsButton(viewModel: .init(container: viewModel.container))
             }
         })
-        .withLoadingToast(loading: .constant(viewModel.isSearching))
+        .withLoadingToast(container: viewModel.container, loading: .constant(viewModel.isSearching))
     }
     
     private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {

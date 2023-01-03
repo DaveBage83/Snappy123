@@ -107,7 +107,7 @@ struct OTPPromptView: View {
             .frame(width: Constants.OTPAlert.frameWidth)
             .background(colorPalette.secondaryWhite)
             .cornerRadius(Constants.OTPAlert.cornerRadius)
-            .withLoadingToast(loading: $viewModel.isSendingOTPRequest)
+            .withLoadingToast(container: viewModel.container, loading: $viewModel.isSendingOTPRequest)
         }
     }
     
@@ -170,7 +170,7 @@ struct OTPPromptView: View {
             .frame(width: Constants.OTPAlert.frameWidth)
             .background(colorPalette.secondaryWhite)
             .cornerRadius(Constants.OTPAlert.cornerRadius)
-            .withLoadingToast(loading: $viewModel.isSendingOTPCode)
+            .withLoadingToast(container: viewModel.container, loading: $viewModel.isSendingOTPCode)
         }
     }
 }

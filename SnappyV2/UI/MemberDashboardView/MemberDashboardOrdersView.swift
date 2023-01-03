@@ -99,7 +99,7 @@ struct MemberDashboardOrdersView: View {
                 OrderDetailsView(viewModel: .init(container: viewModel.container, order: order, showTrackOrderButton: viewModel.showTrackOrderButton))
             }, viewModel: .init(container: viewModel.container, isModal: false))
         })
-        .withLoadingToast(loading: $viewModel.initialOrdersLoading)
+        .withLoadingToast(container: viewModel.container, loading: $viewModel.initialOrdersLoading)
         .onAppear {
             viewModel.onAppearSendEvent()
         }
@@ -114,7 +114,7 @@ struct MemberDashboardOrdersView: View {
             } label: {
                 OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
             }
-            .withLoadingToast(loading: .constant(viewModel.currentOrderIsLoading(businessOrderId: order.businessOrderId)))
+            .withLoadingToast(container: viewModel.container, loading: .constant(viewModel.currentOrderIsLoading(businessOrderId: order.businessOrderId)))
             .disabled(viewModel.disableCard(businessOrderId: order.businessOrderId))
         }
     }

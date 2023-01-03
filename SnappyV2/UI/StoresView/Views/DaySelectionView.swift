@@ -122,7 +122,7 @@ struct DaySelectionView: View {
                 .offset(y: -(Constants.General.height * scale) / 2)
             }
         }
-        .withLoadingToast(loading: $isLoading)
+        .withLoadingToast(container: viewModel.container, loading: $isLoading)
     }
 }
 

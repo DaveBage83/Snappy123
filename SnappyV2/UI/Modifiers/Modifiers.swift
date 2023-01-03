@@ -334,8 +334,8 @@ struct LoadingToast: ViewModifier {
 }
 
 extension View {
-    func withLoadingToast(loading: Binding<Bool>) -> some View {
-        modifier(LoadingToast(container: .preview, loading: loading))
+    func withLoadingToast(container: DIContainer, loading: Binding<Bool>) -> some View {
+        modifier(LoadingToast(container: container, loading: loading))
     }
 }
 

@@ -85,7 +85,7 @@ struct MemberDashboardView: View {
                         }
                     }
                     .background(colorPalette.backgroundMain)
-                    .withLoadingToast(loading: $viewModel.loading)
+                    .withLoadingToast(container: viewModel.container, loading: $viewModel.loading)
                     .fullScreenCover(
                         item: $viewModel.driverDependencies,
                         content: { driverDependencies in

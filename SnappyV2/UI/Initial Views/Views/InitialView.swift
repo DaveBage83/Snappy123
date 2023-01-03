@@ -237,7 +237,7 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
-            .withLoadingToast(loading: .constant(viewModel.isLoading || viewModel.driverSettingsLoading))
+            .withLoadingToast(container: viewModel.container, loading: .constant(viewModel.isLoading || viewModel.driverSettingsLoading))
             .alert(item: $viewModel.showAlert) { alert in
                 switch alert.id {
                 case .locationServicesDenied:

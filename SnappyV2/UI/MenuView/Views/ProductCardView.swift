@@ -62,10 +62,10 @@ struct ProductCardView: View {
     var body: some View {
         if viewModel.showHorizontalCard {
             offerProductCard()
-                .withLoadingToast(loading: $viewModel.isGettingProductDetails)
+                .withLoadingToast(container: viewModel.container, loading: $viewModel.isGettingProductDetails)
         } else {
             standardProductCard()
-                .withLoadingToast(loading: $viewModel.isGettingProductDetails)
+                .withLoadingToast(container: viewModel.container, loading: $viewModel.isGettingProductDetails)
         }
     }
     

@@ -127,6 +127,12 @@ struct MemberDashboardSettingsView: View {
                     termsView
                 }
                 .padding()
+                
+                if let appVersion = AppV2Constants.Client.appVersion {
+                    Text(GeneralStrings.Custom.version.localizedFormat(appVersion))
+                        .font(.Caption1.semiBold())
+                        .padding(.bottom)
+                }
             }
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()

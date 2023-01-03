@@ -66,6 +66,7 @@ enum Strings {
         
         enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
+            case version = "general.custom.version"
         }
         
         enum Login: String, IterableSnappyString {

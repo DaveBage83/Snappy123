@@ -58,7 +58,7 @@
 // MARK: - General - custom
 
 "general.custom.peritem" = "%@ each";
-"general.custom.version" = "Version number: %@";
+"general.custom.version" = "Version number: %@ (%@)";
 
 // MARK: - General - errors
 

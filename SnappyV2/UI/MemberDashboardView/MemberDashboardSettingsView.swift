@@ -128,8 +128,10 @@ struct MemberDashboardSettingsView: View {
                 }
                 .padding()
                 
-                if let appVersion = AppV2Constants.Client.appVersion {
-                    Text(GeneralStrings.Custom.version.localizedFormat(appVersion))
+                if let appVersion = AppV2Constants.Client.appVersion,
+                   let bundleVersion = AppV2Constants.Client.bundleVersion
+                {
+                    Text(GeneralStrings.Custom.version.localizedFormat(appVersion, bundleVersion))
                         .font(.Caption1.semiBold())
                         .padding(.bottom)
                 }

@@ -11,6 +11,7 @@ import CoreData
 extension BusinessProfileMO: ManagedEntity { }
 extension TipLimitLevelMO: ManagedEntity { }
 extension PostcodeRuleMO: ManagedEntity { }
+extension OrderingClientUpdateRequirementsMO: ManagedEntity { }
 
 extension BusinessProfile {
     
@@ -80,6 +81,19 @@ extension BusinessProfile {
             )
         }
         
+        var orderingClientUpdateRequirements: [OrderingClientUpdateRequirements]?
+        if
+            let managedOrderingClientUpdateRequirementsArray = managedObject.orderingClientUpdateRequirements?.array as? [OrderingClientUpdateRequirementsMO] {
+            orderingClientUpdateRequirements = managedOrderingClientUpdateRequirementsArray
+                .reduce([], { (requirementsArray, record) -> [OrderingClientUpdateRequirements] in
+                    var array = requirementsArray
+                    array.append(OrderingClientUpdateRequirements(managedObject: record))
+                    return array
+                })
+        } else {
+            orderingClientUpdateRequirements = []
+        }
+        
         self.init(
             id: Int(managedObject.id),
             checkoutTimeoutSeconds: checkoutTimeoutSeconds,
@@ -102,7 +116,8 @@ extension BusinessProfile {
             marketingText: marketingText,
             fetchLocaleCode: managedObject.fetchLocaleCode,
             fetchTimestamp: managedObject.timestamp,
-            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors)
+            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors),
+            orderingClientUpdateRequirements: orderingClientUpdateRequirements ?? []
         )
     }
     
@@ -157,6 +172,12 @@ extension BusinessProfile {
             profile.remoteNotificationNoneButton = marketingText.remoteNotificationNoneButton
         }
         
+        // Client update requirements
+        profile.orderingClientUpdateRequirements = NSOrderedSet(array: orderingClientUpdateRequirements.compactMap({ orderingClientUpdateRequirements -> OrderingClientUpdateRequirementsMO? in
+            return orderingClientUpdateRequirements.store(in: context)
+            
+        }))
+        
         profile.fetchLocaleCode = fetchLocaleCode
         profile.timestamp = Date().trueDate
         
@@ -200,7 +221,6 @@ extension PostcodeRule {
             countryCode: managedObject.countryCode ?? "",
             regex: managedObject.regex ?? ""
         )
-        
     }
     
     @discardableResult
@@ -213,5 +233,33 @@ extension PostcodeRule {
         postcodeRule.regex = regex
         
         return postcodeRule
+    }
+}
+
+extension OrderingClientUpdateRequirements {
+    
+    init(managedObject: OrderingClientUpdateRequirementsMO) {
+        
+        self.init(
+            platform: managedObject.platform ?? "",
+            minimumBuildVersion: managedObject.minimumBuildVersion ?? "",
+            minimumOSVersion: managedObject.minimumOSVersion,
+            updateUrl: managedObject.updateUrl ?? "",
+            updateDescription: managedObject.updateDescription ?? "")
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> OrderingClientUpdateRequirementsMO? {
+        
+        guard let requirements = OrderingClientUpdateRequirementsMO.insertNew(in: context)
+            else { return nil }
+
+        requirements.platform = platform
+        requirements.minimumBuildVersion = minimumBuildVersion
+        requirements.minimumOSVersion = minimumOSVersion
+        requirements.updateUrl = updateUrl
+        requirements.updateDescription = updateDescription
+        
+        return requirements
     }
 }

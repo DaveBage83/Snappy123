@@ -99,7 +99,8 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: Date(),
-            colors: nil
+            colors: nil,
+            orderingClientUpdateRequirements: [.mockedDataIOS]
         )
         
         // Configuring expected actions on repositories
@@ -179,7 +180,8 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: expiredDate,
-            colors: nil
+            colors: nil,
+            orderingClientUpdateRequirements: [.mockedDataIOS]
         )
         
         // Configuring expected actions on repositories

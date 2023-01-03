@@ -32,9 +32,189 @@ extension BusinessProfile {
         marketingText: MarketingTexts.mockedData,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: nil
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataIOS]
     )
     
+    static let mockedDataNoIOSUpdateInfo = BusinessProfile(
+        id: 15,
+        checkoutTimeoutSeconds: 900,
+        minOrdersForAppReview: 2,
+        privacyPolicyLink: URL(string: "http://www.privacy.hungrrr.co.uk/shop/privacy-policy/?id=214"),
+        pusherClusterServer: "",
+        pusherAppKey: "",
+        mentionMeEnabled: false,
+        iterableMobileApiKey: nil,
+        useDeliveryFirms: false,
+        driverTipIncrement: 0.25,
+        tipLimitLevels: TipLimitLevel.mockedDataArray,
+        facebook: FacebookSetting.mockedData,
+        tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
+        postcodeRules: PostcodeRule.mockedDataArray,
+        marketingText: MarketingTexts.mockedData,
+        fetchLocaleCode: nil,
+        fetchTimestamp: nil,
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataAndroid]
+    )
+    
+    static let mockedDataLowestOSVersionHighestAppVersion = BusinessProfile(
+        id: 15,
+        checkoutTimeoutSeconds: 900,
+        minOrdersForAppReview: 2,
+        privacyPolicyLink: URL(string: "http://www.privacy.hungrrr.co.uk/shop/privacy-policy/?id=214"),
+        pusherClusterServer: "",
+        pusherAppKey: "",
+        mentionMeEnabled: false,
+        iterableMobileApiKey: nil,
+        useDeliveryFirms: false,
+        driverTipIncrement: 0.25,
+        tipLimitLevels: TipLimitLevel.mockedDataArray,
+        facebook: FacebookSetting.mockedData,
+        tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
+        postcodeRules: PostcodeRule.mockedDataArray,
+        marketingText: MarketingTexts.mockedData,
+        fetchLocaleCode: nil,
+        fetchTimestamp: nil,
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataLowestOSVersionHighestAppVersion]
+    )
+    
+    static let mockedDataHighestOSVersionHighestAppVersion = BusinessProfile(
+        id: 15,
+        checkoutTimeoutSeconds: 900,
+        minOrdersForAppReview: 2,
+        privacyPolicyLink: URL(string: "http://www.privacy.hungrrr.co.uk/shop/privacy-policy/?id=214"),
+        pusherClusterServer: "",
+        pusherAppKey: "",
+        mentionMeEnabled: false,
+        iterableMobileApiKey: nil,
+        useDeliveryFirms: false,
+        driverTipIncrement: 0.25,
+        tipLimitLevels: TipLimitLevel.mockedDataArray,
+        facebook: FacebookSetting.mockedData,
+        tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
+        postcodeRules: PostcodeRule.mockedDataArray,
+        marketingText: MarketingTexts.mockedData,
+        fetchLocaleCode: nil,
+        fetchTimestamp: nil,
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataHighestOSVersionHighestAppVersion]
+    )
+    
+    static let mockedDataInvalidMinBuildVersion = BusinessProfile(
+        id: 15,
+        checkoutTimeoutSeconds: 900,
+        minOrdersForAppReview: 2,
+        privacyPolicyLink: URL(string: "http://www.privacy.hungrrr.co.uk/shop/privacy-policy/?id=214"),
+        pusherClusterServer: "",
+        pusherAppKey: "",
+        mentionMeEnabled: false,
+        iterableMobileApiKey: nil,
+        useDeliveryFirms: false,
+        driverTipIncrement: 0.25,
+        tipLimitLevels: TipLimitLevel.mockedDataArray,
+        facebook: FacebookSetting.mockedData,
+        tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
+        postcodeRules: PostcodeRule.mockedDataArray,
+        marketingText: MarketingTexts.mockedData,
+        fetchLocaleCode: nil,
+        fetchTimestamp: nil,
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataInvalidBuildVersion]
+    )
+    static let mockedDataLowestOSVersionLowestAppVersion = BusinessProfile(
+        id: 15,
+        checkoutTimeoutSeconds: 900,
+        minOrdersForAppReview: 2,
+        privacyPolicyLink: URL(string: "http://www.privacy.hungrrr.co.uk/shop/privacy-policy/?id=214"),
+        pusherClusterServer: "",
+        pusherAppKey: "",
+        mentionMeEnabled: false,
+        iterableMobileApiKey: nil,
+        useDeliveryFirms: false,
+        driverTipIncrement: 0.25,
+        tipLimitLevels: TipLimitLevel.mockedDataArray,
+        facebook: FacebookSetting.mockedData,
+        tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
+        postcodeRules: PostcodeRule.mockedDataArray,
+        marketingText: MarketingTexts.mockedData,
+        fetchLocaleCode: nil,
+        fetchTimestamp: nil,
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataLowestOSVersionLowestAppVersion]
+    )
+    static let mockedDataMinOSVersion = BusinessProfile(
+        id: 15,
+        checkoutTimeoutSeconds: 900,
+        minOrdersForAppReview: 2,
+        privacyPolicyLink: URL(string: "http://www.privacy.hungrrr.co.uk/shop/privacy-policy/?id=214"),
+        pusherClusterServer: "",
+        pusherAppKey: "",
+        mentionMeEnabled: false,
+        iterableMobileApiKey: nil,
+        useDeliveryFirms: false,
+        driverTipIncrement: 0.25,
+        tipLimitLevels: TipLimitLevel.mockedDataArray,
+        facebook: FacebookSetting.mockedData,
+        tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
+        postcodeRules: PostcodeRule.mockedDataArray,
+        marketingText: MarketingTexts.mockedData,
+        fetchLocaleCode: nil,
+        fetchTimestamp: nil,
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataLowestOSVersion]
+    )
+    
+    static let mockedDataMaxOSVersion = BusinessProfile(
+        id: 15,
+        checkoutTimeoutSeconds: 900,
+        minOrdersForAppReview: 2,
+        privacyPolicyLink: URL(string: "http://www.privacy.hungrrr.co.uk/shop/privacy-policy/?id=214"),
+        pusherClusterServer: "",
+        pusherAppKey: "",
+        mentionMeEnabled: false,
+        iterableMobileApiKey: nil,
+        useDeliveryFirms: false,
+        driverTipIncrement: 0.25,
+        tipLimitLevels: TipLimitLevel.mockedDataArray,
+        facebook: FacebookSetting.mockedData,
+        tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
+        postcodeRules: PostcodeRule.mockedDataArray,
+        marketingText: MarketingTexts.mockedData,
+        fetchLocaleCode: nil,
+        fetchTimestamp: nil,
+        colors: nil,
+        orderingClientUpdateRequirements: [.mockedDataHighestOSVersion]
+    )
     static let mockedDataFromAPIWithColors = BusinessProfile(
         id: 15,
         checkoutTimeoutSeconds: 900,
@@ -57,7 +237,8 @@ extension BusinessProfile {
         marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColors
+        colors: mockedBusinessProfileColors,
+        orderingClientUpdateRequirements: [.mockedDataIOS]
     )
     
     static let mockedDataFromAPIWithColorsWithoutDarkVariants = BusinessProfile(
@@ -82,7 +263,8 @@ extension BusinessProfile {
         marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsWithoutDarkVariants
+        colors: mockedBusinessProfileColorsWithoutDarkVariants,
+        orderingClientUpdateRequirements: [.mockedDataIOS]
     )
     
     static let mockedDataFromAPIWithColorsInvalidHexValues = BusinessProfile(
@@ -107,7 +289,8 @@ extension BusinessProfile {
         marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsInvalidHexValues
+        colors: mockedBusinessProfileColorsInvalidHexValues,
+        orderingClientUpdateRequirements: [.mockedDataIOS]
     )
     
     static let mockedBusinessProfileColors = BusinessProfileColors(
@@ -214,7 +397,7 @@ extension BusinessProfile {
             count += paymentGateway.recordsCount
         }
         
-        return count + tipLimitLevels.count + (postcodeRules?.count ?? 0) + (colors != nil ? 30 : 0)
+        return count + tipLimitLevels.count + (postcodeRules?.count ?? 0) + (colors != nil ? 30 : 0) + orderingClientUpdateRequirements.count
     }
 }
 
@@ -269,4 +452,62 @@ extension PostcodeRule {
         .mockedDataForIE
     ]
     
+}
+
+extension OrderingClientUpdateRequirements {
+    static let mockedDataIOS = OrderingClientUpdateRequirements(
+        platform: "ios",
+        minimumBuildVersion: "123",
+        minimumOSVersion: 15.1,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
+    
+    static let mockedDataAndroid = OrderingClientUpdateRequirements(
+        platform: "android",
+        minimumBuildVersion: "123",
+        minimumOSVersion: 15.1,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
+    
+    static let mockedDataLowestOSVersion = OrderingClientUpdateRequirements(
+        platform: "ios",
+        minimumBuildVersion: "123",
+        minimumOSVersion: 1.0,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
+    
+    static let mockedDataHighestOSVersion = OrderingClientUpdateRequirements(
+        platform: "ios",
+        minimumBuildVersion: "123",
+        minimumOSVersion: 100000.0,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
+    
+    static let mockedDataLowestOSVersionHighestAppVersion = OrderingClientUpdateRequirements(
+        platform: "ios",
+        minimumBuildVersion: "999999999999999999",
+        minimumOSVersion: 1.0,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
+    
+    static let mockedDataHighestOSVersionHighestAppVersion = OrderingClientUpdateRequirements(
+        platform: "ios",
+        minimumBuildVersion: "999999999999999999",
+        minimumOSVersion: 10000000.0,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
+    
+    static let mockedDataLowestOSVersionLowestAppVersion = OrderingClientUpdateRequirements(
+        platform: "ios",
+        minimumBuildVersion: "1",
+        minimumOSVersion: 1.0,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
+    
+    static let mockedDataInvalidBuildVersion = OrderingClientUpdateRequirements(
+        platform: "ios",
+        minimumBuildVersion: "hhhhdjdjd",
+        minimumOSVersion: 1.0,
+        updateUrl: "www.test.com",
+        updateDescription: "To get the lates updates go to app store")
 }

@@ -419,3 +419,10 @@ extension String {
             }
         }
 }
+
+extension String {
+    func versionUpToDate(_ otherVersion: String) -> Bool {
+        let comparisonResult = self.compare(otherVersion, options: .numeric)
+        return comparisonResult != .orderedAscending
+    }
+}

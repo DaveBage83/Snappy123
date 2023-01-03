@@ -54,6 +54,7 @@
 "general.shop" = "Shop";
 "general.hour" = "hr";
 "general.hours" = "hrs";
+"general.understood" = "Understood";
 
 // MARK: - General - custom
 
@@ -682,3 +683,10 @@
 
 // MARK: - Animated Loading View
 "loadingView.loggingin" = "Logging In...";
+
+// MARK: - Version update alert
+"versionupdatealert.title" = "Time to update";
+"versionupdatealert.buttontext" = "Update now";
+"versionupdatealert.defaultprompt" = "Please head to the AppStore to update your app version";
+"versionupdatealertcustom.simplified" = "Your device has iOS %@ installed. To install the latest version of our app you will need to update your operating system.";
+"versionupdatealertcustom.standard" = "Your device has iOS %@ installed. To install the latest version of our app you will require a minimum of iOS %@.";

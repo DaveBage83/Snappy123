@@ -100,6 +100,7 @@ extension AppState {
         var memberProfile: MemberProfile?
         var todaySlotExpiry: TimeInterval?
         var slotExpired: Bool?
+        var versionUpdateChecked = false // Set to true once checked
     }
 }
 

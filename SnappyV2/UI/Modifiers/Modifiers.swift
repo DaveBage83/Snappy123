@@ -468,6 +468,31 @@ extension View {
     }
 }
 
+struct CustomAlert: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    let container: DIContainer
+    let frameWidth: CGFloat = 300
+    let cornerRadius: CGFloat = 20
+    
+    private var colorPalette: ColorPalette {
+        .init(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .frame(width: frameWidth)
+            .background(colorPalette.secondaryWhite)
+            .cornerRadius(cornerRadius)
+    }
+}
+
+extension View {
+    func customAlert(container: DIContainer) -> some View {
+        modifier(CustomAlert(container: container))
+    }
+}
+
 struct WithSearchHistory: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize

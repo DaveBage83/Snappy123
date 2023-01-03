@@ -462,18 +462,24 @@ class InitialViewModel: ObservableObject {
         guard let orderingClientUpdateRequirements = profile?.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first,
               AppV2Constants.Client.systemVersion.versionUpToDate(String(orderingClientUpdateRequirements.minimumOSVersion))
         else { return false }
+        
+        #if DEBUG
+        return false
+        #else
 
-        let currentAppVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String // User's current
-        let minBuildVersion = Int(orderingClientUpdateRequirements.minimumBuildVersion)
+        let currentAppVersion = AppV2Constants.Client.bundleVersion // User's current version
+        let minBuildVersion = Double(orderingClientUpdateRequirements.minimumBuildVersion)
         
         // If there is a current app version and minBuild version, then we check if the current version is out of date.
         // If it is, then return true.
-        if let currentAppVersion, let version = Int(currentAppVersion), let minBuildVersion {
+        
+        if let currentAppVersion, let version = Double(currentAppVersion), let minBuildVersion {
            return version < minBuildVersion
         }
         
         // If we do not have the currentAppVersion or minBuildVersion data then do not encourage an upgrade
         return false
+        #endif
     }
     
     private func setupShowDeniedLocationAlert() {

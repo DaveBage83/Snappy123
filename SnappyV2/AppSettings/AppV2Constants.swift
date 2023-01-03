@@ -12,7 +12,6 @@ struct AppV2Constants {
     
     struct Client {
         static let platform = "ios"
-        static let currentBuild = 457 // Would need to be updated on each build
         static let languageCode: String = {
             //return "en_GB"
             return Locale.autoupdatingCurrent.identifier.replacingOccurrences(

@@ -208,6 +208,14 @@ struct InitialView: View {
                     }
                 }
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
+                
+                if
+                    viewModel.showVersionUpgradeAlert,
+                   let upgradeUrl = viewModel.appUpgradeUrl,
+                   let url = URL(string: upgradeUrl)
+                {
+                    VersionUpdateAlert(viewModel: .init(container: viewModel.container, prompt: viewModel.updateMessage, appstoreLink: url))
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -225,7 +233,7 @@ struct InitialView: View {
                         viewModel.navigateToUserArea()
                     }
                     .opacity(viewModel.showAccountButton ? 1 : 0)
-                    .disabled(!viewModel.businessProfileIsLoaded)
+                    .disabled(!viewModel.businessProfileIsLoaded || viewModel.showVersionUpgradeAlert)
                 }
             }
             .onAppear {
@@ -278,6 +286,28 @@ struct InitialView: View {
                 hideKeyboard()
             }
         }
+//        .alert(isPresented: $viewModel.showVersionUpgradeAlert, content: {
+//            Alert(title: Text("sd"))
+//        })
+//        .alert(isPresented: $viewModel.showVersionUpgradeAlert) {
+//                    Alert(
+//                        title: Text("Are you sure you want to delete this?"),
+//                        message: Text("There is no undo"),
+//                        primaryButton: .destructive(Text("Delete")) {
+//                            print("Deleting...")
+//                        },
+//                        secondaryButton: .default(Text("Hello"), action: {
+//                            print("Hello")
+//                        })
+//                    )
+//                }
+//        .alert(isPresented: $viewModel.showVersionUpgradeAlert) {
+//            Alert(
+//                title: Text("Time to update..."),
+//                message: Text(viewModel.updateMessage),
+//                dismissButton: nil // no dismiss button as user should update app
+//            )
+//        }
         .navigationViewStyle(.stack)
     }
     

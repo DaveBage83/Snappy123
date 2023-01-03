@@ -34,6 +34,10 @@ class CheckoutSuccessViewModelTests: XCTestCase {
         XCTAssertNil(sut.container.appState.value.userData.successCheckoutBasket)
     }
     
+    func test_when_then() {
+        
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), checkoutState: @escaping (CheckoutRootViewModel.CheckoutState) -> Void = {_ in }, dateGenerator: @escaping () -> Date = Date.init) -> CheckoutSuccessViewModel {
         let sut = CheckoutSuccessViewModel(container: container)
         

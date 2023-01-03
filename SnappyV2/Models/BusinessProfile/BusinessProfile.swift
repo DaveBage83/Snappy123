@@ -59,7 +59,16 @@ struct BusinessProfile: Codable, Equatable {
     let fetchLocaleCode: String?
     let fetchTimestamp: Date?
     let colors: BusinessProfileColors? // For now this will be nil as no white labeling colour info currently returned in API.
-    
+    let orderingClientUpdateRequirements: [OrderingClientUpdateRequirements]
+}
+
+// Used to encourage user to update OS version / app version
+struct OrderingClientUpdateRequirements: Codable, Equatable {
+    let platform: String
+    let minimumBuildVersion: String
+    let minimumOSVersion: Double
+    let updateUrl: String
+    let updateDescription: String
 }
 
 #warning("This is not currently coming back from the API, but we have are implementing this for future white labeling")

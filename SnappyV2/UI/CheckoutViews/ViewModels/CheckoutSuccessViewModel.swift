@@ -22,6 +22,9 @@ class CheckoutSuccessViewModel: ObservableObject {
     @Published var faqURL: URL?
     @Published var storeNumberURL: URL?
     @Published var appStoreReviewScene: UIWindowScene?
+    @Published var showOSUpdateAlert = false
+    
+    private var cancellables = Set<AnyCancellable>()
     
     let lastAskedReviewVersionUserDefaultsKey = "lastAskedReviewVersion"
     let currentOrderCountUserDefaultsKey = "currentOrderCount"
@@ -37,6 +40,20 @@ class CheckoutSuccessViewModel: ObservableObject {
     var showCreateAccountCard: Bool {
         container.appState.value.userData.memberProfile == nil
     }
+
+    var minRequiredOSForUpdate: String? {
+        guard let profile = container.appState.value.businessData.businessProfile,
+              let orderingClientUpdateRequirements = profile.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first else { return nil }
+        
+        return String(orderingClientUpdateRequirements.minimumOSVersion)
+    }
+    
+    var osUpdateText: String {
+        guard let minimumOSRequiredForUpdate = minRequiredOSForUpdate else {
+            return Strings.VersionUpdateCustomisable.simplified.localizedFormat(AppV2Constants.Client.systemVersion)
+        }
+        return Strings.VersionUpdateCustomisable.standard.localizedFormat(AppV2Constants.Client.systemVersion, minimumOSRequiredForUpdate)
+    }
     
     var basket: Basket?
         
@@ -45,6 +62,27 @@ class CheckoutSuccessViewModel: ObservableObject {
         self.basket = container.appState.value.userData.successCheckoutBasket
         setupMentionMe(with: container.appState)
         checkAppStoreReview()
+        setupShowOSUpdateAlert(with: container.appState)
+    }
+    
+    private func setupShowOSUpdateAlert(with appState: Store<AppState>) {
+        appState
+            .map(\.businessData.businessProfile)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
+                guard let self = self else { return }
+                
+                if let profile,
+                   let orderingClientUpdateRequirements = profile.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first,
+                   AppV2Constants.Client.systemVersion.versionUpToDate(String(orderingClientUpdateRequirements.minimumOSVersion)) == true
+                {
+                    self.showOSUpdateAlert = true
+                } else {
+                    self.showOSUpdateAlert = false
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func showMentionMeOffer() {

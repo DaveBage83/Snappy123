@@ -97,6 +97,7 @@ class InitialViewModel: ObservableObject {
         setupDriverNotification(with: appState)
         setupBusinessProfileIsLoaded(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
+        bindToVersionChecked(with: appState)
         setupShowDeniedLocationAlert()
         clearAllStaleImageData()
     }
@@ -312,17 +313,19 @@ class InitialViewModel: ObservableObject {
             setError(error)
         }
     }
-
+    
     func loadBusinessProfile() async {
         
         businessProfileIsLoading = true
         do {
             try await container.services.businessProfileService.getProfile()
             businessProfileIsLoading = false
-            isRestoring = true
-            await restoreLastUser()
-            await restorePreviousState(with: container.appState)
             
+            if showVersionUpgradeAlert == false {
+                isRestoring = true
+                await restoreLastUser()
+                await restorePreviousState(with: container.appState)
+            }
         } catch {
             businessProfileIsLoading = false
             businessProfileLoadingError = error
@@ -406,16 +409,71 @@ class InitialViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
     
+    @Published var showVersionUpgradeAlert = false
+    
+    var updateMessage: String {
+        guard let profile = container.appState.value.businessData.businessProfile,
+              let orderingClientUpdateRequirements = profile.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first else { return "Please update" }
+        
+        return orderingClientUpdateRequirements.updateDescription
+    }
+    
+    var appUpgradeUrl: String? {
+        guard let profile = container.appState.value.businessData.businessProfile,
+              let orderingClientUpdateRequirements = profile.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first else { return nil }
+        
+        return orderingClientUpdateRequirements.updateUrl
+    }
+    
+    private func bindToVersionChecked(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.versionUpdateChecked)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] versionChecked in
+                guard let self = self else { return }
+                if versionChecked == true {
+                    self.showVersionUpgradeAlert = false
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupBusinessProfileIsLoaded(with appState: Store<AppState>) {
         appState
             .map(\.businessData.businessProfile)
             .filter { $0 != nil }
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] profile in
                 guard let self = self else { return }
+                
+                if self.container.appState.value.userData.versionUpdateChecked == false {
+                    self.showVersionUpgradeAlert = self.encourageUserUpgrade(profile: profile)
+                }
+                
                 self.businessProfileIsLoaded = true
             }.store(in: &cancellables)
+    }
+    
+    private func encourageUserUpgrade(profile: BusinessProfile?) -> Bool {
+        // If we do not have any orderingClientUpdateRequirements then we do not have enough info to encourage a user upgrade. We should not end up here
+        // as these requirements are required fields
+        guard let orderingClientUpdateRequirements = profile?.orderingClientUpdateRequirements.filter({ $0.platform == "ios" }).first,
+              AppV2Constants.Client.systemVersion.versionUpToDate(String(orderingClientUpdateRequirements.minimumOSVersion))
+        else { return false }
+
+        let currentAppVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String // User's current
+        let minBuildVersion = Int(orderingClientUpdateRequirements.minimumBuildVersion)
+        
+        // If there is a current app version and minBuild version, then we check if the current version is out of date.
+        // If it is, then return true.
+        if let currentAppVersion, let version = Int(currentAppVersion), let minBuildVersion {
+           return version < minBuildVersion
+        }
+        
+        // If we do not have the currentAppVersion or minBuildVersion data then do not encourage an upgrade
+        return false
     }
     
     private func setupShowDeniedLocationAlert() {
@@ -573,3 +631,19 @@ extension InitialViewModel {
     }
 }
 #endif
+
+extension Bundle {
+    var releaseVersionNumber: String? {
+        return infoDictionary?["CFBundleShortVersionString"] as? String
+    }
+    var buildVersionNumber: String? {
+        return infoDictionary?["CFBundleVersion"] as? String
+    }
+}
+
+extension String {
+    func versionUpToDate(_ otherVersion: String) -> Bool {
+        let comparisonResult = self.compare(otherVersion, options: .numeric)
+        return comparisonResult != .orderedAscending
+    }
+}

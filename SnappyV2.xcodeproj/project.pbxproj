@@ -373,6 +373,7 @@
 		55D4F9C328057BB90002D995 /* OrderListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D4F9C228057BB90002D995 /* OrderListViewModelTests.swift */; };
 		55DAA15F281AA5A100BF3F16 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DAA15E281AA5A100BF3F16 /* TabBarView.swift */; };
 		55DAA162281F2E2500BF3F16 /* TabBarBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DAA161281F2E2500BF3F16 /* TabBarBadgeView.swift */; };
+		55DB4AB22956143D00F923A1 /* VersionUpdateAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DB4AB12956143D00F923A1 /* VersionUpdateAlert.swift */; };
 		55DE108C282656EE00654260 /* Modifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108B282656EE00654260 /* Modifiers.swift */; };
 		55DE108E2827A71500654260 /* ProductIncrementButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108D2827A71500654260 /* ProductIncrementButton.swift */; };
 		55DE1090282923E900654260 /* DriverTipsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108F282923E900654260 /* DriverTipsButton.swift */; };
@@ -1019,6 +1020,7 @@
 		55D4F9C228057BB90002D995 /* OrderListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderListViewModelTests.swift; sourceTree = "<group>"; };
 		55DAA15E281AA5A100BF3F16 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		55DAA161281F2E2500BF3F16 /* TabBarBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarBadgeView.swift; sourceTree = "<group>"; };
+		55DB4AB12956143D00F923A1 /* VersionUpdateAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionUpdateAlert.swift; sourceTree = "<group>"; };
 		55DE108B282656EE00654260 /* Modifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modifiers.swift; sourceTree = "<group>"; };
 		55DE108D2827A71500654260 /* ProductIncrementButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductIncrementButton.swift; sourceTree = "<group>"; };
 		55DE108F282923E900654260 /* DriverTipsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverTipsButton.swift; sourceTree = "<group>"; };
@@ -2396,6 +2398,14 @@
 			path = TabBarView;
 			sourceTree = "<group>";
 		};
+		55DB4AB02956143100F923A1 /* Alerts */ = {
+			isa = PBXGroup;
+			children = (
+				55DB4AB12956143D00F923A1 /* VersionUpdateAlert.swift */,
+			);
+			path = Alerts;
+			sourceTree = "<group>";
+		};
 		55DE108A282656DE00654260 /* Modifiers */ = {
 			isa = PBXGroup;
 			children = (
@@ -3124,6 +3134,7 @@
 		AFE07FCF268F68F400DE942C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				55DB4AB02956143100F923A1 /* Alerts */,
 				0A8D86EB28DB565E00F85184 /* VerifyMobileNumber */,
 				0ADB1D2B28C75F96008EBA11 /* StoreReview */,
 				0AA70C6428ACB3F600DE409F /* PushNotifications */,
@@ -3797,6 +3808,7 @@
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
 				AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */,
 				55F957C42878DCCA00A99BA3 /* AddressDisplayCard.swift in Sources */,
+				55DB4AB22956143D00F923A1 /* VersionUpdateAlert.swift in Sources */,
 				55FCDCBB29475DF10000E53A /* CheckoutSlotExpiryViewModel.swift in Sources */,
 				0A9F2ED728AEA12200F6B0BE /* PushNotificationsEnablePromptViewModel.swift in Sources */,
 				0AEA00FD28A500BD00D48E10 /* PushNotificationWebRepository.swift in Sources */,

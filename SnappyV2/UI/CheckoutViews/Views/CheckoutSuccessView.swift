@@ -144,6 +144,9 @@ struct CheckoutSuccessView: View {
             // Clear temp basket
             viewModel.clearSuccessCheckoutBasket()
         }
+        .alert(isPresented: $viewModel.showOSUpdateAlert) {
+            Alert(title: Text(Strings.VersionUpateAlert.title.localized), message: Text(viewModel.osUpdateText), dismissButton: .default(Text(GeneralStrings.understood.localized)))
+        }
     }
     
     @ViewBuilder private var mentionMe: some View {

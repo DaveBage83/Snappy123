@@ -63,6 +63,7 @@ enum Strings {
         case shop = "general.shop"
         case hour = "general.hour"
         case hours = "general.hours"
+        case understood = "general.understood"
         
         enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
@@ -1018,5 +1019,16 @@ enum Strings {
     
     enum AnimatedLoadingView: String, IterableSnappyString {
         case loggingIn = "loadingView.loggingin"
+    }
+    
+    enum VersionUpateAlert: String, IterableSnappyString {
+        case title = "versionupdatealert.title"
+        case buttonText = "versionupdatealert.buttontext"
+        case defaultPrompt = "versionupdatealert.defaultprompt"
+    }
+    
+    enum VersionUpdateCustomisable: String, IterableSnappyStringCustomisable {
+        case standard = "versionupdatealertcustom.standard"
+        case simplified = "versionupdatealertcustom.simplified"
     }
 }

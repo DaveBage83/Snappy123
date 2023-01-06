@@ -282,9 +282,6 @@ struct InitialView: View {
             .onAppear {
                 AppDelegate.orientationLock = .portrait
             }
-            .onTapGesture {
-                hideKeyboard()
-            }
         }
         .navigationViewStyle(.stack)
     }

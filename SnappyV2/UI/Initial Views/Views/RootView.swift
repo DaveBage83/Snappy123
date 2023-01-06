@@ -52,9 +52,6 @@ struct RootView: View {
         .navigationViewStyle(.stack)
         .environment(\.tabViewHeight, tabViewHeight)
         .edgesIgnoringSafeArea(.bottom)
-        .onTapGesture {
-            hideKeyboard()
-        }
     }
 }
 

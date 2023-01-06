@@ -32,6 +32,7 @@ struct SnappyV2StudyMain: App {
                 )
                     .environment(\.mainWindowSize, proxy.size)
             }
+            .onAppear(perform: UIApplication.shared.addTapGestureRecognizer)
         }
     }
 }

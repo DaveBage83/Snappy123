@@ -79,7 +79,6 @@ struct ProductsView: View {
             if #available(iOS 15.0, *) {
                 mainContent
                     .onTapGesture {
-                        hideKeyboard()
                         viewModel.clearSearchResults()
                     }
                     .snappyBottomSheet(container: viewModel.container, item: $viewModel.selectedItem, windowSize: mainWindowSize) { item in
@@ -90,7 +89,6 @@ struct ProductsView: View {
             } else {
                 mainContent
                     .onTapGesture {
-                        hideKeyboard()
                         viewModel.clearSearchResults()
                     }
                     .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in

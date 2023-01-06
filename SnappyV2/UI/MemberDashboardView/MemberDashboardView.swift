@@ -59,67 +59,106 @@ struct MemberDashboardView: View {
         }
     }
     
+    @State var showAlert = false
+    
     @ViewBuilder private var mainContent: some View {
-        GeometryReader { geo in
-            ScrollView(showsIndicators: false) {
-                if viewModel.noMemberFound && viewModel.isFromInitialView {
-                    LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false))
-                } else {
-                    VStack {
-                        if viewModel.noMemberFound {
-                            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false))
-                            
-                        } else {
-                            
-                            VStack {
-                                dashboardHeaderView
-                                Spacer()
-                                mainContentView
+//        ZStack {
+            GeometryReader { geo in
+                ScrollView(showsIndicators: false) {
+                    if viewModel.noMemberFound && viewModel.isFromInitialView {
+                        LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false))
+                    } else {
+                        VStack {
+                            if viewModel.noMemberFound {
+                                LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false))
+                                
+                            } else {
+                                
+                                VStack {
+                                    dashboardHeaderView
+                                    Spacer()
+                                    mainContentView
+                                }
+                                .frame(minHeight: geo.size.height)
+                                .padding(.horizontal)
+                                .padding(.top)
+                                .onAppear {
+                                    viewModel.onAppearSendEvent()
+                                }
                             }
-                            .frame(minHeight: geo.size.height)
-                            .padding(.horizontal)
-                            .padding(.top)
-                            .onAppear {
-                                viewModel.onAppearSendEvent()
+                        }
+                        .background(colorPalette.backgroundMain)
+                        .withLoadingToast(container: viewModel.container, loading: $viewModel.loading)
+                        .fullScreenCover(
+                            item: $viewModel.driverDependencies,
+                            content: { driverDependencies in
+                                DriverInterfaceView(driverDependencies: driverDependencies)
                             }
-                        }
-                    }
-                    .background(colorPalette.backgroundMain)
-                    .withLoadingToast(container: viewModel.container, loading: $viewModel.loading)
-                    .fullScreenCover(
-                        item: $viewModel.driverDependencies,
-                        content: { driverDependencies in
-                            DriverInterfaceView(driverDependencies: driverDependencies)
-                        }
-                    )
-                    .navigationViewStyle(.stack)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar(content: {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            SettingsButton(viewModel: .init(container: viewModel.container))
-                        }
-                    })
-                    .toolbar(content: {
-                        ToolbarItem(placement: .principal) {
-                            SnappyLogo()
-                        }
-                    })
-                }
-            }.sheet(item: $viewModel.resetToken) { token in
-                ToastableViewContainer(content: {
-                    NavigationView {
-                        ResetPasswordView(viewModel: .init(
-                            container: viewModel.container,
-                            isInCheckout: false,
-                            resetToken: token.id,
-                            dismissHandler: { error in
-                                viewModel.container.appState.value.errors.append(error)
-                            })
                         )
+                        .navigationViewStyle(.stack)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar(content: {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                SettingsButton(viewModel: .init(container: viewModel.container))
+                            }
+                        })
+                        .toolbar(content: {
+                            ToolbarItem(placement: .principal) {
+                                SnappyLogo()
+                            }
+                        })
                     }
-                }, viewModel: .init(container: viewModel.container, isModal: true))
+                }.sheet(item: $viewModel.resetToken) { token in
+                    ToastableViewContainer(content: {
+                        NavigationView {
+                            ResetPasswordView(viewModel: .init(
+                                container: viewModel.container,
+                                isInCheckout: false,
+                                resetToken: token.id,
+                                dismissHandler: { error in
+                                    viewModel.container.appState.value.errors.append(error)
+                                })
+                            )
+                        }
+                    }, viewModel: .init(container: viewModel.container, isModal: true))
+                }
             }
+        .withCustomSnappyAlert(
+            customSnappyAlertViewModel: .init(
+                container: viewModel.container,
+                title: viewModel.enterForgetCodeTitle,
+                prompt: viewModel.enterForgetCodePrompt,
+                textField: .init(
+                    placeholder: "Enter code",
+                    minCharacters: 6,
+                    submitButton: .init(
+                        title: "Submit",
+                        actionType: .destructive,
+                        requiresValidFieldEntry: true)),
+                buttons: [
+                    .init(title: "Cancel", action: {
+                        viewModel.showEnterForgetMemberCodeAlert = false
+                    })
+                ]), showAlert: $viewModel.showEnterForgetMemberCodeAlert,
+            submitAction: { textfieldText in
+                    Task {
+                        try await viewModel.forgetMemberRequested(code: textfieldText)
+                    }
+                })
+        
+        .alert(isPresented: $viewModel.showInitialForgetMemberAlert) {
+            Alert(
+                title: Text("Forget Account Confirmation"),
+                message: Text("This option will delete your account. If you continue you will lose the advantages of being registered for faster checkout, loyalty discounts and more."),
+                primaryButton: .destructive(Text("Continue")) {
+                    Task {
+                        try await viewModel.continueToForgetMeTapped()
+                    }
+                },
+                secondaryButton: .cancel()
+            )
         }
+        .withLoadingToast(container: viewModel.container, loading: $viewModel.forgetMemberRequestLoading)
     }
     
     @ViewBuilder var dashboardHeaderView: some View {
@@ -151,7 +190,7 @@ struct MemberDashboardView: View {
                 viewModel.loading = isLoading
             })
         case .profile:
-            MemberDashboardProfileView(viewModel: .init(container: viewModel.container), didSetError: { error in
+            MemberDashboardProfileView(viewModel: .init(container: viewModel.container), memberDashboardViewModel: viewModel, didSetError: { error in
                 viewModel.container.appState.value.errors.append(error)
             }, didSucceed: { message in
                 let toast = SuccessToast(subtitle: message)

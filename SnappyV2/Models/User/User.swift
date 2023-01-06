@@ -552,3 +552,14 @@ struct CheckRetailMembershipIdResult: Codable, Equatable {
 struct StoreRetailMembershipIdResult: Codable, Equatable {
     let success: Bool
 }
+
+struct ForgetMemberCodeRequestResult: Codable, Equatable {
+    let success: Bool
+    let message_title: String?
+    let message: String?
+}
+
+struct ForgetMemberRequestResult: Codable, Equatable {
+    let success: Bool
+    let errors: [String]?
+}

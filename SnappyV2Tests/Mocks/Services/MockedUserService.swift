@@ -11,7 +11,6 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, MemberServiceProtocol {
-
     var getPlacedOrderResult = PlacedOrder.mockedData
     
     enum Action: Equatable {
@@ -46,6 +45,7 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         case restoreLastUser
         case checkRetailMembershipId
         case storeRetailMembershipId(retailMemberId: String)
+        case sendForgetMemberCode
     }
     
     let actions: MockActions<Action>
@@ -213,5 +213,10 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         default:
             break
         }
+    }
+    
+    func sendForgetCode() async throws -> SnappyV2.ForgetMemberCodeRequestResult {
+        register(.sendForgetMemberCode)
+        return .init(success: true, message_title: nil, message: nil)
     }
 }

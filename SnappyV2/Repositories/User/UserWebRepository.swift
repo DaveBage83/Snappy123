@@ -104,6 +104,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
     
     func clearNetworkSession()
+    func sendForgetCode() async throws -> ForgetMemberCodeRequestResult
+    func forgetMember(confirmationCode: String) async throws -> ForgetMemberRequestResult
 }
 
 struct UserWebRepository: UserWebRepositoryProtocol {
@@ -761,10 +763,21 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return try await call(endpoint: API.requestMessageWithOneTimePassword(parameters)).singleOutput()
     }
     
+    func sendForgetCode() async throws -> ForgetMemberCodeRequestResult {
+        return try await call(endpoint: API.sendForgetCode).singleOutput()
+    }
+    
+    func forgetMember(confirmationCode: String) async throws -> ForgetMemberRequestResult {
+        let parameters: [String: Any] = [
+            "confirmationCode": confirmationCode,
+        ]
+        
+        return try await call(endpoint: API.forgetMember(parameters)).singleOutput()
+    }
+    
     func clearNetworkSession() {
         networkHandler.flushAccessTokens()
     }
-    
 }
 
 // MARK: - Endpoints
@@ -795,6 +808,8 @@ extension UserWebRepository {
         case checkMobileVerificationCode([String: Any]?)
         case checkRetailMembershipId([String: Any]?)
         case storeRetailMembershipId([String: Any]?)
+        case sendForgetCode
+        case forgetMember([String: Any]?)
     }
 }
 
@@ -849,11 +864,15 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/checkout/checkRetailMembershipId.json"
         case .storeRetailMembershipId:
             return AppV2Constants.Client.languageCode + "/checkout/storeRetailMembershipId.json"
+        case .sendForgetCode:
+            return AppV2Constants.Client.languageCode + "/member/sendForgetCode.json"
+        case .forgetMember:
+            return AppV2Constants.Client.languageCode + "/member/forget.json"
         }
     }
     var method: String {
         switch self {
-        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .saveNewCard, .deleteCard, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings, .requestMobileVerificationCode, .checkMobileVerificationCode, .checkRetailMembershipId, .storeRetailMembershipId:
+        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .saveNewCard, .deleteCard, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings, .requestMobileVerificationCode, .checkMobileVerificationCode, .checkRetailMembershipId, .storeRetailMembershipId, .sendForgetCode, .forgetMember:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -911,9 +930,10 @@ extension UserWebRepository.API: APICall {
             return parameters
         case let .storeRetailMembershipId(parameters):
             return parameters
+        case .sendForgetCode:
+            return nil
+        case let .forgetMember(parameters):
+            return parameters
         }
     }
 }
-
-
-

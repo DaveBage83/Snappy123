@@ -44,6 +44,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
         case checkRetailMembershipId(basketToken: String)
         case storeRetailMembershipId(storeId: Int, basketToken: String, retailMemberId: String)
+        case sendForgetMemberCode
     }
     var actions = MockActions<Action>(expected: [])
     
@@ -77,6 +78,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var requestMessageWithOneTimePasswordResponse: Result<OneTimePasswordSendResult, Error> = .failure(MockError.valueNotSet)
     var checkRetailMembershipIdResponse: Result<CheckRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
     var storeRetailMembershipIdResponse: Result<StoreRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
+    var sendForgetMemberCodeResponse: Result<ForgetMemberCodeRequestResult, Error> = .failure(MockError.valueNotSet)
 
     func login(email: String, password: String, basketToken: String?, notificationDeviceToken: String?) async throws -> LoginResult {
         register(.login(email: email, password: password, basketToken: basketToken, notificationDeviceToken: notificationDeviceToken))
@@ -309,6 +311,20 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case let .success(result):
             return result
         case let .failure(error):
+            throw error
+        }
+    }
+    
+    func sendForgetCode() async throws -> SnappyV2.ForgetMemberCodeRequestResult {
+        register(.sendForgetMemberCode)
+        switch sendForgetMemberCodeResponse {
+        case .success(let result):
+            if result.success {
+                return result
+            } else {
+                throw UserServiceError.failedToSendCode(ForgetMemberCodeRequestResult.mockedDataFail.message)
+            }
+        case .failure(let error):
             throw error
         }
     }

@@ -690,3 +690,10 @@
 "versionupdatealert.defaultprompt" = "Please head to the AppStore to update your app version";
 "versionupdatealertcustom.simplified" = "Your device has iOS %@ installed. To install the latest version of our app you will need to update your operating system.";
 "versionupdatealertcustom.standard" = "Your device has iOS %@ installed. To install the latest version of our app you will require a minimum of iOS %@.";
+
+// MARK: - Forget me
+"forgetme.defaulttitle" = "Enter code";
+"forgetme.defaultprompt" = "Please enter the code you received by email.";
+
+// MARK: - Custom alert
+"customalert.defaultplaceholder" = "Enter text";

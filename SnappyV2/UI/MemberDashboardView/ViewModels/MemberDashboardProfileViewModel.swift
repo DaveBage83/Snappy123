@@ -47,6 +47,18 @@ class MemberDashboardProfileViewModel: ObservableObject {
     @Published var verifyNewPasswordHasError = false
     @Published var profileIsUpdating = false
     
+    // Forget member fields
+    
+    @Published var showInitialForgetMemberAlert = false
+    @Published var showEnterForgetMemberCodeAlert = false
+    @Published var forgetMemberCode: String = ""
+    @Published var enterForgetCodeTitle = ""
+    @Published var enterForgetCodePrompt = ""
+    @Published var forgetMemberRequestLoading = false
+    var forgetMeSubmitButtonDisabled: Bool {
+        forgetMemberCode.isEmpty
+    }
+    
     init(container: DIContainer) {
         self.container = container
         let appState = container.appState
@@ -236,5 +248,33 @@ class MemberDashboardProfileViewModel: ObservableObject {
         if filtered != newValue {
             self.phoneNumber = filtered
         }
+    }
+    
+//    func forgetMeTapped() {
+//        showInitialForgetMemberAlert = true
+//    }
+//    
+//    func continueToForgetMeTapped() async throws {
+//        forgetMemberRequestLoading = true
+//        
+//        do {
+//            let sendForgetCodeRequest = try await container.services.memberService.sendForgetCode()
+//            enterForgetCodeTitle = sendForgetCodeRequest.message_title ?? Strings.ForgetMe.defaultTitle.localized
+//            enterForgetCodePrompt = sendForgetCodeRequest.message ?? Strings.ForgetMe.defaultPrompt.localized
+//            showEnterForgetMemberCodeAlert = true
+//        } catch {
+//            container.appState.value.errors.append(error)
+//        }
+//        
+//        forgetMemberRequestLoading = false
+//    }
+    
+    func forgetMemberRequested() async throws {
+        do {
+            let _ = try await container.services.memberService.forgetMember(confirmationCode: forgetMemberCode)
+        } catch {
+            container.appState.value.errors.append(error)
+        }
+        forgetMemberCode = ""
     }
 }

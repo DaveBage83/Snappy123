@@ -55,7 +55,8 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     var checkMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var checkRetailMembershipIdResponse: Result<CheckRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
     var storeRetailMembershipIdResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
-    var sendForgetCode: Result<ForgetMemberCodeRequestResult, Error> = .failure(MockError.valueNotSet)
+    var sendForgetCodeResponse: Result<ForgetMemberCodeRequestResult, Error> = .failure(MockError.valueNotSet)
+    var forgetMemberResponse: Result<ForgetMemberRequestResult, Error> = .failure(MockError.valueNotSet)
     
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
@@ -219,12 +220,27 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     
     func sendForgetCode() async throws -> SnappyV2.ForgetMemberCodeRequestResult {
         register(.sendForgetMemberCode)
-        return .init(success: true, message_title: nil, message: nil)
+        switch sendForgetCodeResponse {
+        case .success(let result):
+            if result.success {
+                return result
+            }
+            throw UserServiceError.failedToSendCode(result.message)
+        case .failure(let error):
+            throw error
+        }
     }
     
     func forgetMember(confirmationCode: String) async throws -> ForgetMemberRequestResult {
-        register(.forgetMember(code: confirmationCode
-                              ))
-        return ForgetMemberRequestResult(success: true, errors: nil)
+        register(.forgetMember(code: confirmationCode))
+        switch forgetMemberResponse {
+        case .success(let result):
+            if result.success {
+                return result
+            }
+            throw UserServiceError.failedToForgetMember(result.errors?.first)
+        case .failure(let error):
+            throw error
+        }
     }
 }

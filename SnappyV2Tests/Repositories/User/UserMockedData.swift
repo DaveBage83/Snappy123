@@ -1986,7 +1986,7 @@ extension ForgetMemberCodeRequestResult {
     static let mockedDataFail = ForgetMemberCodeRequestResult(
         success: false,
         message_title: "Code not sent",
-        message: "Failed to send code to your email")
+        message: Strings.ForgetMe.failedToSendCode.localized)
 }
 
 extension ForgetMemberRequestResult {

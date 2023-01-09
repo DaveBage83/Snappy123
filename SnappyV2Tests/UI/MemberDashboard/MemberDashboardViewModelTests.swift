@@ -354,8 +354,43 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showInitialForgetMemberAlert)
     }
     
-    func test_whenContinueToForgetMeTapped_thenSendForgetCodeTriggered() async {
+    func test_whenContinueToForgetMeTapped_givenFailedToSendCode_thenSendForgetCodeTriggeredAndErrorThrownAndAddedToAppStateArray() async {
         var memberService = MockedUserService(expected: [.sendForgetMemberCode])
+        memberService.sendForgetCodeResponse = .success(.mockedDataFail)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
+        )
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container)
+        
+        do {
+            let _ = try await sut.continueToForgetMeTapped()
+            XCTAssertEqual(container.appState.value.errors.last?.localizedDescription, Strings.ForgetMe.failedToSendCode.localized)
+            
+        } catch {
+            XCTFail()
+        }
+        
+        memberService.verify()
+    }
+    
+    func test_whenContinueToForgetMeTapped_givenSuccessfullySentCode_thenSendForgetCodeTriggeredAndFieldsPopulated() async {
+        var memberService = MockedUserService(expected: [.sendForgetMemberCode])
+        memberService.sendForgetCodeResponse = .success(.mockedDataSuccess)
         
         let services = DIContainer.Services(
             businessProfileService: MockedBusinessProfileService(expected: []),
@@ -378,8 +413,8 @@ class MemberDashboardViewModelTests: XCTestCase {
         
         do {
            let _ = try await sut.continueToForgetMeTapped()
-            XCTAssertEqual(sut.enterForgetCodeTitle, Strings.ForgetMe.defaultTitle.localized)
-            XCTAssertEqual(sut.enterForgetCodePrompt, Strings.ForgetMe.defaultPrompt.localized)
+            XCTAssertEqual(sut.enterForgetCodeTitle, "Code sent")
+            XCTAssertEqual(sut.enterForgetCodePrompt, "Managed to send code to your email")
         } catch {
             XCTFail()
         }
@@ -387,9 +422,9 @@ class MemberDashboardViewModelTests: XCTestCase {
         memberService.verify()
     }
     
-    func test_whenContinueToForgetMeTapped_thenForgetMemberTriggered() async {
-        let memberService = MockedUserService(expected: [.forgetMember(code: "123")])
-        
+    func test_whenForgetMemberTriggered_givenFailure_thenForgetMemberTriggeredAndErrorThrownAndAddedToAppState() async {
+        var memberService = MockedUserService(expected: [.forgetMember(code: "123")])
+        memberService.forgetMemberResponse = .success(.mockedDataFailure)
         let services = DIContainer.Services(
             businessProfileService: MockedBusinessProfileService(expected: []),
             retailStoreService: MockedRetailStoreService(expected: []),
@@ -410,13 +445,52 @@ class MemberDashboardViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         
         do {
-           let _ = try await sut.forgetMemberRequested(code: "123")
+            let _ = try await sut.forgetMemberRequested(code: "123")
+            
+            XCTAssertEqual(container.appState.value.errors.last?.localizedDescription, "Failed to forget member")
+            XCTAssertEqual(sut.forgetCode, "")
         } catch {
             XCTFail()
         }
         
         memberService.verify()
     }
+    
+    func test_whenForgetMemberTriggered_givenSuccess_thenForgetMemberTriggeredAndErrorThrownAndAddedToAppState() async {
+        var memberService = MockedUserService(expected: [.forgetMember(code: "123")])
+        memberService.forgetMemberResponse = .success(.mockedDataSuccess)
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
+        )
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container)
+        
+        do {
+            let _ = try await sut.forgetMemberRequested(code: "123")
+            
+            XCTAssertNil(container.appState.value.errors.last)
+            XCTAssertNil(container.appState.value.userData.memberProfile)
+            XCTAssertEqual(sut.forgetCode, "")
+        } catch {
+            XCTFail()
+        }
+        
+        memberService.verify()
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

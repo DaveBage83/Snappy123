@@ -1183,6 +1183,7 @@ struct UserService: MemberServiceProtocol {
         let forgetMemberRequestResult = try await webRepository.forgetMember(confirmationCode: confirmationCode)
         
         if forgetMemberRequestResult.success {
+            markUserSignedOut() // Sign user out if successfully forgot user
             return forgetMemberRequestResult
         } else {
             throw UserServiceError.failedToForgetMember(forgetMemberRequestResult.errors?.first)

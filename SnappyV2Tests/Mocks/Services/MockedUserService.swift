@@ -55,6 +55,7 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     var checkMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var checkRetailMembershipIdResponse: Result<CheckRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
     var storeRetailMembershipIdResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var sendForgetCode: Result<ForgetMemberCodeRequestResult, Error> = .failure(MockError.valueNotSet)
     
     init(expected: [Action]) {
         self.actions = .init(expected: expected)

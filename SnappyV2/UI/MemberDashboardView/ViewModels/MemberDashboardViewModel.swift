@@ -395,9 +395,7 @@ class MemberDashboardViewModel: ObservableObject {
             enterForgetCodeTitle = sendForgetCodeRequest.message_title ?? Strings.ForgetMe.defaultTitle.localized
             enterForgetCodePrompt = sendForgetCodeRequest.message ?? Strings.ForgetMe.defaultPrompt.localized
             
-            DispatchQueue.main.async {
-                self.showEnterForgetMemberCodeAlert = true
-            }
+            self.showEnterForgetMemberCodeAlert = true
         } catch {
             container.appState.value.errors.append(error)
         }
@@ -406,10 +404,13 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     func forgetMemberRequested(code: String) async throws {
+        self.forgetMemberRequestLoading = true
         do {
             let _ = try await container.services.memberService.forgetMember(confirmationCode: code)
             showEnterForgetMemberCodeAlert = false
+            self.forgetMemberRequestLoading = false
         } catch {
+            self.forgetMemberRequestLoading = false
             container.appState.value.errors.append(error)
         }
         forgetCode = ""

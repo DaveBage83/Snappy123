@@ -1035,6 +1035,8 @@ enum Strings {
     enum ForgetMe: String, IterableSnappyString {
         case defaultTitle = "forgetme.defaulttitle"
         case defaultPrompt = "forgetme.defaultprompt"
+        case failedToSendCode = "forgetme.failedtosendcode"
+        case failedToForget = "forgetme.failedtoforget"
     }
     
     enum CustomAlert: String, IterableSnappyString {

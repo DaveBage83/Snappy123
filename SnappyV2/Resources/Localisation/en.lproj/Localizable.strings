@@ -694,6 +694,8 @@
 // MARK: - Forget me
 "forgetme.defaulttitle" = "Enter code";
 "forgetme.defaultprompt" = "Please enter the code you received by email.";
+"forgetme.failedtosendcode" = "Failed to send code. Please try again.";
+"forgetme.failedtoforget" = "Failed to forget member. Please try again later.";
 
 // MARK: - Custom alert
 "customalert.defaultplaceholder" = "Enter text";

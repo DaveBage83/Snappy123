@@ -126,9 +126,9 @@ extension UserServiceError: LocalizedError {
         case let .unkownError(description):
             return "Unknown error: \(description)"
         case let .failedToSendCode(description):
-            return description ?? "Failed to send code. Please try again."
+            return description ?? Strings.ForgetMe.failedToSendCode.localized
         case let .failedToForgetMember(description):
-            return description ?? "Failed to forget member. Please try again later."
+            return description ?? Strings.ForgetMe.failedToForget.localized
         }
     }
 }

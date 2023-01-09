@@ -348,6 +348,75 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isOptionActive(.orders))
     }
     
+    func test_whenForgetMeTapped_thenShowInitialForgetMemberAlertTrue() {
+        let sut = makeSUT()
+        sut.formetMeTapped()
+        XCTAssertTrue(sut.showInitialForgetMemberAlert)
+    }
+    
+    func test_whenContinueToForgetMeTapped_thenSendForgetCodeTriggered() async {
+        var memberService = MockedUserService(expected: [.sendForgetMemberCode])
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
+        )
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container)
+        
+        do {
+           let _ = try await sut.continueToForgetMeTapped()
+            XCTAssertEqual(sut.enterForgetCodeTitle, Strings.ForgetMe.defaultTitle.localized)
+            XCTAssertEqual(sut.enterForgetCodePrompt, Strings.ForgetMe.defaultPrompt.localized)
+        } catch {
+            XCTFail()
+        }
+        
+        memberService.verify()
+    }
+    
+    func test_whenContinueToForgetMeTapped_thenForgetMemberTriggered() async {
+        let memberService = MockedUserService(expected: [.forgetMember(code: "123")])
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedAsyncImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: []),
+            searchHistoryService: MockedSearchHistoryService(expected: [])
+        )
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container)
+        
+        do {
+           let _ = try await sut.forgetMemberRequested(code: "123")
+        } catch {
+            XCTFail()
+        }
+        
+        memberService.verify()
+    }
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

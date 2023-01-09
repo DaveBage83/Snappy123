@@ -62,7 +62,6 @@ struct MemberDashboardView: View {
     @State var showAlert = false
     
     @ViewBuilder private var mainContent: some View {
-//        ZStack {
             GeometryReader { geo in
                 ScrollView(showsIndicators: false) {
                     if viewModel.noMemberFound && viewModel.isFromInitialView {

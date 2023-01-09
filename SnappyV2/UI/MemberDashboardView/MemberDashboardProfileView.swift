@@ -55,31 +55,6 @@ struct MemberDashboardProfileView: View {
     
     var body: some View {
         mainView
-//        if #available(iOS 15.0, *) {
-//            ZStack {
-//                mainView
-//                    .alert(viewModel.enterForgetCodeTitle, isPresented: $viewModel.showEnterForgetMemberCodeAlert) {
-//                        TextField("Enter code", text: $viewModel.forgetMemberCode)
-//
-//                        Button("Submit", action: {
-//                            if viewModel.forgetMeSubmitButtonDisabled {
-//                                viewModel.showEnterForgetMemberCodeAlert = true
-//
-//                            } else {
-//                                Task {
-//                                    try await viewModel.forgetMemberRequested()
-//                                }
-//                            }
-//                        })
-//                        Button("Cancel", action: {})
-//                    } message: {
-//                        Text(viewModel.enterForgetCodePrompt)
-//                    }
-//            }
-//
-//        } else {
-//            mainView
-//        }
     }
     
     private var mainView: some View {

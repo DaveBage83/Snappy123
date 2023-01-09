@@ -45,6 +45,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case checkRetailMembershipId(basketToken: String)
         case storeRetailMembershipId(storeId: Int, basketToken: String, retailMemberId: String)
         case sendForgetMemberCode
+        case forgetMember(confirmationCode: String)
     }
     var actions = MockActions<Action>(expected: [])
     
@@ -79,6 +80,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var checkRetailMembershipIdResponse: Result<CheckRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
     var storeRetailMembershipIdResponse: Result<StoreRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
     var sendForgetMemberCodeResponse: Result<ForgetMemberCodeRequestResult, Error> = .failure(MockError.valueNotSet)
+    var forgetMember: Result<ForgetMemberRequestResult, Error> = .failure(MockError.valueNotSet)
 
     func login(email: String, password: String, basketToken: String?, notificationDeviceToken: String?) async throws -> LoginResult {
         register(.login(email: email, password: password, basketToken: basketToken, notificationDeviceToken: notificationDeviceToken))
@@ -323,6 +325,20 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
                 return result
             } else {
                 throw UserServiceError.failedToSendCode(ForgetMemberCodeRequestResult.mockedDataFail.message)
+            }
+        case .failure(let error):
+            throw error
+        }
+    }
+    
+    func forgetMember(confirmationCode: String) async throws -> SnappyV2.ForgetMemberRequestResult {
+        register(.forgetMember(confirmationCode: confirmationCode))
+        switch forgetMember {
+        case .success(let result):
+            if result.success {
+                return result
+            } else {
+                throw UserServiceError.failedToForgetMember(ForgetMemberRequestResult.mockedDataFailure.errors?.first)
             }
         case .failure(let error):
             throw error

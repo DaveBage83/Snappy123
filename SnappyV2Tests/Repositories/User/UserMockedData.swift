@@ -1988,3 +1988,15 @@ extension ForgetMemberCodeRequestResult {
         message_title: "Code not sent",
         message: "Failed to send code to your email")
 }
+
+extension ForgetMemberRequestResult {
+    static let mockedDataSuccess = ForgetMemberRequestResult(
+        success: true,
+        errors: nil)
+    
+    static let mockedDataFailure = ForgetMemberRequestResult(
+        success: false,
+        errors: [
+            "Failed to forget member"
+        ])
+}

@@ -249,32 +249,4 @@ class MemberDashboardProfileViewModel: ObservableObject {
             self.phoneNumber = filtered
         }
     }
-    
-//    func forgetMeTapped() {
-//        showInitialForgetMemberAlert = true
-//    }
-//    
-//    func continueToForgetMeTapped() async throws {
-//        forgetMemberRequestLoading = true
-//        
-//        do {
-//            let sendForgetCodeRequest = try await container.services.memberService.sendForgetCode()
-//            enterForgetCodeTitle = sendForgetCodeRequest.message_title ?? Strings.ForgetMe.defaultTitle.localized
-//            enterForgetCodePrompt = sendForgetCodeRequest.message ?? Strings.ForgetMe.defaultPrompt.localized
-//            showEnterForgetMemberCodeAlert = true
-//        } catch {
-//            container.appState.value.errors.append(error)
-//        }
-//        
-//        forgetMemberRequestLoading = false
-//    }
-    
-    func forgetMemberRequested() async throws {
-        do {
-            let _ = try await container.services.memberService.forgetMember(confirmationCode: forgetMemberCode)
-        } catch {
-            container.appState.value.errors.append(error)
-        }
-        forgetMemberCode = ""
-    }
 }

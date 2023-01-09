@@ -43,8 +43,9 @@ class CustomSnappyAlertViewModel: ObservableObject {
     }
     
     var noActionButtons: Bool {
-        guard let buttons, buttons.count == 0 else { return false }
-        return true
+        guard let buttons else { return true }
+        
+        return buttons.isEmpty
     }
     
     init(container: DIContainer, title: String, prompt: String, textField: AlertTextField? = nil, buttons: [AlertActionButton]?) {

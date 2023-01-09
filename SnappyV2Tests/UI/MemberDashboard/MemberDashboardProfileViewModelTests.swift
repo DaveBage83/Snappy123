@@ -324,22 +324,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.dismissPasswordResetView()
         XCTAssertFalse(sut.showPasswordResetView)
     }
-    
-    func test_whenForgetMeTapped_thenShowEnterForgetMemberCodeAlertTrueAndTitleAndPromptValuesPopulated() async {
-        let sut = makeSUT()
-        
-        do {
-            try await sut.continueToForgetMeTapped()
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-        
-        XCTAssertFalse(sut.forgetMemberRequestLoading)
-        XCTAssertEqual(sut.enterForgetCodeTitle, Strings.ForgetMe.defaultTitle.localized)
-        XCTAssertEqual(sut.enterForgetCodePrompt, Strings.ForgetMe.defaultPrompt.localized)
-        XCTAssertTrue(sut.showEnterForgetMemberCodeAlert)
-    }
-    
+
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {
         
         if let profile = profile {

@@ -66,9 +66,6 @@ struct AlertTextfieldSubmitButton {
 /// Note however that this view will not be rendered above the tab bar in our project unless placed in the rootView.
 struct CustomSnappyAlertView: View {
     @Environment(\.colorScheme) var colorScheme
-    
-    // MARK: - Typealiases
-    typealias VersionUpdateStrings = Strings.VersionUpateAlert
         
     private var colorPalette: ColorPalette {
         .init(container: viewModel.container, colorScheme: colorScheme)
@@ -76,6 +73,9 @@ struct CustomSnappyAlertView: View {
     
     @StateObject var viewModel: CustomSnappyAlertViewModel
     
+    // Passes the current value of the textfield (optional) String back to the parent view.
+    // This action should be used as the completion action for a submit request which
+    // needs to consume the textfield value
     let submitAction: (String) -> ()
     
     // MARK: - Constants

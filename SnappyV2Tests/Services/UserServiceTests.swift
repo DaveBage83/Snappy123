@@ -3035,3 +3035,45 @@ final class SendForgetMemberCodeTests: UserServiceTests {
         self.mockedWebRepo.verify()
     }
 }
+
+final class ForgetMemberTests: UserServiceTests {
+    func test_whenForgetmember_givenResponseIsSuccess_thenForgetMember() async {
+        let forgetMemberResult = ForgetMemberRequestResult.mockedDataSuccess
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .forgetMember(confirmationCode: "123456")
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.forgetMember = .success(forgetMemberResult)
+        
+        do {
+            let result = try await sut.forgetMember(confirmationCode: "123456")
+            XCTAssertEqual(result, forgetMemberResult, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        mockedWebRepo.verify()
+    }
+    
+    func test_whenForgetmember_givenResponseIsFailure_thenThrowError() async {
+        let forgetMemberResult = ForgetMemberRequestResult.mockedDataFailure
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .forgetMember(confirmationCode: "123456")
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.forgetMember = .success(forgetMemberResult)
+        
+        do {
+            let _ = try await sut.forgetMember(confirmationCode: "123456")
+            XCTFail("Expected error")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, forgetMemberResult.errors?.first)
+        }
+        
+        mockedWebRepo.verify()
+    }
+}

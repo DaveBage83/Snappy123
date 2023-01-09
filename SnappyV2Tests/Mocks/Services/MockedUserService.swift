@@ -46,6 +46,7 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         case checkRetailMembershipId
         case storeRetailMembershipId(retailMemberId: String)
         case sendForgetMemberCode
+        case forgetMember(code: String)
     }
     
     let actions: MockActions<Action>
@@ -218,5 +219,11 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     func sendForgetCode() async throws -> SnappyV2.ForgetMemberCodeRequestResult {
         register(.sendForgetMemberCode)
         return .init(success: true, message_title: nil, message: nil)
+    }
+    
+    func forgetMember(confirmationCode: String) async throws -> ForgetMemberRequestResult {
+        register(.forgetMember(code: confirmationCode
+                              ))
+        return ForgetMemberRequestResult(success: true, errors: nil)
     }
 }

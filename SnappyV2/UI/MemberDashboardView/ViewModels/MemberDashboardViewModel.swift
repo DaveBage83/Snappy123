@@ -118,11 +118,7 @@ class MemberDashboardViewModel: ObservableObject {
     
     // Forget member properties
     @Published var showInitialForgetMemberAlert = false
-    @Published var showEnterForgetMemberCodeAlert = false {
-        didSet {
-            print(showEnterForgetMemberCodeAlert)
-        }
-    }
+    @Published var showEnterForgetMemberCodeAlert = false
     @Published var forgetMemberRequestLoading = false
     @Published var enterForgetCodeTitle = ""
     @Published var enterForgetCodePrompt = ""

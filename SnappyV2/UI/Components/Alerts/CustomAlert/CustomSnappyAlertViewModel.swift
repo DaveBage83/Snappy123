@@ -18,8 +18,27 @@ class CustomSnappyAlertViewModel: ObservableObject {
     
     @Published var textfieldContent = ""
     
+    var longButtonText: Bool {
+        guard let buttons else { return false }
+        
+        let buttonsWithLongText = buttons.filter { $0.title.count > 10 }
+        
+        var submitButtonHasLongText = false
+        
+        if let submitButton = textField?.submitButton {
+            submitButtonHasLongText = submitButton.title.count > 10
+        }
+        
+        return buttonsWithLongText.count > 0 || submitButtonHasLongText
+    }
+    
     var useVerticalButtonStack: Bool {
         guard let buttons else { return false }
+        
+        if longButtonText {
+            return true
+        }
+        
         if let textField, let _ = textField.submitButton {
             return buttons.count > 1
         }

@@ -696,6 +696,10 @@
 "forgetme.defaultprompt" = "Please enter the code you received by email.";
 "forgetme.failedtosendcode" = "Failed to send code. Please try again.";
 "forgetme.failedtoforget" = "Failed to forget member. Please try again later.";
+"forgetme.entercode" = "Enter code";
+"forgetme.submit" = "Delete account";
+"forgetme.confirmationtitle" = "Forget Account Confirmation";
+"forgetme.confirmationmessage" = "This option will delete your account. If you continue you will lose the advantages of being registered for faster checkout, loyalty discounts and more.";
 
 // MARK: - Custom alert
 "customalert.defaultplaceholder" = "Enter text";

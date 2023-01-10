@@ -12,6 +12,7 @@ import DriverInterface
 
 struct MemberDashboardView: View {
     typealias CustomMemberStrings = Strings.CustomMemberDashboard
+    typealias ForgetMeStrings = Strings.ForgetMe
     
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
@@ -128,14 +129,14 @@ struct MemberDashboardView: View {
                 title: viewModel.enterForgetCodeTitle,
                 prompt: viewModel.enterForgetCodePrompt,
                 textField: .init(
-                    placeholder: "Enter code",
-                    minCharacters: 6,
+                    placeholder: ForgetMeStrings.enterCode.localized,
+                    minCharacters: AppV2Constants.Business.minForgetMeCodeCharacters,
                     submitButton: .init(
-                        title: "Submit",
+                        title: ForgetMeStrings.submit.localized,
                         actionType: .destructive,
                         requiresValidFieldEntry: true)),
                 buttons: [
-                    .init(title: "Cancel", action: {
+                    .init(title: GeneralStrings.cancel.localized, action: {
                         viewModel.showEnterForgetMemberCodeAlert = false
                     })
                 ]), showAlert: $viewModel.showEnterForgetMemberCodeAlert,
@@ -147,9 +148,9 @@ struct MemberDashboardView: View {
         
         .alert(isPresented: $viewModel.showInitialForgetMemberAlert) {
             Alert(
-                title: Text("Forget Account Confirmation"),
-                message: Text("This option will delete your account. If you continue you will lose the advantages of being registered for faster checkout, loyalty discounts and more."),
-                primaryButton: .destructive(Text("Continue")) {
+                title: Text(ForgetMeStrings.confirmationTitle.localized),
+                message: Text(ForgetMeStrings.confirmationMessage.localized),
+                primaryButton: .destructive(Text(GeneralStrings.cont.localized)) {
                     Task {
                         try await viewModel.continueToForgetMeTapped()
                     }

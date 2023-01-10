@@ -24,6 +24,11 @@ class CustomSnappyAlertViewModelTests: XCTestCase {
         XCTAssertFalse(sut.useVerticalButtonStack)
     }
     
+    func test_whenButtonsAREPresent_givenLongButtonTextTrue_thenUseVerticalButtonStackIsTrue() {
+        let sut = makeSUT(title: "test", prompt: "test", buttons: [.init(title: "testing1234", action: {})])
+        XCTAssertTrue(sut.useVerticalButtonStack)
+    }
+    
     func test_whenButtonsAREPresent_givenTextFieldIsNotPresentAndButtonsCountISGreatThan2_thenUseVerticalButtonStackIsTrue() {
         let sut = makeSUT(title: "test", prompt: "test", buttons: [
             .init(title: "test", action: {}),
@@ -184,6 +189,34 @@ class CustomSnappyAlertViewModelTests: XCTestCase {
         
         let addDivider = sut.addDivider(buttonIndex: 0)
         XCTAssertTrue(addDivider)
+    }
+    
+    func test_whenButtonTextMoreThan10Characters_thenLongButtonTextIsTrue() {
+        let sut = makeSUT(title: "test", prompt: "test", buttons: [
+            .init(title: "testing1234", action: {}),
+            .init(title: "test", action: {})
+        ])
+        XCTAssertTrue(sut.longButtonText)
+    }
+    
+    func test_whenButtonTextLessThan10Characters_thenLongButtonTextIsFalse() {
+        let sut = makeSUT(title: "test", prompt: "test", buttons: [
+            .init(title: "test", action: {}),
+            .init(title: "test", action: {})
+        ])
+        XCTAssertFalse(sut.longButtonText)
+    }
+    
+    func test_whenSubmitButtonTextMoreThan10Characters_thenLongButtonTextIsTrue() {
+        let sut = makeSUT(
+            title: "test",
+            prompt: "test",
+            textField: .init(placeholder: "test", minCharacters: nil, submitButton: .init(title: "testing12345")),
+            buttons: [
+                .init(title: "testing", action: {}),
+                .init(title: "test", action: {})
+            ])
+        XCTAssertTrue(sut.longButtonText)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), title: String, prompt: String, textField: AlertTextField? = nil, buttons: [AlertActionButton]?) -> CustomSnappyAlertViewModel {

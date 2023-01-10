@@ -591,6 +591,20 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.showVersionUpgradeAlert)
     }
+    
+    func test_whenNoMemberProfileFound_thenIsMemberSignedInIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        XCTAssertFalse(sut.isMemberLoggedIn)
+    }
+    
+    func test_whenMemberProfileFound_thenIsMemberSignedInIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.memberProfile = .mockedData
+        let sut = makeSUT(container: container)
+        XCTAssertTrue(sut.isMemberLoggedIn)
+    }
+    
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),

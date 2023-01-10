@@ -37,18 +37,14 @@ struct MemberDashboardView: View {
     
     var body: some View {
         if viewModel.isFromInitialView {
-            VStack(spacing: 0) {
-                Divider()
-                ScrollView(showsIndicators: false) {
-                    if viewModel.noMemberFound {
-                        mainContent
-                    } else {
-                        mainContent
-                            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
-                    }
-                }
+            if viewModel.noMemberFound {
+                mainContent
+                    .edgesIgnoringSafeArea(.bottom)
+            } else {
+                mainContent
+                    .edgesIgnoringSafeArea(.bottom)
+                    .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
             }
-            .background(colorPalette.backgroundMain)
         } else {
             NavigationView {
                 VStack(spacing: 0) {

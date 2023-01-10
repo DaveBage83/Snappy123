@@ -122,7 +122,7 @@ struct CustomSnappyAlertView: View {
                 if let textField = viewModel.textField {
                     TextField(textField.placeholder ?? Strings.CustomAlert.defaultPlaceholder.localized, text: $viewModel.textfieldContent)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.allCharacters)
+                        .textCase(.lowercase)
                         .padding(.horizontal)
                 }
 

@@ -575,6 +575,37 @@ extension View {
     }
 }
 
+struct WithCustomSnappyAlert: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    @Binding var showAlert: Bool
+    
+    let customSnappyAlert: CustomSnappyAlertView
+    let opacity: CGFloat = 0.2
+    
+    func body(content: Content) -> some View {
+        
+        ZStack {
+            content
+            
+            if showAlert {
+                Rectangle()
+                    .fill(Color.black.opacity(opacity))
+                    .ignoresSafeArea()
+                
+                customSnappyAlert
+            }
+        }
+    }
+}
+
+extension View {
+    func withCustomSnappyAlert(customSnappyAlertViewModel: CustomSnappyAlertViewModel, showAlert: Binding<Bool>, submitAction: @escaping (String) -> Void) -> some View {
+        modifier(WithCustomSnappyAlert(showAlert: showAlert, customSnappyAlert: CustomSnappyAlertView(
+            viewModel: customSnappyAlertViewModel,
+            submitAction: submitAction)))
+    }
+}
+
 enum BannerType: Int {
     case missedOffer = 1
     case viewSelection

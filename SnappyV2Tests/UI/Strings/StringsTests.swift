@@ -328,6 +328,14 @@ class StringsTests: XCTestCase {
         Strings.VersionUpateAlert.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.ForgetMe.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CustomAlert.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

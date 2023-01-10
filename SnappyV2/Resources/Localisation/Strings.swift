@@ -1031,4 +1031,19 @@ enum Strings {
         case standard = "versionupdatealertcustom.standard"
         case simplified = "versionupdatealertcustom.simplified"
     }
+    
+    enum ForgetMe: String, IterableSnappyString {
+        case defaultTitle = "forgetme.defaulttitle"
+        case defaultPrompt = "forgetme.defaultprompt"
+        case failedToSendCode = "forgetme.failedtosendcode"
+        case failedToForget = "forgetme.failedtoforget"
+        case enterCode = "forgetme.entercode"
+        case submit = "forgetme.submit"
+        case confirmationTitle = "forgetme.confirmationtitle"
+        case confirmationMessage = "forgetme.confirmationmessage"
+    }
+    
+    enum CustomAlert: String, IterableSnappyString {
+        case defaultPlaceholder = "customalert.defaultplaceholder"
+    }
 }

@@ -42,6 +42,8 @@ struct MemberDashboardProfileView: View {
     // MARK: - View Models
     
     @StateObject var viewModel: MemberDashboardProfileViewModel
+    @ObservedObject var memberDashboardViewModel: MemberDashboardViewModel
+    
     let didSetError: (Swift.Error) -> ()
     let didSucceed: (String) -> ()
     
@@ -52,6 +54,10 @@ struct MemberDashboardProfileView: View {
     // MARK: - Main body
     
     var body: some View {
+        mainView
+    }
+    
+    private var mainView: some View {
         updateProfileDetailsView
             .padding(.top, Constants.General.topPadding)
             .padding(.bottom, tabViewHeight)
@@ -77,7 +83,9 @@ struct MemberDashboardProfileView: View {
     var updateProfileDetailsView: some View {
         VStack(alignment: .leading, spacing: Constants.General.stackSpacing) {
             detailFields
+                .withLoadingToast(container: viewModel.container, loading: $viewModel.forgetMemberRequestLoading)
             updateProfileButtons
+
             Spacer()
         }
         .onAppear {
@@ -144,6 +152,15 @@ struct MemberDashboardProfileView: View {
                     keyboardType: .phonePad)
                 .onReceive(Just(viewModel.phoneNumber)) { newValue in
                     viewModel.filterPhoneNumber(newValue: newValue)
+                }
+                
+                Button {
+                    memberDashboardViewModel.formetMeTapped()
+                    
+                } label: {
+                    Text("Forget me")
+                        .foregroundColor(colorPalette.primaryBlue)
+                        .underline()
                 }
             }
             .redacted(reason: viewModel.profileIsUpdating ? .placeholder : [])
@@ -229,7 +246,7 @@ struct MemberDashboardProfileView: View {
 #if DEBUG
 struct MemberDashboardProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        MemberDashboardProfileView(viewModel: .init(container: .preview), didSetError: { _ in }, didSucceed: { _ in })
+        MemberDashboardProfileView(viewModel: .init(container: .preview), memberDashboardViewModel: .init(container: .preview), didSetError: { _ in }, didSucceed: { _ in })
     }
 }
 #endif

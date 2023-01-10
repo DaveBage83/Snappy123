@@ -324,7 +324,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.dismissPasswordResetView()
         XCTAssertFalse(sut.showPasswordResetView)
     }
-    
+
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {
         
         if let profile = profile {

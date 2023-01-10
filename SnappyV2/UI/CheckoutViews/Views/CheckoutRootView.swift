@@ -106,9 +106,6 @@ struct CheckoutRootView: View {
                 OTPPromptView(viewModel: .init(container: viewModel.container, email: viewModel.email, otpTelephone: viewModel.otpTelephone, isInCheckout: true, dismiss: { viewModel.dismissOTPPrompt() }))
             }
         }
-        .onTapGesture {
-            hideKeyboard() // Placed here, as we want this behavious for entire navigation stack
-        }
     }
 }
 

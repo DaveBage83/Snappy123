@@ -123,9 +123,6 @@ struct BasketView: View {
                         .background(colorPalette.backgroundMain)
                         .navigationTitle(BasketViewStrings.title.localized)
                         .navigationBarTitleDisplayMode(.inline)
-                        .onTapGesture {
-                            hideKeyboard()
-                        }
                         Text("")
                             .alert(isPresented: $viewModel.showCouponAlert) {
                                 Alert(

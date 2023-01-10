@@ -323,20 +323,25 @@ struct InitialView: View {
     
     // MARK: - Navigation links
     
-    private var navigationLinks: some View {
-        HStack {
+    @ViewBuilder private var navigationLinks: some View {
+        #warning("Remove conditons below once we cease to support iOS14.")
+        // In iOS < 15 having multiple navigation links causes a bug whereby the newly presented view
+        // pops automatically as soon as it is presented. We therefore have to
+        // keep just one at any time so use a conditional statement to manage this
+        
+        if viewModel.isMemberLoggedIn {
+            NavigationLink(
+                destination: MemberDashboardView(viewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline),
+                tag: InitialViewModel.NavigationDestination.memberDashboard,
+                selection: $viewModel.viewState
+            ) { EmptyView() }
+        } else {
             NavigationLink(
                 destination: LoginView(
                     loginViewModel: .init(container: viewModel.container),
                     socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false)
                 ).navigationBarTitleDisplayMode(.inline),
                 tag: InitialViewModel.NavigationDestination.login,
-                selection: $viewModel.viewState
-            ) { EmptyView() }
-
-            NavigationLink(
-                destination: MemberDashboardView(viewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline),
-                tag: InitialViewModel.NavigationDestination.memberDashboard,
                 selection: $viewModel.viewState
             ) { EmptyView() }
         }

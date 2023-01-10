@@ -36,13 +36,10 @@ class InitialViewModel: ObservableObject {
     var locationManager: LocationManager
     
     @Published var postcode: String
-
     @Published var viewState: NavigationDestination?
-    
     @Published var driverSettingsLoading = false
-    
     @Published var businessProfileLoadingError: Error?
-    
+        
     var showDriverStartShift: Bool {
         container.appState.value.userData.memberProfile?.type == .driver && businessProfileIsLoaded && isRestoring == false
     }
@@ -64,6 +61,10 @@ class InitialViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     private let dateGenerator: () -> Date
+    
+    var isMemberLoggedIn: Bool {
+        container.appState.value.userData.memberProfile != nil
+    }
 
     init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, dateGenerator: @escaping () -> Date = Date.init, locationManager: LocationManager = LocationManager()) {
         

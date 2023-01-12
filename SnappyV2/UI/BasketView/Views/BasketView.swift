@@ -136,10 +136,23 @@ struct BasketView: View {
                             }
                     }
                     // MARK: NavigationLinks
-                    NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                        CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
-                            viewModel.dismissView()
-                        })
+                    // There is a bug in iOS < 15 whereby when there are exactly 2 NavigationLinks in any given view, the link
+                    // will pop back automatically when presented. As a workaround, we need to add an empty link in. This does
+                    // produce a console warning "Unable to present. Please file a bug.".
+                    if #available(iOS 15.0, *) {
+                        NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
+                            CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
+                                viewModel.dismissView()
+                            })
+                        }
+                    } else {
+                        NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
+                            CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
+                                viewModel.dismissView()
+                            })
+                        }
+                        
+                        NavigationLink(destination: EmptyView(), label: {})
                     }
                 }
                 .background(colorPalette.backgroundMain)

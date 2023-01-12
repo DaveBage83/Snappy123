@@ -605,6 +605,28 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isMemberLoggedIn)
     }
     
+    func test_whenLocationIsLoading_givenIsLoading_thenGettingLocationIsFalse() {
+        let sut = makeSUT()
+        
+        sut.searchResult = .isLoading(last: .mockedData, cancelBag: .init())
+        sut.locationIsLoading = true
+        XCTAssertFalse(sut.gettingLocation)
+    }
+    
+    
+    func test_whenLocationIsLoading_givenIsLoadingIsFalseAndSearchResultInAppStateIsNotNotRequested_thenGettingLocationIsFalse() {
+        let sut = makeSUT()
+        
+        sut.container.appState.value.userData.searchResult = .loaded(.mockedData)
+        sut.locationIsLoading = true
+        XCTAssertFalse(sut.gettingLocation)
+    }
+    
+    func test_whenLocationIsLoading_givenIsLoadingIsFalseAndSearchResultInAppstateIsNotRequested_thenGettingLocationIsTrue() {
+        let sut = makeSUT()
+        sut.locationIsLoading = true
+        XCTAssertTrue(sut.gettingLocation)
+    }
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),

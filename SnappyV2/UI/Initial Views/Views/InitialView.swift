@@ -217,7 +217,7 @@ struct InitialView: View {
                     VersionUpdateAlert(viewModel: .init(container: viewModel.container, prompt: viewModel.updateMessage, appstoreLink: url))
                 }
                 
-                if viewModel.locationIsLoading {
+                if viewModel.gettingLocation {
                     LocationLoadingIndicator(viewModel: .init(container: viewModel.container))
                 }
             }

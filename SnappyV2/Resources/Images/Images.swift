@@ -17,6 +17,12 @@ extension Image {
         static let amex = Image("AmEx")
     }
     
+    struct LocationIndicator {
+        static let halfDot = Image("halfLocationDot")
+        static let wholeDot = Image("wholeLocationDot")
+        static let streetMap = Image("StreetMap")
+    }
+    
     struct Search {
         static let noResults = Image("noResults")
         static let enterMoreCharacters = Image("enterMoreCharacters")

@@ -1046,4 +1046,8 @@ enum Strings {
     enum CustomAlert: String, IterableSnappyString {
         case defaultPlaceholder = "customalert.defaultplaceholder"
     }
+    
+    enum LocationIndicator: String, IterableSnappyString {
+        case gettingLocation = "locationindicator.gettinglocation"
+    }
 }

@@ -27,13 +27,13 @@ class LocationLoadingIndicatorViewModel: ObservableObject {
     
     // Rotation degrees
     @Published var blueDegree: Double = 0.0
-    @Published var yellowDegree: Double = 0.0
-    @Published var greenDegree: Double = 0.0
+    @Published var redDegree: Double = 0.0
+    @Published var blue2Degree: Double = 0.0
     
     // Flipped variables
     @Published var blueFlipped = false
-    @Published var yellowFlipped = false
-    @Published var greenFlipped = false
+    @Published var blue2Flipped = false
+    @Published var redFlipped = false
     
     @Published var isReversing = false
     
@@ -69,22 +69,22 @@ class LocationLoadingIndicatorViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        $yellowDegree
+        $redDegree
             .receive(on: RunLoop.main)
             .sink { [weak self] degree in
                 guard let self else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + Constants.AnimationDelay.mid, execute: {
-                    self.yellowFlipped = degree == Constants.Degrees.max
+                    self.blue2Flipped = degree == Constants.Degrees.max
                 })
             }
             .store(in: &cancellables)
         
-        $greenDegree
+        $blue2Degree
             .receive(on: RunLoop.main)
             .sink { [weak self] degree in
                 guard let self else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + Constants.AnimationDelay.mid, execute: {
-                    self.greenFlipped = degree == Constants.Degrees.max
+                    self.redFlipped = degree == Constants.Degrees.max
                 })
                 
             }
@@ -98,20 +98,20 @@ class LocationLoadingIndicatorViewModel: ObservableObject {
                 guard let self else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + Constants.AnimationDelay.min, execute: {
                     if flipped {
-                        self.yellowDegree = Constants.Degrees.max
+                        self.redDegree = Constants.Degrees.max
                     }
                 })
                 
             }
             .store(in: &cancellables)
         
-        $yellowFlipped
+        $blue2Flipped
             .receive(on: RunLoop.main)
             .sink { [weak self] flipped in
                 guard let self else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + Constants.AnimationDelay.min, execute: {
                     if flipped {
-                        self.greenDegree = Constants.Degrees.max
+                        self.blue2Degree = Constants.Degrees.max
                         self.isReversing = true
                     } else if self.isReversing {
                         self.blueDegree = Constants.Degrees.min
@@ -121,19 +121,18 @@ class LocationLoadingIndicatorViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        $greenFlipped
+        $redFlipped
             .receive(on: RunLoop.main)
             .sink { [weak self] flipped in
                 guard let self else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + Constants.AnimationDelay.min, execute: {
                     
                     if flipped {
-                        self.greenDegree = Constants.Degrees.min
+                        self.blue2Degree = Constants.Degrees.min
                     } else {
-                        self.yellowDegree = Constants.Degrees.min
+                        self.redDegree = Constants.Degrees.min
                     }
                 })
-                
             }
             .store(in: &cancellables)
     }

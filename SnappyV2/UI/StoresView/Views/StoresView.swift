@@ -115,45 +115,51 @@ struct StoresView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                Divider()
-                
-                ScrollView(showsIndicators: false) {
-                    HStack {
-                        postcodeSearch
-                        
-                        if sizeClass != .compact {
-                            FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
-                                .frame(maxWidth: Constants.FulfilmentSelectionToggle.largeScreenWidth, maxHeight: .infinity)
+            ZStack {
+                VStack(spacing: 0) {
+                    Divider()
+                    
+                    ScrollView(showsIndicators: false) {
+                        HStack {
+                            postcodeSearch
+                            
+                            if sizeClass != .compact {
+                                FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
+                                    .frame(maxWidth: Constants.FulfilmentSelectionToggle.largeScreenWidth, maxHeight: .infinity)
+                            }
                         }
-                    }
-                    .zIndex(1) // Ensures drop down is on top of other views
-                    .padding()
-                    VStack(alignment: .leading) {
-                        if sizeClass == .compact {
-                            FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
-                                .padding(.horizontal)
+                        .zIndex(1) // Ensures drop down is on top of other views
+                        .padding()
+                        VStack(alignment: .leading) {
+                            if sizeClass == .compact {
+                                FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
+                                    .padding(.horizontal)
+                            }
+                            
+                            browseStores
+                            
+                            navigationLinks
                         }
-                        
-                        browseStores
-                        
-                        navigationLinks
+                        .padding(.bottom, tabViewHeight)
                     }
-                    .padding(.bottom, tabViewHeight)
+                    .toolbar(content: {
+                        ToolbarItem(placement: .principal) {
+                            SnappyLogo()
+                        }
+                    })
+                    .navigationBarTitleDisplayMode(.inline)
+                    .frame(maxHeight: .infinity)
+                    .background(colorPalette.backgroundMain)
                 }
-                .toolbar(content: {
-                    ToolbarItem(placement: .principal) {
-                        SnappyLogo()
-                    }
-                })
-                .navigationBarTitleDisplayMode(.inline)
+                .onTapGesture {
+                    viewModel.clearPostcodeSearchResults()
+                }
                 .frame(maxHeight: .infinity)
-                .background(colorPalette.backgroundMain)
+                
+                if viewModel.locationIsLoading {
+                    LocationLoadingIndicator(viewModel: .init(container: viewModel.container))
+                }
             }
-            .onTapGesture {
-                viewModel.clearPostcodeSearchResults()
-            }
-            .frame(maxHeight: .infinity)
         }
         .onAppear {
             viewModel.onAppearSendEvent()

@@ -1,5 +1,5 @@
 //
-//  LoactionLoadingIndicator.swift
+//  LocationLoadingIndicator.swift
 //  SnappyV2
 //
 //  Created by David Bage on 11/01/2023.
@@ -46,12 +46,12 @@ struct LocationLoadingIndicator: View {
                     ZStack {
                         redLocation
                         
-                        if viewModel.yellowFlipped == false {
-                            halfLocationGreen
+                        if viewModel.blue2Flipped == false {
+                            halfLocationBlue
                         }
                         
                         if viewModel.blueFlipped == false {
-                            halfLocationYellow
+                            halfLocationRed
                         }
                         
                         halfLocationBlue
@@ -59,15 +59,15 @@ struct LocationLoadingIndicator: View {
                             .animation(.easeOut(duration: Constants.durationAndDelay), value: viewModel.blueDegree)
                         
                         if viewModel.blueFlipped {
-                            halfLocationYellow
-                                .rotation3DEffect(Angle(degrees: viewModel.yellowDegree), axis: (x: 0, y: 1, z: 0))
-                                .animation(.easeOut(duration: Constants.durationAndDelay), value: viewModel.yellowDegree)
+                            halfLocationRed
+                                .rotation3DEffect(Angle(degrees: viewModel.redDegree), axis: (x: 0, y: 1, z: 0))
+                                .animation(.easeOut(duration: Constants.durationAndDelay), value: viewModel.redDegree)
                         }
                         
-                        if viewModel.yellowFlipped {
-                            halfLocationGreen
-                                .rotation3DEffect(Angle(degrees: viewModel.greenDegree), axis: (x: 0, y: 1, z: 0))
-                                .animation(.easeOut(duration: Constants.durationAndDelay), value: viewModel.greenDegree)
+                        if viewModel.blue2Flipped {
+                            halfLocationBlue
+                                .rotation3DEffect(Angle(degrees: viewModel.blue2Degree), axis: (x: 0, y: 1, z: 0))
+                                .animation(.easeOut(duration: Constants.durationAndDelay), value: viewModel.blue2Degree)
                         }
                     }
                     
@@ -103,17 +103,9 @@ struct LocationLoadingIndicator: View {
         locationIndicator(type: .half, color: colorPalette.primaryBlue)
     }
     
-    private var halfLocationYellow: some View {
-        locationIndicator(type: .half, color: colorPalette.offer)
-    }
     
-    
-    private var halfLocationGreen: some View {
-        locationIndicator(type: .half, color: colorPalette.alertSuccess)
-    }
-    
-    private var blueLocation: some View {
-        locationIndicator(type: .half, color: colorPalette.primaryBlue)
+    private var halfLocationRed: some View {
+        locationIndicator(type: .half, color: colorPalette.primaryRed)
     }
 }
 

@@ -452,6 +452,159 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showAccountButton)
     }
     
+    func test_whenInit_givenBusinessProfileNil_thenUpdateMessagePopulatedWithDefaultPrompt() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.updateMessage, Strings.VersionUpateAlert.defaultPrompt.localized)
+    }
+    
+    func test_whenInit_givenBusinessProfileNotNilButNoIOSUpdateInfo_thenUpdateMessagePopulatedWithDefaultPrompt() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataNoIOSUpdateInfo
+        let sut = makeSUT(container: container)
+        XCTAssertEqual(sut.updateMessage, Strings.VersionUpateAlert.defaultPrompt.localized)
+    }
+    
+    
+    func test_whenInit_givenBusinessProfileNotNilAndIOSUpdateInfoAvailable_thenUpdateMessagePopulatedWithDefaultPrompt() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataFromAPI
+        let sut = makeSUT(container: container)
+        XCTAssertEqual(sut.updateMessage, OrderingClientUpdateRequirements.mockedDataIOS.updateDescription)
+    }
+    
+    func test_whenInit_givenNoBusinessProfile_thenAppUpgradeUrlNil() {
+        let sut = makeSUT()
+        XCTAssertNil(sut.appUpgradeUrl)
+    }
+    
+    func test_whenInit_givenBusinessProfilePresentButNoIOSUpgradeInfo_thenAppUpgradeUrlNil() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataNoIOSUpdateInfo
+        let sut = makeSUT(container: container)
+        XCTAssertNil(sut.appUpgradeUrl)
+    }
+    
+    func test_whenInit_givenBusinessProfilePresentAndIOSUpgradeInfoAvailable_thenAppUpgradeUrlPopulated() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataFromAPI
+        let sut = makeSUT(container: container)
+        XCTAssertEqual(sut.appUpgradeUrl, OrderingClientUpdateRequirements.mockedDataIOS.updateUrl)
+    }
+    
+    func test_whenVersionCheckedTrue_thenSetShowVersionUpgradeAlertToFalse() {
+        var cancellables = Set<AnyCancellable>()
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataLowestOSVersionHighestAppVersion
+        container.appState.value.userData.versionUpdateChecked = true
+        let sut = makeSUT(container: container)
+        let expectation = expectation(description: "set showVersionUpgradeAlert to false")
+        
+        sut.$showVersionUpgradeAlert
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.showVersionUpgradeAlert)
+    }
+    
+    func test_whenUserOSVersionInDateButAppVersionNot_thenSetShowVersionUpgradeAlertToTrue() {
+        var cancellables = Set<AnyCancellable>()
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataLowestOSVersionHighestAppVersion
+        let sut = makeSUT(container: container)
+        let expectation = expectation(description: "set showVersionUpgradeAlert to true")
+        
+        sut.$showVersionUpgradeAlert
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.showVersionUpgradeAlert)
+    }
+    
+    func test_whenUserOSVersionNOTInDateANDAppVersionNot_thenSetShowVersionUpgradeAlertToFalse() {
+        var cancellables = Set<AnyCancellable>()
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataHighestOSVersionHighestAppVersion
+        let sut = makeSUT(container: container)
+        let expectation = expectation(description: "set showVersionUpgradeAlert to false")
+        
+        sut.$showVersionUpgradeAlert
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.showVersionUpgradeAlert)
+    }
+    
+    func test_whenUserOSVersionInDateAndAppVersionInDate_thenSetShowVersionUpgradeAlertToFalse() {
+        var cancellables = Set<AnyCancellable>()
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataLowestOSVersionLowestAppVersion
+        let sut = makeSUT(container: container)
+        let expectation = expectation(description: "set showVersionUpgradeAlert to false")
+        
+        sut.$showVersionUpgradeAlert
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.showVersionUpgradeAlert)
+    }
+    
+    func test_whenMinBuildVersionInvalid_thenSetShowVersionUpgradeAlertToFalse() {
+        var cancellables = Set<AnyCancellable>()
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.businessData.businessProfile = .mockedDataInvalidMinBuildVersion
+        let sut = makeSUT(container: container)
+        let expectation = expectation(description: "set showVersionUpgradeAlert to false")
+        
+        sut.$showVersionUpgradeAlert
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.showVersionUpgradeAlert)
+    }
+    
+    func test_whenNoMemberProfileFound_thenIsMemberSignedInIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        XCTAssertFalse(sut.isMemberLoggedIn)
+    }
+    
+    func test_whenMemberProfileFound_thenIsMemberSignedInIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.memberProfile = .mockedData
+        let sut = makeSUT(container: container)
+        XCTAssertTrue(sut.isMemberLoggedIn)
+    }
+    
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),
@@ -462,5 +615,4 @@ class InitialViewModelTests: XCTestCase {
         let mockedLocationManager = MockedLocationManager(locationAuthStatus: locationAuthorisationStatus, setLocation: testLocation)
         return InitialViewModel(container: container, dateGenerator: dateGenerator, locationManager: mockedLocationManager)
     }
-    
 }

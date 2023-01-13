@@ -47,6 +47,18 @@ class MemberDashboardProfileViewModel: ObservableObject {
     @Published var verifyNewPasswordHasError = false
     @Published var profileIsUpdating = false
     
+    // Forget member fields
+    
+    @Published var showInitialForgetMemberAlert = false
+    @Published var showEnterForgetMemberCodeAlert = false
+    @Published var forgetMemberCode: String = ""
+    @Published var enterForgetCodeTitle = ""
+    @Published var enterForgetCodePrompt = ""
+    @Published var forgetMemberRequestLoading = false
+    var forgetMeSubmitButtonDisabled: Bool {
+        forgetMemberCode.isEmpty
+    }
+    
     init(container: DIContainer) {
         self.container = container
         let appState = container.appState

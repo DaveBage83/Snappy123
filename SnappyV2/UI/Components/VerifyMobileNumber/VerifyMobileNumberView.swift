@@ -92,7 +92,7 @@ struct VerifyMobileNumberView: View {
                 .frame(width: Constants.VerifyMobileNumberAlert.frameWidth)
                 .background(colorPalette.secondaryWhite)
                 .cornerRadius(Constants.VerifyMobileNumberAlert.cornerRadius)
-                .withLoadingToast(loading: $viewModel.isRequestingOrSendingVerificationCode)
+                .withLoadingToast(container: viewModel.container, loading: $viewModel.isRequestingOrSendingVerificationCode)
         }
             .font(.body)
     }

@@ -12,17 +12,7 @@ class TabBarViewModel: ObservableObject {
     let container: DIContainer
     var cancellables = Set<AnyCancellable>()
     @Published var selectedTab: Tab
-    
-    var basketTotal: String? {
-        // If the basket total is zero, we want to return nil so as not to display the badge
-        if
-            let currency = container.appState.value.userData.selectedStore.value?.currency,
-            let total = container.appState.value.userData.basket?.orderTotal, total > 0
-        {
-            return total.toCurrencyString(using: currency)
-        }
-        return nil
-    }
+    @Published var basketTotal: String?
 
     init(container: DIContainer) {
         self.container = container
@@ -30,6 +20,22 @@ class TabBarViewModel: ObservableObject {
         _selectedTab = .init(initialValue: container.appState.value.routing.selectedTab)
         
         bindSelectedTabToAppState(with: appState)
+        setupBindToBasketTotal(with: appState)
+    }
+    
+    private func setupBindToBasketTotal(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket?.orderTotal)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] total in
+                guard let self = self else { return }
+                if let total, let currency = self.container.appState.value.userData.selectedStore.value?.currency, total > 0 {
+                    self.basketTotal = total.toCurrencyString(using: currency)
+                } else {
+                    self.basketTotal = nil
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func bindSelectedTabToAppState(with appState: Store<AppState>) {

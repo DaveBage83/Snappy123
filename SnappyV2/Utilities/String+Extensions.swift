@@ -419,3 +419,17 @@ extension String {
             }
         }
 }
+
+extension String {
+    func versionUpToDate(_ otherVersion: String) -> Bool {
+        let comparisonResult = self.compare(otherVersion, options: .numeric)
+        return comparisonResult != .orderedAscending
+    }
+}
+
+extension String {
+    var condensedWhitespace: String {
+        let components = self.components(separatedBy: NSCharacterSet.whitespacesAndNewlines)
+        return components.filter { !$0.isEmpty }.joined(separator: " ")
+    }
+}

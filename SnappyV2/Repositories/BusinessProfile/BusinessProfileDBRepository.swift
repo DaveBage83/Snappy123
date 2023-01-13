@@ -69,7 +69,8 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                     marketingText: nil,
                     fetchLocaleCode: localeCode,
                     fetchTimestamp: nil,
-                    colors: businessProfile.colors
+                    colors: businessProfile.colors,
+                    orderingClientUpdateRequirements: businessProfile.orderingClientUpdateRequirements
                 )
                 
                 if businessProfileToSave.store(in: context) == nil {

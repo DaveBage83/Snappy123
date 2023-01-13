@@ -1976,3 +1976,27 @@ extension StoreRetailMembershipIdResult {
     static let mockedDataWithFalseSuccess = StoreRetailMembershipIdResult(success: false)
     
 }
+
+extension ForgetMemberCodeRequestResult {
+    static let mockedDataSuccess = ForgetMemberCodeRequestResult(
+        success: true,
+        message_title: "Code sent",
+        message: "Managed to send code to your email")
+    
+    static let mockedDataFail = ForgetMemberCodeRequestResult(
+        success: false,
+        message_title: "Code not sent",
+        message: Strings.ForgetMe.failedToSendCode.localized)
+}
+
+extension ForgetMemberRequestResult {
+    static let mockedDataSuccess = ForgetMemberRequestResult(
+        success: true,
+        errors: nil)
+    
+    static let mockedDataFailure = ForgetMemberRequestResult(
+        success: false,
+        errors: [
+            "Failed to forget member"
+        ])
+}

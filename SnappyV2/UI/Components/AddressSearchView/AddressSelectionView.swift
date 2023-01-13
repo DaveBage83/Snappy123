@@ -105,7 +105,7 @@ struct AddressSelectionView: View {
                     backButtonAction: nil)
             }
         }
-        .withLoadingToast(loading: $viewModel.searchingForAddresses)
+        .withLoadingToast(container: viewModel.container, loading: $viewModel.searchingForAddresses)
     }
     
     private var enterManuallyButtonStack: some View {

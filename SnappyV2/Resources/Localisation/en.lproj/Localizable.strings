@@ -54,10 +54,12 @@
 "general.shop" = "Shop";
 "general.hour" = "hr";
 "general.hours" = "hrs";
+"general.understood" = "Understood";
 
 // MARK: - General - custom
 
 "general.custom.peritem" = "%@ each";
+"general.custom.version" = "Version number: %@ (%@)";
 
 // MARK: - General - errors
 
@@ -681,3 +683,23 @@
 
 // MARK: - Animated Loading View
 "loadingView.loggingin" = "Logging In...";
+
+// MARK: - Version update alert
+"versionupdatealert.title" = "Time to update";
+"versionupdatealert.buttontext" = "Update now";
+"versionupdatealert.defaultprompt" = "Please head to the AppStore to update your app version";
+"versionupdatealertcustom.simplified" = "Your device has iOS %@ installed. To install the latest version of our app you will need to update your operating system.";
+"versionupdatealertcustom.standard" = "Your device has iOS %@ installed. To install the latest version of our app you will require a minimum of iOS %@.";
+
+// MARK: - Forget me
+"forgetme.defaulttitle" = "Enter code";
+"forgetme.defaultprompt" = "Please enter the code you received by email.";
+"forgetme.failedtosendcode" = "Failed to send code. Please try again.";
+"forgetme.failedtoforget" = "Failed to forget member. Please try again later.";
+"forgetme.entercode" = "Enter code";
+"forgetme.submit" = "Delete account";
+"forgetme.confirmationtitle" = "Forget Account Confirmation";
+"forgetme.confirmationmessage" = "This option will delete your account. If you continue you will lose the advantages of being registered for faster checkout, loyalty discounts and more.";
+
+// MARK: - Custom alert
+"customalert.defaultplaceholder" = "Enter text";

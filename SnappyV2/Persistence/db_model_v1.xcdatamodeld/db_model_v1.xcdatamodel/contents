@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22A380" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="21G115" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -184,6 +184,7 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="useDeliveryFirms" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="colors" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BusinessProfileColors" inverseName="businessProfile" inverseEntity="BusinessProfileColors"/>
+        <relationship name="orderingClientUpdateRequirements" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="OrderingClientUpdateRequirements" inverseName="businessProfile" inverseEntity="OrderingClientUpdateRequirements"/>
         <relationship name="paymentGateways" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PaymentGateway" inverseName="businessProfile" inverseEntity="PaymentGateway"/>
         <relationship name="postcodeRules" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PostcodeRule" inverseName="businessProfile" inverseEntity="PostcodeRule"/>
         <relationship name="tipLimitLevels" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TipLimitLevel" inverseName="profile" inverseEntity="TipLimitLevel"/>
@@ -355,6 +356,14 @@
     <entity name="MenuItemSearch" representedClassName="MenuItemSearchMO" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="OrderingClientUpdateRequirements" representedClassName="OrderingClientUpdateRequirementsMO" syncable="YES" codeGenerationType="class">
+        <attribute name="minimumBuildVersion" optional="YES" attributeType="String"/>
+        <attribute name="minimumOSVersion" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="platform" optional="YES" attributeType="String"/>
+        <attribute name="updateDescription" optional="YES" attributeType="String"/>
+        <attribute name="updateUrl" optional="YES" attributeType="String"/>
+        <relationship name="businessProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfile" inverseName="orderingClientUpdateRequirements" inverseEntity="BusinessProfile"/>
     </entity>
     <entity name="PaymentGateway" representedClassName="PaymentGatewayMO" syncable="YES" codeGenerationType="class">
         <attribute name="mode" optional="YES" attributeType="String"/>

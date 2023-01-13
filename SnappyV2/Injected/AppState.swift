@@ -29,17 +29,10 @@ struct AppState: Equatable {
     // Toast properties
     var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
     var errors: [Swift.Error] = []
-    var successToastStrings = [String]()
+    var successToasts: [SuccessToast] = []
+    
     var latestViewID: UUID? {
         viewIDs.last
-    }
-    
-    var latestSuccessToast: String? {
-        successToastStrings.first
-    }
-    
-    var latestError: Swift.Error? {
-        errors.first
     }
 }
 
@@ -107,6 +100,7 @@ extension AppState {
         var memberProfile: MemberProfile?
         var todaySlotExpiry: TimeInterval?
         var slotExpired: Bool?
+        var versionUpdateChecked = false // Set to true once checked
     }
 }
 
@@ -143,6 +137,7 @@ extension AppState {
         var isInForeground = false
         var isConnected = false
         var notificationDeviceToken: String?
+        var errorsInQueue = false
     }
 }
 

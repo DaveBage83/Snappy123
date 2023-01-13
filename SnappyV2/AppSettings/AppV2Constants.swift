@@ -111,6 +111,7 @@ struct AppV2Constants {
         static let maximumSearchHistoryResults = 10
         static let expiryWarningThreshold: Double = 300 // 5 mins
         static let todayTimeslotDeadline: Double = 900 // 15 mins
+        static let minForgetMeCodeCharacters = 6
     }
     
     struct Driver {

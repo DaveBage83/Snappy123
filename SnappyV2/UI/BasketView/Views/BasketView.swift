@@ -118,13 +118,11 @@ struct BasketView: View {
                                 viewModel.onBasketViewSendEvent()
                             }
                             .padding(.bottom, tabViewHeight)
+                            .padding(.bottom)
                         }
                         .background(colorPalette.backgroundMain)
                         .navigationTitle(BasketViewStrings.title.localized)
                         .navigationBarTitleDisplayMode(.inline)
-                        .onTapGesture {
-                            hideKeyboard()
-                        }
                         Text("")
                             .alert(isPresented: $viewModel.showCouponAlert) {
                                 Alert(
@@ -138,24 +136,32 @@ struct BasketView: View {
                             }
                     }
                     // MARK: NavigationLinks
-                    NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                        CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
-                            viewModel.dismissView()
-                        })
+                    // There is a bug in iOS < 15 whereby when there are exactly 2 NavigationLinks in any given view, the link
+                    // will pop back automatically when presented. As a workaround, we need to add an empty link in. This does
+                    // produce a console warning "Unable to present. Please file a bug.".
+                    if #available(iOS 15.0, *) {
+                        NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
+                            CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
+                                viewModel.dismissView()
+                            })
+                        }
+                    } else {
+                        NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
+                            CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
+                                viewModel.dismissView()
+                            })
+                        }
+                        
+                        NavigationLink(destination: EmptyView(), label: {})
                     }
                 }
                 .background(colorPalette.backgroundMain)
-                
-                if #available(iOS 15.0, *) {
-                    mainButton
-                        .padding(.horizontal)
-                        .background(.ultraThinMaterial)
-                        .padding(.bottom)
-                } else {
-                    mainButton
-                        .padding(.horizontal)
-                }
+
+                mainButton
+                    .padding(.horizontal)
+                    .background(colorPalette.backgroundMain.withOpacity(.eighty))
             }
+            .edgesIgnoringSafeArea(.bottom)
         }
         .snappySheet(container: viewModel.container, isPresented: $viewModel.showMentionMeWebView,
                      sheetContent: MentionMeWebView(
@@ -258,46 +264,33 @@ struct BasketView: View {
     }
     
     @ViewBuilder private var mainButton: some View {
-        if viewModel.basketIsEmpty {
+        HStack(spacing: Constants.MainButtonStack.spacing) {
             SnappyButton(
                 container: viewModel.container,
-                type: .primary,
+                type: viewModel.basketIsEmpty ? .primary : .outline,
                 size: .large,
-                title: BasketViewStrings.startShopping.localized,
+                title: viewModel.shopButtonText,
                 largeTextTitle: nil,
                 icon: nil) {
                     viewModel.startShoppingPressed()
                 }
-        } else {
-            HStack(spacing: Constants.MainButtonStack.spacing) {
-                
+            
+            if viewModel.showCheckoutButton {
                 SnappyButton(
                     container: viewModel.container,
-                    type: .outline,
+                    type: .success,
                     size: .large,
-                    title: GeneralStrings.shop.localized,
+                    title: Strings.BasketView.checkout.localized,
                     largeTextTitle: nil,
                     icon: nil) {
-                        viewModel.startShoppingPressed()
-                    }
-                
-                if viewModel.showCheckoutButton {
-                    SnappyButton(
-                        container: viewModel.container,
-                        type: .success,
-                        size: .large,
-                        title: Strings.BasketView.checkout.localized,
-                        largeTextTitle: nil,
-                        icon: nil) {
-                            Task {
-                                await viewModel.checkoutTapped()
-                            }
+                        Task {
+                            await viewModel.checkoutTapped()
                         }
-                }
+                    }
             }
-            .padding(.bottom, tabViewHeight * 0.5)
-            .padding(.vertical)
         }
+        .padding(.bottom, tabViewHeight)
+        .padding(.top)
     }
 
     private var emptyBasket: some View {
@@ -361,7 +354,8 @@ struct BasketView: View {
                     if fee.text.lowercased() == "delivery" {
                             listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                             .frame(width: mainWindowSize.width - Constants.DeliveryBanner.widthAdjustment)
-                            .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: true)
+                            #warning("Designs have changed for delivery fees now. Current implementation causing an issue with animation of driver tips so disabling this for now.")
+//                            .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: true)
                     } else {
                         listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                     }
@@ -409,8 +403,11 @@ struct BasketView: View {
             
             Spacer()
             
-            DriverTipsButton(viewModel: viewModel, size: .standard)
-                .padding(.trailing)
+            VStack {
+                DriverTipsButton(viewModel: viewModel, size: .standard)
+                    .padding(.trailing)
+            }
+            
             
             Text(amount)
         }

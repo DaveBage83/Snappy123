@@ -115,6 +115,14 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var requestingVerifyCode = false
     @Published var resetToken: ResetToken?
     @Published var activeOptionButton: OptionType = .dashboard
+    
+    // Forget member properties
+    @Published var showInitialForgetMemberAlert = false
+    @Published var showEnterForgetMemberCodeAlert = false
+    @Published var forgetMemberRequestLoading = false
+    @Published var enterForgetCodeTitle = ""
+    @Published var enterForgetCodePrompt = ""
+    @Published var forgetCode = ""
 
     var isFromInitialView: Bool {
         container.appState.value.routing.showInitialView
@@ -367,5 +375,40 @@ class MemberDashboardViewModel: ObservableObject {
     
     func switchState(to optionType: OptionType) {
         viewState = optionType
+    }
+    
+    // Forget member methods
+    
+    func formetMeTapped() {
+        showInitialForgetMemberAlert = true
+    }
+    
+    func continueToForgetMeTapped() async throws {
+        forgetMemberRequestLoading = true
+        
+        do {
+            let sendForgetCodeRequest = try await container.services.memberService.sendForgetCode()
+            enterForgetCodeTitle = sendForgetCodeRequest.message_title ?? Strings.ForgetMe.defaultTitle.localized
+            enterForgetCodePrompt = sendForgetCodeRequest.message ?? Strings.ForgetMe.defaultPrompt.localized
+            
+            self.showEnterForgetMemberCodeAlert = true
+        } catch {
+            container.appState.value.errors.append(error)
+        }
+        
+        forgetMemberRequestLoading = false
+    }
+    
+    func forgetMemberRequested(code: String) async throws {
+        self.forgetMemberRequestLoading = true
+        do {
+            let _ = try await container.services.memberService.forgetMember(confirmationCode: code)
+            showEnterForgetMemberCodeAlert = false
+            self.forgetMemberRequestLoading = false
+        } catch {
+            self.forgetMemberRequestLoading = false
+            container.appState.value.errors.append(error)
+        }
+        forgetCode = ""
     }
 }

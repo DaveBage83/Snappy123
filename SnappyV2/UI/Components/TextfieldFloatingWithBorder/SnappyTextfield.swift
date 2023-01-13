@@ -297,7 +297,7 @@ struct SnappyTextfield: View {
         }
         .cornerRadius(Constants.Border.cornerRadius)
         .offset(y: labelYOffset)
-        .animation(.default)
+        .animation(.default, value: labelYOffset)
         .transition(.opacity)
         .padding(.leading, Constants.Text.inset)
     }

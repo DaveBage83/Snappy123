@@ -85,7 +85,7 @@ class SnappyV2AppViewModel: ObservableObject {
         
         setUpInitialView()
     }
-    
+
     private func setUpInitialView() {
         container.appState
             .map(\.routing.showInitialView)
@@ -385,7 +385,8 @@ class SnappyV2AppViewModel: ObservableObject {
         if let error = error {
             self.container.appState.value.errors.append(error)
         } else if let toast = toast {
-            container.appState.value.successToastStrings.append(toast)
+            let toast = SuccessToast(subtitle: toast)
+            container.appState.value.successToasts.append(toast)
         }
     }
     
@@ -393,7 +394,8 @@ class SnappyV2AppViewModel: ObservableObject {
         container.appState.value.retailStoreReview = nil
         storeReview = nil
         if let reviewSentMessage {
-            container.appState.value.successToastStrings.append(reviewSentMessage)
+            let toast = SuccessToast(subtitle: reviewSentMessage)
+            container.appState.value.successToasts.append(toast)
         }
     }
     

@@ -66,39 +66,105 @@ struct MeasureSizeModifier: ViewModifier {
   }
 }
 
-struct StandardAlertToast: ViewModifier {
-    @Environment(\.colorScheme) var colorScheme
-    
-    @Binding var error: Swift.Error?
-    @State var showAlert = false
+enum ToastType {
+    case error
+    case success
+}
+
+class StandardAlertToastViewModel: ObservableObject {
     let container: DIContainer
+    @Published var showAlert = false
+    @Published var alertText = ""
+    
+    private var cancellables = Set<AnyCancellable>()
     let viewID: UUID
+    let toastType: ToastType
     
-    @State var errorText = ""
-    
-    let tapToDismissOverride: Bool
-    
-    init(container: DIContainer, tapToDismissOverride: Bool, error: Binding<Swift.Error?>, viewID: UUID) {
-        self._error = error
-        self.tapToDismissOverride = tapToDismissOverride
+    init(container: DIContainer, toastType: ToastType, viewID: UUID) {
         self.container = container
         self.viewID = viewID
+        self.toastType = toastType
+        let appState = container.appState
+        
+        if toastType == .error {
+            setupBindToLatestError(with: appState)
+        }
+        
+        if toastType == .success {
+            setupBindToLatestSuccess(with: appState)
+        }
     }
     
+    private func setupBindToLatestError(with appState: Store<AppState>) {
+        appState
+            .map(\.errors.first)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.configureAlert()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupBindToLatestSuccess(with appState: Store<AppState>) {
+        appState
+            .map(\.successToasts.first)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.configureAlert()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func configureAlert() {
+        switch toastType {
+        case .error:
+            let toastString = container.appState.value.errors.first?.localizedDescription
+            handleToast(toastString: toastString)
+        case .success:
+            let toastString = container.appState.value.successToasts.first?.subtitle
+            handleToast(toastString: toastString)
+        }
+    }
+    
+    private func handleToast(toastString: String?) {
+        if let toastString, toastString.isEmpty == false {
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                guard let self else { return }
+                self.alertText = toastString
+                self.showAlert = true
+            }
+            
+        } else {
+            self.alertText = ""
+            self.showAlert = false
+        }
+    }
+}
+
+struct StandardAlertToast: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    @StateObject var viewModel: StandardAlertToastViewModel
+    
     private var colorPalette: ColorPalette {
-        ColorPalette(container: container, colorScheme: colorScheme)
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $showAlert, subtitle: $errorText, tapToDismissOverride: tapToDismissOverride, alert: { subtitle, tapToDismiss  in
+            .toast(
+                container: viewModel.container,
+                isPresenting: $viewModel.showAlert,
+                subtitle: $viewModel.alertText, alert: { subtitle, tapToDismiss  in
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,
-                    title: GeneralStrings.oops.localized,
-                    subTitle: $errorText,
+                    title: viewModel.toastType == .error ? GeneralStrings.oops.localized : GeneralStrings.success.localized,
+                    subTitle: .constant(subtitle),
                     style: .style(
-                        backgroundColor: .red,
+                        backgroundColor: viewModel.toastType == .error ? colorPalette.alertWarning : colorPalette.alertSuccess,
                         titleColor: .white,
                         subTitleColor: .white,
                         titleFont: .Body1.semiBold(),
@@ -106,31 +172,6 @@ struct StandardAlertToast: ViewModifier {
                     tapToDismiss: tapToDismiss
                 )
             })
-            .onChange(of: container.appState.value.latestError?.localizedDescription) { errText in
-                if errText != nil && showAlert == false && container.appState.value.latestViewID == viewID {
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        
-                        if let err = container.appState.value.latestError as? APIErrorResult {
-                            self.errorText = err.errorDisplay
-                            showAlert = true
-                            self.errorText = err.errorDisplay
-                        } else {
-                            self.errorText = container.appState.value.latestError?.localizedDescription ?? ""
-                            showAlert = true
-                            self.errorText = container.appState.value.latestError?.localizedDescription ?? ""
-                        }
-                        
-
-                    }
-                }
-            }
-            .onChange(of: showAlert) { newValue in
-                if newValue == false && container.appState.value.latestViewID == viewID {
-                    container.appState.value.errors.removeAll(where: { $0.localizedDescription == error?.localizedDescription })
-                    error = nil
-                }
-            }
     }
 }
 
@@ -222,61 +263,6 @@ struct BasketAndPastOrderImage: ViewModifier {
     }
 }
 
-struct StandardSuccessToast: ViewModifier {
-    @Environment(\.colorScheme) var colorScheme
-    
-    @Binding var toastText: String?
-    @State var showAlert = false
-    @State var successText = ""
-    
-    let container: DIContainer
-    let viewID: UUID
-
-    init(container: DIContainer, viewID: UUID, toastText: Binding<String?>) {
-        self._toastText = toastText
-        self.container = container
-        self.viewID = viewID
-    }
-    
-    private var colorPalette: ColorPalette {
-        ColorPalette(container: container, colorScheme: colorScheme)
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .toast(isPresenting: $showAlert, subtitle: .constant(successText), tapToDismissOverride: false, alert: { subtitle, tapToDismiss in
-                AlertToast(
-                    displayMode: .banner(.slide),
-                    type: .regular,
-                    title: GeneralStrings.success.localized,
-                    subTitle: $successText,
-                    style: .style(
-                        backgroundColor: colorPalette.alertSuccess,
-                        titleColor: .white,
-                        subTitleColor: .white,
-                        titleFont: .Body1.semiBold(),
-                        subTitleFont: .Body1.regular()),
-                    tapToDismiss: false // success toast should not be tap to dismiss
-                )
-            })
-            .onChange(of: container.appState.value.latestSuccessToast) { toastText in
-                if toastText?.isEmpty == false && container.appState.value.latestViewID == viewID {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.successText = container.appState.value.latestSuccessToast ?? ""
-
-                        showAlert = true
-                    }
-                }
-            }
-            .onChange(of: showAlert) { newValue in
-                if newValue == false {
-                    container.appState.value.successToastStrings.removeAll(where: { $0 == toastText })
-                    toastText = nil
-                }
-            }
-    }
-}
-
 struct WithInfoButtonAndText: ViewModifier {
     @State var elementWidth: CGFloat = 0
     
@@ -326,15 +312,17 @@ struct LoadingModifier: ViewModifier {
 }
 
 struct LoadingToast: ViewModifier {
+    let container: DIContainer
     @Binding var loading: Bool
 
-    init(loading: Binding<Bool>) {
+    init(container: DIContainer, loading: Binding<Bool>) {
         self._loading = loading
+        self.container = container
     }
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $loading, subtitle: .constant(""), tapToDismissOverride: true, alert: { _, _  in
+            .toast(container: container, isPresenting: $loading, subtitle: .constant(""), alert: { _, _  in
                 AlertToast(
                     displayMode: .alert,
                     type: .loading,
@@ -346,21 +334,17 @@ struct LoadingToast: ViewModifier {
 }
 
 extension View {
-    func withLoadingToast(loading: Binding<Bool>) -> some View {
-        modifier(LoadingToast(loading: loading))
+    func withLoadingToast(container: DIContainer, loading: Binding<Bool>) -> some View {
+        modifier(LoadingToast(container: container, loading: loading))
     }
 }
 
 extension View {
-    func withAlertToast(container: DIContainer, tapToDismissOverride: Bool = false, error: Binding<Swift.Error?>, viewID: UUID) -> some View {
-        modifier(StandardAlertToast(container: container, tapToDismissOverride: tapToDismissOverride, error: error, viewID: viewID))
-
-    }
-}
-
-extension View {
-    func withSuccessToast(container: DIContainer, viewID: UUID, toastText: Binding<String?>) -> some View {
-        modifier(StandardSuccessToast(container: container, viewID: viewID, toastText: toastText))
+    func withAlertToast(container: DIContainer, toastType: ToastType, viewID: UUID) -> some View {
+        modifier(StandardAlertToast(viewModel: .init(
+            container: container,
+            toastType: toastType,
+            viewID: viewID)))
     }
 }
 
@@ -484,6 +468,31 @@ extension View {
     }
 }
 
+struct CustomAlert: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    let container: DIContainer
+    let frameWidth: CGFloat = 300
+    let cornerRadius: CGFloat = 20
+    
+    private var colorPalette: ColorPalette {
+        .init(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .frame(width: frameWidth)
+            .background(colorPalette.secondaryWhite)
+            .cornerRadius(cornerRadius)
+    }
+}
+
+extension View {
+    func customAlert(container: DIContainer) -> some View {
+        modifier(CustomAlert(container: container))
+    }
+}
+
 struct WithSearchHistory: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize
@@ -563,6 +572,37 @@ struct WithSearchHistory: ViewModifier {
 extension View {
     func withSearchHistory(container: DIContainer, searchResults: Binding<[String]>, textfieldTextSetter: @escaping (String) -> Void) -> some View {
         modifier(WithSearchHistory(container: container, textfieldTextSetter: textfieldTextSetter, searchResults: searchResults))
+    }
+}
+
+struct WithCustomSnappyAlert: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    @Binding var showAlert: Bool
+    
+    let customSnappyAlert: CustomSnappyAlertView
+    let opacity: CGFloat = 0.2
+    
+    func body(content: Content) -> some View {
+        
+        ZStack {
+            content
+            
+            if showAlert {
+                Rectangle()
+                    .fill(Color.black.opacity(opacity))
+                    .ignoresSafeArea()
+                
+                customSnappyAlert
+            }
+        }
+    }
+}
+
+extension View {
+    func withCustomSnappyAlert(customSnappyAlertViewModel: CustomSnappyAlertViewModel, showAlert: Binding<Bool>, submitAction: @escaping (String) -> Void) -> some View {
+        modifier(WithCustomSnappyAlert(showAlert: showAlert, customSnappyAlert: CustomSnappyAlertView(
+            viewModel: customSnappyAlertViewModel,
+            submitAction: submitAction)))
     }
 }
 

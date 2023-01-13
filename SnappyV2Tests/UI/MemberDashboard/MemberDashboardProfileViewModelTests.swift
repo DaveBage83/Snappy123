@@ -295,7 +295,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
             successMessage = "Success!" // Should not reach here
         })
         
-        XCTAssertEqual(sut.container.appState.value.latestError as? FormError, FormError.missingDetails)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? FormError, FormError.missingDetails)
         XCTAssertEqual(successMessage, "")
     }
     
@@ -312,7 +312,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
             successMessage = "Success!" // Should not reach here
         })
         
-        XCTAssertEqual(sut.container.appState.value.latestError as? FormError, FormError.passwordsDoNotMatch)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? FormError, FormError.passwordsDoNotMatch)
         XCTAssertTrue(sut.newPasswordHasError)
         XCTAssertTrue(sut.verifyNewPasswordHasError)
         XCTAssertEqual(successMessage, "")
@@ -324,7 +324,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.dismissPasswordResetView()
         XCTAssertFalse(sut.showPasswordResetView)
     }
-    
+
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {
         
         if let profile = profile {

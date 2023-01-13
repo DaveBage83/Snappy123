@@ -255,7 +255,7 @@ class BasketViewModelTests: XCTestCase {
         
         await sut.checkoutTapped()
         
-        XCTAssertEqual(sut.container.appState.value.latestError as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
         eventLogger.verify()
     }
     
@@ -271,7 +271,7 @@ class BasketViewModelTests: XCTestCase {
         await sut.checkoutTapped()
         
         XCTAssertNotNil(sut.unmetCouponMemberAccountRequirement)
-        XCTAssertEqual(sut.container.appState.value.latestError as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
         // check that the requestMobileVerificationCode was NOT called
         container.services.verify(as: .member)
     }
@@ -306,7 +306,7 @@ class BasketViewModelTests: XCTestCase {
         await sut.checkoutTapped()
         
         XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenMobileNumber)
-        XCTAssertNil(sut.container.appState.value.latestError)
+        XCTAssertNil(sut.container.appState.value.errors.first)
         XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
         // check that the requestMobileVerificationCode WAS called
         container.services.verify(as: .member)
@@ -343,7 +343,7 @@ class BasketViewModelTests: XCTestCase {
         await sut.checkoutTapped()
         
         XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenMobileNumber)
-        XCTAssertEqual(sut.container.appState.value.latestError as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
+        XCTAssertEqual(sut.container.appState.value.errors.first as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
         XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
         // check that the requestMobileVerificationCode WAS called
         container.services.verify(as: .member)
@@ -609,7 +609,7 @@ class BasketViewModelTests: XCTestCase {
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
         let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
         let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil, orderingClientUpdateRequirements: [.mockedDataIOS]))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
@@ -623,7 +623,7 @@ class BasketViewModelTests: XCTestCase {
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
         let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
         let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil, orderingClientUpdateRequirements: [.mockedDataIOS]))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
@@ -637,7 +637,7 @@ class BasketViewModelTests: XCTestCase {
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
         let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
         let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil, orderingClientUpdateRequirements: [.mockedDataIOS]))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
@@ -651,7 +651,7 @@ class BasketViewModelTests: XCTestCase {
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
         let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
         let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil, orderingClientUpdateRequirements: [.mockedDataIOS]))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
@@ -665,7 +665,7 @@ class BasketViewModelTests: XCTestCase {
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
         let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
         let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil, orderingClientUpdateRequirements: [.mockedDataIOS]))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
@@ -700,7 +700,7 @@ class BasketViewModelTests: XCTestCase {
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
         let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
         let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil, orderingClientUpdateRequirements: [.mockedDataIOS]))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateTip(tip: 3)]))
         let sut = makeSUT(container: container, runMemoryLeakTracking: false)
@@ -731,7 +731,7 @@ class BasketViewModelTests: XCTestCase {
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
         let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
         let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], postcodeRules: PostcodeRule.mockedDataArray, marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil, orderingClientUpdateRequirements: [.mockedDataIOS]))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateTip(tip: 0)]))
         let sut = makeSUT(container: container, runMemoryLeakTracking: false)
@@ -806,10 +806,28 @@ class BasketViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
-    func test_whenSelectedSlotIsNotClosedOrExpired_thenShowCheckoutButtonIsTrue() {
+    func test_whenSelectedSlotIsNotClosedOrExpired_givenBasketNotEmpty_thenShowCheckoutButtonIsTrue() {
+        let sut = makeSUT()
+        sut.basket = Basket.mockedData
+        XCTAssertTrue(sut.showCheckoutButton)
+    }
+    
+    func test_whenSelectedSlotIsNotClosedOrExpired_givenBasketEmpty_thenShowCheckoutButtonIsTrue() {
         let sut = makeSUT()
         sut.selectedStore = RetailStoreDetails.mockedData
-        XCTAssertTrue(sut.showCheckoutButton)
+        XCTAssertFalse(sut.showCheckoutButton)
+    }
+    
+    func test_whenBasketEmpty_thenShopButtonTextSet() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.shopButtonText, Strings.BasketView.startShopping.localized)
+    }
+    
+    
+    func test_whenBasketNotEmpty_thenShopButtonTextSet() {
+        let sut = makeSUT()
+        sut.basket = Basket.mockedData
+        XCTAssertEqual(sut.shopButtonText, GeneralStrings.shop.localized)
     }
     
     func test_whenFulfilmentIsDeliveryAndDeliveryStatusIsClosed_thenShowCheckoutButtonIsTrue() {

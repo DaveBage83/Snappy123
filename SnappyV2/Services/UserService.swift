@@ -45,6 +45,8 @@ enum UserServiceError: Swift.Error, Equatable {
     case mobileNumberAlreadyVerifiedWithAnotherMember
     case unableToSendMobileVerificationCodeToSavedNumber
     case unkownError(String)
+    case failedToSendCode(String?)
+    case failedToForgetMember(String?)
 }
 
 enum RegisteringFromScreenType: String {
@@ -123,6 +125,10 @@ extension UserServiceError: LocalizedError {
             return Strings.VerifyMobileNumber.RequestCodeErrors.unableToSendMobileVerificationCodeToSavedNumber.localized
         case let .unkownError(description):
             return "Unknown error: \(description)"
+        case let .failedToSendCode(description):
+            return description ?? Strings.ForgetMe.failedToSendCode.localized
+        case let .failedToForgetMember(description):
+            return description ?? Strings.ForgetMe.failedToForget.localized
         }
     }
 }
@@ -203,10 +209,11 @@ protocol MemberServiceProtocol {
     //* methods where a signed in user would not expected *//
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
+    func sendForgetCode() async throws -> ForgetMemberCodeRequestResult
+    func forgetMember(confirmationCode: String) async throws -> ForgetMemberRequestResult
 }
 
 struct UserService: MemberServiceProtocol {
-
     let webRepository: UserWebRepositoryProtocol
     let dbRepository: UserDBRepositoryProtocol
     let appState: Store<AppState>
@@ -1161,6 +1168,27 @@ struct UserService: MemberServiceProtocol {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         return try await webRepository.requestMessageWithOneTimePassword(email: email, type: type)
     }
+    
+    func sendForgetCode() async throws -> ForgetMemberCodeRequestResult {
+        let sendForgetCodeResponse = try await webRepository.sendForgetCode()
+        
+        if sendForgetCodeResponse.success {
+            return sendForgetCodeResponse
+        } else {
+            throw UserServiceError.failedToSendCode(sendForgetCodeResponse.message)
+        }
+    }
+    
+    func forgetMember(confirmationCode: String) async throws -> ForgetMemberRequestResult {
+        let forgetMemberRequestResult = try await webRepository.forgetMember(confirmationCode: confirmationCode)
+        
+        if forgetMemberRequestResult.success {
+            markUserSignedOut() // Sign user out if successfully forgot user
+            return forgetMemberRequestResult
+        } else {
+            throw UserServiceError.failedToForgetMember(forgetMemberRequestResult.errors?.first)
+        }
+    }
 
     private func stripToFieldErrors(from dictionayResult: [String: Any]) -> [String: [String]] {
         var fieldErrors: [String: [String]] = [:]
@@ -1251,7 +1279,6 @@ struct UserService: MemberServiceProtocol {
 }
 
 struct StubUserService: MemberServiceProtocol {
-
     func restoreLastUser() async throws { }
 
     func login(email: String, password: String, atCheckout: Bool) async throws { }
@@ -1340,5 +1367,13 @@ struct StubUserService: MemberServiceProtocol {
     
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         OneTimePasswordSendResult(success: true, message: "SMS Sent")
+    }
+    
+    func sendForgetCode() async throws -> ForgetMemberCodeRequestResult {
+        return ForgetMemberCodeRequestResult(success: true, message_title: nil, message: nil)
+    }
+    
+    func forgetMember(confirmationCode: String) async throws -> ForgetMemberRequestResult {
+        return .init(success: true, errors: nil)
     }
 }

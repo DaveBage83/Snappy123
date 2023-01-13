@@ -119,7 +119,7 @@ struct OrderListView: View {
                             .font(.Body2.regular())
                     }
                 }
-                
+
                 Text(Strings.General.Custom.perItem.localizedFormat(mainLine.item.price.toCurrencyString(using: viewModel.order.currency)))
                     .font(.Body2.semiBold())
                 

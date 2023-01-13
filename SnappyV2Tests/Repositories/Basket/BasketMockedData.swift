@@ -26,7 +26,7 @@ extension Basket {
         storeId: 1569,
         basketItemRemoved: nil
     )
-    
+
     static let mockedDataWithExpiry = Basket(
         basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
         isNewBasket: false,

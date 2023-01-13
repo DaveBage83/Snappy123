@@ -18,8 +18,6 @@ struct OTPPromptView: View {
     // MARK: - Constants
     struct Constants {
         struct OTPAlert {
-            static let frameWidth: CGFloat = 300
-            static let cornerRadius: CGFloat = 20
             static let vStackSpacing: CGFloat = 11
             static let opacity: CGFloat = 0.2
             static let buttonPadding: CGFloat = -10
@@ -104,10 +102,8 @@ struct OTPPromptView: View {
                     }
                     .padding(.bottom)
             }
-            .frame(width: Constants.OTPAlert.frameWidth)
-            .background(colorPalette.secondaryWhite)
-            .cornerRadius(Constants.OTPAlert.cornerRadius)
-            .withLoadingToast(loading: $viewModel.isSendingOTPRequest)
+            .customAlert(container: viewModel.container)
+            .withLoadingToast(container: viewModel.container, loading: $viewModel.isSendingOTPRequest)
         }
     }
     
@@ -167,10 +163,8 @@ struct OTPPromptView: View {
                     Spacer()
                 }
             }
-            .frame(width: Constants.OTPAlert.frameWidth)
-            .background(colorPalette.secondaryWhite)
-            .cornerRadius(Constants.OTPAlert.cornerRadius)
-            .withLoadingToast(loading: $viewModel.isSendingOTPCode)
+            .customAlert(container: viewModel.container)
+            .withLoadingToast(container: viewModel.container, loading: $viewModel.isSendingOTPCode)
         }
     }
 }

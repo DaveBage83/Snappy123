@@ -208,6 +208,14 @@ struct InitialView: View {
                     }
                 }
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
+                
+                if
+                    viewModel.showVersionUpgradeAlert,
+                   let upgradeUrl = viewModel.appUpgradeUrl,
+                   let url = URL(string: upgradeUrl)
+                {
+                    VersionUpdateAlert(viewModel: .init(container: viewModel.container, prompt: viewModel.updateMessage, appstoreLink: url))
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -225,7 +233,7 @@ struct InitialView: View {
                         viewModel.navigateToUserArea()
                     }
                     .opacity(viewModel.showAccountButton ? 1 : 0)
-                    .disabled(!viewModel.businessProfileIsLoaded)
+                    .disabled(!viewModel.businessProfileIsLoaded || viewModel.showVersionUpgradeAlert)
                 }
             }
             .onAppear {
@@ -237,7 +245,7 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
-            .withLoadingToast(loading: .constant(viewModel.isLoading || viewModel.driverSettingsLoading))
+            .withLoadingToast(container: viewModel.container, loading: .constant(viewModel.isLoading || viewModel.driverSettingsLoading))
             .alert(item: $viewModel.showAlert) { alert in
                 switch alert.id {
                 case .locationServicesDenied:
@@ -273,9 +281,6 @@ struct InitialView: View {
             )
             .onAppear {
                 AppDelegate.orientationLock = .portrait
-            }
-            .onTapGesture {
-                hideKeyboard()
             }
         }
         .navigationViewStyle(.stack)
@@ -318,20 +323,25 @@ struct InitialView: View {
     
     // MARK: - Navigation links
     
-    private var navigationLinks: some View {
-        HStack {
+    @ViewBuilder private var navigationLinks: some View {
+        #warning("Remove conditons below once we cease to support iOS14.")
+        // In iOS < 15 having multiple navigation links causes a bug whereby the newly presented view
+        // pops automatically as soon as it is presented. We therefore have to
+        // keep just one at any time so use a conditional statement to manage this
+        
+        if viewModel.isMemberLoggedIn {
+            NavigationLink(
+                destination: MemberDashboardView(viewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline),
+                tag: InitialViewModel.NavigationDestination.memberDashboard,
+                selection: $viewModel.viewState
+            ) { EmptyView() }
+        } else {
             NavigationLink(
                 destination: LoginView(
                     loginViewModel: .init(container: viewModel.container),
                     socialLoginViewModel: .init(container: viewModel.container, isInCheckout: false)
                 ).navigationBarTitleDisplayMode(.inline),
                 tag: InitialViewModel.NavigationDestination.login,
-                selection: $viewModel.viewState
-            ) { EmptyView() }
-
-            NavigationLink(
-                destination: MemberDashboardView(viewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline),
-                tag: InitialViewModel.NavigationDestination.memberDashboard,
                 selection: $viewModel.viewState
             ) { EmptyView() }
         }

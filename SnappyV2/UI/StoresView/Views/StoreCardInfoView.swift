@@ -73,7 +73,7 @@ struct StoreCardInfoView: View {
         mainBody
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
-            .withLoadingToast(loading: $isLoading)
+            .withLoadingToast(container: viewModel.container, loading: $isLoading)
     }
     
     private var mainBody: some View {

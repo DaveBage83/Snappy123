@@ -7,36 +7,6 @@
 
 import SwiftUI
 
-class TimeSlotViewModel: ObservableObject {
-    let container: DIContainer
-    let timeSlot: RetailStoreSlotDayTimeSlot
-    let startTime: String
-    let endTime: String
-    
-    init(container: DIContainer, timeSlot: RetailStoreSlotDayTimeSlot) {
-        let appState = container.appState
-        self.timeSlot = timeSlot
-        self.container = container
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm"
-        dateFormatter.timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
-        self.startTime = dateFormatter.string(from: timeSlot.startTime)
-        self.endTime = dateFormatter.string(from: timeSlot.endTime)
-    }
-    
-    var cost: String {
-        if timeSlot.info.price == 0 { return GeneralStrings.free.localized}
-        
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "£"
-
-        guard let total = formatter.string(from: NSNumber(value: timeSlot.info.price)) else { return "" }
-        return total
-    }
-}
-
 struct TimeSlotView: View {
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     @Environment(\.colorScheme) var colorScheme
@@ -60,18 +30,18 @@ struct TimeSlotView: View {
             VStack(alignment: .leading, spacing: Constants.stackSpacing) {
                 Text("\(viewModel.startTime) - \(viewModel.endTime)")
                     .font(.Body2.semiBold())
-                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.typefaceInvert : colorPalette.typefacePrimary)
+                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.typefaceInvert : colorPalette.typefacePrimary.opacity(viewModel.disabled ? 0.5 : 1.0))
                     .frame(height: Constants.textHeight * scale)
                 Text(viewModel.cost)
                     .font(.Body2.regular())
-                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.typefaceInvert : colorPalette.textGrey1)
+                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.typefaceInvert : colorPalette.textGrey1.opacity(viewModel.disabled ? 0.5 : 1.0))
                     .frame(height: Constants.textHeight * scale)
             }
             .padding(.horizontal, Constants.hPadding)
             .frame(width: Constants.cardWidth * scale, height: Constants.cardHeight * scale, alignment: .leading)
             .background(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
             .standardCardFormat()
-        }
+        }.disabled(viewModel.disabled)
     }
 }
 

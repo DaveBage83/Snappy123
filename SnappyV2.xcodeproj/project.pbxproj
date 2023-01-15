@@ -19,6 +19,7 @@
 		0A27480828CB57FF00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A27480728CB57FE00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift */; };
 		0A27480B28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A27480A28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift */; };
 		0A27B99028DDE12500D29DB5 /* VerifyMobileNumberViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A27B98F28DDE12500D29DB5 /* VerifyMobileNumberViewModelTests.swift */; };
+		0A27FC542971A8C000718A1A /* TimeSlotViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A27FC532971A8C000718A1A /* TimeSlotViewModel.swift */; };
 		0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E98BB2709A41F00F86EB7 /* APICall.swift */; };
 		0A30A03F279422C6000C4E50 /* AddressWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */; };
 		0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */; };
@@ -677,6 +678,7 @@
 		0A27480728CB57FE00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserPermissionsUserDefaultsRepository.swift; sourceTree = "<group>"; };
 		0A27480A28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPermissionsUserDefaultsRepositoryTests.swift; sourceTree = "<group>"; };
 		0A27B98F28DDE12500D29DB5 /* VerifyMobileNumberViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyMobileNumberViewModelTests.swift; sourceTree = "<group>"; };
+		0A27FC532971A8C000718A1A /* TimeSlotViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewModel.swift; sourceTree = "<group>"; };
 		0A2E98BB2709A41F00F86EB7 /* APICall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
 		0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDBRepositoryTests.swift; sourceTree = "<group>"; };
@@ -2645,6 +2647,7 @@
 				AF5D8CDB26C58E2E003C9C21 /* StoreCardInfoViewModel.swift */,
 				AFD6085F26FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift */,
 				AFFAC2282702008A00DFE9A8 /* StoresViewModel.swift */,
+				0A27FC532971A8C000718A1A /* TimeSlotViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -3861,6 +3864,7 @@
 				0AB2B5A827AD9D8400BE3FBF /* CheckoutWebRepository.swift in Sources */,
 				AFBB1C2C278DEE72002C5BBD /* View+Extensions.swift in Sources */,
 				AF75A11927A44F49006BD6DA /* CheckoutPaymentHandlingView.swift in Sources */,
+				0A27FC542971A8C000718A1A /* TimeSlotViewModel.swift in Sources */,
 				55E8051527EE2C9800111D58 /* MemberDashboardProfileViewModel.swift in Sources */,
 				55F957B228744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift in Sources */,
 				AF4B7CC027E8C7E100D7D25C /* ProductDetailBottomSheetViewModel.swift in Sources */,

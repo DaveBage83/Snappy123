@@ -20,13 +20,9 @@ class TimeSlotViewModel: ObservableObject {
     
     var cost: String {
         if timeSlot.info.price == 0 { return GeneralStrings.free.localized}
-        
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "£"
-
-        guard let total = formatter.string(from: NSNumber(value: timeSlot.info.price)) else { return "" }
-        return total
+        return timeSlot.info.price.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
     }
     
     init(container: DIContainer, timeSlot: RetailStoreSlotDayTimeSlot) {

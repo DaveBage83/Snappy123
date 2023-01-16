@@ -51,6 +51,12 @@ final class ProductOptionsViewModel: ObservableObject {
     
     var showExpandedDescription: Bool { item.quickAdd == false && item.menuItemSizes == nil && item.menuItemOptions == nil }
     
+    var buttonText: String {
+        let mainText = showUpdateButtonText ? Strings.ProductOptions.update.localized : Strings.ProductOptions.add.localized
+        
+        return "\(mainText)  \(totalPrice)"
+    }
+    
     var showItemDetails: Bool { itemDetails.isEmpty == false }
     
     init(container: DIContainer, item: RetailStoreMenuItem, basketItem: BasketItem? = nil) {

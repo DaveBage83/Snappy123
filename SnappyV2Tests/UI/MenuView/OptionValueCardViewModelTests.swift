@@ -710,7 +710,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWithSizeValueWithPrice_thenPriceMatchesCurrency() {
         let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, size: initSizeWithPrice)
         
-        XCTAssertEqual(sut.price, " + £1.50")
+        XCTAssertEqual(sut.price, "£1.50")
     }
     
     func test_givenInitWithValueWithLargeSizePrice_thenPriceMatchesSizeExtraCost() {

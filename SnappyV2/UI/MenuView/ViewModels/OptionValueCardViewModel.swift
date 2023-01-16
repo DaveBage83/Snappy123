@@ -19,6 +19,7 @@ class OptionValueCardViewModel: ObservableObject {
     let optionValueID: Int
     let sizeID: Int?
     let extraCost: Double
+    
     @Published var price = ""
     @Published var quantity = Int()
     let optionsType: OptionValueType
@@ -58,7 +59,7 @@ class OptionValueCardViewModel: ObservableObject {
         self.sizeExtraCosts = nil
         
         if size.price.price != 0 {
-            self.price = " + " + size.price.price.toCurrencyString(using: currency)
+            self.price = size.price.price.toCurrencyString(using: currency)
         }
         
         setupSizeIsSelected()
@@ -161,7 +162,7 @@ class OptionValueCardViewModel: ObservableObject {
                         if let sizeExtraCosts = self.sizeExtraCosts {
                             for sizeExtraCost in sizeExtraCosts {
                                 if sizeid == sizeExtraCost.sizeId {
-                                    return  " + " +  sizeExtraCost.extraCost.toCurrencyString(using: self.currency)
+                                    return  " + " + sizeExtraCost.extraCost.toCurrencyString(using: self.currency)
                                 }
                             }
                         }

@@ -31,7 +31,8 @@ struct OptionValueCardView: View {
                     HStack {
                         Text(maximumReached ? Strings.ProductOptions.Customisable.change.localizedFormat(viewModel.title) : Strings.ProductOptions.Customisable.add.localizedFormat(viewModel.title))
                             .font(.heading4())
-                            .fontWeight(.regular)
+                            .fontWeight(.semibold)
+                            .multilineTextAlignment(.leading)
                             .foregroundColor(colorPalette.typefacePrimary)
                     }
                 }
@@ -51,12 +52,10 @@ struct OptionValueCardView: View {
                         HStack {
                             Text(viewModel.title)
                                 .font(.heading4())
-                                .fontWeight(.regular)
                                 .foregroundColor(colorPalette.typefacePrimary)
                             
                             Text(viewModel.price)
                                 .font(.heading4())
-                                .fontWeight(.semibold)
                                 .foregroundColor(colorPalette.primaryBlue)
                         }
                     }

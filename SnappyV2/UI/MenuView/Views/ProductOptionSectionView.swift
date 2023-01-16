@@ -26,6 +26,8 @@ struct ProductOptionSectionView: View {
     var body: some View {
         VStack(spacing: Constants.vStackSpacing) {
             sectionHeading(title: viewModel.title)
+                .background(viewModel.minimumReached ? colorPalette.alertSuccess.withOpacity(.ten) : colorPalette.alertWarning.withOpacity(.ten))
+                .padding(.top)
             
             optionSectionTypeViews
         }
@@ -87,23 +89,47 @@ struct ProductOptionSectionView: View {
         }
     }
     
+    private var requiredPill: some View {
+        Text("Required")
+            .font(.Caption1.bold())
+            .padding(.vertical, 4)
+            .padding(.horizontal, 12)
+            .background(colorPalette.alertWarning)
+            .foregroundColor(.white)
+            .standardPillFormat()
+    }
+    
     func sectionHeading(title: String, bottomSheet: Bool = false) -> some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(title).bold()
+                Text(title)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.typefacePrimary)
+                if viewModel.minimumReached {
+                    Image.Icons.CircleCheck.filled
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16)
+                        .foregroundColor(colorPalette.alertSuccess)
+                } else {
+                    requiredPill
+                }
+
                 Spacer()
             }
-            .font(.heading4())
+            .font(.Body1.semiBold())
             .foregroundColor(colorPalette.typefacePrimary)
             
             if viewModel.showOptionLimitationsSubtitle {
                 Text(viewModel.optionLimitationsSubtitle)
-                    .font(.Body1.regular())
+                    .font(.Caption1.semiBold())
                     .foregroundColor(bottomSheet ? colorPalette.primaryBlue : (viewModel.minimumReached ? colorPalette.typefacePrimary : colorPalette.alertWarning))
             }
         }
         .frame(maxWidth: .infinity)
-        .padding([.horizontal, .top])
+        .padding(.horizontal)
+        .padding(.vertical, 12)
     }
     
     var bottomSheetView: some View {

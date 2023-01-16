@@ -68,21 +68,21 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         sut.morningTimeSlots = [
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+1), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+2), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+1), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+2), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         ]
         
         sut.afternoonTimeSlots = [
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+4), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+5), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+6), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+4), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+5), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+6), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         ]
         
         sut.eveningTimeSlots = [
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+7), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+8), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
-            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+9), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+7), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+8), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+9), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         ]
         
         let morning = FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod.morning.slots(viewModel: sut)
@@ -125,8 +125,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenInit_whenSelectedDaySlotAndSelectedTimeSlotIsPopulated_thenIsDataSelectedIsTrue() {
         let sut = makeSUT()
         
-        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [])
-        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+        sut.selectedDaySlot = RetailStoreSlotDay(status: "available", reason: "", slotDate: "", slots: [])
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         
         XCTAssertTrue(sut.isFulfilmentSlotSelected)
     }
@@ -201,7 +201,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let today = Date()
         let days = [RetailStoreFulfilmentDay(date: today.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: today.startOfDay.timeString(storeTimeZone: nil), end: today.endOfDay.timeString(storeTimeZone: nil), storeDateStart: today.startOfDay, storeDateEnd: today.endOfDay)]
         sut.availableFulfilmentDays = days
-        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "morning", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 1, fulfilmentIn: ""))
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "morning", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 1, fulfilmentIn: ""))
         sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
         sut.selectFulfilmentDate(startDate: today, endDate: today.addingTimeInterval(60*60*23), storeID: 123)
                 
@@ -240,7 +240,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        let daySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)
+        let daySlot = RetailStoreSlotDay(status: "available", reason: "", slotDate: "", slots: nil)
         sut.selectedDaySlot = daySlot
 
         wait(for: [expectationMorning, expectationAfternoon, expectationEvening], timeout: 5)
@@ -252,7 +252,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     
     func test_givenVariousDaytimeSlots_thenCorrectTimeSlotsFilled() {
         let sut = makeSUT()
-        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         
         let expectationMorning = expectation(description: "morningTimeSlots")
         let expectationAfternoon = expectation(description: "afternoonTimeSlots")
@@ -284,10 +284,10 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
-        let morningSlot1 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: tomorrow, endTime: tomorrow, daytime: "morning", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: tomorrow, endTime: tomorrow, daytime: "morning", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: tomorrow, endTime: tomorrow, daytime: "afternoon", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let daySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [morningSlot1, morningSlot2, afternoonSlot])
+        let morningSlot1 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: tomorrow, endTime: tomorrow, daytime: "morning", info: .init(status: "available", isAsap: false, price: 0, fulfilmentIn: ""))
+        let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: tomorrow, endTime: tomorrow, daytime: "morning", info: .init(status: "available", isAsap: false, price: 0, fulfilmentIn: ""))
+        let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: tomorrow, endTime: tomorrow, daytime: "afternoon", info: .init(status: "available", isAsap: false, price: 0, fulfilmentIn: ""))
+        let daySlot = RetailStoreSlotDay(status: "available", reason: "", slotDate: "", slots: [morningSlot1, morningSlot2, afternoonSlot])
         sut.selectedDaySlot = daySlot
         
         wait(for: [expectationMorning, expectationAfternoon, expectationEvening], timeout: 5)
@@ -312,9 +312,9 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container)
         
-        let slot1 = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: todayDate, endTime: todayDate.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 0, fulfilmentIn: ""))
-        let slot2 = RetailStoreSlotDayTimeSlot(slotId: "2", startTime: todayDate.addingTimeInterval(60*60), endTime: todayDate.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let slots = RetailStoreSlotDay(status: "", reason: "", slotDate: todayString, slots: [slot1, slot2])
+        let slot1 = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: todayDate, endTime: todayDate.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 0, fulfilmentIn: ""))
+        let slot2 = RetailStoreSlotDayTimeSlot(slotId: "2", startTime: todayDate.addingTimeInterval(60*60), endTime: todayDate.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 0, fulfilmentIn: ""))
+        let slots = RetailStoreSlotDay(status: "available", reason: "", slotDate: todayString, slots: [slot1, slot2])
         sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(RetailStoreTimeSlots(startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, fulfilmentMethod: "delivery", slotDays: [slots], searchStoreId: nil, searchLatitude: nil, searchLongitude: nil))
                 
         let expectation = expectation(description: "availableFulfilmentDays")
@@ -346,9 +346,9 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container)
         sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
-        let slot1 = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: todayDate, endTime: todayDate.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 0, fulfilmentIn: ""))
-        let slot2 = RetailStoreSlotDayTimeSlot(slotId: "2", startTime: todayDate.addingTimeInterval(60*60), endTime: todayDate.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let slots = RetailStoreSlotDay(status: "", reason: "", slotDate: todayString, slots: [slot1, slot2])
+        let slot1 = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: todayDate, endTime: todayDate.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 0, fulfilmentIn: ""))
+        let slot2 = RetailStoreSlotDayTimeSlot(slotId: "2", startTime: todayDate.addingTimeInterval(60*60), endTime: todayDate.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 0, fulfilmentIn: ""))
+        let slots = RetailStoreSlotDay(status: "available", reason: "", slotDate: todayString, slots: [slot1, slot2])
         sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(RetailStoreTimeSlots(startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, fulfilmentMethod: "collection", slotDays: [slots], searchStoreId: nil, searchLatitude: nil, searchLongitude: nil))
                 
         let expectation = expectation(description: "availableFulfilmentDays")
@@ -379,8 +379,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Tomorrow", timeSlotTime: "\(startTime) - \(endTime)")]))
         
         let sut = makeSUT(container: container)
-        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "Tomorrow", slots: nil)
-        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+        sut.selectedDaySlot = RetailStoreSlotDay(status: "available", reason: "", slotDate: "Tomorrow", slots: nil)
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         
         await sut.shopNowButtonTapped()
         
@@ -390,8 +390,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenInCheckoutAndSlotSelectedIsToday_whenShowNowTapped_thenTempTodayTimeSlotpopulatedAndViewDismissed() async {
         let sut = makeSUT(isInCheckout: true)
         let today = Date().startOfDay
-        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: today.dateOnlyString(storeTimeZone: nil), slots: nil)
-        let selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: today, endTime: today.addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+        sut.selectedDaySlot = RetailStoreSlotDay(status: "available", reason: "", slotDate: today.dateOnlyString(storeTimeZone: nil), slots: nil)
+        let selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: today, endTime: today.addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         sut.selectedTimeSlot = selectedTimeSlot
         
         await sut.shopNowButtonTapped()
@@ -415,7 +415,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
 
     func test_whenSelectedTimeSlotIsToday_thenIsSlotSelectedTodayIsTrue() {
         let sut = makeSUT(isInCheckout: true)
-        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "12", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 0, fulfilmentIn: ""))
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "12", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 0, fulfilmentIn: ""))
         
         XCTAssertTrue(sut.isSlotSelectedToday)
     }
@@ -477,7 +477,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let currentDate = Date().startOfDay
         let selectedStoreDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "TN223HY", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, retailCustomer: nil, searchPostcode: nil)
         let storeSearch = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation)
-        let tempSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: currentDate, endTime: currentDate, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
+        let tempSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: currentDate, endTime: currentDate, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 10, fulfilmentIn: ""))
         let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(storeSearch), basket: nil, currentFulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation, tempTodayTimeSlot: tempSlot, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate.startOfDay, endDate: currentDate.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
@@ -513,9 +513,12 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let sut = makeSUT(container: container, isInCheckout: true)
-        let timeSlot1 = RetailStoreSlotDayTimeSlot(slotId: "213", startTime: tomorrow, endTime: tomorrow.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
-        let timeSlot2 = RetailStoreSlotDayTimeSlot(slotId: "321", startTime: tomorrow.addingTimeInterval(60*60), endTime: tomorrow.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
-        let timeSlotDayTomorrow = RetailStoreSlotDay(status: "", reason: "", slotDate: tomorrow.dateOnlyString(storeTimeZone: nil), slots: [timeSlot1, timeSlot2])
+        // only one available slot matching the basket selection
+        let wrongTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "321", startTime: tomorrow.addingTimeInterval(60*60), endTime: tomorrow.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 10, fulfilmentIn: ""))
+        let matchingUnavailableSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: tomorrow, endTime: tomorrow.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "unavailable", isAsap: true, price: 10, fulfilmentIn: ""))
+        let matchingAvailableSlot = RetailStoreSlotDayTimeSlot(slotId: "213", startTime: tomorrow, endTime: tomorrow.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 10, fulfilmentIn: ""))
+        // have the time slots in a sequence to test to rule out the unsuitable cases first
+        let timeSlotDayTomorrow = RetailStoreSlotDay(status: "available", reason: "", slotDate: tomorrow.dateOnlyString(storeTimeZone: nil), slots: [wrongTimeSlot, matchingUnavailableSlot, matchingAvailableSlot])
         let timeSlots = RetailStoreTimeSlots(startDate: tomorrow.startOfDay, endDate: tomorrow.endOfDay, fulfilmentMethod: "delivery", slotDays: [timeSlotDayTomorrow], searchStoreId: nil, searchLatitude: nil, searchLongitude: nil)
         sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(timeSlots)
         
@@ -532,7 +535,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 2)
         
-        XCTAssertEqual(sut.selectedTimeSlot, timeSlot1)
+        XCTAssertEqual(sut.selectedTimeSlot, matchingAvailableSlot)
     }
     
     func test_givenTempTodayTimeSlotIsFilled_thenCorrectTimeSlotIsSelected() {
@@ -540,13 +543,13 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let tomorrow = today.addingTimeInterval(60*60*24)
         let selectedStoreDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "TN223HY", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, retailCustomer: nil, searchPostcode: nil)
         let storeSearch = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation)
-        let timeSlot1 = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: tomorrow, endTime: tomorrow, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
+        let timeSlot1 = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: tomorrow, endTime: tomorrow, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 10, fulfilmentIn: ""))
         let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(storeSearch), basket: nil, currentFulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation, tempTodayTimeSlot: timeSlot1, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: tomorrow.startOfDay, endDate: tomorrow.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
-        let timeSlot2 = RetailStoreSlotDayTimeSlot(slotId: "321", startTime: tomorrow.addingTimeInterval(60*60), endTime: tomorrow.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
-        let timeSlotDayTomorrow = RetailStoreSlotDay(status: "", reason: "", slotDate: tomorrow.dateOnlyString(storeTimeZone: nil), slots: [timeSlot1, timeSlot2])
+        let timeSlot2 = RetailStoreSlotDayTimeSlot(slotId: "321", startTime: tomorrow.addingTimeInterval(60*60), endTime: tomorrow.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "available", isAsap: true, price: 10, fulfilmentIn: ""))
+        let timeSlotDayTomorrow = RetailStoreSlotDay(status: "available", reason: "", slotDate: tomorrow.dateOnlyString(storeTimeZone: nil), slots: [timeSlot1, timeSlot2])
         let timeSlots = RetailStoreTimeSlots(startDate: tomorrow.startOfDay, endDate: tomorrow.endOfDay, fulfilmentMethod: "delivery", slotDays: [timeSlotDayTomorrow], searchStoreId: nil, searchLatitude: nil, searchLongitude: nil)
         sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(timeSlots)
         
@@ -619,15 +622,44 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
     }
     
-    func test_whenNoSlotsAvailableForSelectedDay_thenNoSlotsAvailbleTrueAndShowNoSlotsAvailableViewTrue() {
-        let sut = makeSUT()
+    // To test that the dropFirst() on selectedDaySlot will not impact newer nil values.
+    func test_whenNullForSlots_thenNoSlotsAvailbleTrueAndShowNoSlotsAvailableViewTrueAndEventTriggered() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: SnappyV2.AppEvent.noSlotsAvailable, with: SnappyV2.EventLoggerType.firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        var cancellables = Set<AnyCancellable>()
+        
+        let expectation = expectation(description: "noSlotsAvailable true")
+        
+        sut.$selectedDaySlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.selectedDaySlot = nil
+
+        wait(for: [expectation], timeout: 0.5)
+        
+        XCTAssertTrue(sut.noSlotsAvailable)
+        XCTAssertTrue(sut.showNoSlotsAvailableView)
+        eventLogger.verify()
+    }
+    
+    func test_whenNoSlotsAvailableForSelectedDay_thenNoSlotsAvailbleTrueAndShowNoSlotsAvailableViewTrueAndEventTriggered() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: SnappyV2.AppEvent.noSlotsAvailable, with: SnappyV2.EventLoggerType.firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
         
         var cancellables = Set<AnyCancellable>()
         
         let expectation = expectation(description: "noSlotsAvailable true")
         
         let slot = RetailStoreSlotDay(
-            status: "",
+            status: "available",
             reason: "",
             slotDate: "2022-09-01",
             slots: nil)
@@ -646,19 +678,56 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.noSlotsAvailable)
         XCTAssertTrue(sut.showNoSlotsAvailableView)
+        eventLogger.verify()
+    }
+    
+    func test_whenSlotsAreAllUnavailable_thenNoSlotsAvailbleTrueAndShowNoSlotsAvailableViewTrueAndEventTriggered() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: SnappyV2.AppEvent.noSlotsAvailable, with: SnappyV2.EventLoggerType.firebaseAnalytics, params: [:])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        var cancellables = Set<AnyCancellable>()
+        
+        let expectation = expectation(description: "noSlotsAvailable true")
+        
+        let slot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "", info: .init(status: "unavailable", isAsap: true, price: 1.0, fulfilmentIn: ""))
+        
+        let slotDay = RetailStoreSlotDay(
+            status: "available",
+            reason: "",
+            slotDate: "2022-09-01",
+            slots: [slot])
+        
+        sut.$selectedDaySlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.selectedDaySlot = slotDay
+
+        wait(for: [expectation], timeout: 0.5)
+        
+        XCTAssertTrue(sut.noSlotsAvailable)
+        XCTAssertTrue(sut.showNoSlotsAvailableView)
+        eventLogger.verify()
     }
 
     func test_1whenNoSlotsAvailableForSelectedDay_givenFirstSlotStartTimeIsToday_thenNoSlotsAvailbleFalseAndShowNoSlotsAvailableViewFalse() {
-        let sut = makeSUT()
+        let eventLogger = MockedEventLogger(expected: [])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
 
         var cancellables = Set<AnyCancellable>()
 
         let expectation = expectation(description: "noSlotsAvailable true")
 
-        let slot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "", info: .init(status: "", isAsap: true, price: 1.0, fulfilmentIn: ""))
+        let slot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "", info: .init(status: "available", isAsap: true, price: 1.0, fulfilmentIn: ""))
         
         let slotDay = RetailStoreSlotDay(
-            status: "",
+            status: "available",
             reason: "",
             slotDate: "2022-09-01",
             slots: [slot])
@@ -677,19 +746,23 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
 
         XCTAssertFalse(sut.noSlotsAvailable)
         XCTAssertFalse(sut.showNoSlotsAvailableView)
+        // no events should be sent
+        eventLogger.verify()
     }
     
     func test_1whenNoSlotsAvailableForSelectedDay_givenFirstSlotStartTimeIsNotToday_thenNoSlotsAvailbleFalseAndShowNoSlotsAvailableViewFalse() {
-        let sut = makeSUT()
+        let eventLogger = MockedEventLogger(expected: [])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
 
         var cancellables = Set<AnyCancellable>()
 
         let expectation = expectation(description: "noSlotsAvailable true")
 
-        let slot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date().advanced(by: 24 * 60 * 60), endTime: Date().advanced(by: 24 * 60 * 60), daytime: "", info: .init(status: "", isAsap: true, price: 1.0, fulfilmentIn: ""))
+        let slot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date().advanced(by: 24 * 60 * 60), endTime: Date().advanced(by: 24 * 60 * 60), daytime: "", info: .init(status: "available", isAsap: true, price: 1.0, fulfilmentIn: ""))
         
         let slotDay = RetailStoreSlotDay(
-            status: "",
+            status: "available",
             reason: "",
             slotDate: "2022-09-01",
             slots: [slot])
@@ -708,6 +781,45 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
 
         XCTAssertFalse(sut.noSlotsAvailable)
         XCTAssertFalse(sut.showNoSlotsAvailableView)
+        // no events should be sent
+        eventLogger.verify()
+    }
+    
+    func test_whenFirstSlotIsUnavailable_givenSecondSlotIsAvailable_thenEarliestFulfilmentTimeStringSetToSecondSloatValue() {
+        let eventLogger = MockedEventLogger(expected: [])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+
+        var cancellables = Set<AnyCancellable>()
+
+        let expectation = expectation(description: "noSlotsAvailable true")
+
+        let unavailableSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "", info: .init(status: "unavailable", isAsap: true, price: 1.0, fulfilmentIn: "Don't use me!"))
+        let availableSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "", info: .init(status: "available", isAsap: true, price: 1.0, fulfilmentIn: "Display me!"))
+        
+        let slotDay = RetailStoreSlotDay(
+            status: "available",
+            reason: "",
+            slotDate: "2022-09-01",
+            slots: [unavailableSlot, availableSlot])
+
+        sut.$selectedDaySlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        sut.selectedDaySlot = slotDay
+
+        wait(for: [expectation], timeout: 0.5)
+
+        XCTAssertFalse(sut.noSlotsAvailable)
+        XCTAssertFalse(sut.showNoSlotsAvailableView)
+        XCTAssertEqual(sut.earliestFulfilmentTimeString, availableSlot.info.fulfilmentIn)
+        // no events should be sent
+        eventLogger.verify()
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, state: FulfilmentTimeSlotSelectionViewModel.State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil) -> FulfilmentTimeSlotSelectionViewModel {

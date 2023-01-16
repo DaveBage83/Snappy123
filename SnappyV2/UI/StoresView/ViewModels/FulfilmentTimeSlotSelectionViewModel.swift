@@ -153,6 +153,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
+        
+        setupNoSlotsAvailableEvent()
     }
     
     // MARK: - Setup subscriptions
@@ -200,6 +202,17 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .sink { [weak self] method in
                 guard let self = self else { return }
                 self.setFulfilmentDays(method: method)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupNoSlotsAvailableEvent() {
+        $noSlotsAvailable
+            .removeDuplicates()
+            .filter { $0 }
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.container.eventLogger.sendEvent(for: .noSlotsAvailable, with: .firebaseAnalytics, params: [:])
             }
             .store(in: &cancellables)
     }
@@ -254,12 +267,17 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     
     private func setupDeliveryDaytimeSectionSlots() {
         $selectedDaySlot
+            .dropFirst() // remove the initial nil value
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] slotDay in
                 guard let self = self else { return }
                 
-                if let firstSlot = slotDay?.slots?.first, firstSlot.startTime.isToday {
+                let availableSlots = slotDay?.slots?.filter {
+                    $0.info.status.lowercased() == "available"
+                }
+                
+                if let firstSlot = availableSlots?.first, firstSlot.startTime.isToday {
                     if self.isInCheckout == false {
                         self.noSlotsAvailable = false
                         self.isTodaySelectedWithSlotSelectionRestrictions = true
@@ -274,7 +292,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 self.selectedTimeSlot = nil
                 self.clearSlots()
                 
-                if let slots = slotDay?.slots {
+                if let slots = slotDay?.slots, availableSlots?.isEmpty == false {
                     self.noSlotsAvailable = false
                     self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
                     self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
@@ -282,7 +300,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     
                     // Selects the time slot if there exists a selected time in the basket object
                     if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
-                        if let slot = slots.first(where: { $0.startTime == start && $0.endTime == end }) {
+                        if let slot = availableSlots?.first(where: { $0.startTime == start && $0.endTime == end }) {
                             self.selectedTimeSlot = slot
                         }
                     }
@@ -291,7 +309,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     if let tempTodaySlot = self.container.appState.value.userData.tempTodayTimeSlot {
                         self.selectedTimeSlot = tempTodaySlot
                     }
-                } else {
+                } else if self.isTimeSlotsLoading == false {
                     self.noSlotsAvailable = true
                 }
             })

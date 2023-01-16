@@ -112,6 +112,7 @@ enum AppEvent: Equatable {
     case mentionMeOfferView
     case mentionMeRefereeView
     case mentionMeDashboardView
+    case noSlotsAvailable
     case apiError
     case otpPresented
     case otpEmail
@@ -209,6 +210,7 @@ enum AppEvent: Equatable {
         case .mentionMeOfferView:               return "mentionme_offer_view"
         case .mentionMeRefereeView:             return "mentionme_referee_view"
         case .mentionMeDashboardView:           return "mentionme_dashboard_view"
+        case .noSlotsAvailable:                 return "no_slots_available_warning"
         case .apiError:                         return "api_error"
         default:                                return nil
         }

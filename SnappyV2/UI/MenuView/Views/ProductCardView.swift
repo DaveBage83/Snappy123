@@ -82,7 +82,15 @@ struct ProductCardView: View {
                 HStack {
                     price
                     Spacer()
-                    ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
+                    ProductIncrementButton(viewModel: .init(
+                        container: viewModel.container,
+                        menuItem: viewModel.itemDetail,
+                        interactionLoggerHandler: { item in
+                            productsViewModel.logItemIteraction(with: item)
+                        }
+                    ),
+                    size: .large
+                    )
                         .frame(height: Constants.Card.StandardCard.buttonHeight * scale)
                 }
             }

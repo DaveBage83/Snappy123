@@ -14,6 +14,16 @@ struct ProductOptionSectionView: View {
     struct Constants {
         static let vStackSpacing: CGFloat = 0
         static let padding: CGFloat = 5
+        
+        struct RequiredPill {
+            static let vPadding: CGFloat = 4
+            static let hPadding: CGFloat = 12
+        }
+        
+        struct SectionHeading {
+            static let checkmarkWidth: CGFloat = 16
+            static let vPadding: CGFloat = 12
+        }
     }
     
     @StateObject var viewModel: ProductOptionSectionViewModel
@@ -90,10 +100,10 @@ struct ProductOptionSectionView: View {
     }
     
     private var requiredPill: some View {
-        Text("Required")
+        Text(GeneralStrings.required.localized)
             .font(.Caption1.bold())
-            .padding(.vertical, 4)
-            .padding(.horizontal, 12)
+            .padding(.vertical, Constants.RequiredPill.vPadding)
+            .padding(.horizontal, Constants.RequiredPill.hPadding)
             .background(colorPalette.alertWarning)
             .foregroundColor(.white)
             .standardPillFormat()
@@ -110,7 +120,7 @@ struct ProductOptionSectionView: View {
                         .renderingMode(.template)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 16)
+                        .frame(width: Constants.SectionHeading.checkmarkWidth)
                         .foregroundColor(colorPalette.alertSuccess)
                 } else {
                     requiredPill
@@ -129,7 +139,7 @@ struct ProductOptionSectionView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal)
-        .padding(.vertical, 12)
+        .padding(.vertical, Constants.SectionHeading.vPadding)
     }
     
     var bottomSheetView: some View {

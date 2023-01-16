@@ -64,6 +64,7 @@ enum Strings {
         case hour = "general.hour"
         case hours = "general.hours"
         case understood = "general.understood"
+        case required = "general.required"
         
         enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"

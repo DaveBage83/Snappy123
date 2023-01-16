@@ -55,6 +55,7 @@
 "general.hour" = "hr";
 "general.hours" = "hrs";
 "general.understood" = "Understood";
+"general.required" = "Required";
 
 // MARK: - General - custom
 

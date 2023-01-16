@@ -22,6 +22,11 @@ struct ProductOptionsView: View {
             static let bottom: CGFloat = 60
             static let buttonBottom: CGFloat = 5
         }
+        
+        struct FloatingButton {
+            static let bottomPadding: CGFloat = 30
+            static let topPadding: CGFloat = 8
+        }
     }
     
     private var colorPalette: ColorPalette {
@@ -37,12 +42,6 @@ struct ProductOptionsView: View {
                     ScrollViewReader { value in
                         VStack(spacing: Constants.spacing) {
                             VStack {
-    //                            AsyncImage(container: viewModel.container, urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
-    //                                .scaledToFill()
-    //                                .frame(height: Constants.imageHeight)
-    //                                .clipShape(Rectangle())
-    //                                .brightness(Constants.brightness)
-                                
                                 ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true, showExpandableText: viewModel.showExpandedDescription))
                                 
                                 if viewModel.showItemDetails {
@@ -105,8 +104,8 @@ struct ProductOptionsView: View {
                     Task { await viewModel.actionButtonTapped() }
                 })
             .padding(.horizontal)
-            .padding(.bottom, 30)
-            .padding(.top, 8)
+            .padding(.bottom, Constants.FloatingButton.bottomPadding)
+            .padding(.top, Constants.FloatingButton.topPadding)
         }
         .background(colorPalette.backgroundMain.withOpacity(.eighty))
     }

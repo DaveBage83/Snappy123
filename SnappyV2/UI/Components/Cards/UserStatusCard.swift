@@ -128,7 +128,7 @@ struct UserStatusCard: View {
         .padding(.vertical)
         .padding(.horizontal, Constants.General.hPadding)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: container)
     }
 }
 

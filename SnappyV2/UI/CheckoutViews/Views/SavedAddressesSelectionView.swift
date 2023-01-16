@@ -51,7 +51,7 @@ struct SavedAddressesSelectionView: View {
                     }
                     .padding(.vertical, Constants.Main.vSpacing)
                     .background(colorPalette.secondaryWhite)
-                    .standardCardFormat()
+                    .standardCardFormat(container: viewModel.container)
                     .padding()
                     .dismissableNavBar(
                         presentation: presentation,

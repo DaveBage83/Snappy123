@@ -92,7 +92,7 @@ struct ProductCardView: View {
         .padding(.vertical, Constants.padding)
         .padding(.horizontal)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
     }
     
     // MARK: - Standard card
@@ -133,7 +133,7 @@ struct ProductCardView: View {
             .padding(.vertical, Constants.padding)
             .padding(.horizontal)
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
         }
     }
     

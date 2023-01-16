@@ -40,7 +40,7 @@ struct TimeSlotView: View {
             .padding(.horizontal, Constants.hPadding)
             .frame(width: Constants.cardWidth * scale, height: Constants.cardHeight * scale, alignment: .leading)
             .background(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
         }.disabled(viewModel.disabled)
     }
 }

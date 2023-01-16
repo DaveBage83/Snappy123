@@ -57,7 +57,7 @@ struct AddressDisplayCard: View {
         .frame(height: Constants.height)
         .frame(maxWidth: .infinity)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.cornerRadius)
                 .stroke(isSelected ? colorPalette.primaryBlue : .clear, lineWidth: Constants.borderLineWidth)

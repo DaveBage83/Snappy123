@@ -84,7 +84,7 @@ struct LoyaltyView: View {
         .foregroundColor(.white)
         .padding()
         .background(colorPalette.alertSuccess)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
     }
     
     @ViewBuilder private var mentionMeView: some View {

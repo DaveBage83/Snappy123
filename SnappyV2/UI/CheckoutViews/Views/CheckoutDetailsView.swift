@@ -117,7 +117,7 @@ struct CheckoutDetailsView: View {
                 .padding() // Internal view padding
                 .padding(.bottom, tabViewHeight)
                 .background(colorPalette.secondaryWhite)
-                .standardCardFormat()
+                .standardCardFormat(container: viewModel.container)
                 .padding() // External view padding
                 .onChange(of: viewModel.newErrorsExist) { contactDetailsErrorsExist in
                     withAnimation {
@@ -234,7 +234,7 @@ struct CheckoutDetailsView: View {
         }
         .padding()
         .background(viewModel.deliverySlotExpired ? colorPalette.alertWarning.withOpacity(.ten) : colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.DeliverySlotInfo.borderCornerRadius)
                 .stroke((viewModel.deliverySlotExpired || viewModel.timeSlotHasWarning) ? colorPalette.primaryRed : .clear, lineWidth: Constants.DeliverySlotInfo.borderLineWidth)

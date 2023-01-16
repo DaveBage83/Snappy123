@@ -9,18 +9,28 @@ import SwiftUI
 import Combine
 
 struct StandardCardFormat: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    let container: DIContainer
     @Binding var isDisabled: Bool
+    @Binding var isHighlighted: Bool
     let corners: UIRectCorner
     
-    init(isDisabled: Binding<Bool>, corners: UIRectCorner) {
+    private var colorPalette: ColorPalette {
+        .init(container: container, colorScheme: colorScheme)
+    }
+    
+    init(container: DIContainer, isDisabled: Binding<Bool>, corners: UIRectCorner, isHighlighted: Binding<Bool>) {
+        self.container = container
         self._isDisabled = isDisabled
         self.corners = corners
+        self._isHighlighted = isHighlighted
     }
 
     func body(content: Content) -> some View {
         content
             .cornerRadius(8, corners: corners)
-            .shadow(color: isDisabled ? .clear : .cardShadow, radius: 9, x: 0, y: 0) // When in disabled state we do not want to apply shadow
+            .shadow(color: isDisabled ? .clear : isHighlighted ? colorPalette.primaryBlue : .cardShadow, radius: 9, x: 0, y: 0) // When in disabled state we do not want to apply shadow
     }
 }
 
@@ -362,8 +372,8 @@ extension View {
 }
 
 extension View {
-    func standardCardFormat(isDisabled: Binding<Bool> = .constant(false), corners: UIRectCorner = .allCorners) -> some View {
-        modifier(StandardCardFormat(isDisabled: isDisabled, corners: corners))
+    func standardCardFormat(container: DIContainer, isDisabled: Binding<Bool> = .constant(false), corners: UIRectCorner = .allCorners, isHighlighted: Binding<Bool> = .constant(false)) -> some View {
+        modifier(StandardCardFormat(container: container, isDisabled: isDisabled, corners: corners, isHighlighted: isHighlighted))
     }
 }
 
@@ -563,7 +573,7 @@ struct WithSearchHistory: ViewModifier {
             .padding(.top, topPadding)
             .frame(width: width)
             .background(colorPalette.typefaceInvert)
-            .standardCardFormat(corners: [.bottomLeft, .bottomRight])
+            .standardCardFormat(container: container, corners: [.bottomLeft, .bottomRight])
             .offset(x: xOffset, y: yOffset)
         }
     }

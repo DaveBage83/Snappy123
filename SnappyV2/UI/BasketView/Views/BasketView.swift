@@ -202,7 +202,7 @@ struct BasketView: View {
             .foregroundColor(colorPalette.primaryRed)
             .padding(Constants.MinSpendWarning.fontPadding)
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
         }
     }
     
@@ -224,7 +224,7 @@ struct BasketView: View {
             .foregroundColor(colorPalette.primaryRed)
             .padding(Constants.VerifiedAccountRequiredWarning.fontPadding)
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
         }
     }
     

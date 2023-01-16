@@ -101,7 +101,7 @@ struct DaySelectionView: View {
                 .background(viewModel.disabled ? colorPalette.textGrey5 :  selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
                 .cornerRadius(Constants.General.cornerRadius)
             }
-            .standardCardFormat(isDisabled: .constant(viewModel.disabled))
+            .standardCardFormat(container: viewModel.container, isDisabled: .constant(viewModel.disabled))
             
             if viewModel.disabled, let reason = viewModel.disabledReason {
                 DayChip(

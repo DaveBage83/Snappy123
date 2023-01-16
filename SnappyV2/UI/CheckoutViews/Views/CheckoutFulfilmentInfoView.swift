@@ -53,7 +53,7 @@ struct CheckoutFulfilmentInfoView: View {
                 )
             }
             .background(colorPalette.typefaceInvert)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
             .padding()
             .snappySheet(container: viewModel.container, isPresented: $viewModel.handleGlobalPayment, sheetContent: paymentSheet)
         }

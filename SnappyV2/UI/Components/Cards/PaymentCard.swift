@@ -97,7 +97,7 @@ struct PaymentCard: View {
         }
         .padding(Constants.padding)
         .background(disabled ? colorPalette.textGrey4 : colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: container)
     }
 }
 

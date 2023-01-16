@@ -61,7 +61,7 @@ struct InfoButtonWithText: View {
                     .padding(Constants.Text.padding)
                     .frame(maxWidth: Constants.Text.maxWidth, alignment: .leading)
                     .background(colorPalette.secondaryWhite)
-                    .standardCardFormat()
+                    .standardCardFormat(container: container)
                     .overlay(GeometryReader { geo in
                         Text("")
                             .onAppear {

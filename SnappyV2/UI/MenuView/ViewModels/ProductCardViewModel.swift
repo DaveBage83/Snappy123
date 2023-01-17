@@ -75,7 +75,7 @@ class ProductCardViewModel: ObservableObject {
     
     private func sendSearchResultSelectionEvent() {
         guard let associatedSearchTerm = associatedSearchTerm else { return }
-        var firebaseAnalyticsParams: [String : Any] = [
+        let firebaseAnalyticsParams: [String : Any] = [
             AnalyticsParameterSearchTerm: associatedSearchTerm,
             "name": itemDetail.name,
             "category_id": itemDetail.mainCategory.id,

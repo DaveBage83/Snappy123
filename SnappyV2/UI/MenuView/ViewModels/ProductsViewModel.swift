@@ -202,8 +202,8 @@ class ProductsViewModel: ObservableObject {
     
     // used by this view model and injected into ProductCardViewModel
     var associatedSearchTerm: String? {
-        // only record the event if the activity is from the first step of the fetched
-        // search results
+        // Only record the event if the activity is from the first step of the fetched
+        // search results. Rick confirmed on 2023-01-16.
         guard
             let searchResult = searchResult.value,
             let fetchSearchTerm = searchResult.fetchSearchTerm,

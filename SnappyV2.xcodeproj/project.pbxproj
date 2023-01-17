@@ -312,6 +312,8 @@
 		556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BA278EAEDD00794E3F /* MultiBuyBanner.swift */; };
 		556A31BD27908DC600794E3F /* SpecialOfferPillViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */; };
 		556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */; };
+		557351F8296ED60F00B89BCB /* LocationLoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557351F7296ED60F00B89BCB /* LocationLoadingIndicator.swift */; };
+		557351FA296F835600B89BCB /* LocationIndicatorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557351F9296F835600B89BCB /* LocationIndicatorViewModel.swift */; };
 		5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5584934728328B5A00F84AC1 /* DayChipTests.swift */; };
 		558579FF2908869C0017855B /* LoadingDotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558579FE2908869C0017855B /* LoadingDotsView.swift */; };
 		558620BA29326EE0005EB336 /* SearchHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558620B929326EDF005EB336 /* SearchHistory.swift */; };
@@ -966,6 +968,8 @@
 		556A31BA278EAEDD00794E3F /* MultiBuyBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBanner.swift; sourceTree = "<group>"; };
 		556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialOfferPillViewTests.swift; sourceTree = "<group>"; };
 		556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBannerViewTests.swift; sourceTree = "<group>"; };
+		557351F7296ED60F00B89BCB /* LocationLoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationLoadingIndicator.swift; sourceTree = "<group>"; };
+		557351F9296F835600B89BCB /* LocationIndicatorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationIndicatorViewModel.swift; sourceTree = "<group>"; };
 		5584934728328B5A00F84AC1 /* DayChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChipTests.swift; sourceTree = "<group>"; };
 		558579FE2908869C0017855B /* LoadingDotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingDotsView.swift; sourceTree = "<group>"; };
 		558620B929326EDF005EB336 /* SearchHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistory.swift; sourceTree = "<group>"; };
@@ -2284,6 +2288,15 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		557351F6296ED5FC00B89BCB /* Spinners */ = {
+			isa = PBXGroup;
+			children = (
+				557351F7296ED60F00B89BCB /* LocationLoadingIndicator.swift */,
+				557351F9296F835600B89BCB /* LocationIndicatorViewModel.swift */,
+			);
+			path = Spinners;
+			sourceTree = "<group>";
+		};
 		558620B829326ECD005EB336 /* SearchHistory */ = {
 			isa = PBXGroup;
 			children = (
@@ -3160,6 +3173,7 @@
 		AFE07FCF268F68F400DE942C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				557351F6296ED5FC00B89BCB /* Spinners */,
 				55DB4AB02956143100F923A1 /* Alerts */,
 				0A8D86EB28DB565E00F85184 /* VerifyMobileNumber */,
 				0ADB1D2B28C75F96008EBA11 /* StoreReview */,
@@ -3606,6 +3620,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				557351F8296ED60F00B89BCB /* LocationLoadingIndicator.swift in Sources */,
 				55DAA162281F2E2500BF3F16 /* TabBarBadgeView.swift in Sources */,
 				AFE7FB0627299343003FC4FB /* db_model_v1.xcdatamodeld in Sources */,
 				0ADDC720276B3BC200D5EB24 /* UserService.swift in Sources */,
@@ -3639,6 +3654,7 @@
 				55E84A4328FDEB73000D5843 /* RetailStoreDeliveryTiers.swift in Sources */,
 				0ADB1D2F28C75FF1008EBA11 /* StoreReviewViewModel.swift in Sources */,
 				551A639428529435007E0E78 /* ExpandableText.swift in Sources */,
+				557351FA296F835600B89BCB /* LocationIndicatorViewModel.swift in Sources */,
 				AFF1DE6A28B5080E0026FFA2 /* LayoutGuideSource.swift in Sources */,
 				0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */,
 				0A644CBC28E2118100EB0A83 /* ForgotPasswordViewModel.swift in Sources */,

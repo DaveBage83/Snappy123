@@ -58,6 +58,10 @@ class InitialViewModel: ObservableObject {
     @Published var businessProfileIsLoaded: Bool
     @Published var showAlert: AlertInfo?
     
+    var gettingLocation: Bool {
+        locationIsLoading && isLoading == false && container.appState.value.userData.searchResult == .notRequested
+    }
+    
     private var cancellables = Set<AnyCancellable>()
     
     private let dateGenerator: () -> Date

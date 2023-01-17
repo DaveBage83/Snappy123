@@ -168,26 +168,26 @@ struct InitialView: View {
             ZStack {
                 navigationLinks
                 backgroundView
-                
+
                 VStack {
-                    
+
                     Image.Branding.Logo.white
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: Constants.Logo.width)
                         .padding(.bottom, logoBottomPadding)
-                    
+
                     if sizeCategory.size < Constants.General.minimalDisplayThreshold || sizeClass != .compact {
                         Text(ViewStrings.tagline.localized)
                             .font(.heading2)
                             .foregroundColor(.white)
                             .padding(.bottom, Constants.Tagline.bottomPadding)
-                        
+
                         Text(ViewStrings.subTagline.localized)
                             .font(.Body1.regular())
                             .foregroundColor(.white)
                             .padding(.bottom, postcodeSearchBarViewHeight / Constants.SubTagline.paddingDenominator)
-                        
+
                         if viewModel.isRestoring {
                             Text(Strings.InitialView.restoring.localized)
                                 .font(.Body1.semiBold())
@@ -197,24 +197,28 @@ struct InitialView: View {
                                 .font(.Body1.semiBold())
                                 .foregroundColor(.clear)
                         }
-                        
+
                         if viewModel.isRestoring || viewModel.businessProfileIsLoading {
                             LoadingDotsView()
                         }
                     }
-                    
+
                     if viewModel.isRestoring == false, viewModel.businessProfileIsLoaded {
                         postcodeSearchBarView()
                     }
                 }
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
-                
+
                 if
                     viewModel.showVersionUpgradeAlert,
                    let upgradeUrl = viewModel.appUpgradeUrl,
                    let url = URL(string: upgradeUrl)
                 {
                     VersionUpdateAlert(viewModel: .init(container: viewModel.container, prompt: viewModel.updateMessage, appstoreLink: url))
+                }
+                
+                if viewModel.gettingLocation {
+                    LocationLoadingIndicator(viewModel: .init(container: viewModel.container))
                 }
             }
             .navigationBarTitleDisplayMode(.inline)

@@ -7,6 +7,7 @@
 
 import XCTest
 @testable import SnappyV2
+import Combine
 
 class StoreCardInfoViewModelTests: XCTestCase {
 
@@ -304,8 +305,49 @@ class StoreCardInfoViewModelTests: XCTestCase {
         XCTAssertEqual(sut.minOrder, Strings.StoresView.DeliveryTiers.noMinOrder.localized)
     }
     
-    func makeSUT(storeDetails: RetailStore) -> StoreCardInfoViewModel {
-        let sut = StoreCardInfoViewModel(container: .preview, storeDetails: storeDetails)
+    func test_whenAppStateSelectedStoreIDIsSameAsStoreDetailsID_thenIsSelectedStoreIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedStore = .loaded(.mockedDataID1234)
+        let store = RetailStore(id: 1234, storeName: "", distance: 1, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, ratings: nil, currency: .mockedGBPData)
+        let sut = makeSUT(container: container, storeDetails: store)
+        let expectation = expectation(description: "storeSelected == true")
+        var cancellables = Set<AnyCancellable>()
+        
+        container.appState
+            .map(\.userData.selectedStore)
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.isSelectedStore)
+    }
+    
+    func test_whenAppStateSelectedStoreIDIsNOTSameAsStoreDetailsID_thenIsSelectedStoreIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedStore = .loaded(.mockedDataID1234)
+        let store = RetailStore(id: 5678, storeName: "", distance: 1, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, ratings: nil, currency: .mockedGBPData)
+        let sut = makeSUT(container: container, storeDetails: store)
+        let expectation = expectation(description: "storeSelected == true")
+        var cancellables = Set<AnyCancellable>()
+        
+        container.appState
+            .map(\.userData.selectedStore)
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.isSelectedStore)
+    }
+    func makeSUT(container: DIContainer = .preview, storeDetails: RetailStore) -> StoreCardInfoViewModel {
+        let sut = StoreCardInfoViewModel(container: container, storeDetails: storeDetails)
         
         trackForMemoryLeaks(sut)
         

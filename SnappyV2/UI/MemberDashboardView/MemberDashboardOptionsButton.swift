@@ -71,7 +71,7 @@ struct MemberDashboardOptionsButton: View {
         }
         .padding(.vertical, Constants.vPadding)
         .background(viewModel.isOptionActive(option) ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
     }
 }
 

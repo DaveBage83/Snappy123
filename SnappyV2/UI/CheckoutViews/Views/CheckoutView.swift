@@ -85,7 +85,7 @@ struct CheckoutView: View {
             .foregroundColor(colorPalette.alertSuccess)
             .padding(Constants.RetailMembershipIdWarning.fontPadding)
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
         }
     }
 }

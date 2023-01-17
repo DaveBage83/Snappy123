@@ -48,7 +48,7 @@ struct GlobalSearchCategoryCard: View {
         .frame(width: Constants.cardWidth)
         .frame(maxHeight: .infinity)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: container)
     }
 }
 

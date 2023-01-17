@@ -138,7 +138,7 @@ struct ResetPasswordView: View {
             .foregroundColor(colorPalette.primaryRed)
             .padding(Constants.Warning.fontPadding)
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
         }
     }
     
@@ -159,7 +159,7 @@ struct ResetPasswordView: View {
         .foregroundColor(colorPalette.primaryRed)
         .padding(Constants.Warning.fontPadding)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
     }
 
 }

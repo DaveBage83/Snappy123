@@ -85,7 +85,7 @@ struct CheckoutPaymentHandlingView: View {
                 }
             }
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
             .padding()
             .sheet(item: $viewModel.threeDSWebViewURLs) { url in
                 ToastableViewContainer(content: {

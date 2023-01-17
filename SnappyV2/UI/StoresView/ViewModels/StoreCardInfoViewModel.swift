@@ -6,11 +6,16 @@
 //
 
 import Foundation
+import Combine
 
 class StoreCardInfoViewModel: ObservableObject {
     let container: DIContainer
     var storeDetails: RetailStore
     let isClosed: Bool
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    @Published var isSelectedStore = false
     
     var orderDeliveryMethod: RetailStoreOrderMethod? {
         storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
@@ -52,6 +57,18 @@ class StoreCardInfoViewModel: ObservableObject {
         self.container = container
         self.storeDetails = storeDetails
         self.isClosed = isClosed
+        self.setupIsSelectedStore(with: container.appState)
+    }
+    
+    private func setupIsSelectedStore(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedStore)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] store in
+                guard let self, let store = store.value else { return }
+                self.isSelectedStore = store.id == self.storeDetails.id
+            }
+            .store(in: &cancellables)
     }
     
     var distance: String {

@@ -99,7 +99,7 @@ struct EditableCardContainer<Content: View>: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
     }
     
     private var buttonStack: some View {

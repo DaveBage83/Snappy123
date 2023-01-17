@@ -56,7 +56,7 @@ struct CardOnBackgroundImageViewContainer<Content: View>: View {
             .frame(maxWidth: sizeClass == .compact ? .infinity : frameLargeDeviceWidth)
             .padding(sizeClass == .compact ? internalPaddingStandard: internalPaddingLargeDevice)
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: container)
             .padding(.horizontal)
     }
 }

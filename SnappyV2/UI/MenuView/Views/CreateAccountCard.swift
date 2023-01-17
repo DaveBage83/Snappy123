@@ -162,7 +162,7 @@ struct CreateAccountCard: View {
         }
         .padding(Constants.General.padding)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
     }
     
     var memberBenefitsView: some View {

@@ -62,7 +62,7 @@ struct LoginView: View {
                         loginView
                             .padding()
                             .background(colorPalette.secondaryWhite)
-                            .standardCardFormat()
+                            .standardCardFormat(container: viewModel.container)
                     }
                 }
                 .padding()

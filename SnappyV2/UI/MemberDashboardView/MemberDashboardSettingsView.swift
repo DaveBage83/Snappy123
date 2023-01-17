@@ -137,7 +137,7 @@ struct MemberDashboardSettingsView: View {
                 }
             }
             .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
+            .standardCardFormat(container: viewModel.container)
             .padding()
         }
         .background(colorPalette.backgroundMain)

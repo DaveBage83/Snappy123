@@ -44,7 +44,7 @@ struct ProductCategoryCardView: View {
         .padding(.horizontal, Constants.hPadding)
         .frame(height: Constants.height * scale)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: container)
     }
     
     // MARK: - Item image

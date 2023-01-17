@@ -90,7 +90,7 @@ struct OrderSummaryCard: View {
         .padding(.vertical)
         .padding(.horizontal, Constants.General.padding)
         .background(colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .standardCardFormat(container: viewModel.container)
     }
     
     // MARK: - Store logo

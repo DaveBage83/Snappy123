@@ -705,4 +705,4 @@
 "customalert.defaultplaceholder" = "Enter text";
 
 // MARK: - Location indicator
-"locationindicator.gettinglocation" = "Just getting your location ...";
+"locationindicator.gettinglocation" = "Locating ...";

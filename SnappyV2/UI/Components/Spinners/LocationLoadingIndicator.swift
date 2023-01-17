@@ -42,7 +42,7 @@ struct LocationLoadingIndicator: View {
             Rectangle()
                 .fill(Color.black.opacity(Constants.backgroundOpacity))
             ZStack {
-                VStack {
+                VStack(spacing: 15) {
                     ZStack {
                         redLocation
                         
@@ -73,13 +73,13 @@ struct LocationLoadingIndicator: View {
                     
                     Text(Strings.LocationIndicator.gettingLocation.localized)
                         .font(.Body1.semiBold())
-                        .foregroundColor(Color.black)
-                        .padding()
+                        .foregroundColor(colorPalette.primaryBlue)
                 }
             }
             .frame(width: Constants.alertSize, height: Constants.alertSize)
             .background(Image.LocationIndicator.streetMap.resizable().scaledToFill())
-            .standardCardFormat()
+            .clipShape(Circle())
+            .shadow(color: .cardShadow, radius: 9, x: 0, y: 0)
         }
         .edgesIgnoringSafeArea(.all)
     }

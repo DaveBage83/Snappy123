@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/checkout/frames-ios.git",
       "state" : {
-        "revision" : "431a2bcc1792bfdc30906d8277e28b802285122d",
-        "version" : "4.0.3"
+        "revision" : "7bad77a7bfa3132269b1b1258217e209593101f1",
+        "version" : "4.0.4"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "6db6edb48bdd9943426562c7f042a5492de5ba3d",
-        "version" : "7.10.0"
+        "revision" : "0543562f85620b5b7c510c6bcbef75b562a5127b",
+        "version" : "7.11.0"
       }
     },
     {
@@ -212,8 +212,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/peripheryapp/periphery",
       "state" : {
-        "revision" : "8a32d215b49968771dc1226ba183716ae84112fb",
-        "version" : "2.10.0"
+        "revision" : "4a3088214e8330586a475a6a0b428424402bab92",
+        "version" : "2.12.0"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "1446735484440822ff3c11aed78989d70f39b5e8",
-        "version" : "3.5.2"
+        "revision" : "56f612ea0178406b1ff57846401bd68a57d96a80",
+        "version" : "3.5.4"
       }
     },
     {
@@ -266,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "5238cc5f12c2b75027730a54ecf632cf103daf21",
-        "version" : "7.31.4"
+        "revision" : "cf43eac1aa12017868c257ad3854ad87a5de0758",
+        "version" : "7.31.5"
       }
     },
     {
@@ -284,8 +284,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
-        "revision" : "fddd1c00396eed152c45a46bea9f47b98e59301d",
-        "version" : "1.2.0"
+        "revision" : "4ad606ba5d7673ea60679a61ff867cc1ff8c8e86",
+        "version" : "1.2.1"
       }
     },
     {
@@ -293,8 +293,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kateinoigakukun/swift-indexstore",
       "state" : {
-        "revision" : "ea41d13796dbbc4dc36d97ba5edb20a021aaf4e4",
-        "version" : "0.1.5"
+        "revision" : "94261f627b5f82214b676d55809bb814814a3817",
+        "version" : "0.2.0"
       }
     },
     {
@@ -311,17 +311,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/iterable/swift-sdk",
       "state" : {
-        "revision" : "1e25b4253fe5dcca3cae6477fc934912cae9708d",
-        "version" : "6.4.9"
+        "revision" : "4720adacaa87249d92e8d873ea8381513ea46658",
+        "version" : "6.4.10"
       }
     },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax.git",
+      "location" : "https://github.com/peripheryapp/swift-syntax",
       "state" : {
-        "revision" : "04d4497be6b88e524a71778d828790e9589ae1c4",
-        "version" : "0.50700.0"
+        "revision" : "a2d31e8880224f5a619f24bf58c122836faf99ff",
+        "version" : "1.0.0"
       }
     },
     {

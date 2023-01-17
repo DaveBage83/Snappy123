@@ -22,6 +22,11 @@ struct ProductOptionsView: View {
             static let bottom: CGFloat = 60
             static let buttonBottom: CGFloat = 5
         }
+        
+        struct FloatingButton {
+            static let bottomPadding: CGFloat = 30
+            static let topPadding: CGFloat = 8
+        }
     }
     
     private var colorPalette: ColorPalette {
@@ -32,106 +37,77 @@ struct ProductOptionsView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                ScrollViewReader { value in
-                    VStack(spacing: Constants.spacing) {
-                        VStack {
-                            AsyncImage(container: viewModel.container, urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
-                                .scaledToFill()
-                                .frame(height: Constants.imageHeight)
-                                .clipShape(Rectangle())
-                                .brightness(Constants.brightness)
-                            
-                            ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true, showExpandableText: viewModel.showExpandedDescription))
-                            
-                            if viewModel.showItemDetails {
-                                ExpandableContentView(viewModel: .init(container: viewModel.container, title: Strings.ProductOptions.additionalInfo.localized, shortTitle: Strings.ProductOptions.moreInfo.localized)) {
-                                    ForEach(viewModel.itemDetails, id:\.self) { detail in
-                                        ItemDetailsView(viewModel: .init(container: viewModel.container, itemDetails: detail))
+            ZStack(alignment: .bottom) {
+                ScrollView {
+                    ScrollViewReader { value in
+                        VStack(spacing: Constants.spacing) {
+                            VStack {
+                                ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true, showExpandableText: viewModel.showExpandedDescription))
+                                
+                                if viewModel.showItemDetails {
+                                    ExpandableContentView(viewModel: .init(container: viewModel.container, title: Strings.ProductOptions.additionalInfo.localized, shortTitle: Strings.ProductOptions.moreInfo.localized)) {
+                                        ForEach(viewModel.itemDetails, id:\.self) { detail in
+                                            ItemDetailsView(viewModel: .init(container: viewModel.container, itemDetails: detail))
+                                        }
                                     }
+                                    .padding(.top)
                                 }
-                                .padding(.top)
+                                
                             }
                             
+                            if let sizes = viewModel.item.menuItemSizes {
+                                ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes), optionsViewModel: viewModel)
+                            }
+                            
+                            ForEach(viewModel.filteredOptions) { itemOption in
+                                ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption), optionsViewModel: viewModel)
+                                    .id(itemOption.id)
+                            }
+                            
+                            Spacer()
                         }
-                        
-                        if let sizes = viewModel.item.menuItemSizes {
-                            ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes), optionsViewModel: viewModel)
+                        .padding(.top)
+                        .padding(.bottom, Constants.Padding.bottom)
+                        .onChange(of: viewModel.viewDismissed) { dismissed in
+                            if dismissed {
+                                self.presentationMode.wrappedValue.dismiss()
+                            }
                         }
-                        
-                        ForEach(viewModel.filteredOptions) { itemOption in
-                            ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption), optionsViewModel: viewModel)
-                                .id(itemOption.id)
+                        .onChange(of: viewModel.scrollToOptionId) { id in
+                            withAnimation {
+                                value.scrollTo(id)
+                                viewModel.scrollToOptionId = nil
+                            }
                         }
-                        
-                        Spacer()
                     }
-                    .padding(.bottom, Constants.Padding.bottom)
-                    .onChange(of: viewModel.viewDismissed) { dismissed in
-                        if dismissed {
-                            self.presentationMode.wrappedValue.dismiss()
-                        }
-                    }
-                    .onChange(of: viewModel.scrollToOptionId) { id in
-                        withAnimation {
-                            value.scrollTo(id)
-                            viewModel.scrollToOptionId = nil
-                        }
-                    }
+                    .dismissableNavBar(presentation: presentationMode, color: colorPalette.primaryBlue, navigationDismissType: .close)
                 }
-                .dismissableNavBar(presentation: presentationMode, color: colorPalette.primaryBlue, navigationDismissType: .close)
-            }
-            .overlay(
                 addToBasketFloatingButton()
-            )
+            }
+            .edgesIgnoringSafeArea(.bottom)
             .animation(.default)
         }
     }
     
     func addToBasketFloatingButton() -> some View {
         VStack {
-            Spacer()
-            
-            HStack {
-                Button(action: { Task { await viewModel.actionButtonTapped() } }) {
-                    if viewModel.isAddingToBasket {
-                        ProgressView()
-                            .font(.snappyTitle3)
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .padding(Constants.Padding.standard)
-                            .padding(.horizontal)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                    .fill(colorPalette.primaryBlue)
-                                    .padding(.horizontal)
-                            )
-                    } else {
-                        HStack {
-                            Text(viewModel.showUpdateButtonText ? Strings.ProductOptions.update.localized : Strings.ProductOptions.add.localized)
-                                .fontWeight(.semibold)
-                            
-                            Spacer()
-                            
-                            Text(viewModel.totalPrice)
-                                .fontWeight(.semibold)
-                        }
-                        .font(.snappyTitle3)
-                        .foregroundColor(.white)
-                        .padding(Constants.Padding.standard)
-                        .padding(.horizontal)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                .fill(colorPalette.primaryBlue)
-                                .padding(.horizontal)
-                        )
-                    }
-                }
-                .disabled(viewModel.isAddingToBasket)
-            }
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: viewModel.buttonText,
+                largeTextTitle: nil,
+                icon: nil,
+                isEnabled: .constant(viewModel.isAddingToBasket == false),
+                isLoading: $viewModel.isAddingToBasket,
+                action: {
+                    Task { await viewModel.actionButtonTapped() }
+                })
+            .padding(.horizontal)
+            .padding(.bottom, Constants.FloatingButton.bottomPadding)
+            .padding(.top, Constants.FloatingButton.topPadding)
         }
-        .padding(.bottom, Constants.Padding.buttonBottom)
+        .background(colorPalette.backgroundMain.withOpacity(.eighty))
     }
 }
 

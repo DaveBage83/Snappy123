@@ -14,6 +14,16 @@ struct ProductOptionSectionView: View {
     struct Constants {
         static let vStackSpacing: CGFloat = 0
         static let padding: CGFloat = 5
+        
+        struct RequiredPill {
+            static let vPadding: CGFloat = 4
+            static let hPadding: CGFloat = 12
+        }
+        
+        struct SectionHeading {
+            static let checkmarkWidth: CGFloat = 16
+            static let vPadding: CGFloat = 12
+        }
     }
     
     @StateObject var viewModel: ProductOptionSectionViewModel
@@ -26,6 +36,8 @@ struct ProductOptionSectionView: View {
     var body: some View {
         VStack(spacing: Constants.vStackSpacing) {
             sectionHeading(title: viewModel.title)
+                .background(viewModel.minimumReached ? colorPalette.alertSuccess.withOpacity(.ten) : colorPalette.alertWarning.withOpacity(.ten))
+                .padding(.top)
             
             optionSectionTypeViews
         }
@@ -87,23 +99,47 @@ struct ProductOptionSectionView: View {
         }
     }
     
+    private var requiredPill: some View {
+        Text(GeneralStrings.required.localized)
+            .font(.Caption1.bold())
+            .padding(.vertical, Constants.RequiredPill.vPadding)
+            .padding(.horizontal, Constants.RequiredPill.hPadding)
+            .background(colorPalette.alertWarning)
+            .foregroundColor(.white)
+            .standardPillFormat()
+    }
+    
     func sectionHeading(title: String, bottomSheet: Bool = false) -> some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(title).bold()
+                Text(title)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.typefacePrimary)
+                if viewModel.minimumReached {
+                    Image.Icons.CircleCheck.filled
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.SectionHeading.checkmarkWidth)
+                        .foregroundColor(colorPalette.alertSuccess)
+                } else {
+                    requiredPill
+                }
+
                 Spacer()
             }
-            .font(.heading4())
+            .font(.Body1.semiBold())
             .foregroundColor(colorPalette.typefacePrimary)
             
             if viewModel.showOptionLimitationsSubtitle {
                 Text(viewModel.optionLimitationsSubtitle)
-                    .font(.Body1.regular())
+                    .font(.Caption1.semiBold())
                     .foregroundColor(bottomSheet ? colorPalette.primaryBlue : (viewModel.minimumReached ? colorPalette.typefacePrimary : colorPalette.alertWarning))
             }
         }
         .frame(maxWidth: .infinity)
-        .padding([.horizontal, .top])
+        .padding(.horizontal)
+        .padding(.vertical, Constants.SectionHeading.vPadding)
     }
     
     var bottomSheetView: some View {

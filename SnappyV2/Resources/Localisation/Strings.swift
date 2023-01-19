@@ -1051,4 +1051,8 @@ enum Strings {
     enum LocationIndicator: String, IterableSnappyString {
         case gettingLocation = "locationindicator.gettinglocation"
     }
+    
+    enum Pagination: String, IterableSnappyString {
+        case moreItems = "pagination.moreitems"
+    }
 }

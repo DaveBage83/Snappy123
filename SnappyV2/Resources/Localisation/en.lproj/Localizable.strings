@@ -707,3 +707,6 @@
 
 // MARK: - Location indicator
 "locationindicator.gettinglocation" = "Locating ...";
+
+// MARK: - Pagination
+"pagination.moreitems" = "More items";

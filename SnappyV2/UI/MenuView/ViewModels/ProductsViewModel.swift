@@ -51,6 +51,8 @@ class ProductsViewModel: ObservableObject {
     @Published var searchText: String
     @Published var isSearchActive = false
     @Published var searchResult: Loadable<RetailStoreMenuGlobalSearch> = .notRequested
+    @Published var moreItemsSearchResult: Loadable<RetailStoreMenuGlobalSearch> = .notRequested
+
     @Published var searchResultCategories: [GlobalSearchResultRecord]
     @Published var searchResultItems: [RetailStoreMenuItem]
     @Published var navigationWithIsSearchActive: Int
@@ -60,6 +62,7 @@ class ProductsViewModel: ObservableObject {
     // Titles
     @Published var subCategoryNavigationTitle: [String]
     @Published var itemNavigationTitle: String?
+    @Published var loadingMoreItems = false
     
     // MARK: - Properties
     let container: DIContainer
@@ -276,11 +279,13 @@ class ProductsViewModel: ObservableObject {
         setupRootCategories()
         setupSubCategoriesOrItems()
         setupSearchText()
-        setupCategoriesOrItemSearchResult()
+//        setupCategoriesOrItemSearchResult()
         setupSpecialOffers()
         setupIsSearchActive()
         setupBindingsToStoreDisplayedStates(with: appState)
         setupSelectedSearchTerm()
+        
+        setupGlobalSearch()
         
         if let missedOffer = missedOffer {
             getMissedPromotion(offer: missedOffer)
@@ -519,6 +524,8 @@ class ProductsViewModel: ObservableObject {
         selectedSearchTerm = nil
     }
     
+    @Published var globalSearching = false
+    
     private func setupSearchText() {
         $searchText
             .dropFirst()
@@ -526,6 +533,8 @@ class ProductsViewModel: ObservableObject {
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 guard let self = self else { return }
+                self.globalSearch = nil
+                self.initialSearchItemPage = 1
                                 
                 Task {
                     await self.populateStoredSearches()
@@ -536,7 +545,11 @@ class ProductsViewModel: ObservableObject {
                     self.isSearchActive = true
                 } else if searchText.count > 1 {
                     self.showEnterMoreCharactersView = false
-                    self.search(text: searchText)
+                    
+                    Task {
+                        try await self.search(text: searchText)
+                    }
+                    
                     self.isSearchActive = true
                     // Store search text
                     self.container.appState.value.searchHistoryData.latestProductSearch = searchText
@@ -550,6 +563,7 @@ class ProductsViewModel: ObservableObject {
                     self.showAllSearchHistoryResults()
                     self.showEnterMoreCharactersView = false
                     self.isSearchActive = false
+                    self.initialSearchItemPage = 1
                 }
                 
                 self.container.appState.value.storeMenu.searchText = searchText
@@ -561,10 +575,9 @@ class ProductsViewModel: ObservableObject {
         $isSearchActive
             .dropFirst()
             .removeDuplicates()
-            .filter { $0 == false }
-            .sink { [weak self] _ in
+            .sink { [weak self] isActive in
                 guard let self = self else { return }
-                if self.navigationWithIsSearchActive > 0 {
+                if self.navigationWithIsSearchActive > 0, isActive {
                     // if there has been navigation away from the search view, whilist displaying the
                     // search, then clear the subcategories and return the user back to the root
                     // category
@@ -573,6 +586,9 @@ class ProductsViewModel: ObservableObject {
                     self.subCategories = []
                     self.subcategoriesOrItemsMenuFetch = .notRequested
                     self.navigationWithIsSearchActive = 0
+                } else {
+                    self.globalSearch = nil
+                    self.initialSearchItemPage = 1
                 }
             }
             .store(in: &cancellables)
@@ -730,9 +746,61 @@ class ProductsViewModel: ObservableObject {
         container.eventLogger.sendEvent(for: .searchResultSelection, with: .firebaseAnalytics, params: firebaseAnalyticsParams)
     }
     
-    func search(text: String) {
+    @Published var globalSearch: RetailStoreMenuGlobalSearch?
+    
+    private func setupGlobalSearch() {
+        $globalSearch
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] search in
+                guard let self else { return }
+                if let items = search?.menuItems?.records {
+                    if self.initialSearchItemPage == 1 {
+                        self.searchResultItems = [] // Clear first
+                        self.searchResultItems = items
+                    } else {
+                        self.searchResultItems.append(contentsOf: items)
+                    }
+                }
+                
+                if let categories = search?.categories?.records {
+                    self.searchResultCategories = categories
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    @Published var initialSearchItemLimit = AppV2Constants.Business.globalSearchItemResultsPerPage
+    @Published var initialSearchItemPage = 1
+    
+    var showMoreItemsButton: Bool {
+        guard let pagination = globalSearch?.menuItems?.pagination, isSearching == false, searchText.count > 1 else { return false }
+        
+        if loadingMoreItems {
+            return pagination.pageCount >= initialSearchItemPage
+        }
+        
+        return pagination.pageCount > initialSearchItemPage
+    }
+    
+    func search(text: String) async throws {
         // Setting max 10 categories and 100 items to be shown
-        container.services.retailStoreMenuService.globalSearch(searchFetch: loadableSubject(\.searchResult), searchTerm: text, scope: nil, itemsPagination: (100, 0), categoriesPagination: (10, 0))
+        self.isSearchActive = true
+        
+//        Task {
+            if globalSearch == nil {
+                self.globalSearching = true
+
+                self.globalSearch = try await container.services.retailStoreMenuService.globalSearch(searchTerm: text, scope: nil, itemsPagination: (initialSearchItemLimit, initialSearchItemPage), categoriesPagination: (10, 0))
+                self.globalSearching = false
+            } else {
+                self.loadingMoreItems = true
+                self.initialSearchItemPage += 1
+                self.globalSearch = try await container.services.retailStoreMenuService.globalSearch(searchTerm: text, scope: nil, itemsPagination: (initialSearchItemLimit, initialSearchItemPage), categoriesPagination: (10, 0))
+                self.globalSearching = false
+                self.loadingMoreItems = false
+            }
+//        }
     }
 
     func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal, fromItem item: RetailStoreMenuItem, offersRetrieved: (() -> Void)? = nil) {

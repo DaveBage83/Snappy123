@@ -126,12 +126,11 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
     }
     
     func globalSearch(
-        searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>,
         searchTerm: String,
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
         categoriesPagination: (limit: Int, page: Int)?
-    ) {
+    ) async throws -> RetailStoreMenuGlobalSearch? {
         register(
             .globalSearch(
                 searchTerm: searchTerm,
@@ -140,12 +139,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
                 categoriesPagination: categoriesPagination
             )
         )
-        globalSearchResponse
-            .publish()
-            .sinkToLoadable {
-                searchFetch.wrappedValue = $0
-            }
-            .store(in: cancelBag)
+        return .mockedData
     }
     
     func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?) {

@@ -23,7 +23,7 @@ class RetailStoreMenuServiceTests: XCTestCase {
     var mockedSearchHistoryDB: MockedSearchHistoryDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: RetailStoreMenuService!
-
+    
     override func setUp() {
         mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedRetailStoreMenuWebRepository()
@@ -36,7 +36,7 @@ class RetailStoreMenuServiceTests: XCTestCase {
             eventLogger: mockedEventLogger
         )
     }
-
+    
     override func tearDown() {
         appState = CurrentValueSubject<AppState, Never>(AppState())
         subscriptions = Set<AnyCancellable>()
@@ -216,7 +216,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
     }
     
     func test_whenNoStoreIsSelected_thenReturnError() {
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -312,7 +312,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         
         wait(for: [exp], timeout: 2)
     }
-
+    
     func test_whenWebErrorAndInDBButExpired_thenReturnError() {
         
         let expiredDate = Calendar.current.date(byAdding: .hour, value: -12, to: AppV2Constants.Business.retailStoreMenuCachedExpiry)
@@ -368,9 +368,9 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         
         wait(for: [exp], timeout: 2)
     }
-
+    
     func test_whenWebErrorAndInNotInDB_thenReturnError() {
-
+        
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let store = RetailStoreDetails.mockedData
         appState.value.userData.selectedStore = .loaded(store)
@@ -413,7 +413,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
 // MARK: - func globalSearch(searchFetch:searchTerm:scope:itemsPagination:categoriesPagination:)
 final class GlobalSearchTests: RetailStoreMenuServiceTests {
     
-    func test_whenSuccessfulSearch_thenReturnCorrectResult() {
+    func test_whenSuccessfulSearch_thenReturnCorrectResult() async {
         
         let searchTerm = "Bags"
         
@@ -448,60 +448,43 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         mockedDBRepo.clearGlobalSearchResponse = .success(true)
         mockedDBRepo.storeSearchResponse = .success(searchResult)
         
-        let exp = expectation(description: #function)
+        do {
+            let result = try await sut.globalSearch(
+                searchTerm: searchTerm,
+                scope: nil,
+                itemsPagination: nil,
+                categoriesPagination: nil
+            )
+            
+            XCTAssertEqual(result, searchResult)
+        } catch {
+            XCTFail()
+        }
         
-        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuGlobalSearch>.notRequested)
-        sut.globalSearch(
-            searchFetch: result.binding,
-            searchTerm: searchTerm,
-            scope: nil,
-            itemsPagination: nil,
-            categoriesPagination: nil
-        )
-        result.updatesRecorder.sink { updates  in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(searchResult)
-            ])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            self.mockedEventLogger.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
-    func test_whenNoStoreIsSelected_thenReturnError() {
-
-        let exp = expectation(description: #function)
-        
-        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuGlobalSearch>.notRequested)
-        sut.globalSearch(
-            searchFetch: result.binding,
-            searchTerm: "Bags",
-            scope: nil,
-            itemsPagination: nil,
-            categoriesPagination: nil
-        )
-        
-        result.updatesRecorder.sink { updates  in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .failed(RetailStoreMenuServiceError.noSelectedStore)
-            ])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            self.mockedEventLogger.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+    func test_whenNoStoreIsSelected_thenReturnError() async {
+        do {
+            let _ = try await sut.globalSearch(
+                searchTerm: "Bags",
+                scope: nil,
+                itemsPagination: nil,
+                categoriesPagination: nil
+            )
+            XCTFail("Expected failure, received success")
+            
+        } catch {
+            XCTAssertEqual(error.localizedDescription, RetailStoreMenuServiceError.unableToSearch.localizedDescription)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
-    func test_whenWebErrorGetItemsForDeliveryAndInDB_thenReturnCorrectCacheResult() {
+    func test_whenWebErrorGetItemsForDeliveryAndInDB_thenReturnCorrectCacheResult() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchTerm = "Bags"
@@ -554,32 +537,24 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         mockedWebRepo.globalSearchResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuGlobalSearchResponse = .success(storedSearchResult)
         
-        let exp = expectation(description: #function)
+        do {
+            let result = try await sut.globalSearch(
+                searchTerm: searchTerm,
+                scope: nil,
+                itemsPagination: nil,
+                categoriesPagination: nil
+            )
+            XCTAssertEqual(result, storedSearchResult)
+        } catch {
+            XCTFail()
+        }
         
-        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuGlobalSearch>.notRequested)
-        sut.globalSearch(
-            searchFetch: result.binding,
-            searchTerm: searchTerm,
-            scope: nil,
-            itemsPagination: nil,
-            categoriesPagination: nil
-        )
-        result.updatesRecorder.sink { updates  in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(storedSearchResult)
-            ])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            self.mockedEventLogger.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
-
-    func test_whenWebErrorGetItemsForDeliveryAndInDBButExpired_thenReturnError() {
+    
+    func test_whenWebErrorGetItemsForDeliveryAndInDBButExpired_thenReturnError() async {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchTerm = "Bags"
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
@@ -631,32 +606,24 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         mockedWebRepo.globalSearchResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuGlobalSearchResponse = .success(storedSearchResult)
         
-        let exp = expectation(description: #function)
+        do {
+            let result = try await sut.globalSearch(
+                searchTerm: searchTerm,
+                scope: nil,
+                itemsPagination: nil,
+                categoriesPagination: nil
+            )
+            XCTAssertEqual(result, storedSearchResult)
+        } catch {
+            XCTFail()
+        }
         
-        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuGlobalSearch>.notRequested)
-        sut.globalSearch(
-            searchFetch: result.binding,
-            searchTerm: searchTerm,
-            scope: nil,
-            itemsPagination: nil,
-            categoriesPagination: nil
-        )
-        result.updatesRecorder.sink { updates  in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(storedSearchResult)
-            ])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            self.mockedEventLogger.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
-
-    func test_whenWebErrorGetItemsForDeliveryAndInNotInDB_thenReturnError() {
+    
+    func test_whenWebErrorGetItemsForDeliveryAndInNotInDB_thenReturnError() async {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchTerm = "Bags"
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
@@ -674,29 +641,20 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         mockedWebRepo.globalSearchResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuGlobalSearchResponse = .success(nil)
         
-        let exp = expectation(description: #function)
-        
-        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuGlobalSearch>.notRequested)
-        sut.globalSearch(
-            searchFetch: result.binding,
-            searchTerm: searchTerm,
-            scope: nil,
-            itemsPagination: nil,
-            categoriesPagination: nil
-        )
-        result.updatesRecorder.sink { updates  in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .failed(networkError)
-            ])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            self.mockedEventLogger.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            let result = try await  sut.globalSearch(
+                searchTerm: searchTerm,
+                scope: nil,
+                itemsPagination: nil,
+                categoriesPagination: nil
+            )
+            XCTFail("Expected error, received success")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, networkError.localizedDescription)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 }
 
@@ -710,7 +668,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataCategoriesFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -771,11 +729,11 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         ])
         
         // Configuring responses from repositories
-
+        
         mockedWebRepo.loadRootRetailStoreMenuCategoriesResponse = .success(menuFetchResult)
         mockedDBRepo.clearRetailStoreMenuFetchResponse = .success(true)
         mockedDBRepo.storeCategoryResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -804,7 +762,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .collection
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataCategoriesFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -865,11 +823,11 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         ])
         
         // Configuring responses from repositories
-
+        
         mockedWebRepo.loadRootRetailStoreMenuCategoriesResponse = .success(menuFetchResult)
         mockedDBRepo.clearRetailStoreMenuFetchResponse = .success(true)
         mockedDBRepo.storeCategoryResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -891,7 +849,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
     }
     
     func test_whenNoStoreIsSelected_thenReturnError() {
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -922,7 +880,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataCategoriesFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -976,10 +934,10 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         ])
         
         // Configuring responses from repositories
-
+        
         mockedWebRepo.loadRootRetailStoreMenuCategoriesResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuFetchResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -999,7 +957,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         
         wait(for: [exp], timeout: 2)
     }
-
+    
     func test_whenWebErrorGetRootCategoriesForDeliveryAndInDBButExpired_thenReturnError() {
         
         let expiredDate = Calendar.current.date(byAdding: .hour, value: -12, to: AppV2Constants.Business.retailStoreMenuCachedExpiry)
@@ -1011,7 +969,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataCategoriesFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -1046,10 +1004,10 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         ])
         
         // Configuring responses from repositories
-
+        
         mockedWebRepo.loadRootRetailStoreMenuCategoriesResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuFetchResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1069,7 +1027,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         
         wait(for: [exp], timeout: 2)
     }
-
+    
     func test_whenWebErrorGetRootCategoriesForDeliveryAndInNotInDB_thenReturnError() {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         
@@ -1099,10 +1057,10 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         ])
         
         // Configuring responses from repositories
-
+        
         mockedWebRepo.loadRootRetailStoreMenuCategoriesResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuFetchResponse = .success(nil)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1134,7 +1092,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataItemsFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -1190,7 +1148,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         mockedWebRepo.getItemsResponse = .success(menuFetchResult)
         mockedDBRepo.clearRetailStoreMenuItemsFetchResponse = .success(true)
         mockedDBRepo.storeMenuFetchResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1225,7 +1183,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .collection
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataItemsFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -1281,7 +1239,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         mockedWebRepo.getItemsResponse = .success(menuFetchResult)
         mockedDBRepo.clearRetailStoreMenuItemsFetchResponse = .success(true)
         mockedDBRepo.storeMenuFetchResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1309,7 +1267,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
     }
     
     func test_whenNoStoreIsSelected_thenReturnError() {
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1340,7 +1298,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         let store = RetailStoreDetails.mockedData
         appState.value.userData.selectedStore = .loaded(store)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1371,7 +1329,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         let store = RetailStoreDetails.mockedData
         appState.value.userData.selectedStore = .loaded(store)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1402,7 +1360,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         let store = RetailStoreDetails.mockedData
         appState.value.userData.selectedStore = .loaded(store)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1440,7 +1398,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataItemsFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -1487,7 +1445,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         mockedWebRepo.getItemsResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuItemsFetchResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1525,7 +1483,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         let fulfilmentMethod: RetailStoreOrderMethodType = .delivery
         appState.value.userData.selectedFulfilmentMethod = fulfilmentMethod
         let menuFetchResult = RetailStoreMenuFetch.mockedDataItemsFromAPI
-
+        
         let storedMenuFetchResult = RetailStoreMenuFetch(
             id: menuFetchResult.id ?? 0,
             name: menuFetchResult.name ?? "",
@@ -1572,7 +1530,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         mockedWebRepo.getItemsResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuItemsFetchResponse = .success(storedMenuFetchResult)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1641,7 +1599,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         mockedWebRepo.getItemsResponse = .failure(networkError)
         mockedDBRepo.retailStoreMenuItemsFetchResponse = .success(nil)
-
+        
         let exp = expectation(description: #function)
         
         let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
@@ -1757,7 +1715,7 @@ final class GetItemTests: RetailStoreMenuServiceTests {
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
-
+        
     }
     
     func test_whenWebErrorGetItemAndInDBButExpired_thenReturnError() async {
@@ -1802,7 +1760,7 @@ final class GetItemTests: RetailStoreMenuServiceTests {
             self.mockedDBRepo.verify()
             self.mockedEventLogger.verify()
         }
-
+        
     }
     
     func test_whenWebErrorGetItemAndNotInDB_thenReturnError() async {
@@ -1810,7 +1768,7 @@ final class GetItemTests: RetailStoreMenuServiceTests {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         
         let request = RetailStoreMenuItemRequest.mockedData
-
+        
         // Configuring expected actions on repositories
         
         mockedWebRepo.actions = .init(expected: [
@@ -1835,6 +1793,6 @@ final class GetItemTests: RetailStoreMenuServiceTests {
             self.mockedDBRepo.verify()
             self.mockedEventLogger.verify()
         }
-
+        
     }
 }

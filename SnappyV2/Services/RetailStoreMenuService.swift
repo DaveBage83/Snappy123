@@ -17,6 +17,7 @@ enum RetailStoreMenuServiceError: Swift.Error {
     case unableToPersistResult
     case noSelectedStore
     case invalidGetItemsCriteria
+    case unableToSearch
 }
 
 extension RetailStoreMenuServiceError: LocalizedError {
@@ -28,6 +29,8 @@ extension RetailStoreMenuServiceError: LocalizedError {
             return "Store needs to be selected to use this RetailStoreMenuService function"
         case .invalidGetItemsCriteria:
             return "menuItems (with at least one id) or discountId or discountSectionId required. Multiple criteria cannot be used."
+        case .unableToSearch:
+            return "Unable to perform global search"
         }
     }
 }
@@ -43,12 +46,11 @@ protocol RetailStoreMenuServiceProtocol {
     func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int)
     
     func globalSearch(
-        searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>,
         searchTerm: String,
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
         categoriesPagination: (limit: Int, page: Int)?
-    )
+    ) async throws -> RetailStoreMenuGlobalSearch?
     
     func getItems(
         menuFetch: LoadableSubject<RetailStoreMenuFetch>,
@@ -97,55 +99,47 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     }
     
     func globalSearch(
-        searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>,
         searchTerm: String,
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
         categoriesPagination: (limit: Int, page: Int)?
-    ) {
-        let cancelBag = CancelBag()
-        searchFetch.wrappedValue.setIsLoading(cancelBag: cancelBag)
-        
+    ) async throws -> RetailStoreMenuGlobalSearch? {
         guard let storeId = appState.value.userData.selectedStore.value?.id else {
-            Fail(outputType: RetailStoreMenuGlobalSearch.self, failure: RetailStoreMenuServiceError.noSelectedStore)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { searchFetch.wrappedValue = $0 }
-                .store(in: cancelBag)
-            return
+            throw RetailStoreMenuServiceError.unableToSearch
         }
         
         if AppV2Constants.Business.attemptFreshMenuFetches {
-            firstWebSearchBeforeCheckingStore(
-                storeId: storeId,
-                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
-                searchTerm: searchTerm,
-                scope: scope,
-                itemsPagination: itemsPagination,
-                categoriesPagination: categoriesPagination
-            )
-                .sinkToLoadable {
-                    searchFetch.wrappedValue = $0
-                    if let unwrappedSearchResult = $0.value {
-                        sendSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
-                    }
-                }
-                .store(in: cancelBag)
+            do {
+                let searchResult = try await firstWebSearchBeforeCheckingStore(
+                    storeId: storeId,
+                    fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                    searchTerm: searchTerm,
+                    scope: scope,
+                    itemsPagination: itemsPagination,
+                    categoriesPagination: categoriesPagination
+                ).singleOutput()
+                sendSearchEvent(searchTerm: searchTerm, searchResult: searchResult)
+                                
+                return searchResult
+            } catch {
+                throw error
+            }
         } else {
-            firstCheckStoreBeforeSearchingFromWeb(
-                storeId: storeId,
-                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
-                searchTerm: searchTerm,
-                scope: scope,
-                itemsPagination: itemsPagination,
-                categoriesPagination: categoriesPagination
-            )
-                .sinkToLoadable {
-                    searchFetch.wrappedValue = $0
-                    if let unwrappedSearchResult = $0.value {
-                        sendSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
-                    }
-                }
-                .store(in: cancelBag)
+            do {
+                let searchResult =
+                try await firstCheckStoreBeforeSearchingFromWeb(
+                    storeId: storeId,
+                    fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                    searchTerm: searchTerm,
+                    scope: scope,
+                    itemsPagination: itemsPagination,
+                    categoriesPagination: categoriesPagination
+                ).singleOutput()
+                sendSearchEvent(searchTerm: searchTerm, searchResult: searchResult)
+                return searchResult
+            } catch {
+                throw error
+            }
         }
     }
     
@@ -529,6 +523,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             // convert the result to include a Bool indicating the
             // source of the data
             .flatMap({ globalSearch -> AnyPublisher<(Bool, RetailStoreMenuGlobalSearch), Error> in
+                print("*** FROM SUB: \(globalSearch.menuItems)")
                 return Just<(Bool, RetailStoreMenuGlobalSearch)>.withErrorType((true, globalSearch), Error.self)
             })
             .catch({ error in
@@ -945,7 +940,9 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
 
 struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
-    func globalSearch(searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>, searchTerm: String, scope: RetailStoreMenuGlobalSearchScope?, itemsPagination: (limit: Int, page: Int)?, categoriesPagination: (limit: Int, page: Int)?) {}
+    func globalSearch(searchTerm: String, scope: RetailStoreMenuGlobalSearchScope?, itemsPagination: (limit: Int, page: Int)?, categoriesPagination: (limit: Int, page: Int)?) async -> RetailStoreMenuGlobalSearch? {
+        return nil
+    }
     
     func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) {}
     

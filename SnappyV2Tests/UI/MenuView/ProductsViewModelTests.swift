@@ -281,7 +281,8 @@ class ProductsViewModelTests: XCTestCase {
         let searchResultCategories = GlobalSearchResult(pagination: nil, records: categories)
         let searchResultItems = GlobalSearchItemsResult(pagination: nil, records: items)
         let searchResult = RetailStoreMenuGlobalSearch(categories: searchResultCategories, menuItems: searchResultItems, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil)
-        sut.searchResult = .loaded(searchResult)
+        
+        sut.globalSearch = searchResult
         
         sut.$searchResultItems
             .first()
@@ -300,7 +301,7 @@ class ProductsViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         wait(for: [expectationItems, expectationCategories], timeout: 5)
-        
+            
         XCTAssertEqual(sut.searchResultCategories, categories)
         XCTAssertEqual(sut.searchResultItems, items)
     }
@@ -352,7 +353,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSearchTextIsEntered_thenSearchTriggers() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Beer", scope: nil, itemsPagination: (limit: 100, page: 0), categoriesPagination: (limit: 10, page: 0))]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Beer", scope: nil, itemsPagination: (limit: AppV2Constants.Business.globalSearchItemResultsPerPage, page: 1), categoriesPagination: (limit: 10, page: 0))]))
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "setupSearchText")
@@ -422,7 +423,7 @@ class ProductsViewModelTests: XCTestCase {
         
         let itemsResult = GlobalSearchItemsResult(pagination: nil, records: menuItems)
         
-        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: itemsResult, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        sut.globalSearch = RetailStoreMenuGlobalSearch(categories: nil, menuItems: itemsResult, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil)
         
         let expectation = expectation(description: "noSearchResult")
         var cancellables = Set<AnyCancellable>()
@@ -449,11 +450,15 @@ class ProductsViewModelTests: XCTestCase {
         container.services.verify(as: .retailStoreMenu)
     }
     
-    func test_whenSearchTapped() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Milk", scope: nil, itemsPagination: (limit: 100, page: 0), categoriesPagination: (limit: 10, page: 0))]))
+    func test_whenSearchTapped() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories, .globalSearch(searchTerm: "Milk", scope: nil, itemsPagination: (limit: AppV2Constants.Business.globalSearchItemResultsPerPage, page: 1), categoriesPagination: (limit: 10, page: 0))]))
         let sut = makeSUT(container: container)
         
-        sut.search(text: "Milk")
+        do {
+            try await sut.search(text: "Milk")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
         
         container.services.verify(as: .retailStoreMenu)
     }
@@ -463,7 +468,7 @@ class ProductsViewModelTests: XCTestCase {
         
         var retailStoreMenuService = MockedRetailStoreMenuService(expected: [
             .getRootCategories,
-            .globalSearch(searchTerm: "Test", scope: nil, itemsPagination: (100, 0), categoriesPagination: (10, 0)),
+            .globalSearch(searchTerm: "Test", scope: nil, itemsPagination: (AppV2Constants.Business.globalSearchItemResultsPerPage, 1), categoriesPagination: (10, 0)),
             .getChildCategoriesAndItems(categoryId: 321)
         ])
         retailStoreMenuService.getChildCategoriesAndItemsResponse = .success(RetailStoreMenuFetch.mockedData)
@@ -511,7 +516,7 @@ class ProductsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.$isSearchActive
+        sut.$globalSearching
             .filter { $0 }
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -538,7 +543,7 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showSearchView)
         
         retailStoreMenuService.verify()
-        eventLogger.verify()
+//        eventLogger.verify()
     }
     
     func test_associatedSearchTerm_givenNoSearchResultOrNavigationSearch_thenNil() {

@@ -106,7 +106,6 @@ struct ProductsView: View {
                 SettingsButton(viewModel: .init(container: viewModel.container))
             }
         })
-        .withLoadingToast(container: viewModel.container, loading: .constant(viewModel.isSearching))
     }
     
     private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {
@@ -125,31 +124,49 @@ struct ProductsView: View {
                 
                 ScrollViewReader { proxy in
                     ScrollView(showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            
-                            if viewModel.showStandardView {
-                                ProductsNavigationAndSearch(
-                                    productsViewModel: viewModel,
-                                    text: $viewModel.searchText,
-                                    isEditing: $viewModel.isSearchActive)
-                                .padding(.top, Constants.standardViewPadding)
-                                .background(colorPalette.typefaceInvert)
-                                .id(topID)
+                            VStack(spacing: 0) {
                                 
-                                Divider()
-                            }
-                            
-                            mainProducts()
-                                .onChange(of: viewModel.viewState) { _ in
-                                    // Unfortunately, slight delay needed in order for this to work
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                                        proxy.scrollTo(topID)
-                                    }
+                                if viewModel.showStandardView {
+                                    ProductsNavigationAndSearch(
+                                        productsViewModel: viewModel,
+                                        text: $viewModel.searchText,
+                                        isEditing: $viewModel.isSearchActive)
+                                    .padding(.top, Constants.standardViewPadding)
+                                    .background(colorPalette.typefaceInvert)
+                                    .id(topID)
+                                    
+                                    Divider()
                                 }
-                        }
-                        .padding(.bottom, tabViewHeight)
-                        .background(colorPalette.backgroundMain)
-                    }.simultaneousGesture(DragGesture().onChanged({ _ in
+                                
+                                mainProducts()
+                                    .onChange(of: viewModel.viewState) { _ in
+                                        // Unfortunately, slight delay needed in order for this to work
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                                            proxy.scrollTo(topID)
+                                        }
+                                    }
+                                
+                                if viewModel.showMoreItemsButton {
+                                    SnappyButton(
+                                        container: viewModel.container,
+                                        type: .primary,
+                                        size: .large,
+                                        title: Strings.Pagination.moreItems.localized,
+                                        largeTextTitle: nil,
+                                        icon: Image.Icons.Pagination.more,
+                                        isLoading: $viewModel.loadingMoreItems,
+                                        action: {
+                                            Task {
+                                              try await viewModel.search(text: viewModel.searchText)
+                                            }
+                                        })
+                                    .padding()
+                                }
+                            }
+                            .padding(.bottom, tabViewHeight)
+                            .background(colorPalette.backgroundMain)
+                    }
+                    .simultaneousGesture(DragGesture().onChanged({ _ in
                         hideKeyboard()
                     }))
                 }
@@ -161,7 +178,9 @@ struct ProductsView: View {
                     }
                 })
             }
+            .withLoadingToast(container: viewModel.container, loading: $viewModel.globalSearching)
             .background(colorPalette.backgroundMain)
+            
         } else {
             VStack(spacing: 0) {
                 ScrollViewReader { proxy in
@@ -208,7 +227,7 @@ struct ProductsView: View {
     
     // MARK: - Results view
     @ViewBuilder var productsResultsViews: some View {
-        if viewModel.isSearching {
+        if viewModel.globalSearching {
             // When searching, we do not want to show previously found items
             EmptyView()
         } else if viewModel.showDummyProductCards {
@@ -517,7 +536,7 @@ struct ProductsView: View {
             }
             
             // Search result items card list
-            Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
+            Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", viewModel.totalItems, "\(viewModel.searchText)"))
                 .font(.Body1.semiBold())
                 .padding(.leading)
             if viewModel.showSearchResultItems {

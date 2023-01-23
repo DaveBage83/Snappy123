@@ -30,10 +30,9 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.categoryLoading)
         XCTAssertTrue(sut.searchText.isEmpty)
         XCTAssertFalse(sut.isSearchActive)
-        XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertTrue(sut.searchResultCategories.isEmpty)
         XCTAssertTrue(sut.searchResultItems.isEmpty)
-        XCTAssertFalse(sut.noSearchResult)
+        XCTAssertTrue(sut.noSearchResult)
         XCTAssertFalse(sut.showBackButton)
         XCTAssertFalse(sut.showSearchResultCategories)
         XCTAssertFalse(sut.showSearchResultItems)
@@ -168,15 +167,7 @@ class ProductsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.rootCategoriesIsLoading)
     }
-    
-    func test_whenSearchIsLoading_thenIsSearchingReturnsTrueAndSearchIsLoadedReturnsFalse() {
-        let sut = makeSUT()
-        sut.searchResult = .isLoading(last: nil, cancelBag: CancelBag())
-        
-        XCTAssertTrue(sut.isSearching)
-        XCTAssertFalse(sut.searchIsLoaded)
-    }
-    
+
     func test_whenRootCategoriesMenuFetchHasLoadedWithResult_thenRootCategoriesIsPopulated() {
         let sut = makeSUT()
         
@@ -400,22 +391,6 @@ class ProductsViewModelTests: XCTestCase {
         
     }
     
-    func test_whenSearchHasLoaded_thenIsSearchingReturnsFalseAndSearchIsLoadedReturnsTrue() {
-        let sut = makeSUT()
-        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
-        
-        XCTAssertFalse(sut.isSearching)
-        XCTAssertTrue(sut.searchIsLoaded)
-    }
-    
-    func test_whenSearchReturnsNoResultAndHasLoaded_thenNoSearchResultReturnsTrue() {
-        let sut = makeSUT()
-        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
-        sut.searchText = "SomeSearch"
-        
-        XCTAssertTrue(sut.noSearchResult)
-    }
-    
     func test_whenSearchReturnsItemResultAndHasLoaded_thenNoSearchResultReturnsFalse() {
         let sut = makeSUT()
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
@@ -551,7 +526,7 @@ class ProductsViewModelTests: XCTestCase {
         // No search result
         XCTAssertNil(sut.associatedSearchTerm)
         // Search result but not active
-        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: "Test", fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        sut.globalSearch = nil
         sut.isSearchActive = false
         XCTAssertNil(sut.associatedSearchTerm)
         // Search result and active but with navigation
@@ -563,7 +538,9 @@ class ProductsViewModelTests: XCTestCase {
     func test_associatedSearchTerm_givenActiveSearchResultwithoutNavigationSearch_thenReturnSearchTerm() {
         let searchTerm = "Test"
         let sut = makeSUT()
-        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: searchTerm, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        sut.globalSearch = RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: searchTerm, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil)
+        
+        sut.navigationWithIsSearchActive = 0
         sut.isSearchActive = true
         XCTAssertEqual(sut.associatedSearchTerm, searchTerm)
     }

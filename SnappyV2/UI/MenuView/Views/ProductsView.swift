@@ -106,7 +106,6 @@ struct ProductsView: View {
                 SettingsButton(viewModel: .init(container: viewModel.container))
             }
         })
-        .withLoadingToast(container: viewModel.container, loading: .constant(viewModel.isSearching))
     }
     
     private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {
@@ -160,7 +159,6 @@ struct ProductsView: View {
                                             Task {
                                               try await viewModel.search(text: viewModel.searchText)
                                             }
-                                            
                                         })
                                     .padding()
                                 }
@@ -229,7 +227,7 @@ struct ProductsView: View {
     
     // MARK: - Results view
     @ViewBuilder var productsResultsViews: some View {
-        if viewModel.isSearching || viewModel.globalSearching {
+        if viewModel.globalSearching {
             // When searching, we do not want to show previously found items
             EmptyView()
         } else if viewModel.showDummyProductCards {
@@ -643,76 +641,3 @@ extension MockData {
 }
 
 #endif
-
-//NavigationView {
-//            VStack {
-//                ScrollView {
-//                    Text(eula)
-//                    Text("hidden tag")
-//                        .hidden()
-//                        .background(
-//                            GeometryReader { proxy in
-//                                Color.clear
-//                                    .onChange(of: proxy.frame(in: .named(scrollViewNameSpace))) { newFrame in
-//                                        if newFrame.minY < scrollViewHeight {
-//                                            readToEnd = true
-//                                        }
-//                                    }
-//                            }
-//                        )
-//                        .border(Color.red)
-//                }
-//                .background(
-//                    GeometryReader { proxy in
-//                        Color.clear
-//                            .onChange(of: proxy.size, perform: { newSize in
-//                                let _ = print("ScrollView: ", newSize)
-//                                scrollViewHeight = newSize.height
-//                            })
-//                    }
-//                )
-//                .coordinateSpace(name: scrollViewNameSpace)
-//
-//                NavigationLink("Accept", destination: Text("Welcome and Thank you!"))
-//                    .opacity(readToEnd ? 1 : 0)
-//                    .animation(.default, value: readToEnd)
-//            }
-//            .padding(.horizontal)
-//            .navigationTitle("EULA")
-//        }
-
-struct PullToRefresh: View {
-    
-    var coordinateSpaceName: String
-    var onRefresh: ()->Void
-    
-    @State var needRefresh: Bool = false
-    
-    var body: some View {
-        GeometryReader { geo in
-            if (geo.frame(in: .named(coordinateSpaceName)).midY > 50) {
-                Spacer()
-                    .onAppear {
-                        needRefresh = true
-                    }
-            } else if (geo.frame(in: .named(coordinateSpaceName)).maxY < 10) {
-                Spacer()
-                    .onAppear {
-                        if needRefresh {
-                            needRefresh = false
-                            onRefresh()
-                        }
-                    }
-            }
-            HStack {
-                Spacer()
-                if needRefresh {
-                    ProgressView()
-                } else {
-                    Text("⬇️")
-                }
-                Spacer()
-            }
-        }.padding(.top, -50)
-    }
-}

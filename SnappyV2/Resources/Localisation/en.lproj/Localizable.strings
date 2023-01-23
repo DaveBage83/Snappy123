@@ -710,3 +710,4 @@
 
 // MARK: - Pagination
 "pagination.moreitems" = "More items";
+"pagination.unabletosearch" = "Unable to perform global search";

@@ -1054,5 +1054,6 @@ enum Strings {
     
     enum Pagination: String, IterableSnappyString {
         case moreItems = "pagination.moreitems"
+        case unableToSearch = "pagination.unabletosearch"
     }
 }

@@ -30,7 +30,7 @@ extension RetailStoreMenuServiceError: LocalizedError {
         case .invalidGetItemsCriteria:
             return "menuItems (with at least one id) or discountId or discountSectionId required. Multiple criteria cannot be used."
         case .unableToSearch:
-            return "Unable to perform global search"
+            return Strings.Pagination.unableToSearch.localized
         }
     }
 }
@@ -523,7 +523,6 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             // convert the result to include a Bool indicating the
             // source of the data
             .flatMap({ globalSearch -> AnyPublisher<(Bool, RetailStoreMenuGlobalSearch), Error> in
-                print("*** FROM SUB: \(globalSearch.menuItems)")
                 return Just<(Bool, RetailStoreMenuGlobalSearch)>.withErrorType((true, globalSearch), Error.self)
             })
             .catch({ error in

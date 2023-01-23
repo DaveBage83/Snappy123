@@ -458,7 +458,7 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
             
             XCTAssertEqual(result, searchResult)
         } catch {
-            XCTFail()
+            XCTFail("Unexpected error: \(error)")
         }
         
         self.mockedWebRepo.verify()
@@ -546,7 +546,7 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
             )
             XCTAssertEqual(result, storedSearchResult)
         } catch {
-            XCTFail()
+            XCTFail("Unexpected error: \(error)")
         }
         
         self.mockedWebRepo.verify()
@@ -615,7 +615,7 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
             )
             XCTAssertEqual(result, storedSearchResult)
         } catch {
-            XCTFail()
+            XCTFail("Unexpected error: \(error)")
         }
         
         self.mockedWebRepo.verify()

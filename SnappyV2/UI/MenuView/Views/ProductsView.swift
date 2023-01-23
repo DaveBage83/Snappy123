@@ -536,7 +536,7 @@ struct ProductsView: View {
             }
             
             // Search result items card list
-            Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
+            Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", viewModel.totalItems, "\(viewModel.searchText)"))
                 .font(.Body1.semiBold())
                 .padding(.leading)
             if viewModel.showSearchResultItems {

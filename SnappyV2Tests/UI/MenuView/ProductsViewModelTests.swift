@@ -518,7 +518,7 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showSearchView)
         
         retailStoreMenuService.verify()
-//        eventLogger.verify()
+        eventLogger.verify()
     }
     
     func test_associatedSearchTerm_givenNoSearchResultOrNavigationSearch_thenNil() {
@@ -1033,6 +1033,12 @@ class ProductsViewModelTests: XCTestCase {
 
         sut.rootCategoriesMenuFetch = .isLoading(last: .mockedData, cancelBag: .init())
         XCTAssertTrue(sut.showDummyProductCards)
+    }
+    
+    func test_givenGlobalSearchPresentAndTotalIsPopulated_totalResultsStringPresent() {
+        let sut = makeSUT()
+        sut.globalSearch = .mockedData
+        XCTAssertEqual(sut.totalItems, "2")
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {

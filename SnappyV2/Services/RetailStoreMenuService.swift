@@ -50,7 +50,7 @@ protocol RetailStoreMenuServiceProtocol {
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
         categoriesPagination: (limit: Int, page: Int)?
-    ) async throws -> RetailStoreMenuGlobalSearch?
+    ) async throws -> RetailStoreMenuGlobalSearch
     
     func getItems(
         menuFetch: LoadableSubject<RetailStoreMenuFetch>,
@@ -103,7 +103,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
         categoriesPagination: (limit: Int, page: Int)?
-    ) async throws -> RetailStoreMenuGlobalSearch? {
+    ) async throws -> RetailStoreMenuGlobalSearch {
         guard let storeId = appState.value.userData.selectedStore.value?.id else {
             throw RetailStoreMenuServiceError.unableToSearch
         }
@@ -939,8 +939,8 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
 
 struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
-    func globalSearch(searchTerm: String, scope: RetailStoreMenuGlobalSearchScope?, itemsPagination: (limit: Int, page: Int)?, categoriesPagination: (limit: Int, page: Int)?) async -> RetailStoreMenuGlobalSearch? {
-        return nil
+    func globalSearch(searchTerm: String, scope: RetailStoreMenuGlobalSearchScope?, itemsPagination: (limit: Int, page: Int)?, categoriesPagination: (limit: Int, page: Int)?) async -> RetailStoreMenuGlobalSearch {
+        return .init(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil)
     }
     
     func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) {}

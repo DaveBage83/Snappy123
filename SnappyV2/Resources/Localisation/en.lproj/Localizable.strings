@@ -301,7 +301,7 @@
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productcard.title" = "Item Details";
 "productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";
-"productsview.productcard.search.resultthatincludesitems" = "%@ product results for \"%@\"";
+"productsview.productcard.search.resultthatincludesitems" = "Showing %@ of %@ product results for \"%@\"";
 "productsview.productcard.search.noresults" = "No results for \"%@\".";
 "productsview.productcard.sort.default" = "Default";
 "productsview.productcard.sort.atoz" = "A → Z";

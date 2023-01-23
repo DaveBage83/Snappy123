@@ -130,7 +130,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
         categoriesPagination: (limit: Int, page: Int)?
-    ) async throws -> RetailStoreMenuGlobalSearch? {
+    ) async throws -> RetailStoreMenuGlobalSearch {
         register(
             .globalSearch(
                 searchTerm: searchTerm,

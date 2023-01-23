@@ -99,6 +99,12 @@ class ProductsViewModel: ObservableObject {
         return unsortedItems
     }
     
+    var totalItems: String {
+        guard let total = globalSearch?.menuItems?.pagination?.totalCount else { return "" }
+        
+        return String(total)
+    }
+    
     var currentNavigationTitle: String? {
         switch viewState {
         case .subCategories:

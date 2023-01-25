@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="21G115" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21279" systemVersion="21G115" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -49,7 +49,12 @@
         <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
         <attribute name="fulfilmentMethodCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="fulfilmentMethodDateTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fulfilmentMethodMinAdditionalBasketSpendForNextTier" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="fulfilmentMethodMinBasketSpendForNextDeliveryTier" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="fulfilmentMethodMinSpend" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="fulfilmentMethodNextTierDeliveryCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="fulfilmentMethodNextTierSpendIsHigherThanCurrent" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="fulfilmentMethodZoneFreeDeliveryMessage" optional="YES" attributeType="String"/>
         <attribute name="isNewBasket" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="orderSubtotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="orderTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>

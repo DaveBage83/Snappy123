@@ -59,6 +59,10 @@ struct BasketView: View {
         struct MentionMe {
             static let bottomPadding: CGFloat = 20
         }
+        
+        struct DeliveryUpsellMessage {
+            static let vPadding: CGFloat = 8
+        }
     }
     
     // MARK: - View model
@@ -173,6 +177,17 @@ struct BasketView: View {
                             }
                         )
                      ))
+        .snappyBottomSheet(
+            container: viewModel.container,
+            item: $viewModel.selectedDeliveryTierInfo,
+            title: Strings.StoresView.DeliveryTiers.title.localized,
+            windowSize: mainWindowSize,
+            content: { orderMethod in
+                RetailStoreDeliveryTiers(viewModel: .init(
+                    container: viewModel.container,
+                    deliveryOrderMethod: viewModel.selectedDeliveryTierInfo?.orderMethod,
+                    currency: viewModel.currency))
+            })
         .navigationViewStyle(.stack)
     }
     
@@ -354,8 +369,16 @@ struct BasketView: View {
                     if fee.text.lowercased() == "delivery" {
                             listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                             .frame(width: mainWindowSize.width - Constants.DeliveryBanner.widthAdjustment)
-                            #warning("Designs have changed for delivery fees now. Current implementation causing an issue with animation of driver tips so disabling this for now.")
-//                            .withDeliveryOffer(container: viewModel.container, deliveryTierInfo: .init(orderMethod: viewModel.orderDeliveryMethod, currency: viewModel.currency), currency: viewModel.currency, fromBasket: true)
+                        
+                        if let deliveryUpsellMessage = viewModel.deliveryUpsellMessage, viewModel.showDeliveryUpsellMessage {
+                            Text(deliveryUpsellMessage)
+                                .frame(maxWidth: .infinity)
+                                .font(.Body2.semiBold())
+                                .foregroundColor(colorPalette.alertSuccess)
+                                .padding(.vertical, Constants.DeliveryUpsellMessage.vPadding)
+                                .background(colorPalette.alertSuccess.withOpacity(.ten))
+                        }
+                        
                     } else {
                         listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                     }
@@ -380,10 +403,16 @@ struct BasketView: View {
     
     private func listEntry(text: String, amount: String, feeDescription: String?) -> some View {
         HStack {
-            if let feeDescription = feeDescription {
+            if let feeDescription {
                 Text(text)
                     .font(.Body2.regular())
                     .withInfoButtonAndText(container: viewModel.container, text: feeDescription)
+            } else if viewModel.showInfoButton(feeName: text) {
+                Text(text)
+                    .font(.Body2.regular())
+                    .withInfoButtonAndAction(container: viewModel.container, action: {
+                        viewModel.deliveryTierButtonPressed()
+                    })
             } else {
                 Text(text)
                     .font(.Body2.regular())

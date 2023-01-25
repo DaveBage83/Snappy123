@@ -82,6 +82,7 @@ class BasketViewModel: ObservableObject {
     @Published var showMentionMeLoading = false
     @Published var showMentionMeWebView = false
     @Published var mentionMeRefereeRequestResult = MentionMeRequestResult(success: false, type: .referee, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
+    @Published var selectedDeliveryTierInfo: DeliveryTierInfo?
     
     @Published var isContinueToCheckoutTapped = false
         
@@ -113,6 +114,23 @@ class BasketViewModel: ObservableObject {
         }
         
         return nil
+    }
+    
+    var deliveryUpsellMessage: String? {
+        guard let minAdditionalSpend = basket?.fulfilmentMethod.minAdditionalBasketSpendForNextTier?.toCurrencyString(using: currency),
+              let nextTierDeliveryCost = basket?.fulfilmentMethod.nextTierDeliveryCost else {
+                  return nil
+              }
+        
+        let nextTierCost = nextTierDeliveryCost > 0 ? "delivery for \(nextTierDeliveryCost.toCurrencyString(using: currency))" : "FREE DELIVERY"
+        
+        return "Spend \(minAdditionalSpend) more to get \(nextTierCost)"
+    }
+    
+    var showDeliveryUpsellMessage: Bool {
+        guard let minAdditionalSpend = basket?.fulfilmentMethod.minAdditionalBasketSpendForNextTier else { return false }
+        
+        return minAdditionalSpend > 0
     }
     
     var orderDeliveryMethod: RetailStoreOrderMethod? {
@@ -633,5 +651,22 @@ class BasketViewModel: ObservableObject {
     
     func dismissView() {
         isContinueToCheckoutTapped = false
+    }
+    
+    var orderMethod: RetailStoreOrderMethod? {
+        container.appState.value.userData.selectedStore.value?.orderMethods?.filter { $0.value.name == .delivery }.first?.value
+    }
+    
+    func showInfoButton(feeName: String) -> Bool {
+        if let deliveryTiers = orderMethod?.deliveryTiers, deliveryTiers.isEmpty == false {
+            return feeName.lowercased() == "delivery"
+        }
+        return false
+    }
+        
+    func deliveryTierButtonPressed() {
+        selectedDeliveryTierInfo = .init(
+            orderMethod: orderMethod,
+            currency: currency)
     }
 }

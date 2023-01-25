@@ -119,7 +119,12 @@ extension Basket {
             fulfilmentMethod: BasketFulfilmentMethod(
                 type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery,//,
                 cost: managedObject.fulfilmentMethodCost,
-                minSpend: managedObject.fulfilmentMethodMinSpend
+                minSpend: managedObject.fulfilmentMethodMinSpend,
+                zoneFreeDeliveryMessage: managedObject.fulfilmentMethodZoneFreeDeliveryMessage,
+                minBasketSpendForNextDeliveryTier: managedObject.fulfilmentMethodMinBasketSpendForNextDeliveryTier,
+                nextTierSpendIsHigherThanCurrent: managedObject.fulfilmentMethodNextTierSpendIsHigherThanCurrent,
+                minAdditionalBasketSpendForNextTier: managedObject.fulfilmentMethodMinAdditionalBasketSpendForNextTier,
+                nextTierDeliveryCost: managedObject.fulfilmentMethodNextTierDeliveryCost
             ),
             selectedSlot: selectedSlot,
             savings: savings,
@@ -134,7 +139,7 @@ extension Basket {
         )
         
     }
-    
+
     @discardableResult
     func store(in context: NSManagedObjectContext) -> BasketMO? {
         
@@ -187,6 +192,21 @@ extension Basket {
         basket.fulfilmentMethodCost = fulfilmentMethod.cost
         basket.fulfilmentMethodMinSpend = fulfilmentMethod.minSpend
         //basket.fulfilmentMethodDateTime = fulfilmentMethod.datetime
+        basket.fulfilmentMethodZoneFreeDeliveryMessage = fulfilmentMethod.zoneFreeDeliveryMessage
+        
+        if let minBasketSpendForNextDeliveryTier = fulfilmentMethod.minBasketSpendForNextDeliveryTier {
+            basket.fulfilmentMethodMinBasketSpendForNextDeliveryTier = minBasketSpendForNextDeliveryTier
+        }
+        
+        basket.fulfilmentMethodNextTierSpendIsHigherThanCurrent = fulfilmentMethod.nextTierSpendIsHigherThanCurrent
+        
+        if let minAdditionalBasketSpendForNextTier = fulfilmentMethod.minAdditionalBasketSpendForNextTier {
+            basket.fulfilmentMethodMinAdditionalBasketSpendForNextTier = minAdditionalBasketSpendForNextTier
+        }
+        
+        if let nextTierDeliveryCost = fulfilmentMethod.nextTierDeliveryCost {
+            basket.fulfilmentMethodNextTierDeliveryCost = nextTierDeliveryCost
+        }
         
         basket.basketToken = basketToken
         basket.isNewBasket = isNewBasket

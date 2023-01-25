@@ -277,19 +277,37 @@ struct WithInfoButtonAndText: ViewModifier {
     @State var elementWidth: CGFloat = 0
     
     let container: DIContainer
-    let infoText: String
+    let infoText: String?
+    let action: (() -> Void)?
     
     func body(content: Content) -> some View {
-        content
-            .overlay(GeometryReader { geo in
-                Text("")
-                    .onAppear {
-                        elementWidth = geo.size.width
-                    }
-            })
-            .overlay(InfoButtonWithText(container: container, text: infoText)
-                .offset(x: (elementWidth / 2) + 16)
-            )
+        mainBody(content: content)
+    }
+    
+    @ViewBuilder func mainBody(content: Content) -> some View {
+        if let infoText {
+            content
+                .overlay(GeometryReader { geo in
+                    Text("")
+                        .onAppear {
+                            elementWidth = geo.size.width
+                        }
+                })
+                .overlay(InfoButtonWithText(container: container, text: infoText)
+                    .offset(x: (elementWidth / 2) + 16)
+                )
+        } else if let action {
+            content
+                .overlay(GeometryReader { geo in
+                    Text("")
+                        .onAppear {
+                            elementWidth = geo.size.width
+                        }
+                })
+                .overlay(InfoButtonWithText(container: container, action: action)
+                    .offset(x: (elementWidth / 2) + 16)
+                )
+        }
     }
 }
 
@@ -462,8 +480,14 @@ extension View {
 }
 
 extension View {
+    // Provides an info button next to the parent view with pop up text when tapped
     func withInfoButtonAndText(container: DIContainer, text: String) -> some View {
-        modifier(WithInfoButtonAndText(container: container, infoText: text))
+        modifier(WithInfoButtonAndText(container: container, infoText: text, action: nil))
+    }
+    
+    // Provides an info button next to the parent view with an associated action when tapped
+    func withInfoButtonAndAction(container: DIContainer, action: @escaping () -> Void) -> some View {
+        modifier(WithInfoButtonAndText(container: container, infoText: nil, action: action))
     }
 }
 

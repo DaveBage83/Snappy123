@@ -122,9 +122,13 @@ class BasketViewModel: ObservableObject {
                   return nil
               }
         
-        let nextTierCost = nextTierDeliveryCost > 0 ? "delivery for \(nextTierDeliveryCost.toCurrencyString(using: currency))" : "FREE DELIVERY"
+        let nextTierCost = nextTierDeliveryCost.toCurrencyString(using: currency)
         
-        return "Spend \(minAdditionalSpend) more to get \(nextTierCost)"
+        if nextTierDeliveryCost > 0 {
+            return Strings.BasketView.DeliveryTiersCustom.upsellNotFree.localizedFormat(minAdditionalSpend, nextTierCost)
+        }
+        
+        return Strings.BasketView.DeliveryTiersCustom.upsellFree.localizedFormat(minAdditionalSpend)
     }
     
     var showDeliveryUpsellMessage: Bool {
@@ -653,12 +657,8 @@ class BasketViewModel: ObservableObject {
         isContinueToCheckoutTapped = false
     }
     
-    var orderMethod: RetailStoreOrderMethod? {
-        container.appState.value.userData.selectedStore.value?.orderMethods?.filter { $0.value.name == .delivery }.first?.value
-    }
-    
     func showInfoButton(feeName: String) -> Bool {
-        if let deliveryTiers = orderMethod?.deliveryTiers, deliveryTiers.isEmpty == false {
+        if let deliveryTiers = orderDeliveryMethod?.deliveryTiers, deliveryTiers.isEmpty == false {
             return feeName.lowercased() == "delivery"
         }
         return false
@@ -666,7 +666,7 @@ class BasketViewModel: ObservableObject {
         
     func deliveryTierButtonPressed() {
         selectedDeliveryTierInfo = .init(
-            orderMethod: orderMethod,
+            orderMethod: orderDeliveryMethod,
             currency: currency)
     }
 }

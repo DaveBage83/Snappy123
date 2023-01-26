@@ -14,8 +14,31 @@ import AppsFlyerLib
 class FulfilmentInfoCardViewModelTests: XCTestCase {
     
     func test_whenSlotExpiryIsBeforeCurrentTime_thenSlotExpiredIsTrue() {
+
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 2.5,
+                minSpend: 10,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot.mockedYesterdaySlot,
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 1,
+            orderTotal: 10,
+            storeId: nil,
+            basketItemRemoved: nil)
         
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: BasketSelectedSlot.mockedYesterdaySlot, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
         let params: [String: Any] = [
@@ -34,8 +57,9 @@ class FulfilmentInfoCardViewModelTests: XCTestCase {
     }
     
     func test_whenSlotExpiryIsAfterCurrentTime_thenSlotExpiredIsFalse() {
+
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: .mockedData, selectedSlot: BasketSelectedSlot.mockedTodayData, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: BasketSelectedSlot.mockedTodayData, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
         let params: [String: Any] = [
@@ -53,8 +77,31 @@ class FulfilmentInfoCardViewModelTests: XCTestCase {
     }
     
     func test_whenSlotEndIsLaterThanCurrentDateTime_givenExpiryIsNil_thenSlotExpiredIsTrue() {
+
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 2.5,
+                minSpend: 10,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot.mockedYesterdaySlot,
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 1,
+            orderTotal: 10,
+            storeId: nil,
+            basketItemRemoved: nil)
         
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: BasketSelectedSlot.mockedYesterdaySlotNoExpiry, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
         let params: [String: Any] = [

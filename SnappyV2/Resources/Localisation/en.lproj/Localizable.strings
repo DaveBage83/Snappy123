@@ -711,3 +711,7 @@
 // MARK: - Pagination
 "pagination.moreitems" = "More items";
 "pagination.unabletosearch" = "Unable to perform global search";
+
+// MARK: - Delivery tiers - basket
+"basketview.deliverytiers.custom.upsellnotfree" = "Spend %@ more to get delivery for %@";
+"basketview.deliverytiers.custom.upsellfree" = "Spend %@ more to get FREE DELIVERY ";

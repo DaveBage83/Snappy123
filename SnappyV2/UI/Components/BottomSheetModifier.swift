@@ -16,9 +16,7 @@ struct BottomSheet<Content: View>: View {
     private let headerCornerRadius: CGFloat = 2.5
     private let headerWidth: CGFloat = 40
     private let headerHeight: CGFloat = 5
-    private let mainCornerRadius: CGFloat = 10
-//    private let dragPillBottomPadding: CGFloat = 25
-    
+    private let mainCornerRadius: CGFloat = 10    
     
     @Binding var isPresented: Bool
     

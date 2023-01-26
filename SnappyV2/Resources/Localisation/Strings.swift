@@ -301,6 +301,11 @@ enum Strings {
             case gotIt = "basketview.listentry.gotit"
             case missed = "basketview.listentry.missed"
         }
+        
+        enum DeliveryTiersCustom: String, IterableSnappyStringCustomisable {
+            case upsellNotFree = "basketview.deliverytiers.custom.upsellnotfree"
+            case upsellFree = "basketview.deliverytiers.custom.upsellfree"
+        }
     }
     
     enum StoresView: String, IterableSnappyString {

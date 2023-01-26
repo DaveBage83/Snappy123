@@ -16,7 +16,8 @@ struct BottomSheet<Content: View>: View {
     private let headerCornerRadius: CGFloat = 2.5
     private let headerWidth: CGFloat = 40
     private let headerHeight: CGFloat = 5
-    private let mainCornerRadius: CGFloat = 10    
+    private let mainCornerRadius: CGFloat = 10
+    private let titleBottomPadding: CGFloat = 8
     
     @Binding var isPresented: Bool
     
@@ -124,7 +125,7 @@ struct BottomSheet<Content: View>: View {
                                     Text(title)
                                         .font(.heading4())
                                         .foregroundColor(colorPalette.typefacePrimary)
-                                        .padding(.bottom, 8)
+                                        .padding(.bottom, titleBottomPadding)
                                 }
                                 
                                 self.content

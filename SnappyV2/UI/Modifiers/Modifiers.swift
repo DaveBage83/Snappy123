@@ -438,12 +438,12 @@ struct DeliveryTierInfo: Identifiable, Equatable {
 }
 
 extension View {
-    // Provides an info button next to the parent view with pop up text when tapped
+    /// Provides an info button next to the parent view with pop up text when tapped
     func withInfoButtonAndText(container: DIContainer, text: String) -> some View {
         modifier(WithInfoButtonAndText(container: container, infoText: text, action: nil))
     }
     
-    // Provides an info button next to the parent view with an associated action when tapped
+    /// Provides an info button next to the parent view with an associated action when tapped
     func withInfoButtonAndAction(container: DIContainer, action: @escaping () -> Void) -> some View {
         modifier(WithInfoButtonAndText(container: container, infoText: nil, action: action))
     }

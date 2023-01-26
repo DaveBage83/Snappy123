@@ -437,48 +437,6 @@ struct DeliveryTierInfo: Identifiable, Equatable {
     let currency: RetailStoreCurrency?
 }
 
-struct DeliveryOfferBanner: ViewModifier {
-    @Environment(\.mainWindowSize) var mainWindowSize
-
-    @Environment(\.colorScheme) var colorScheme
-    
-    @StateObject var viewModel: DeliveryOfferBannerViewModel
-                
-    init(viewModel: DeliveryOfferBannerViewModel) {
-        self._viewModel = .init(wrappedValue: viewModel)
-    }
-
-    func body(content: Content) -> some View {
-        if viewModel.showDeliveryBanner {
-            content
-                .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
-                if viewModel.isDisabled == false, let orderMethod = viewModel.deliveryTierInfo.orderMethod {
-                    viewModel.setOrderMethod(orderMethod)
-                }
-            })])
-            .disabled(viewModel.isDisabled)
-            .snappyBottomSheet(
-                container: viewModel.container,
-                item: $viewModel.selectedDeliveryTierInfo,
-                windowSize: mainWindowSize,
-                content: { orderMethod in
-                    RetailStoreDeliveryTiers(viewModel: .init(
-                        container: viewModel.container,
-                        deliveryOrderMethod: viewModel.selectedDeliveryTierInfo?.orderMethod,
-                        currency: viewModel.deliveryTierInfo.currency))
-                })
-        } else {
-            content
-        }
-    }
-}
-
-extension View {
-    func withDeliveryOffer(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
-        modifier(DeliveryOfferBanner(viewModel: .init(container: container, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
-    }
-}
-
 extension View {
     // Provides an info button next to the parent view with pop up text when tapped
     func withInfoButtonAndText(container: DIContainer, text: String) -> some View {

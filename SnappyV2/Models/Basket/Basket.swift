@@ -80,7 +80,7 @@ struct BasketFulfilmentMethod: Codable, Equatable {
     let minSpend: Double
     let zoneFreeDeliveryMessage: String?
     let minBasketSpendForNextDeliveryTier: Double?
-    let nextTierSpendIsHigherThanCurrent: Bool
+    let nextTierSpendIsHigherThanCurrent: Bool?
     let minAdditionalBasketSpendForNextTier: Double?
     let nextTierDeliveryCost: Double?
     //let datetime: Date // disabled for now until bakend team straighten out

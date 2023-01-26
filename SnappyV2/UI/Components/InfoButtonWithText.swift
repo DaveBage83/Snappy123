@@ -14,7 +14,7 @@ struct InfoButtonWithText: View {
     
     struct Constants {
         struct Image {
-            static let height: CGFloat = 18
+            static let height: CGFloat = 12
         }
         
         struct Text {
@@ -31,7 +31,8 @@ struct InfoButtonWithText: View {
     }
     
     let container: DIContainer
-    let text: String
+    let text: String?
+    let action: (() -> Void)?
     
     @State var showText: Bool = false
     @State var textHeight: CGFloat = 0
@@ -41,21 +42,37 @@ struct InfoButtonWithText: View {
         .init(container: container, colorScheme: colorScheme)
     }
     
+    init(container: DIContainer, text: String) {
+        self.container = container
+        self.text = text
+        self.action = nil
+    }
+    
+    init(container: DIContainer, action: @escaping () -> Void) {
+        self.container = container
+        self.text = nil
+        self.action = action
+    }
+    
     var body: some View {
         ZStack {
             Button {
-                showText.toggle()
+                if let action {
+                    action()
+                } else {
+                    showText.toggle()
+                }
             } label: {
-                Image.Icons.Info.filled
+                Image.Icons.Info.standard
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: Constants.Image.height)
-                    .foregroundColor(colorPalette.primaryBlue)
+                    .foregroundColor(colorPalette.typefacePrimary)
             }
             .fixedSize()
             
-            if showText {
+            if let text = text, showText {
                 Text(text)
                     .font(.Body2.regular())
                     .padding(Constants.Text.padding)
@@ -85,7 +102,7 @@ struct InfoButtonWithText: View {
 #if DEBUG
 struct InfoButtonWithText_Previews: PreviewProvider {
     static var previews: some View {
-        InfoButtonWithText(container: .preview, text: "sdasdasdasdasdasdasdasdasd")
+        InfoButtonWithText(container: .preview, action: {})
     }
 }
 #endif

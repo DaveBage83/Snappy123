@@ -277,19 +277,37 @@ struct WithInfoButtonAndText: ViewModifier {
     @State var elementWidth: CGFloat = 0
     
     let container: DIContainer
-    let infoText: String
+    let infoText: String?
+    let action: (() -> Void)?
     
     func body(content: Content) -> some View {
-        content
-            .overlay(GeometryReader { geo in
-                Text("")
-                    .onAppear {
-                        elementWidth = geo.size.width
-                    }
-            })
-            .overlay(InfoButtonWithText(container: container, text: infoText)
-                .offset(x: (elementWidth / 2) + 16)
-            )
+        mainBody(content: content)
+    }
+    
+    @ViewBuilder func mainBody(content: Content) -> some View {
+        if let infoText {
+            content
+                .overlay(GeometryReader { geo in
+                    Text("")
+                        .onAppear {
+                            elementWidth = geo.size.width
+                        }
+                })
+                .overlay(InfoButtonWithText(container: container, text: infoText)
+                    .offset(x: (elementWidth / 2) + 16)
+                )
+        } else if let action {
+            content
+                .overlay(GeometryReader { geo in
+                    Text("")
+                        .onAppear {
+                            elementWidth = geo.size.width
+                        }
+                })
+                .overlay(InfoButtonWithText(container: container, action: action)
+                    .offset(x: (elementWidth / 2) + 16)
+                )
+        }
     }
 }
 
@@ -419,51 +437,15 @@ struct DeliveryTierInfo: Identifiable, Equatable {
     let currency: RetailStoreCurrency?
 }
 
-struct DeliveryOfferBanner: ViewModifier {
-    @Environment(\.mainWindowSize) var mainWindowSize
-
-    @Environment(\.colorScheme) var colorScheme
-    
-    @StateObject var viewModel: DeliveryOfferBannerViewModel
-                
-    init(viewModel: DeliveryOfferBannerViewModel) {
-        self._viewModel = .init(wrappedValue: viewModel)
-    }
-
-    func body(content: Content) -> some View {
-        if viewModel.showDeliveryBanner {
-            content
-                .highlightedItem(container: viewModel.container, banners: [.init(type: viewModel.bannerType, text: viewModel.deliveryBannerText?.firstLetterCapitalized ?? "", action: {
-                if viewModel.isDisabled == false, let orderMethod = viewModel.deliveryTierInfo.orderMethod {
-                    viewModel.setOrderMethod(orderMethod)
-                }
-            })])
-            .disabled(viewModel.isDisabled)
-            .snappyBottomSheet(
-                container: viewModel.container,
-                item: $viewModel.selectedDeliveryTierInfo,
-                windowSize: mainWindowSize,
-                content: { orderMethod in
-                    RetailStoreDeliveryTiers(viewModel: .init(
-                        container: viewModel.container,
-                        deliveryOrderMethod: viewModel.selectedDeliveryTierInfo?.orderMethod,
-                        currency: viewModel.deliveryTierInfo.currency))
-                })
-        } else {
-            content
-        }
-    }
-}
-
 extension View {
-    func withDeliveryOffer(container: DIContainer, deliveryTierInfo: DeliveryTierInfo, currency: RetailStoreCurrency?, fromBasket: Bool) -> some View {
-        modifier(DeliveryOfferBanner(viewModel: .init(container: container, deliveryTierInfo: deliveryTierInfo, currency: currency, fromBasket: fromBasket)))
-    }
-}
-
-extension View {
+    /// Provides an info button next to the parent view with pop up text when tapped
     func withInfoButtonAndText(container: DIContainer, text: String) -> some View {
-        modifier(WithInfoButtonAndText(container: container, infoText: text))
+        modifier(WithInfoButtonAndText(container: container, infoText: text, action: nil))
+    }
+    
+    /// Provides an info button next to the parent view with an associated action when tapped
+    func withInfoButtonAndAction(container: DIContainer, action: @escaping () -> Void) -> some View {
+        modifier(WithInfoButtonAndText(container: container, infoText: nil, action: action))
     }
 }
 

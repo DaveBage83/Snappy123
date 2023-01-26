@@ -549,7 +549,9 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: selectedStore.storeTimeZone)) - \(slotEndTime.hourMinutesString(timeZone: selectedStore.storeTimeZone))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+
+        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: .mockedData, selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let checkoutService = MockedCheckoutService(expected: [.processNewCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
@@ -593,7 +595,31 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: selectedStore.storeTimeZone)) - \(slotEndTime.hourMinutesString(timeZone: selectedStore.storeTimeZone))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+  
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 1.5,
+                minSpend: 0,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil),
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 10,
+            orderTotal: 11,
+            storeId: nil,
+            basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let checkoutService = MockedCheckoutService(expected: [.processNewCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
@@ -637,7 +663,31 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: selectedStore.storeTimeZone)) - \(slotEndTime.hourMinutesString(timeZone: selectedStore.storeTimeZone))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+ 
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 1.5,
+                minSpend: 0,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil),
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 10,
+            orderTotal: 11,
+            storeId: nil,
+            basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let checkoutService = MockedCheckoutService(expected: [.processNewCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
@@ -683,7 +733,31 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: selectedStore.storeTimeZone)) - \(slotEndTime.hourMinutesString(timeZone: selectedStore.storeTimeZone))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 1.5,
+                minSpend: 0,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil),
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 10,
+            orderTotal: 11,
+            storeId: nil,
+            basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let checkoutService = MockedCheckoutService(expected: [
@@ -733,7 +807,30 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: selectedStore.storeTimeZone)) - \(slotEndTime.hourMinutesString(timeZone: selectedStore.storeTimeZone))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 1.5,
+                minSpend: 0,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil),
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 10,
+            orderTotal: 11,
+            storeId: nil,
+            basketItemRemoved: nil)
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let checkoutService = MockedCheckoutService(expected: [.processSavedCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardId: memberCard.id, cvv: cvv)])
@@ -791,7 +888,31 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: selectedStore.storeTimeZone)) - \(slotEndTime.hourMinutesString(timeZone: selectedStore.storeTimeZone))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 1.5,
+                minSpend: 0,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil),
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 10,
+            orderTotal: 11,
+            storeId: nil,
+            basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let checkoutService = MockedCheckoutService(expected: [.processSavedCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardId: memberCard.id, cvv: cvv)])

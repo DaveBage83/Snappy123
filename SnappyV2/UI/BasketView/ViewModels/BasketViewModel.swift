@@ -82,6 +82,7 @@ class BasketViewModel: ObservableObject {
     @Published var showMentionMeLoading = false
     @Published var showMentionMeWebView = false
     @Published var mentionMeRefereeRequestResult = MentionMeRequestResult(success: false, type: .referee, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
+    @Published var selectedDeliveryTierInfo: DeliveryTierInfo?
     
     @Published var isContinueToCheckoutTapped = false
         
@@ -113,6 +114,27 @@ class BasketViewModel: ObservableObject {
         }
         
         return nil
+    }
+    
+    var deliveryUpsellMessage: String? {
+        guard let minAdditionalSpend = basket?.fulfilmentMethod.minAdditionalBasketSpendForNextTier?.toCurrencyString(using: currency),
+              let nextTierDeliveryCost = basket?.fulfilmentMethod.nextTierDeliveryCost else {
+                  return nil
+              }
+        
+        let nextTierCost = nextTierDeliveryCost.toCurrencyString(using: currency)
+        
+        if nextTierDeliveryCost > 0 {
+            return Strings.BasketView.DeliveryTiersCustom.upsellNotFree.localizedFormat(minAdditionalSpend, nextTierCost)
+        }
+        
+        return Strings.BasketView.DeliveryTiersCustom.upsellFree.localizedFormat(minAdditionalSpend)
+    }
+    
+    var showDeliveryUpsellMessage: Bool {
+        guard let minAdditionalSpend = basket?.fulfilmentMethod.minAdditionalBasketSpendForNextTier else { return false }
+        
+        return minAdditionalSpend > 0
     }
     
     var orderDeliveryMethod: RetailStoreOrderMethod? {
@@ -633,5 +655,18 @@ class BasketViewModel: ObservableObject {
     
     func dismissView() {
         isContinueToCheckoutTapped = false
+    }
+    
+    func showInfoButton(feeName: String) -> Bool {
+        if let deliveryTiers = orderDeliveryMethod?.deliveryTiers, deliveryTiers.isEmpty == false {
+            return feeName.lowercased() == "delivery"
+        }
+        return false
+    }
+        
+    func deliveryTierButtonPressed() {
+        selectedDeliveryTierInfo = .init(
+            orderMethod: orderDeliveryMethod,
+            currency: currency)
     }
 }

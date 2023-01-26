@@ -76,7 +76,8 @@ struct FulfilmentInfoCard: View {
     
     private var cardContents: some View {
         ZStack {
-            CheckoutSlotExpiryView(viewModel: .init(container: viewModel.container, visible: false))
+            #warning("Commenting this out for now. This view displays a pill and error if the slot is expired. Currently awaiting clarity on how we want to proceed with slot expiry.")
+//            CheckoutSlotExpiryView(viewModel: .init(container: viewModel.container, visible: false))
 
             HStack(spacing: Constants.Main.spacing) {
                 

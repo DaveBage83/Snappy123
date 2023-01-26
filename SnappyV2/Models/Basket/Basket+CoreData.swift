@@ -198,7 +198,9 @@ extension Basket {
             basket.fulfilmentMethodMinBasketSpendForNextDeliveryTier = minBasketSpendForNextDeliveryTier
         }
         
-        basket.fulfilmentMethodNextTierSpendIsHigherThanCurrent = fulfilmentMethod.nextTierSpendIsHigherThanCurrent
+        if let nextTierSpendIsHigherThanCurrent = fulfilmentMethod.nextTierSpendIsHigherThanCurrent {
+            basket.fulfilmentMethodNextTierSpendIsHigherThanCurrent = nextTierSpendIsHigherThanCurrent
+        }
         
         if let minAdditionalBasketSpendForNextTier = fulfilmentMethod.minAdditionalBasketSpendForNextTier {
             basket.fulfilmentMethodMinAdditionalBasketSpendForNextTier = minAdditionalBasketSpendForNextTier

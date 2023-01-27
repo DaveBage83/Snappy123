@@ -346,6 +346,66 @@ class StoreCardInfoViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isSelectedStore)
     }
+    
+    func test_whenOrderMethodIsDelivery_givenStoreHasDeliveryAndStatusOpen_thenReturnCorrectStoreStatus() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreDeliveryOpen)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertEqual(sut.storeStatus, .open)
+    }
+    
+    
+    func test_whenOrderMethodIsDelivery_givenStoreHasDeliveryAndStatusCloded_thenReturnCorrectStoreStatus() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreDeliveryClosed)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertEqual(sut.storeStatus, .closed)
+    }
+    
+    func test_whenOrderMethodIsDelivery_givenStoreHasNoDelivery_thenReturnCorrectStoreStatusNil() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreCollectionOpen)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertNil(sut.storeStatus)
+    }
+    
+    func test_whenOrderMethodIsCollection_givenStoreHasCollectionAndStatusOpen_thenReturnCorrectStoreStatus() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreCollectionOpen)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertEqual(sut.storeStatus, .open)
+    }
+    
+    func test_whenOrderMethodIsCollection_givenStoreHasCollectionAndStatusCloded_thenReturnCorrectStoreStatus() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreCollectionClosed)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertEqual(sut.storeStatus, .closed)
+    }
+    
+    func test_whenOrderMethodIsCollection_givenStoreHasNoCollection_thenReturnCorrectStoreStatusNil() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreDeliveryOpen)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertNil(sut.storeStatus)
+    }
+    
+    func test_whenSelectedMethodIsDelivery_givenPreorderStatus_thenReturnCorrectFulfilmentTimeString() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreDeliveryPreorder)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        
+        XCTAssertEqual(sut.fulfilmentTime, "31-Jan")
+    }
+    
+    func test_whenSelectedMethodIsCollection_givenPreorderStatus_thenReturnCorrectFulfilmentTimeString() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreCollectionPreorder)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        
+        XCTAssertEqual(sut.fulfilmentTime, "31-Jan")
+    }
+    
+    
+    func test_whenSelectedMethodIsDelivery_givenPreorderStatusAndWrongDateFormat_thenReturnFulfilmentTimeStringAsNil() {
+        let sut = makeSUT(storeDetails: .mockedDataIndividualStoreDeliveryPreorderWrongDateFormat)
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        
+        XCTAssertNil(sut.fulfilmentTime)
+    }
+    
     func makeSUT(container: DIContainer = .preview, storeDetails: RetailStore) -> StoreCardInfoViewModel {
         let sut = StoreCardInfoViewModel(container: container, storeDetails: storeDetails)
         

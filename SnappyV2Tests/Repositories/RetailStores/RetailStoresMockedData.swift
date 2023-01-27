@@ -276,6 +276,202 @@ extension RetailStore {
         ),
     ]
     
+    static let mockedDataIndividualStoreDeliveryOpen: RetailStore = .init(
+        id: 1944,
+        storeName: "Premier Nethergate",
+        distance: 0.579,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+        ],
+        storeProductTypes: [21],
+        orderMethods: [
+            "delivery" : RetailStoreOrderMethod(
+                name: .delivery,
+                earliestTime: "13:15 - 13:20",
+                status: .open,
+                cost: 0,
+                fulfilmentIn: "1 to 6 mins",
+                freeFulfilmentMessage: nil,
+                deliveryTiers: nil,
+                freeFrom: 0,
+                minSpend: 0,
+                earliestOpeningDate: "2023-01-31"
+            )
+        ],
+        ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+        currency: RetailStoreCurrency.mockedGBPData
+    )
+    
+    static let mockedDataIndividualStoreDeliveryPreorder: RetailStore = .init(
+        id: 1944,
+        storeName: "Premier Nethergate",
+        distance: 0.579,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+        ],
+        storeProductTypes: [21],
+        orderMethods: [
+            "delivery" : RetailStoreOrderMethod(
+                name: .delivery,
+                earliestTime: "13:15 - 13:20",
+                status: .preorder,
+                cost: 0,
+                fulfilmentIn: "1 to 6 mins",
+                freeFulfilmentMessage: nil,
+                deliveryTiers: nil,
+                freeFrom: 0,
+                minSpend: 0,
+                earliestOpeningDate: "2023-01-31"
+            )
+        ],
+        ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+        currency: RetailStoreCurrency.mockedGBPData
+    )
+    
+    static let mockedDataIndividualStoreDeliveryPreorderWrongDateFormat: RetailStore = .init(
+        id: 1944,
+        storeName: "Premier Nethergate",
+        distance: 0.579,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+        ],
+        storeProductTypes: [21],
+        orderMethods: [
+            "delivery" : RetailStoreOrderMethod(
+                name: .delivery,
+                earliestTime: "13:15 - 13:20",
+                status: .preorder,
+                cost: 0,
+                fulfilmentIn: "1 to 6 mins",
+                freeFulfilmentMessage: nil,
+                deliveryTiers: nil,
+                freeFrom: 0,
+                minSpend: 0,
+                earliestOpeningDate: "2023222-01-31"
+            )
+        ],
+        ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+        currency: RetailStoreCurrency.mockedGBPData
+    )
+    
+    static let mockedDataIndividualStoreCollectionPreorder: RetailStore = .init(
+        id: 1944,
+        storeName: "Premier Nethergate",
+        distance: 0.579,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+        ],
+        storeProductTypes: [21],
+        orderMethods: [
+            "collection" : RetailStoreOrderMethod(
+                name: .collection,
+                earliestTime: "13:15 - 13:20",
+                status: .preorder,
+                cost: 0,
+                fulfilmentIn: "1 to 6 mins",
+                freeFulfilmentMessage: nil,
+                deliveryTiers: nil,
+                freeFrom: 0,
+                minSpend: 0,
+                earliestOpeningDate: "2023-01-31"
+            )
+        ],
+        ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+        currency: RetailStoreCurrency.mockedGBPData
+    )
+    
+    static let mockedDataIndividualStoreDeliveryClosed: RetailStore = .init(
+        id: 1944,
+        storeName: "Premier Nethergate",
+        distance: 0.579,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+        ],
+        storeProductTypes: [21],
+        orderMethods: [
+            "delivery" : RetailStoreOrderMethod(
+                name: .delivery,
+                earliestTime: "13:15 - 13:20",
+                status: .closed,
+                cost: 0,
+                fulfilmentIn: "1 to 6 mins",
+                freeFulfilmentMessage: nil,
+                deliveryTiers: nil,
+                freeFrom: 0,
+                minSpend: 0,
+                earliestOpeningDate: nil
+            )
+        ],
+        ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+        currency: RetailStoreCurrency.mockedGBPData
+    )
+    
+    static let mockedDataIndividualStoreCollectionClosed: RetailStore = .init(
+        id: 1944,
+        storeName: "Premier Nethergate",
+        distance: 0.579,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+        ],
+        storeProductTypes: [21],
+        orderMethods: [
+            "collection" : RetailStoreOrderMethod(
+                name: .collection,
+                earliestTime: "13:15 - 13:20",
+                status: .closed,
+                cost: 0,
+                fulfilmentIn: "1 to 6 mins",
+                freeFulfilmentMessage: nil,
+                deliveryTiers: nil,
+                freeFrom: 0,
+                minSpend: 0,
+                earliestOpeningDate: nil
+            )
+        ],
+        ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+        currency: RetailStoreCurrency.mockedGBPData
+    )
+    
+    static let mockedDataIndividualStoreCollectionOpen: RetailStore = .init(
+        id: 1944,
+        storeName: "Premier Nethergate",
+        distance: 0.579,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/14867386811484320803snappy_store_logo.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
+        ],
+        storeProductTypes: [21],
+        orderMethods: [
+            "collection" : RetailStoreOrderMethod(
+                name: .collection,
+                earliestTime: "13:15 - 13:20",
+                status: .open,
+                cost: 0,
+                fulfilmentIn: "1 to 6 mins",
+                freeFulfilmentMessage: nil,
+                deliveryTiers: nil,
+                freeFrom: 0,
+                minSpend: 0,
+                earliestOpeningDate: nil
+            )
+        ],
+        ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+        currency: RetailStoreCurrency.mockedGBPData
+    )
+    
     static let mockedDataIndividualStoreNoDelivery: RetailStore = .init(
         id: 1944,
         storeName: "Premier Nethergate",

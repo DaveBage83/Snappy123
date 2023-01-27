@@ -90,7 +90,8 @@ struct RetailStoreDeliveryTiers_Previews: PreviewProvider {
                     .init(minBasketSpend: 5, deliveryFee: 3)
                 ],
                 freeFrom: nil,
-                minSpend: nil),
+                minSpend: nil,
+                earliestOpeningDate: nil),
             currency: .init(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "Pound")))
     }
 }

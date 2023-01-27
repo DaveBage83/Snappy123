@@ -54,6 +54,7 @@ struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
     let deliveryTiers: [DeliveryTier]?
     let freeFrom: Double?
     let minSpend: Double?
+    let earliestOpeningDate: String?
     // workingHours - todo, differs from spolight
 }
 

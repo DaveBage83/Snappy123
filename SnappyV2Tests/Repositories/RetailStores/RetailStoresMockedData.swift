@@ -132,7 +132,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -161,7 +162,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -172,7 +174,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -198,7 +201,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             ratings: nil,
@@ -224,7 +228,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -235,7 +240,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             ratings: nil,
@@ -261,7 +267,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             ratings: nil,
@@ -289,7 +296,8 @@ extension RetailStore {
                 freeFulfilmentMessage: nil,
                 deliveryTiers: nil,
                 freeFrom: 0,
-                minSpend: 0
+                minSpend: 0,
+                earliestOpeningDate: nil
             )
         ],
         ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -316,7 +324,8 @@ extension RetailStore {
                 freeFulfilmentMessage: nil,
                 deliveryTiers: nil,
                 freeFrom: 0,
-                minSpend: 0
+                minSpend: 0,
+                earliestOpeningDate: nil
             )
         ],
         ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -343,7 +352,8 @@ extension RetailStore {
                 freeFulfilmentMessage: "Test",
                 deliveryTiers: nil,
                 freeFrom: 0,
-                minSpend: 0
+                minSpend: 0,
+                earliestOpeningDate: nil
             )
         ],
         ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -370,7 +380,8 @@ extension RetailStore {
                 freeFulfilmentMessage: "Test",
                 deliveryTiers: nil,
                 freeFrom: 0,
-                minSpend: nil
+                minSpend: nil,
+                earliestOpeningDate: nil
             )
         ],
         ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -397,7 +408,8 @@ extension RetailStore {
                 freeFulfilmentMessage: "Test",
                 deliveryTiers: nil,
                 freeFrom: 0,
-                minSpend: 0
+                minSpend: 0,
+                earliestOpeningDate: nil
             )
         ],
         ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -424,7 +436,8 @@ extension RetailStore {
                 freeFulfilmentMessage: "Test",
                 deliveryTiers: nil,
                 freeFrom: 0,
-                minSpend: 10
+                minSpend: 10,
+                earliestOpeningDate: nil
             )
         ],
         ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -452,7 +465,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -463,7 +477,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
@@ -489,7 +504,8 @@ extension RetailStore {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             ratings: nil,
@@ -570,7 +586,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -581,7 +598,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -676,7 +694,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: [],
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -687,7 +706,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -782,7 +802,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -877,7 +898,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -888,7 +910,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -983,7 +1006,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -994,7 +1018,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1089,7 +1114,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1100,7 +1126,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1186,7 +1213,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1197,7 +1225,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1290,7 +1319,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1301,7 +1331,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1396,7 +1427,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1407,7 +1439,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1502,7 +1535,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: [],
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1513,7 +1547,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1612,7 +1647,8 @@ extension RetailStoreDetails {
                         .init(minBasketSpend: 15, deliveryFee: 2)
                     ],
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1623,7 +1659,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1718,7 +1755,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1729,7 +1767,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1825,7 +1864,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1836,7 +1876,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -1934,7 +1975,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -1945,7 +1987,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -2067,7 +2110,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -2078,7 +2122,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -2178,7 +2223,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -2189,7 +2235,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [
@@ -2284,7 +2331,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 ),
                 "collection" : RetailStoreOrderMethod(
                     name: .collection,
@@ -2295,7 +2343,8 @@ extension RetailStoreDetails {
                     freeFulfilmentMessage: nil,
                     deliveryTiers: nil,
                     freeFrom: 0,
-                    minSpend: 0
+                    minSpend: 0,
+                    earliestOpeningDate: nil
                 )
             ],
             deliveryDays: [

@@ -51,7 +51,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
         
         let cost: Double = 3
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: nil)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)?.text
         let hasTiers = orderMethod.fromDeliveryCost(currency: currency)?.hasTiers
@@ -69,7 +69,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
         
         let cost: Double = 3
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0, earliestOpeningDate: nil)
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)?.text
         let hasTiers = orderMethod.fromDeliveryCost(currency: currency)?.hasTiers
@@ -86,7 +86,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
         
         let currency = RetailStoreCurrency(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "GBP")
                 
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0, earliestOpeningDate: nil)
         
         let lowestCostString = tiers.first?.deliveryFee.toCurrencyString(using: currency, roundWholeNumbers: true)
                 
@@ -107,7 +107,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
               
         let cost: Double = 10
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 0, earliestOpeningDate: nil)
         
         let lowestCostString = tiers.first?.deliveryFee.toCurrencyString(using: currency, roundWholeNumbers: true)
                 
@@ -128,7 +128,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
               
         let cost: Double = 2
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 2)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 2, earliestOpeningDate: nil)
         
         let lowestCostString = tiers.first?.deliveryFee.toCurrencyString(using: currency, roundWholeNumbers: true)
                 
@@ -145,7 +145,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
               
         let cost: Double = 2
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 20)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 20, earliestOpeningDate: nil)
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)?.text
         
@@ -158,7 +158,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
               
         let cost: Double = 2
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: nil)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: nil, earliestOpeningDate: nil)
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)?.text
         let hasTiers = orderMethod.fromDeliveryCost(currency: currency)?.hasTiers
@@ -173,7 +173,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
               
         let cost: Double = 2
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: 10)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: 10, earliestOpeningDate: nil)
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)?.text
         let hasTiers = orderMethod.fromDeliveryCost(currency: currency)?.hasTiers
@@ -188,7 +188,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
               
         let cost: Double = 2
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 0, minSpend: 10)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 0, minSpend: 10, earliestOpeningDate: nil)
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)?.text
         let hasTiers = orderMethod.fromDeliveryCost(currency: currency)?.hasTiers
@@ -204,7 +204,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
               
         let cost: Double = 2
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 5)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 5, earliestOpeningDate: nil)
         
         let fromDeliveryCostString = orderMethod.fromDeliveryCost(currency: currency)?.text
         let hasTiers = orderMethod.fromDeliveryCost(currency: currency)?.hasTiers
@@ -216,7 +216,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
     func test_whenNoTiersPresent_thenLowestTierDeliveryCostNil() {
         let cost: Double = 2
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 20)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: 10, minSpend: 20, earliestOpeningDate: nil)
         
         XCTAssertNil(orderMethod.lowestTierDeliveryCost)
     }
@@ -229,7 +229,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
             DeliveryTier(minBasketSpend: 5, deliveryFee: 5)
         ]
         
-        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: 10, minSpend: 20)
+        let orderMethod: RetailStoreOrderMethod = .init(name: .delivery, earliestTime: nil, status: .open, cost: cost, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: 10, minSpend: 20, earliestOpeningDate: nil)
         
         XCTAssertEqual(orderMethod.lowestTierDeliveryCost, 3)
     }

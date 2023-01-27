@@ -1137,7 +1137,8 @@ class BasketViewModelTests: XCTestCase {
             freeFulfilmentMessage: nil,
             deliveryTiers: nil,
             freeFrom: 0,
-            minSpend: 0
+            minSpend: 0,
+            earliestOpeningDate: nil
         )
         
         XCTAssertEqual(sut.orderDeliveryMethod, expectedMethod)

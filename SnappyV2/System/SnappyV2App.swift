@@ -281,7 +281,7 @@ struct SnappyV2StudyApp: View {
                 closeDriverMapView?()
             }
         )
-        
+
         let popup = UIHostingController(
             rootView: ToastableViewContainer(
                 content: {

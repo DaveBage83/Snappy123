@@ -87,15 +87,14 @@ class StandardAlertToastViewModel: ObservableObject {
     @Published var alertText = ""
     
     private var cancellables = Set<AnyCancellable>()
-    let viewID: UUID
-    let toastType: ToastType
+    let toastType: ToastType // Error or success
     
-    init(container: DIContainer, toastType: ToastType, viewID: UUID) {
+    init(container: DIContainer, toastType: ToastType) {
         self.container = container
-        self.viewID = viewID
         self.toastType = toastType
         let appState = container.appState
         
+        // Bind to AppState values
         if toastType == .error {
             setupBindToLatestError(with: appState)
         }
@@ -141,8 +140,11 @@ class StandardAlertToastViewModel: ObservableObject {
     private func handleToast(toastString: String?) {
         if let toastString, toastString.isEmpty == false {
             
+            // We add a short delay of 0.2 secs so that when one toast dismisses, we allow the toast iteself
+            // to begin dismissing before presenting the next one in the queue
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                 guard let self else { return }
+                // Set text of toast and present
                 self.alertText = toastString
                 self.showAlert = true
             }
@@ -368,11 +370,12 @@ extension View {
 }
 
 extension View {
-    func withAlertToast(container: DIContainer, toastType: ToastType, viewID: UUID) -> some View {
+    /// Modifier which reacts to changes in 2 AppState arrays:  'errors' and 'successToasts', and presents toasts on top of the parent view
+    /// when changes detected
+    func withAlertToast(container: DIContainer, toastType: ToastType) -> some View {
         modifier(StandardAlertToast(viewModel: .init(
             container: container,
-            toastType: toastType,
-            viewID: viewID)))
+            toastType: toastType)))
     }
 }
 

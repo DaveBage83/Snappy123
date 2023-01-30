@@ -207,31 +207,14 @@ struct StoresView: View {
         }
     }
     
-    // MARK: - Horizontal store type scroll view
-    private func storesTypesAvailableHorisontalScrollView() -> some View {
-        VStack(alignment: .leading) {
-            AdaptableText(
-                text: StoreTypesStrings.browse.localized,
-                altText: StoreTypesStrings.browseShort.localized,
-                threshold: Constants.General.minimalViewLayoutThreshold)
-            .font(.heading4())
-            .foregroundColor(colorPalette.primaryBlue)
-            .padding(.horizontal)
-            .padding(.top, Constants.HorizontalStoreTypeScroll.topPadding)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    if let storeTypes = viewModel.retailStoreTypes {
-                        ForEach(storeTypes, id: \.self) { storeType in
-                            Button(action: { viewModel.selectFilteredRetailStoreType(id: storeType.id) }) {
-                                StoreTypeCard(container: viewModel.container, storeType: storeType, selected: .constant(viewModel.filteredRetailStoreType == storeType.id), viewModel: viewModel)
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
+    @ViewBuilder private func categoryPill(text: String, isSelected: Binding<Bool>) -> some View {
+        Text(text)
+            .font(.Body2.semiBold())
+            .foregroundColor(isSelected.wrappedValue ? .white : colorPalette.typefacePrimary)
+            .padding(8)
+            .background(isSelected.wrappedValue ? colorPalette.secondaryDark : colorPalette.typefaceInvert)
+            .standardPillFormat(outlineColor: colorPalette.typefacePrimary)
+            .padding(.vertical, 3)
     }
     
     private var unsuccessfulStoreSearch: some View {
@@ -316,7 +299,7 @@ struct StoresView: View {
                 
             } else {
                 if viewModel.showStoreTypes {
-                    storesTypesAvailableHorisontalScrollView()
+                    DigitalHighstreet(viewModel: viewModel)
                 }
                 
                 if viewModel.showNoStoresAvailableMessage {
@@ -381,6 +364,7 @@ struct StoresView: View {
                     }
                 }
             }
+            .transition(.move(edge: .bottom))
         } else {
             VStack {
                 storeStatusHeader(status: status)

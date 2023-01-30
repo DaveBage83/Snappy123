@@ -344,6 +344,10 @@ class StringsTests: XCTestCase {
         Strings.Pagination.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.DigitalHighstreet.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

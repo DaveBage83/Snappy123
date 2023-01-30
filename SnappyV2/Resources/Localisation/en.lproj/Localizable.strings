@@ -715,3 +715,8 @@
 // MARK: - Delivery tiers - basket
 "basketview.deliverytiers.custom.upsellnotfree" = "Spend %@ more to get delivery for %@";
 "basketview.deliverytiers.custom.upsellfree" = "Spend %@ more to get FREE DELIVERY ";
+
+// MARK: - Digital highstreet
+"digitalhighstreet.allstores" = "All stores";
+"digitalhighstreet.selectstore" = "Select a store >";
+"digitalhighstreet.buildandpay" = " Build your order > Pay securely";

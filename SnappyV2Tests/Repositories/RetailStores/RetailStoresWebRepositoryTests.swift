@@ -34,19 +34,24 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     
     func test_loadRetailStores_postcode() throws {
         let data = RetailStoresSearch.mockedData
+        let isFirstOrder = true
         
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "postcode": "DD1 3JA",
             "country": "UK",
             "platform": AppV2Constants.Client.platform,
-            "deviceId": "string",
-            "businessId": AppV2Constants.Business.id
+            "businessId": AppV2Constants.Business.id,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
         
         try mock(.searchByPostcode(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
         
-        sut.loadRetailStores(postcode: "DD1 3JA").sinkToResult { result in
+        sut.loadRetailStores(postcode: "DD1 3JA", isFirstOrder: isFirstOrder).sinkToResult { result in
             result.assertSuccess(value: data)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -56,19 +61,24 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     
     func test_loadRetailStores_empty_postcode() throws {
         let data = RetailStoresSearch.mockedData
+        let isFirstOrder = true
         
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "postcode": "",
             "country": "UK",
             "platform": AppV2Constants.Client.platform,
-            "deviceId": "string",
-            "businessId": AppV2Constants.Business.id
+            "businessId": AppV2Constants.Business.id,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
         
         try mock(.searchByPostcode(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
         
-        sut.loadRetailStores(postcode: "").sinkToResult { result in
+        sut.loadRetailStores(postcode: "", isFirstOrder: isFirstOrder).sinkToResult { result in
             result.assertFailure(RetailStoresServiceError.invalidParameters(["postcode empty"]).localizedDescription)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -83,7 +93,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         
         let location = CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)
         
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "lat": location.latitude,
             "lng": location.longitude,
             "country": "UK",
@@ -92,10 +102,14 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
             "businessId": AppV2Constants.Business.id
         ]
         
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
+        
         try mock(.searchByLocation(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
         
-        sut.loadRetailStores(location: location).sinkToResult { result in
+        sut.loadRetailStores(location: location, isFirstOrder: true).sinkToResult { result in
             result.assertSuccess(value: data)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -118,7 +132,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         try mock(.retailStoreDetails(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
         
-        sut.loadRetailStoreDetails(storeId: 30, postcode: "DD1 3JA").sinkToResult { result in
+        sut.loadRetailStoreDetails(storeId: 30, postcode: "DD1 3JA", isFirstOrder: true).sinkToResult { result in
             result.assertSuccess(value: data)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -139,7 +153,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         try mock(.retailStoreDetails(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
         
-        sut.loadRetailStoreDetails(storeId: 30, postcode: "").sinkToResult { result in
+        sut.loadRetailStoreDetails(storeId: 30, postcode: "", isFirstOrder: true).sinkToResult { result in
             result.assertFailure(RetailStoresServiceError.invalidParameters(["postcode empty"]).localizedDescription)
             exp.fulfill()
         }.store(in: &subscriptions)

@@ -38,11 +38,11 @@ public func ==(lhs: RetailStoreTimeSlots, rhs: RetailStoreTimeSlots) -> Bool {
 }
 
 final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtocol {
-    
+
     enum Action: Equatable {
-        case store(searchResult: RetailStoresSearch, forPostode: String)
-        case store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D)
-        case store(storeDetails: RetailStoreDetails, forPostode: String)
+        case store(searchResult: RetailStoresSearch, forPostode: String, isFirstOrder: Bool)
+        case store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D, isFirstOrder: Bool)
+        case store(storeDetails: RetailStoreDetails, forPostode: String, isFirstOrder: Bool)
         case store(storeTimeSlots: RetailStoreTimeSlots, forStoreId: Int, location: CLLocationCoordinate2D?)
         case store(fulfilmentLocation: FulfilmentLocation)
         case clearSearches
@@ -50,12 +50,12 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         case clearRetailStoreDetails
         case clearRetailStoreTimeSlots
         case clearFulfilmentLocation
-        case retailStoresSearch(forPostcode: String)
-        case retailStoresSearch(forLocation: CLLocationCoordinate2D)
+        case retailStoresSearch(forPostcode: String, isFirstOrder: Bool)
+        case retailStoresSearch(forLocation: CLLocationCoordinate2D, isFirstOrder: Bool)
         case lastStoresSearch
         case lastSelectedStore
         case currentFulfilmentLocation
-        case retailStoreDetails(forStoreId: Int, postcode: String)
+        case retailStoreDetails(forStoreId: Int, postcode: String, isFirstOrder: Bool)
         case retailStoreTimeSlots(forStoreId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?)
     }
     var actions = MockActions<Action>(expected: [])
@@ -78,18 +78,18 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     var retailStoreDetailsResult: Result<RetailStoreDetails?, Error> = .failure(MockError.valueNotSet)
     var retailStoreTimeSlotsResult: Result<RetailStoreTimeSlots?, Error> = .failure(MockError.valueNotSet)
     
-    func store(searchResult: RetailStoresSearch, forPostode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
-        register(.store(searchResult: searchResult, forPostode: postcode))
+    func store(searchResult: RetailStoresSearch, forPostode postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
+        register(.store(searchResult: searchResult, forPostode: postcode, isFirstOrder: isFirstOrder))
         return storeByPostcode.publish()
     }
     
-    func store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error> {
-        register(.store(searchResult: searchResult, location: location))
+    func store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
+        register(.store(searchResult: searchResult, location: location, isFirstOrder: isFirstOrder))
         return storeByLocation.publish()
     }
     
-    func store(storeDetails: RetailStoreDetails, forPostode postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
-        register(.store(storeDetails: storeDetails, forPostode: postcode))
+    func store(storeDetails: RetailStoreDetails, forPostode postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails?, Error> {
+        register(.store(storeDetails: storeDetails, forPostode: postcode, isFirstOrder: isFirstOrder))
         return storeDetailsByPostcode.publish()
     }
     
@@ -128,13 +128,13 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         return clearFulfilmentLocationResult.publish()
     }
     
-    func retailStoresSearch(forPostcode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
-        register(.retailStoresSearch(forPostcode: postcode))
+    func retailStoresSearch(forPostcode postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
+        register(.retailStoresSearch(forPostcode: postcode, isFirstOrder: isFirstOrder))
         return fetchRetailStoresSearchByPostcodeResult.publish()
     }
     
-    func retailStoresSearch(forLocation location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error> {
-        register(.retailStoresSearch(forLocation: location))
+    func retailStoresSearch(forLocation location: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
+        register(.retailStoresSearch(forLocation: location, isFirstOrder: isFirstOrder))
         return fetchRetailStoresSearchByLocationResult.publish()
     }
 
@@ -158,8 +158,8 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         return currentFulfilmentLocationResult.publish()
     }
     
-    func retailStoreDetails(forStoreId storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
-        register(.retailStoreDetails(forStoreId: storeId, postcode: postcode))
+    func retailStoreDetails(forStoreId storeId: Int, postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails?, Error> {
+        register(.retailStoreDetails(forStoreId: storeId, postcode: postcode, isFirstOrder: isFirstOrder))
         return retailStoreDetailsResult.publish()
     }
 

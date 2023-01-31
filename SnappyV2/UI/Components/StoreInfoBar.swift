@@ -99,7 +99,8 @@ struct StoreInfoBar_Previews: PreviewProvider {
                 name: "Great British Pound"
             ),
             retailCustomer: nil,
-            searchPostcode: nil))
+            searchPostcode: nil,
+            searchIsFirstOrder: nil))
     }
 }
 #endif

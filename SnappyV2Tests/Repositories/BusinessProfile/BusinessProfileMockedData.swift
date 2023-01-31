@@ -511,3 +511,8 @@ extension OrderingClientUpdateRequirements {
         updateUrl: "www.test.com",
         updateDescription: "To get the lates updates go to app store")
 }
+
+extension CheckPreviousOrderedDeviceStateResult {
+    static let mockedDeviceUsedToPlaceOrder = CheckPreviousOrderedDeviceStateResult(deviceOrderPlacedBitSet: true)
+    static let mockedDeviceNotUsedToPlaceOrder = CheckPreviousOrderedDeviceStateResult(deviceOrderPlacedBitSet: false)
+}

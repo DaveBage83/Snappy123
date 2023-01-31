@@ -7,6 +7,8 @@
 
 import Combine
 import Foundation
+import DeviceCheck
+import OSLog
 
 // 3rd Party
 import AppsFlyerLib
@@ -133,6 +135,8 @@ final class CheckoutService: CheckoutServiceProtocol {
     
     let eventLogger: EventLoggerProtocol
     
+    let deviceChecker: DCDeviceCheckerProtocol
+    
     private var cancelBag = CancelBag()
     
     private var draftOrderId: Int?
@@ -201,12 +205,14 @@ final class CheckoutService: CheckoutServiceProtocol {
         dbRepository: CheckoutDBRepositoryProtocol,
         appState: Store<AppState>,
         eventLogger: EventLoggerProtocol,
+        deviceChecker: DCDeviceCheckerProtocol = DCDeviceChecker(),
         checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIService(publicKey: $0, environment: $1)}
     ) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
         self.eventLogger = eventLogger
+        self.deviceChecker = deviceChecker
         self.checkoutComClient = checkoutComClient
     }
 
@@ -296,7 +302,11 @@ final class CheckoutService: CheckoutServiceProtocol {
                         ).singleOutput()
                     
                     if let businessOrderId = draft.businessOrderId {
-                        self.sendPurchaseEvents(firstPurchase: draft.firstOrder, businessOrderId: businessOrderId, paymentType: paymentGatewayType)
+                        try await self.sendPurchaseEventsAndUpdateOrderedStates(
+                            firstPurchase: draft.firstOrder,
+                            businessOrderId: businessOrderId,
+                            paymentType: paymentGatewayType
+                        )
                         try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     } else {
                         // keep the draftOrderId for subsequent operations
@@ -313,11 +323,11 @@ final class CheckoutService: CheckoutServiceProtocol {
     }
     
     #warning("Add firstPurchase flag when api changes are through")
-    private func sendPurchaseEvents(firstPurchase: Bool, businessOrderId: Int, paymentType: PaymentGatewayType) {
+    private func sendPurchaseEventsAndUpdateOrderedStates(firstPurchase: Bool, businessOrderId: Int, paymentType: PaymentGatewayType) async {
         
         let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
-        
         let basket = self.appState.value.userData.basket
+        let useFirstPurchaseEvent = firstPurchase && appState.value.userData.isFirstOrder
         
         // AppsFlyer
         var itemIdArray: [Int] = []
@@ -335,7 +345,7 @@ final class CheckoutService: CheckoutServiceProtocol {
             }
             basketQuantity = itemQuantityArray.reduce(0, +)
             deliveryCost = basket.fees?.first(where: { fee in
-                fee.title == "Delivery"
+                fee.title.lowercased() == "delivery"
             })?.amount ?? 0
         }
         
@@ -393,7 +403,7 @@ final class CheckoutService: CheckoutServiceProtocol {
             purchaseParams["campaign_id"] = coupon.iterableCampaignId
         }
         
-        eventLogger.sendEvent(for: firstPurchase ? .firstPurchase : .purchase, with: .appsFlyer, params: purchaseParams)
+        eventLogger.sendEvent(for: useFirstPurchaseEvent ? .firstPurchase : .purchase, with: .appsFlyer, params: purchaseParams)
         
         // Facebook
         purchaseParams = [
@@ -436,6 +446,25 @@ final class CheckoutService: CheckoutServiceProtocol {
         }
         
         eventLogger.sendEvent(for: .purchase, with: .firebaseAnalytics, params: purchaseParams)
+        
+        // set the local state
+        let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
+        keychain[AppV2Constants.Business.orderPlacedPreviouslyKey] = AppV2Constants.Business.keychainTrueValue
+        appState.value.userData.isFirstOrder = false
+        // set the server state if not already set
+        guard
+            keychain[AppV2Constants.Business.deviceOrderPlacedBitSetKey] != AppV2Constants.Business.keychainTrueValue,
+            let deviceCheckToken = await deviceChecker.getAppleDeviceToken()
+        else { return }
+        
+        do {
+            let result = try await webRepository.setPreviousOrderedDeviceState(deviceCheckToken: deviceCheckToken)
+            if result.success {
+                keychain[AppV2Constants.Business.deviceOrderPlacedBitSetKey] = AppV2Constants.Business.keychainTrueValue
+            }
+        } catch {
+            Logger.deviceChecking.error("Failed to set server ordered device state: \(error.localizedDescription)")
+        }
     }
     
     func getRealexHPPProducerData() -> Future<Data, Error> {
@@ -518,7 +547,11 @@ final class CheckoutService: CheckoutServiceProtocol {
                         .singleOutput()
                     
                     if let businessOrderId = consumerResponse.result.businessOrderId {
-                        self.sendPurchaseEvents(firstPurchase: firstOrder, businessOrderId: businessOrderId, paymentType: .realex)
+                        try await self.sendPurchaseEventsAndUpdateOrderedStates(
+                            firstPurchase: firstOrder,
+                            businessOrderId: businessOrderId,
+                            paymentType: .realex
+                        )
                         try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
@@ -553,7 +586,11 @@ final class CheckoutService: CheckoutServiceProtocol {
                         .singleOutput()
                     
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-                        self.sendPurchaseEvents(firstPurchase: firstOrder, businessOrderId: businessOrderId, paymentType: .realex)
+                        try await self.sendPurchaseEventsAndUpdateOrderedStates(
+                            firstPurchase: firstOrder,
+                            businessOrderId: businessOrderId,
+                            paymentType: .realex
+                        )
                         try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
@@ -670,7 +707,11 @@ extension CheckoutService {
         
         guard let businessOrderId = businessOrderId else { throw CheckoutServiceError.businessOrderIdNotReturned }
         
-        sendPurchaseEvents(firstPurchase: draftResult.firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
+        try await sendPurchaseEventsAndUpdateOrderedStates(
+            firstPurchase: draftResult.firstOrder,
+            businessOrderId: businessOrderId,
+            paymentType: .checkoutcom
+        )
         
         return businessOrderId
     }
@@ -760,10 +801,14 @@ extension CheckoutService {
     private func process(makePaymentResult: MakePaymentResponse, firstOrder: Bool) async throws -> (Int?, CheckoutCom3DSURLs?) {
         if let businessOrderId = makePaymentResult.order?.businessOrderId {
             // trigger event logging if success
-            sendPurchaseEvents(firstPurchase: firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
+            try await sendPurchaseEventsAndUpdateOrderedStates(
+                firstPurchase: firstOrder,
+                businessOrderId: businessOrderId,
+                paymentType: .checkoutcom
+            )
             
             // process successful order
-            try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
+            try await processConfirmedOrder(forBusinessOrderId: businessOrderId)
             
             return (businessOrderId, nil)
         // pending signifies 3DS check and get urls for 3DS
@@ -792,15 +837,19 @@ extension CheckoutService {
     }
     
     func verifyCheckoutcomPayment() async throws {
-        guard let draftOrderId = self.draftOrderId else { throw CheckoutServiceError.draftOrderRequired }
+        guard let draftOrderId = draftOrderId else { throw CheckoutServiceError.draftOrderRequired }
         guard let paymentId = checkoutcomPaymentId else { throw CheckoutServiceError.paymentIdRequired}
         
-        let verifyPaymentResponse = try await self.webRepository
+        let verifyPaymentResponse = try await webRepository
             .verifyCheckoutcomPayment(draftOrderId: draftOrderId, businessId: appState.value.businessData.businessProfile?.id ?? 15, paymentId: paymentId)
         
-        self.sendPurchaseEvents(firstPurchase: firstOrder ?? false, businessOrderId: verifyPaymentResponse.businessOrderId, paymentType: .checkoutcom)
+        try await sendPurchaseEventsAndUpdateOrderedStates(
+            firstPurchase: firstOrder ?? false,
+            businessOrderId: verifyPaymentResponse.businessOrderId,
+            paymentType: .checkoutcom
+        )
         
-        try await self.processConfirmedOrder(forBusinessOrderId: verifyPaymentResponse.businessOrderId)
+        try await processConfirmedOrder(forBusinessOrderId: verifyPaymentResponse.businessOrderId)
     }
 }
 

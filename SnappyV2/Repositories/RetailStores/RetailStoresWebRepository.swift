@@ -18,9 +18,9 @@ import CoreLocation
 // - the server responses vary and don't always adhere to APIErrorResult structure or http codes
 
 protocol RetailStoresWebRepositoryProtocol: WebRepository {
-    func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error>
-    func loadRetailStores(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch, Error>
-    func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error>
+    func loadRetailStores(postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch, Error>
+    func loadRetailStores(location: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch, Error>
+    func loadRetailStoreDetails(storeId: Int, postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails, Error>
     
     func loadRetailStoreTimeSlots(
         storeId: Int,
@@ -45,7 +45,7 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error> {
+    func loadRetailStores(postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch, Error> {
         
         // See general note (a)
         if postcode.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -53,32 +53,40 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
                 .eraseToAnyPublisher()
         }
         
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "postcode": postcode,
             "country": AppV2Constants.Business.operatingCountry,
             "platform": AppV2Constants.Client.platform,
-            "deviceId": "string",
-            "businessId": AppV2Constants.Business.id
+            "businessId": AppV2Constants.Business.id,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
         
         return call(endpoint: API.searchByPostcode(parameters))
     }
     
-    func loadRetailStores(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch, Error> {
+    func loadRetailStores(location: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch, Error> {
         
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "lat": location.latitude,
             "lng": location.longitude,
             "country": AppV2Constants.Business.operatingCountry,
             "platform": AppV2Constants.Client.platform,
-            "deviceId": "string",
-            "businessId": AppV2Constants.Business.id
+            "businessId": AppV2Constants.Business.id,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
         
         return call(endpoint: API.searchByLocation(parameters))
     }
     
-    func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error> {
+    func loadRetailStoreDetails(storeId: Int, postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails, Error> {
         
         // See general note (a)
         if postcode.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -90,7 +98,8 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
             "businessId": AppV2Constants.Business.id,
             "postcode": postcode,
             "country": AppV2Constants.Business.operatingCountry,
-            "storeId": storeId
+            "storeId": storeId,
+            "isFirstOrder": isFirstOrder
         ]
         
         return call(endpoint: API.retailStoreDetails(parameters))

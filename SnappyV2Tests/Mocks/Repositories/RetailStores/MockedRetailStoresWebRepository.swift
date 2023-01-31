@@ -11,11 +11,11 @@ import CoreLocation
 @testable import SnappyV2
 
 final class MockedRetailStoresWebRepository: TestWebRepository, Mock, RetailStoresWebRepositoryProtocol {
-    
+
     enum Action: Equatable {
-        case loadRetailStores(postcode: String)
-        case loadRetailStores(location: CLLocationCoordinate2D)
-        case loadRetailStoreDetails(storeId: Int, postcode: String)
+        case loadRetailStores(postcode: String, isFirstOrder: Bool)
+        case loadRetailStores(location: CLLocationCoordinate2D, isFirstOrder: Bool)
+        case loadRetailStoreDetails(storeId: Int, postcode: String, isFirstOrder: Bool)
         case loadRetailStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?)
         case futureContactRequest(email: String, postcode: String)
         case sendRetailStoreCustomerRating(orderId: Int, hash: String, rating: Int, comments: String?)
@@ -29,18 +29,18 @@ final class MockedRetailStoresWebRepository: TestWebRepository, Mock, RetailStor
     var futureContactRequestResponse: Result<FutureContactRequestResponse, Error> = .failure(MockError.valueNotSet)
     var sendRetailStoreCustomerRatingResponse: Result<RetailStoreReviewResponse, Error> = .failure(MockError.valueNotSet)
     
-    func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error> {
-        register(.loadRetailStores(postcode: postcode))
+    func loadRetailStores(postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch, Error> {
+        register(.loadRetailStores(postcode: postcode, isFirstOrder: isFirstOrder))
         return loadRetailStoresByPostcodeResponse.publish()
     }
     
-    func loadRetailStores(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch, Error> {
-        register(.loadRetailStores(location: location))
+    func loadRetailStores(location: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch, Error> {
+        register(.loadRetailStores(location: location, isFirstOrder: isFirstOrder))
         return loadRetailStoresByLocationResponse.publish()
     }
     
-    func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error> {
-        register(.loadRetailStoreDetails(storeId: storeId, postcode: postcode))
+    func loadRetailStoreDetails(storeId: Int, postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails, Error> {
+        register(.loadRetailStoreDetails(storeId: storeId, postcode: postcode, isFirstOrder: isFirstOrder))
         return loadRetailStoreDetailsResponse.publish()
     }
     

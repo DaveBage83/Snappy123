@@ -159,6 +159,7 @@ struct RetailStoreDetails: Codable, Equatable {
 
     // populated by request and cached data
     let searchPostcode: String?
+    let searchIsFirstOrder: Bool?
     
     var nameWithAddress1: String {
         "\(storeName), \(address1)"

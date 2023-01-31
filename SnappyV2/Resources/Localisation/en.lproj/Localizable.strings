@@ -628,6 +628,7 @@
 "settings.storemenu.dropdownrootcategorymenu" = "Dropdown root category menu";
 "settings.marketingprefs.subtitle" = "Methods Of Staying In Touch";
 "settings.marketingprefs.overridetitle" = "Allow Snappy Shopper to send me news and offers";
+"settings.debuginformation.copiedmessage" = "Debug information copied to clipboard.";
 
 // MARK: - Form error
 "formerrors.passwordsdonotmatch" = "Passwords do not match";

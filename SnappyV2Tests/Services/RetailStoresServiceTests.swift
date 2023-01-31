@@ -52,18 +52,29 @@ class RetailStoresServiceTests: XCTestCase {
 // MARK: - func searchRetailStores(postcode:)
 final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     
-    func test_successfulSearch_givenOpenStores_setAppSearchResultState() async {
+    func test_successfulSearch_givenOpenStoresAndFirstOrder_setAppSearchResultState() async {
         
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+            .loadRetailStores(
+                postcode: searchResult.fulfilmentLocation.postcode,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches,
-            .store(searchResult: searchResult, forPostode: "DD1 3JA")
+            .store(
+                searchResult: searchResult,
+                forPostode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            )
         ])
         
         let appsFlyerParams: [String: Any] = [
@@ -98,7 +109,82 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         mockedDBRepo.storeByPostcode = .success(searchResult)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
+        
+        do {
+            try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                searchResult
+            )
+        } catch {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successfulSearch_givenOpenStoresAndNotFirstOrder_setAppSearchResultState() async {
+        
+        let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStores(
+                postcode: searchResult.fulfilmentLocation.postcode,
+                isFirstOrder: isFirstOrder
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearSearches,
+            .store(
+                searchResult: searchResult,
+                forPostode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            )
+        ])
+        
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude,
+            "delivery_stores": [1944, 1414, 1807, 910],
+            "num_delivery_stores": 4,
+            "collection_stores": [1944, 1807],
+            "num_collection_stores": 2
+        ]
+        
+        let iterableParams: [String: Any] = [
+            "postalCode": searchResult.fulfilmentLocation.postcode,
+            "lat": searchResult.fulfilmentLocation.latitude,
+            "long": searchResult.fulfilmentLocation.longitude,
+            "deliveryStoreIdsFound": [1944, 1414, 1807, 910],
+            "totalDeliveryStoresFound": 4,
+            "collectionStoreIdsFound": [1944, 1807],
+            "totalCollectionStoresFound": 2,
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams),
+            .sendEvent(for: .storeSearch, with: .firebaseAnalytics, params: ["store_search_result": "open"])
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoresByPostcodeResponse = .success(searchResult)
+        mockedDBRepo.clearSearchesResult = .success(true)
+        mockedDBRepo.storeByPostcode = .success(searchResult)
+        
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
@@ -119,15 +205,26 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     func test_successfulSearch_givenClosedStores_setAppSearchResultState() async {
         
         let searchResult = RetailStoresSearch.mockedDataOnlyClosedStores
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+            .loadRetailStores(
+                postcode: searchResult.fulfilmentLocation.postcode,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches,
-            .store(searchResult: searchResult, forPostode: "DD1 3JA")
+            .store(
+                searchResult: searchResult,
+                forPostode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            )
         ])
         
         let appsFlyerParams: [String: Any] = [
@@ -162,7 +259,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         mockedDBRepo.storeByPostcode = .success(searchResult)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
@@ -183,15 +280,26 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     func test_successfulSearch_givenNoMatchingStores_setAppSearchResultState() async {
         
         let searchResult = RetailStoresSearch.mockedDataNoMatchingStores
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+            .loadRetailStores(
+                postcode: searchResult.fulfilmentLocation.postcode,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches,
-            .store(searchResult: searchResult, forPostode: "DD1 3JA")
+            .store(
+                searchResult: searchResult,
+                forPostode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            )
         ])
         
         let appsFlyerParams: [String: Any] = [
@@ -222,7 +330,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         mockedDBRepo.storeByPostcode = .success(searchResult)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
@@ -244,11 +352,18 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+            .loadRetailStores(
+                postcode: searchResult.fulfilmentLocation.postcode,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches
@@ -259,35 +374,40 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedWebRepo.loadRetailStoresByPostcodeResponse = .failure(networkError)
         mockedDBRepo.clearSearchesResult = .success(true)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
-            
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual(error as NSError, networkError)
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 nil
             )
-        } catch {
-            XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         }
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
     }
     
-    func test_unsuccessfulSearch_whenNetworkErrorAndPreviousResult_nilAppSearchResultState() async {
+    func test_unsuccessfulSearch_whenNetworkErrorAndPreviousResult_keepPreviousAppSearchResultState() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.searchResult = .loaded(searchResult)
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+            .loadRetailStores(
+                postcode: searchResult.fulfilmentLocation.postcode,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches
@@ -298,17 +418,12 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedWebRepo.loadRetailStoresByPostcodeResponse = .failure(networkError)
         mockedDBRepo.clearSearchesResult = .success(true)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
-        
         do {
             try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
-            
-            XCTAssertEqual(
-                self.sut.appState.value.userData.searchResult.value,
-                nil
-            )
+            XCTFail("Expected error to be thrown")
         } catch {
-            XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+            XCTAssertEqual(error as NSError, networkError)
+            XCTAssertEqual(appState.value.userData.searchResult.value, searchResult)
         }
         
         self.mockedWebRepo.verify()
@@ -319,15 +434,26 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         
         let dbError = NSError(domain: "CoreData", code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+            .loadRetailStores(
+                postcode: searchResult.fulfilmentLocation.postcode,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches,
-            .store(searchResult: searchResult, forPostode: "DD1 3JA")
+            .store(
+                searchResult: searchResult,
+                forPostode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            )
         ])
 
         // Configuring responses from repositories
@@ -336,17 +462,19 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         mockedDBRepo.storeByPostcode = .failure(dbError)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
-            
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual(error as NSError, dbError)
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 nil
             )
-        } catch {
-            XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+            // Returning cancel by user, which is a temporary hack in the RetailStoresService
+            //XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         }
         
         self.mockedWebRepo.verify()
@@ -359,18 +487,29 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
 final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
     
     #warning("Needs fixing - 2-3% failure rate")
-    func test_successfulSearch_setAppSearchResultState() {
+    func test_successfulSearch_givenIsFirstOrder_setAppSearchResultState() {
         
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(location: searchResult.fulfilmentLocation.location)
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches,
-            .store(searchResult: searchResult, location: searchResult.fulfilmentLocation.location)
+            .store(
+                searchResult: searchResult,
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
         ])
 
         // Configuring responses from repositories
@@ -379,7 +518,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         mockedDBRepo.storeByLocation = .success(searchResult)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
         _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
@@ -395,16 +534,69 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         wait(for: [exp], timeout: 2)
     }
     
+    func test_successfulSearch_givenIsNotFirstOrder_setAppSearchResultState() {
+        
+        let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearSearches,
+            .store(
+                searchResult: searchResult,
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoresByLocationResponse = .success(searchResult)
+        mockedDBRepo.clearSearchesResult = .success(true)
+        mockedDBRepo.storeByLocation = .success(searchResult)
+        
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
+        let exp = XCTestExpectation(description: #function)
+        _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
+        delay {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                searchResult
+            )
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 2)
+    }
     
     func test_unsuccessfulSearch_whenNetworkErrorAndNoPreviousResult_nilAppSearchResultState() {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(location: searchResult.fulfilmentLocation.location)
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches
@@ -415,7 +607,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         mockedWebRepo.loadRetailStoresByLocationResponse = .failure(networkError)
         mockedDBRepo.clearSearchesResult = .success(true)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
         _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
@@ -440,14 +632,19 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.searchResult = .loaded(searchResult)
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(location: searchResult.fulfilmentLocation.location)
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches
@@ -458,7 +655,6 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         mockedWebRepo.loadRetailStoresByLocationResponse = .failure(networkError)
         mockedDBRepo.clearSearchesResult = .success(true)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
         _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
@@ -483,15 +679,26 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         
         let dbError = NSError(domain: "CoreData", code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(location: searchResult.fulfilmentLocation.location)
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearSearches,
-            .store(searchResult: searchResult, location: searchResult.fulfilmentLocation.location)
+            .store(
+                searchResult: searchResult,
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            )
         ])
 
         // Configuring responses from repositories
@@ -500,7 +707,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         mockedDBRepo.storeByPostcode = .failure(dbError)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
         _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
@@ -533,7 +740,7 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
 
         mockedDBRepo.lastStoresSearchResult = .success(nil)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.repeatLastSearch()
@@ -551,19 +758,30 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
         self.mockedDBRepo.verify()
     }
     
-    func test_successfulSearch_whenStoredResult_setAppSearchResultState() async {
+    func test_successfulSearch_whenStoredResultAndIsFirstOrder_setAppSearchResultState() async {
         
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
         
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(location: searchResult.fulfilmentLocation.location) // 2nd
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            ) // 2nd
         ])
         mockedDBRepo.actions = .init(expected: [
             .lastStoresSearch, // 1st
             .clearSearches, // 3rd
-            .store(searchResult: searchResult, location: searchResult.fulfilmentLocation.location), // 4th
+            .store(
+                searchResult: searchResult,
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            ), // 4th
             .currentFulfilmentLocation // 5th
         ])
         
@@ -575,7 +793,64 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
         mockedDBRepo.storeByLocation = .success(searchResult)
         mockedDBRepo.currentFulfilmentLocationResult = .success(searchResult.fulfilmentLocation)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
+        
+        do {
+            try await sut.repeatLastSearch()
+            
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                searchResult
+            )
+            XCTAssertEqual(
+                self.appState.value.userData.currentFulfilmentLocation,
+                searchResult.fulfilmentLocation
+            )
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_successfulSearch_whenStoredResultAndIsNotFirstOrder_setAppSearchResultState() async {
+        
+        let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            ) // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .lastStoresSearch, // 1st
+            .clearSearches, // 3rd
+            .store(
+                searchResult: searchResult,
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            ), // 4th
+            .currentFulfilmentLocation // 5th
+        ])
+        
+        // Configuring responses from repositories
+
+        mockedDBRepo.lastStoresSearchResult = .success(searchResult)
+        mockedWebRepo.loadRetailStoresByLocationResponse = .success(searchResult)
+        mockedDBRepo.clearSearchesResult = .success(true)
+        mockedDBRepo.storeByLocation = .success(searchResult)
+        mockedDBRepo.currentFulfilmentLocationResult = .success(searchResult.fulfilmentLocation)
+        
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.repeatLastSearch()
@@ -601,11 +876,18 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
         
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStores(location: searchResult.fulfilmentLocation.location) // 2nd
+            .loadRetailStores(
+                location: searchResult.fulfilmentLocation.location,
+                isFirstOrder: isFirstOrder
+            ) // 2nd
         ])
         mockedDBRepo.actions = .init(expected: [
             .lastStoresSearch, // 1st
@@ -616,7 +898,7 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
         mockedDBRepo.lastStoresSearchResult = .success(searchResult)
         mockedWebRepo.loadRetailStoresByLocationResponse = .failure(networkError)
         
-        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        XCTAssertEqual(appState.value.userData.searchResult, .notRequested)
         
         do {
             try await sut.repeatLastSearch()
@@ -633,6 +915,8 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
 // MARK: - func repeatLastSearch()
 final class RestoreLastSelectedStoreTests: RetailStoresServiceTests {
     func test_givenNoResult_whenRestoreLastSelectedStoreTriggered_thenSelectedStoreInAppStateIsNotRequested() async {
+        
+        // Configuring expected actions on repositories
         mockedDBRepo.actions = .init(expected: [.lastSelectedStore])
         mockedDBRepo.lastSelectedStoreResult = .success(nil)
         
@@ -654,17 +938,77 @@ final class RestoreLastSelectedStoreTests: RetailStoresServiceTests {
         self.mockedDBRepo.verify()
     }
     
-    func test_givenResult_whenRestoreLastSelectedStoreTriggered_thenSelectedStoreInAppStateIsLoadedWithResult() async {
+    func test_givenResult_whenRestoreLastSelectedStoreTriggeredAndIsFirstOrder_thenSelectedStoreInAppStateIsLoadedWithResult() async {
         let restoredStoreResult = RetailStoreDetails.mockedData
+        let isFirstOrder = true
         
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        
+        // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStoreDetails(storeId: restoredStoreResult.id, postcode: restoredStoreResult.postcode) // 2nd
+            .loadRetailStoreDetails(
+                storeId: restoredStoreResult.id,
+                postcode: restoredStoreResult.postcode,
+                isFirstOrder: isFirstOrder
+            ) // 2nd
         ])
         mockedDBRepo.actions = .init(expected: [
             .lastSelectedStore, // 1st
             .clearRetailStoreDetails, // 3rd
-            .store(storeDetails: restoredStoreResult, forPostode: restoredStoreResult.postcode) // 4th
+            .store(
+                storeDetails: restoredStoreResult,
+                forPostode: restoredStoreResult.postcode,
+                isFirstOrder: isFirstOrder
+            ) // 4th
+        ])
+        
+        mockedDBRepo.lastSelectedStoreResult = .success(restoredStoreResult)
+        mockedWebRepo.loadRetailStoreDetailsResponse = .success(restoredStoreResult)
+        mockedDBRepo.clearRetailStoreDetailsResult = .success(true)
+        mockedDBRepo.storeDetailsByPostcode = .success(restoredStoreResult)
+        
+        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        
+        do {
+            try await sut.restoreLastSelectedStore(postcode: restoredStoreResult.postcode)
             
+            XCTAssertNil(self.sut.appState.value.userData.selectedStore.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.selectedStore.error))", file: #file, line: #line)
+            XCTAssertEqual(
+                self.sut.appState.value.userData.selectedStore.value,
+                restoredStoreResult
+            )
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_givenResult_whenRestoreLastSelectedStoreTriggeredAndIsNotFirstOrder_thenSelectedStoreInAppStateIsLoadedWithResult() async {
+        let restoredStoreResult = RetailStoreDetails.mockedData
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreDetails(
+                storeId: restoredStoreResult.id,
+                postcode: restoredStoreResult.postcode,
+                isFirstOrder: isFirstOrder
+            ) // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .lastSelectedStore, // 1st
+            .clearRetailStoreDetails, // 3rd
+            .store(
+                storeDetails: restoredStoreResult,
+                forPostode: restoredStoreResult.postcode,
+                isFirstOrder: isFirstOrder
+            ) // 4th
         ])
         
         mockedDBRepo.lastSelectedStoreResult = .success(restoredStoreResult)
@@ -693,9 +1037,18 @@ final class RestoreLastSelectedStoreTests: RetailStoresServiceTests {
     func test_givenNetworkError_whenRestoreLastSelectedStoreTriggered_thenSelectedStoreInAppStateIsNilAndError() async {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let restoredStoreResult = RetailStoreDetails.mockedData
+        let isFirstOrder = true
         
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        
+        // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStoreDetails(storeId: restoredStoreResult.id, postcode: restoredStoreResult.postcode) // 2nd
+            .loadRetailStoreDetails(
+                storeId: restoredStoreResult.id,
+                postcode: restoredStoreResult.postcode,
+                isFirstOrder: isFirstOrder
+            ) // 2nd
         ])
         mockedDBRepo.actions = .init(expected: [
             .lastSelectedStore
@@ -720,9 +1073,13 @@ final class RestoreLastSelectedStoreTests: RetailStoresServiceTests {
 // MARK: - func getStoreDetails(storeId:postcode:)
 final class GetStoreDetailsTests: RetailStoresServiceTests {
     
-    func test_successfulGetStoreDetails() async {
+    func test_successfulGetStoreDetails_givenIsFirstOrder() async {
         
         let storeDetails = RetailStoreDetails.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         sut.appState.value.storeMenu.rootCategories = [RetailStoreMenuCategory.mockedData]
         sut.appState.value.storeMenu.subCategories = [[RetailStoreMenuCategory.mockedData]]
         sut.appState.value.storeMenu.unsortedItems = [RetailStoreMenuItem.mockedData]
@@ -731,11 +1088,88 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         // Configuring expected actions on repositories
         
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA") // 2nd
+            .loadRetailStoreDetails(
+                storeId: storeDetails.id,
+                postcode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            ) // 2nd
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearRetailStoreDetails, // 1st
-            .store(storeDetails: storeDetails, forPostode: "DD1 3JA") // 3rd
+            .store(
+                storeDetails: storeDetails,
+                forPostode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            ) // 3rd
+        ])
+    
+        // Configuring expected events
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(
+                for: .selectStore,
+                with: .appsFlyer,
+                params: [
+                    "store_id": storeDetails.id,
+                    "fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
+            )
+        ])
+        
+        // Configuring responses from repositories
+
+        mockedDBRepo.clearRetailStoreDetailsResult = .success(true)
+        mockedDBRepo.storeDetailsByPostcode = .success(storeDetails)
+        mockedWebRepo.loadRetailStoreDetailsResponse = .success(storeDetails)
+        
+        XCTAssertEqual(sut.appState.value.userData.selectedStore, .notRequested)
+        
+        do {
+            try await sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA").singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.selectedStore.value,
+                storeDetails
+            )
+        } catch {
+            XCTFail("Unexpected fail - Error: \(error)")
+        }
+        
+        XCTAssertTrue(sut.appState.value.storeMenu.rootCategories.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.subCategories.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.unsortedItems.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.specialOfferItems.isEmpty)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successfulGetStoreDetails_givenIsNotFirstOrder() async {
+        
+        let storeDetails = RetailStoreDetails.mockedData
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        sut.appState.value.storeMenu.rootCategories = [RetailStoreMenuCategory.mockedData]
+        sut.appState.value.storeMenu.subCategories = [[RetailStoreMenuCategory.mockedData]]
+        sut.appState.value.storeMenu.unsortedItems = [RetailStoreMenuItem.mockedData]
+        sut.appState.value.storeMenu.specialOfferItems = [RetailStoreMenuItem.mockedData]
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreDetails(
+                storeId: storeDetails.id,
+                postcode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            ) // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearRetailStoreDetails, // 1st
+            .store(
+                storeDetails: storeDetails,
+                forPostode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            ) // 3rd
         ])
     
         // Configuring expected events
@@ -781,11 +1215,19 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let storeDetails = RetailStoreDetails.mockedData
+        let isFirstOrder = true
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         
         // Configuring expected actions on repositories
         
         mockedWebRepo.actions = .init(expected: [
-            .loadRetailStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA") // 2nd
+            .loadRetailStoreDetails(
+                storeId: storeDetails.id,
+                postcode: "DD1 3JA",
+                isFirstOrder: isFirstOrder
+            ) // 2nd
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearRetailStoreDetails, // 1st

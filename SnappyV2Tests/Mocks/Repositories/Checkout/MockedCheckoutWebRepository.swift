@@ -10,7 +10,7 @@ import Combine
 @testable import SnappyV2
 
 final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRepositoryProtocol {
-
+    
     enum Action: Equatable {
         case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGatewayType, storeId: Int, notificationDeviceToken: String?)
         case getRealexHPPProducerData(orderId: Int)
@@ -21,6 +21,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         case getPlacedOrderStatus(forBusinessOrderId: Int)
         case getDriverLocation(forBusinessOrderId: Int)
         case getOrder(forBusinessOrderId: Int, withHash: String)
+        case setPreviousOrderedDeviceState(deviceCheckToken: String)
     
         // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
         static func == (lhs: MockedCheckoutWebRepository.Action, rhs: MockedCheckoutWebRepository.Action) -> Bool {
@@ -56,6 +57,9 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
                 
             case (let .getOrder(forBusinessOrderId: lhsBusinessOrderId, withHash: lhsHash), let .getOrder(forBusinessOrderId: rhsBusinessOrderId, withHash: rhsHash)):
                 return lhsBusinessOrderId == rhsBusinessOrderId && lhsHash == rhsHash
+                
+            case (let .setPreviousOrderedDeviceState(deviceCheckToken: lhsDeviceCheckToken), let .setPreviousOrderedDeviceState(deviceCheckToken: rhsDeviceCheckToken)):
+                return lhsDeviceCheckToken == rhsDeviceCheckToken
 
             default:
                 return false
@@ -73,6 +77,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
     var getDriverLocationResponse: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
     var makePaymentResponse: MakePaymentResponse = MakePaymentResponse(gatewayData: GatewayData(id: nil, status: nil, gateway: nil, saveCard: nil, paymentMethod: nil, approved: nil, _links: nil), order: Order(draftOrderId: 0, businessOrderId: nil, pointsEarned: nil, message: nil))
     var getOrderResponse: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
+    var setPreviousOrderedDeviceStateResponse: Result<SetPreviousOrderedDeviceStateResult, Error> = .failure(MockError.valueNotSet)
     
     func createDraftOrder(
         basketToken: String,
@@ -149,13 +154,25 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         }
     }
     
-    func getOrder(forBusinessOrderId businessOrderId: Int, withHash hash: String) async throws -> SnappyV2.PlacedOrder {
+    func getOrder(forBusinessOrderId businessOrderId: Int, withHash hash: String) async throws -> PlacedOrder {
         register(
             .getOrder(forBusinessOrderId: businessOrderId, withHash: hash)
         )
         switch getOrderResponse {
         case let .success(order):
             return order
+        case let .failure(error):
+            throw error
+        }
+    }
+    
+    func setPreviousOrderedDeviceState(deviceCheckToken: String) async throws -> SetPreviousOrderedDeviceStateResult {
+        register(
+            .setPreviousOrderedDeviceState(deviceCheckToken: deviceCheckToken)
+        )
+        switch setPreviousOrderedDeviceStateResponse {
+        case let .success(setPreviousOrderedDeviceStateResult):
+            return setPreviousOrderedDeviceStateResult
         case let .failure(error):
             throw error
         }

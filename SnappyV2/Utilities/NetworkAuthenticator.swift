@@ -138,7 +138,7 @@ class NetworkAuthenticator {
     
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
-    private var currentToken: Token
+    private(set) var currentToken: Token
     private var debugTrace: Bool = false
     
     /// The Token object is a simple object that I defined to easily fake an expired token

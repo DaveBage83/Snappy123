@@ -12,10 +12,10 @@ import CoreLocation
 protocol RetailStoresDBRepositoryProtocol {
     
     // adding a store search result to the database
-    func store(searchResult: RetailStoresSearch, forPostode: String) -> AnyPublisher<RetailStoresSearch?, Error>
-    func store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
+    func store(searchResult: RetailStoresSearch, forPostode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error>
+    func store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error>
     // adding details for a store to the database
-    func store(storeDetails: RetailStoreDetails, forPostode: String) -> AnyPublisher<RetailStoreDetails?, Error>
+    func store(storeDetails: RetailStoreDetails, forPostode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails?, Error>
     // adding time slots for a store to the database
     func store(storeTimeSlots: RetailStoreTimeSlots, forStoreId: Int, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error>
     // setting the fulfilment location
@@ -31,14 +31,14 @@ protocol RetailStoresDBRepositoryProtocol {
     func clearFulfilmentLocation() -> AnyPublisher<Bool, Error>
     
     // fetching search results
-    func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
-    func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
+    func retailStoresSearch(forPostcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error>
+    func retailStoresSearch(forLocation: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error>
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
     func lastSelectedStore() async throws -> RetailStoreDetails?
     func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error>
     
     // fetching detail results
-    func retailStoreDetails(forStoreId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error>
+    func retailStoreDetails(forStoreId: Int, postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails?, Error>
     
     // fetching time slot results
     func retailStoreTimeSlots(forStoreId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error>
@@ -48,30 +48,33 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
     
     let persistentStore: PersistentStore
     
-    func store(searchResult: RetailStoresSearch, forPostode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
+    func store(searchResult: RetailStoresSearch, forPostode postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
         return persistentStore
             .update { context in
                 let search = searchResult.store(in: context)
                 search?.postcode = postcode
+                search?.isFirstOrder = isFirstOrder
                 return search.flatMap { RetailStoresSearch(managedObject: $0) }
             }
     }
     
-    func store(searchResult: RetailStoresSearch, location coordinate: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error> {
+    func store(searchResult: RetailStoresSearch, location coordinate: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
         return persistentStore
             .update { context in
                 let search = searchResult.store(in: context)
                 search?.latitude = NSNumber(value: coordinate.latitude)
                 search?.longitude = NSNumber(value: coordinate.longitude)
+                search?.isFirstOrder = isFirstOrder
                 return search.flatMap { RetailStoresSearch(managedObject: $0) }
             }
     }
     
-    func store(storeDetails: RetailStoreDetails, forPostode postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
+    func store(storeDetails: RetailStoreDetails, forPostode postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails?, Error> {
         return persistentStore
             .update { context in
                 let details = storeDetails.store(in: context)
                 details?.searchPostcode = postcode
+                details?.searchIsFirstOrder = isFirstOrder
                 return details.flatMap { RetailStoreDetails(managedObject: $0) }
             }
     }
@@ -116,8 +119,11 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
     }
     
     // fetching search results
-    func retailStoresSearch(forPostcode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
-        let fetchRequest = RetailStoresSearchMO.fetchRequest(usingPostcode: postcode)
+    func retailStoresSearch(forPostcode postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
+        let fetchRequest = RetailStoresSearchMO.fetchRequest(
+            usingPostcode: postcode,
+            isFirstOrder: isFirstOrder
+        )
         return persistentStore
             .fetch(fetchRequest) {
                 RetailStoresSearch(managedObject: $0)
@@ -126,8 +132,11 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             .eraseToAnyPublisher()
     }
     
-    func retailStoresSearch(forLocation location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error> {
-        let fetchRequest = RetailStoresSearchMO.fetchRequest(forLocation: location)
+    func retailStoresSearch(forLocation location: CLLocationCoordinate2D, isFirstOrder: Bool) -> AnyPublisher<RetailStoresSearch?, Error> {
+        let fetchRequest = RetailStoresSearchMO.fetchRequest(
+            forLocation: location,
+            isFirstOrder: isFirstOrder
+        )
         return persistentStore
             .fetch(fetchRequest) {
                 RetailStoresSearch(managedObject: $0)
@@ -183,8 +192,12 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
     }
     
     // fetching detail results
-    func retailStoreDetails(forStoreId storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
-        let fetchRequest = RetailStoreDetailsMO.fetchRequest(forStoreId: storeId, usingPostcode: postcode)
+    func retailStoreDetails(forStoreId storeId: Int, postcode: String, isFirstOrder: Bool) -> AnyPublisher<RetailStoreDetails?, Error> {
+        let fetchRequest = RetailStoreDetailsMO.fetchRequest(
+            forStoreId: storeId,
+            usingPostcode: postcode,
+            isFirstOrder: isFirstOrder
+        )
         return persistentStore
             .fetch(fetchRequest) {
                 RetailStoreDetails(managedObject: $0)
@@ -243,21 +256,21 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
 
 extension RetailStoresSearchMO {
     
-    static func fetchRequest(usingPostcode postcode: String) -> NSFetchRequest<RetailStoresSearchMO> {
+    static func fetchRequest(usingPostcode postcode: String, isFirstOrder: Bool) -> NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "postcode == %@", postcode)
+        request.predicate = NSPredicate(format: "postcode == %@ AND isFirstOrder == %@", postcode, NSNumber(value: isFirstOrder))
         request.fetchLimit = 1
         return request
     }
     
-    static func fetchRequest(forLocation location: CLLocationCoordinate2D) -> NSFetchRequest<RetailStoresSearchMO> {
+    static func fetchRequest(forLocation location: CLLocationCoordinate2D, isFirstOrder: Bool) -> NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
         // compare with a range rather than an specific cordinate values for two reasons
         // (1) potential float rounding errors invalidating the match
         // (2) location service results vary an exact positioning is not critical
         request.predicate = NSPredicate(
-            format: "latitude > %f AND latitude < %f AND longitude > %f AND longitude < %f",
-            location.latitude - 0.0002, location.latitude + 0.0002, location.longitude - 0.0002, location.longitude + 0.0002
+            format: "latitude > %f AND latitude < %f AND longitude > %f AND longitude < %f AND isFirstOrder == %@",
+            location.latitude - 0.0002, location.latitude + 0.0002, location.longitude - 0.0002, location.longitude + 0.0002, NSNumber(value: isFirstOrder)
         )
         request.fetchLimit = 1
         return request
@@ -275,9 +288,9 @@ extension RetailStoresSearchMO {
 
 extension RetailStoreDetailsMO {
     
-    static func fetchRequest(forStoreId storeId: Int, usingPostcode postcode: String) -> NSFetchRequest<RetailStoreDetailsMO> {
+    static func fetchRequest(forStoreId storeId: Int, usingPostcode postcode: String, isFirstOrder: Bool) -> NSFetchRequest<RetailStoreDetailsMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "id == %i AND searchPostcode == %@", storeId, postcode)
+        request.predicate = NSPredicate(format: "id == %i AND searchPostcode == %@ AND searchIsFirstOrder == %@", storeId, postcode, NSNumber(value: isFirstOrder))
         request.fetchLimit = 1
         return request
     }

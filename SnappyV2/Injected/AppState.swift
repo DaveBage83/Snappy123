@@ -91,6 +91,7 @@ extension AppState {
         var basket: Basket?
         var successCheckoutBasket: Basket?
         var confirmedAge: Int = 0
+        var isFirstOrder = true
         
         // currentFulfilmentLocation comes from the store search but only set
         // once a store is chosen.

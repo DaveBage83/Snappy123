@@ -145,7 +145,8 @@ class StandardAlertToastViewModelTests: XCTestCase {
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), toastType: ToastType) -> StandardAlertToastViewModel {
         let sut = StandardAlertToastViewModel(
             container: container,
-            toastType: toastType)
+            toastType: toastType,
+            viewID: UUID())
         
         trackForMemoryLeaks(sut)
         

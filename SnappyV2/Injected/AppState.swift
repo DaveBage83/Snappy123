@@ -27,8 +27,13 @@ struct AppState: Equatable {
     var searchHistoryData = SearchHistoryData()
     
     // Toast properties
+    var viewIDs = [UUID]() // Used to ensure toast only displayed on latest view. Ensures toasts are not presented on sheets and views beneathe sheets simultaneously
     var errors: [Swift.Error] = []
     var successToasts: [SuccessToast] = []
+    
+    var latestViewID: UUID? {
+        viewIDs.last
+    }
 }
 
 extension AppState {

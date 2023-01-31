@@ -21,10 +21,26 @@ class StoreCardInfoViewModel: ObservableObject {
         storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
     }
     
+    var storeStatus: RetailStoreOrderMethodStatus? {
+        if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            return storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.status
+        } else {
+            return storeDetails.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]?.status
+        }
+    }
+    
     var fulfilmentTime: String? {
         if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            let orderMethod = storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]
+            if orderMethod?.status == .preorder, let earliestDate = orderMethod?.earliestOpeningDate?.prefix(10) {
+                return String(earliestDate).stringToDateOnly?.dateShortString(storeTimeZone: nil)
+            }
             return storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.fulfilmentIn
         } else {
+            let orderMethod = storeDetails.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]
+            if orderMethod?.status == .preorder, let earliestDate = orderMethod?.earliestOpeningDate?.prefix(10) {
+                return String(earliestDate).stringToDateOnly?.dateShortString(storeTimeZone: nil)
+            }
             return storeDetails.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]?.fulfilmentIn
         }
     }

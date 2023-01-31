@@ -29,6 +29,7 @@ enum Strings {
         case shopNow = "general.shopnow"
         case updateSlot = "general.updateslot"
         case today = "general.today"
+        case todayASAP = "general.today.asap"
         case add = "general.add"
         case description = "general.description"
         case noDescription = "general.nodescription"

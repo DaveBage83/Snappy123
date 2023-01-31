@@ -24,6 +24,7 @@
 "general.shopnow" = "Shop Now";
 "general.updateslot" = "Update slot";
 "general.today" = "Today";
+"general.today.asap" = "Today | ASAP";
 "general.add" = "Add";
 "general.description" = "Description";
 "general.nodescription" = "No description";

@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 class ToastableViewModel: ObservableObject {
-    let id = UUID()
+    let id = UUID() // The ID allows us to keep track of which view is being presented
     let container: DIContainer
     let isModal: Bool
     
@@ -24,6 +24,12 @@ class ToastableViewModel: ObservableObject {
     }
     
     func manageToastsOnDisappear() {
+        // If the user navigates away from a modal view whilst a toast is still being presented, the toast will be dismissed as well as it belongs to that modal view.
+        // If this is the case, we therefore need to re-send any prematurely dismissed errors or successes
+        // to the appState once dismissed in order to show them on the underlying view.
+        // Therefore, before dismissing, we keep a local copy of the errors before clearing the AppState
+        // values and then we re-apend these to either the 'errors' or 'successToasts' arrays in the AppState
+        // to re-trigger the toast view.
         let errors = container.appState.value.errors // keep local copy of errors
         let successes = container.appState.value.successToasts
         clearErrorsAndToasts()
@@ -34,20 +40,21 @@ class ToastableViewModel: ObservableObject {
                 self.container.appState.value.successToasts = successes
             }
         }
-        
-        container.appState.value.viewIDs.removeAll(where: { $0 == id })
     }
     
     func manageToastsOnAppear() {
+        // When the view appears we first need to clear errors and toasts from the appState
         clearErrorsAndToasts()
-        if !container.appState.value.viewIDs.contains(where: {$0 == id}) {
-            container.appState.value.viewIDs.append(id)
-        }
     }
 }
 
-/// A wrapper which allows any injected content to display alert toasts, success toasts and loading toasts
-/// when AppState values are changed
+/// A wrapper which allows any injected content to display alert toasts and success  toasts when AppState values are changed.
+/// Usage:
+/// 1- Pass content into this container e.g. ToastableViewContainer(content: <Content>, viewModel: <ToastableViewModel>)
+/// 2- From the content's viewModel, append any errors or successes to either the 'errors' (type: Error)  or 'successToasts' (type: String)  arrays in the AppState
+/// 3- Relevant toasts will be  presented on top of the content view when any change to these arrays in the AppState is detected
+/// NB: For toasts which are required to be displayed on top of a sheet view, 'SnappySheet' is already wrapped in a ToastableViewContainer. However, 'SnappySheet' does not support Binding items (it can only be triggered using a Binding Boolean). If a binding item trigger is required
+/// then use iOS system Sheet instead, but ensure to wrap the content in a ToastableViewContainer.
 struct ToastableViewContainer<Content: View>: View {
     var content: () -> Content
     
@@ -55,8 +62,8 @@ struct ToastableViewContainer<Content: View>: View {
     
     var body: some View {
         VStack(content: content)
-            .withAlertToast(container: viewModel.container, toastType: .error, viewID: viewModel.id)
-            .withAlertToast(container: viewModel.container, toastType: .success, viewID: viewModel.id)
+            .withAlertToast(container: viewModel.container, toastType: .error)
+            .withAlertToast(container: viewModel.container, toastType: .success)
             .onDisappear {
                 viewModel.manageToastsOnDisappear()
             }

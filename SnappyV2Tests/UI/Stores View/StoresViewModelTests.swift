@@ -45,9 +45,9 @@ class StoresViewModelTests: XCTestCase {
 
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethodCollection = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                           freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                           freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
@@ -82,9 +82,9 @@ class StoresViewModelTests: XCTestCase {
     
     func test_givenStoreWithCollection_whenCollectionIsSelected_thenStoreIsShown() throws {
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethodCollection = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                           freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                           freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
@@ -148,7 +148,7 @@ class StoresViewModelTests: XCTestCase {
     
     func test_givenStoreWith2Types_whenButchersIsSelected_ThenOnlyButchersShown() {
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethods = ["delivery": orderMethod]
         let storeTypeButchers = RetailStoreProductType(id: 1, name: "Butchers", image: nil)
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods, ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
@@ -187,7 +187,7 @@ class StoresViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethods = ["delivery": orderMethod]
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods, ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
@@ -237,11 +237,11 @@ class StoresViewModelTests: XCTestCase {
         
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                     freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                     freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil,
-                                                       freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                       freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethodPreorder = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .preorder, cost: nil, fulfilmentIn: nil,
-                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let storePreorder = RetailStore(id: 1, storeName: "PreorderStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodPreorder], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
@@ -270,9 +270,9 @@ class StoresViewModelTests: XCTestCase {
         
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                     freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                     freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil,
-                                                       freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                       freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed], fulfilmentLocation: fulfilmentLocation)
@@ -300,11 +300,11 @@ class StoresViewModelTests: XCTestCase {
         
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                     freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                     freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil,
-                                                       freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                       freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethodPreorder = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .preorder, cost: nil, fulfilmentIn: nil,
-                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                         freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let storePreorder = RetailStore(id: 1, storeName: "PreorderStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodPreorder], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
@@ -634,7 +634,7 @@ class StoresViewModelTests: XCTestCase {
             searchIsFirstOrder: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethods = ["delivery": orderMethod]
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods, ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
@@ -690,7 +690,7 @@ class StoresViewModelTests: XCTestCase {
             searchIsFirstOrder: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
-                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil)
+                                                 freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
         let orderMethods = ["collection": orderMethod]
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods, ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")

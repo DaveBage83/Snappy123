@@ -12,12 +12,12 @@ class RetailStoreDeliveryTiersViewModelTests: XCTestCase {
     typealias CustomTiersString = Strings.StoresView.DeliveryTiersCustom
     
     func test_whenMinSpendIsNotNilAndMinSpendIsGreaterThan0_thenReturnNil() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 0, deliveryFee: 1)], freeFrom: nil, minSpend: 0))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 0, deliveryFee: 1)], freeFrom: nil, minSpend: 0, earliestOpeningDate: nil))
         XCTAssertNil(sut.minSpend)
     }
     
     func test_whenMinSpendIsNotNilAndMinSpendIsNotGreaterThan0_givenCurrencyIsNotNil_thenReturnCorrectString() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10, earliestOpeningDate: nil))
         
         guard let currency = sut.currency else {
             XCTFail("Currency should be present")
@@ -30,13 +30,13 @@ class RetailStoreDeliveryTiersViewModelTests: XCTestCase {
     }
     
     func test_whenDeliveryTiersOnOrderMethodIsNil_thenDeliveryTiersIsNil() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: 10))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: 10, earliestOpeningDate: nil))
         
         XCTAssertNil(sut.deliveryTiers)
     }
     
     func test_whenDeliveryTiersIsNotNil_givenTiersAreEmpty_thenDeliveryTiersIsNil() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [], freeFrom: nil, minSpend: 10))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [], freeFrom: nil, minSpend: 10, earliestOpeningDate: nil))
         
         XCTAssertNil(sut.deliveryTiers)
     }
@@ -49,7 +49,7 @@ class RetailStoreDeliveryTiersViewModelTests: XCTestCase {
             .init(minBasketSpend: 30, deliveryFee: 1)
         ]
         
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 5))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: 5, earliestOpeningDate: nil))
         
         let expectedAdditionalTier = DeliveryTier(minBasketSpend: 5, deliveryFee:5)
         
@@ -71,7 +71,7 @@ class RetailStoreDeliveryTiersViewModelTests: XCTestCase {
             .init(minBasketSpend: 30, deliveryFee: 1)
         ]
         
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: nil))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: tiers, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil))
         
         let expectedAdditionalTier = DeliveryTier(minBasketSpend: 5, deliveryFee:5)
         
@@ -86,17 +86,17 @@ class RetailStoreDeliveryTiersViewModelTests: XCTestCase {
     }
     
     func test_whenMinSpendPresent_thenMindSpendPopulated() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: 5))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: 5, earliestOpeningDate: nil))
         XCTAssertEqual(sut.minSpendValue, 5)
     }
     
     func test_whenMinSpendPresent_thenMindSpendNil() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil))
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil))
         XCTAssertNil(sut.minSpendValue)
     }
     
     func test_whenMinSpendIsNotNilAndMinSpendIsNotGreaterThan0_givenCurrencyIsNil_thenReturnCorrectString() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10), currency: nil)
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10, earliestOpeningDate: nil), currency: nil)
 
         let expectedSpend = sut.deliveryOrderMethod?.minSpend?.toCurrencyString(using: .init(currencyCode: "GBP", symbol: "£", ratio: 1, symbolChar: "£", name: "Great British Pount"))
         
@@ -104,12 +104,12 @@ class RetailStoreDeliveryTiersViewModelTests: XCTestCase {
     }
     
     func test_whenCostPresent_thenDefaultDeliveryCostPopulated() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10), currency: nil)
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: 5, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10, earliestOpeningDate: nil), currency: nil)
         XCTAssertEqual(sut.defaultDeliveryCost, 5)
     }
     
     func test_whenCostNil_thenDefaultDeliveryCostNil() {
-        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10), currency: nil)
+        let sut = makeSUT(deliveryOrderMethod: .init(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil, freeFulfilmentMessage: nil, deliveryTiers: [.init(minBasketSpend: 10, deliveryFee: 1)], freeFrom: nil, minSpend: 10, earliestOpeningDate: nil), currency: nil)
         XCTAssertNil(sut.defaultDeliveryCost)
     }
     

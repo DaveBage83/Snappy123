@@ -276,7 +276,8 @@ extension RetailStoreOrderMethod {
             freeFulfilmentMessage: managedObject.freeFulfilmentMessage,
             deliveryTiers: deliveryTiers.isEmpty ? nil : deliveryTiers,
             freeFrom: managedObject.freeFrom?.doubleValue,
-            minSpend: managedObject.minSpend?.doubleValue
+            minSpend: managedObject.minSpend?.doubleValue,
+            earliestOpeningDate: managedObject.earliestOpeningDate
         )
     }
     
@@ -294,6 +295,7 @@ extension RetailStoreOrderMethod {
         }
         orderMethod.fulfilmentIn = fulfilmentIn
         orderMethod.freeFulfilmentMessage = freeFulfilmentMessage
+        orderMethod.earliestOpeningDate = earliestOpeningDate
         
         if let freeFrom = freeFrom {
             orderMethod.freeFrom = NSNumber(value: freeFrom)

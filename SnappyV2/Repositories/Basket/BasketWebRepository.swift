@@ -25,11 +25,11 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     // func addItem(basketToken: String?, item: BasketItemRequest, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
     func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String,  fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType,                     isFirstOrder: Bool) async throws -> Basket
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) async throws -> Basket
     func removeItem(basketToken: String, basketLineId: Int) async throws -> Basket
-    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest,                 isFirstOrder: Bool) async throws -> Basket
-    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int,                 isFirstOrder: Bool) async throws -> Basket
-    func applyCoupon(basketToken: String, code: String,                 isFirstOrder: Bool) async throws -> Basket
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest, isFirstOrder: Bool) async throws -> Basket
+    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int, isFirstOrder: Bool) async throws -> Basket
+    func applyCoupon(basketToken: String, code: String, isFirstOrder: Bool) async throws -> Basket
     func removeCoupon(basketToken: String) async throws -> Basket
     func clearItems(basketToken: String) async throws -> Basket
     func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) async throws -> Basket

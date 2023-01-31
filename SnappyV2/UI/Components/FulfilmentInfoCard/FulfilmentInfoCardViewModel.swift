@@ -56,7 +56,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
                 return GeneralStrings.today.localized + " | \(startTime) - \(endTime)"
             } else {
                 let fulfilmentTypeString = container.appState.value.userData.selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
-                return "\(fulfilmentTypeString) " + GeneralStrings.today.localized
+                return "\(fulfilmentTypeString) " + GeneralStrings.todayASAP.localized
             }
         }
         

@@ -52,7 +52,35 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     }
     
     func test_givenBasketSelectedSlotTodaySelectedTrueAndNoTempTodayTimeSlotAssigned_thenFirstAvailableTimeSlotTodayAssigned() {
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: nil, end: nil, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+        
+        let basket = Basket(
+            basketToken: "",
+            isNewBasket: true,
+            items: [],
+            fulfilmentMethod: .init(
+            type: .delivery,
+            cost: 1.5,
+            minSpend: 0,
+            zoneFreeDeliveryMessage: nil,
+            minBasketSpendForNextDeliveryTier: nil,
+            nextTierSpendIsHigherThanCurrent: false,
+            minAdditionalBasketSpendForNextTier: nil,
+            nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot(
+                todaySelected: true,
+                start: nil,
+                end: nil,
+                expires: nil),
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 10,
+            orderTotal: 10,
+            storeId: nil,
+            basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
@@ -480,7 +508,35 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+        
+        let basket = Basket(
+            basketToken: "",
+            isNewBasket: true,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 1.5,
+                minSpend: 0,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: BasketSelectedSlot(
+                todaySelected: true,
+                start: slotStartTime,
+                end: slotEndTime,
+                expires: nil),
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 10,
+            orderTotal: 11,
+            storeId: nil,
+            basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let eventLogger = MockedEventLogger()

@@ -26,6 +26,74 @@ extension Basket {
         storeId: 1569,
         basketItemRemoved: nil
     )
+    
+    static let mockedDataMinAdditionalSpendZero = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataMinAdditionalSpendZero,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataFreeDelivery = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataFreeDelivery,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataNoMinAdditionalSpend = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataNoMinAdditionalSpend,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataNoNextTierDeliveryCost = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataNoNextTierDeliveryCost,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
 
     static let mockedDataWithExpiry = Basket(
         basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
@@ -504,10 +572,65 @@ extension BasketItem {
 
 extension BasketFulfilmentMethod {
     
-    static let mockedData = BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10)
+    static let mockedData = BasketFulfilmentMethod(
+        type: .delivery,
+        cost: 2.5,
+        minSpend: 10,
+        zoneFreeDeliveryMessage: nil,
+        minBasketSpendForNextDeliveryTier: 5,
+        nextTierSpendIsHigherThanCurrent: false,
+        minAdditionalBasketSpendForNextTier: 4.5,
+        nextTierDeliveryCost: 1.5)
     
-    static let mockedDataCollection = BasketFulfilmentMethod(type: .collection, cost: 0, minSpend: 0)
+    static let mockedDataMinAdditionalSpendZero = BasketFulfilmentMethod(
+        type: .delivery,
+        cost: 2.5,
+        minSpend: 10,
+        zoneFreeDeliveryMessage: nil,
+        minBasketSpendForNextDeliveryTier: 5,
+        nextTierSpendIsHigherThanCurrent: false,
+        minAdditionalBasketSpendForNextTier: 0,
+        nextTierDeliveryCost: 1.5)
     
+    static let mockedDataFreeDelivery = BasketFulfilmentMethod(
+        type: .delivery,
+        cost: 2.5,
+        minSpend: 10,
+        zoneFreeDeliveryMessage: nil,
+        minBasketSpendForNextDeliveryTier: 5,
+        nextTierSpendIsHigherThanCurrent: false,
+        minAdditionalBasketSpendForNextTier: 4.5,
+        nextTierDeliveryCost: 0)
+    
+    static let mockedDataNoMinAdditionalSpend = BasketFulfilmentMethod(
+        type: .delivery,
+        cost: 2.5,
+        minSpend: 10,
+        zoneFreeDeliveryMessage: nil,
+        minBasketSpendForNextDeliveryTier: 5,
+        nextTierSpendIsHigherThanCurrent: false,
+        minAdditionalBasketSpendForNextTier: nil,
+        nextTierDeliveryCost: 0)
+    
+    static let mockedDataNoNextTierDeliveryCost = BasketFulfilmentMethod(
+        type: .delivery,
+        cost: 2.5,
+        minSpend: 10,
+        zoneFreeDeliveryMessage: nil,
+        minBasketSpendForNextDeliveryTier: 5,
+        nextTierSpendIsHigherThanCurrent: false,
+        minAdditionalBasketSpendForNextTier: 10,
+        nextTierDeliveryCost: nil)
+
+    static let mockedDataCollection = BasketFulfilmentMethod(
+        type: .collection,
+        cost: 0,
+        minSpend: 0,
+        zoneFreeDeliveryMessage: nil,
+        minBasketSpendForNextDeliveryTier: nil,
+        nextTierSpendIsHigherThanCurrent: false,
+        minAdditionalBasketSpendForNextTier: nil,
+        nextTierDeliveryCost: nil)
 }
 
 extension BasketSelectedSlot {

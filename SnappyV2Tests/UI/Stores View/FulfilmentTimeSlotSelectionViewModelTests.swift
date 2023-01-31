@@ -443,7 +443,9 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let menuItem = RetailStoreMenuItem(id: 12, name: "SomeItem", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: true, basketQuantityLimit: 10, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "10", unitsInPack: 10, unitVolume: 10, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)
         let basketItem = BasketItem(basketLineId: 1, menuItem: menuItem, totalPrice: 15, totalPriceBeforeDiscounts: 15, price: 15, pricePaid: 15, quantity: 1, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
         let selectedSlot = BasketSelectedSlot(todaySelected: false, start: currentDate, end: currentDate, expires: nil)
-        let basket = Basket(basketToken: "nejnsfkj", isNewBasket: true, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: selectedSlot, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 15, orderTotal: 15, storeId: nil, basketItemRemoved: nil)
+
+        let basket = Basket(basketToken: "nejnsfkj", isNewBasket: true, items: [basketItem], fulfilmentMethod: .mockedData, selectedSlot: selectedSlot, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 15, orderTotal: 15, storeId: nil, basketItemRemoved: nil)
+        
         sut.basket = basket
         
         let expectationBasket = expectation(description: "basket")
@@ -508,7 +510,31 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let menuItem = RetailStoreMenuItem(id: 12, name: "SomeItem", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: true, basketQuantityLimit: 10, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "10", unitsInPack: 10, unitVolume: 10, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)
         let basketItem = BasketItem(basketLineId: 1, menuItem: menuItem, totalPrice: 15, totalPriceBeforeDiscounts: 15, price: 15, pricePaid: 15, quantity: 1, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
         let selectedSlot = BasketSelectedSlot(todaySelected: false, start: tomorrow, end: tomorrow.addingTimeInterval(60*30), expires: nil)
-        let basket = Basket(basketToken: "nejnsfkj", isNewBasket: true, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: selectedSlot, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 15, orderTotal: 15, storeId: nil, basketItemRemoved: nil)
+
+        let basket = Basket(
+            basketToken: "nejnsfkj",
+            isNewBasket: false,
+            items: [],
+            fulfilmentMethod: .init(
+                type: .delivery,
+                cost: 1.5,
+                minSpend: 0,
+                zoneFreeDeliveryMessage: nil,
+                minBasketSpendForNextDeliveryTier: nil,
+                nextTierSpendIsHigherThanCurrent: false,
+                minAdditionalBasketSpendForNextTier: nil,
+                nextTierDeliveryCost: nil),
+            selectedSlot: selectedSlot,
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: nil,
+            orderSubtotal: 15,
+            orderTotal: 15,
+            storeId: nil,
+            basketItemRemoved: nil)
+        
         let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(FulfilmentTimeSlotSelectionViewModelTests.storeSearch), basket: basket, currentFulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))

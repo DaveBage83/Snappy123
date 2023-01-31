@@ -131,6 +131,8 @@ struct AppV2Constants {
         static let todayTimeslotDeadline: Double = 900 // 15 mins
         static let minForgetMeCodeCharacters = 6
         
+        static let globalSearchItemResultsPerPage = 20
+
         // Generate tokens that can be marked on the Apple Server and later
         // consulted after an order has been placed with a device. Other UDIDs
         // can change after an app is deleted or device reset. Key kept the
@@ -169,9 +171,8 @@ struct AppV2Constants {
         static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
 
         #else
-        //        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
-        #warning("Temporarily set production to point to staging. Change when we release")
-        static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
+                static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
+//        static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
         #endif
         
         static let authenticationURL: String = "oauth/token"

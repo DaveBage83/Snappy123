@@ -377,6 +377,10 @@ extension Image {
         struct CategoryMenu {
             static let standard = Image(systemName: "list.bullet.indent")
         }
+        
+        struct Pagination {
+            static let more = Image(systemName: "ellipsis.rectangle")
+        }
     }
 
     // The following icons to be deprecated in favour of the above official design ones

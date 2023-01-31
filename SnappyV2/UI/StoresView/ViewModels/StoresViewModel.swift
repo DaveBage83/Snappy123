@@ -253,8 +253,7 @@ class StoresViewModel: ObservableObject {
             return
         }
         
-        if fulfilmentDays.count == 1,
-           let timezone = container.appState.value.userData.selectedStore.value?.storeTimeZone,
+        if let timezone = container.appState.value.userData.selectedStore.value?.storeTimeZone,
            let fulfilmentDate = fulfilmentDays.first?.date,
            fulfilmentDate == Date().trueDate.dateOnlyString(storeTimeZone: timezone) {
             await reserveTodayTimeslot()

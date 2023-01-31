@@ -17,7 +17,7 @@ struct BottomSheet<Content: View>: View {
     private let headerWidth: CGFloat = 40
     private let headerHeight: CGFloat = 5
     private let mainCornerRadius: CGFloat = 10
-    private let dragPillBottomPadding: CGFloat = 25
+    private let titleBottomPadding: CGFloat = 8
     
     @Binding var isPresented: Bool
     
@@ -31,11 +31,16 @@ struct BottomSheet<Content: View>: View {
     private var onDismiss: () -> Void
     private let animationDelay: TimeInterval = 0.2
     private let container: DIContainer
+    let title: String?
     private let windowSize: CGSize
     private let omitCloseButton: Bool
     
     private var grayBackgroundOpacity: Double { isPresented ? 0.4 : 0 }
     private var dragToDismissThreshold: CGFloat { height * 0.3 }
+    
+    private var dragPillBottomPadding: CGFloat {
+        title != nil ? 10 : 25
+    }
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: container, colorScheme: colorScheme)
@@ -43,6 +48,7 @@ struct BottomSheet<Content: View>: View {
     
     init(
         container: DIContainer,
+        title: String?,
         isPresented: Binding<Bool>,
         windowSize: CGSize,
         omitCloseButton: Bool,
@@ -50,6 +56,7 @@ struct BottomSheet<Content: View>: View {
         onDismiss: @escaping () -> Void
     ) {
         self._isPresented = isPresented
+        self.title = title
         self.content = content()
         self.onDismiss = onDismiss
         self.container = container
@@ -97,6 +104,7 @@ struct BottomSheet<Content: View>: View {
                                     }
                                     
                                 } label: {
+
                                     Image.Icons.Xmark.heavy
                                         .renderingMode(.template)
                                         .resizable()
@@ -112,6 +120,14 @@ struct BottomSheet<Content: View>: View {
                                     .foregroundColor(.secondary)
                                     .padding(.top)
                                     .padding(.bottom, dragPillBottomPadding)
+                                
+                                if let title {
+                                    Text(title)
+                                        .font(.heading4())
+                                        .foregroundColor(colorPalette.typefacePrimary)
+                                        .padding(.bottom, titleBottomPadding)
+                                }
+                                
                                 self.content
                             }
                         }
@@ -193,6 +209,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
     
     let container: DIContainer
     @Binding var item: Item?
+    let title: String?
     let windowSize: CGSize
     let omitCloseButton: Bool
     let onDismiss: (() -> Void)?
@@ -227,7 +244,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
             if !bottomSheetAlreadyPresented {
                 if let item = self.item {
                     
-                    let view = BottomSheet(container: container, isPresented: $isPresented, windowSize: windowSize, omitCloseButton: omitCloseButton) {
+                    let view = BottomSheet(container: container, title: title, isPresented: $isPresented, windowSize: windowSize, omitCloseButton: omitCloseButton) {
                         content(item)
                     } onDismiss: {
                         self.item = nil
@@ -276,13 +293,14 @@ public extension View {
    internal func snappyBottomSheet<Item, Content>(
         container: DIContainer,
         item: Binding<Item?>,
+        title: String? = nil,
         windowSize: CGSize,
         omitCloseButton: Bool = false,
         @ViewBuilder content: @escaping (Item) -> Content,
         onDismiss: @escaping () -> Void = {}
     ) -> some View  where Item: Identifiable & Equatable, Content: View {
         
-        self.modifier(BottomSheetItemModifier(container: container, item: item, windowSize: windowSize, omitCloseButton: omitCloseButton, onDismiss: onDismiss, content: content))
+        self.modifier(BottomSheetItemModifier(container: container, item: item, title: title, windowSize: windowSize, omitCloseButton: omitCloseButton, onDismiss: onDismiss, content: content))
     }
 }
 

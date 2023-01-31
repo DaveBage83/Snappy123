@@ -134,7 +134,7 @@
 "productsview.filter" = "Filter Selection";
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";
-"productsview.productcard.search.resultthatincludesitems" = "%@ product results for \"%@\"";
+"productsview.productcard.search.resultthatincludesitems" = "Showing %@ of %@ product results for \"%@\"";
 "productsview.productcard.search.noresults" = "Sorry, there are no results for \"%@\"";
 "productsview.productdetail.was" = "Was";
 "productsview.productdetail.now" = "Now";

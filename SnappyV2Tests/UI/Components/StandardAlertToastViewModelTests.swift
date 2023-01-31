@@ -42,10 +42,12 @@ class StandardAlertToastViewModelTests: XCTestCase {
         XCTAssertEqual(sut.toastType, .success)
     }
     
-    func test_whenLatestErrorInAppStateChanges_thenShowAlertTrueAndAlertTextTriggered() {
-        let sut = makeSUT(toastType: .error)
+    func test_whenLatestErrorInAppStateChanges_givenLatestViewIDInAppstateIsEqualToCurrentViewID_thenShowAlertTrueAndAlertTextTriggered() {
+        let id = UUID()
+        let sut = makeSUT(toastType: .error, viewID: id)
         var cancellables = Set<AnyCancellable>()
-        
+        sut.container.appState.value.viewIDs = [id]
+
         let expectation = expectation(description: "Error text set, showAlert true")
         
         sut.container.appState.value.errors.append(TestError.testError)
@@ -63,6 +65,31 @@ class StandardAlertToastViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.alertText, TestError.testError.localizedDescription)
         XCTAssertTrue(sut.showAlert)
+    }
+    
+    func test_whenLatestErrorInAppStateChanges_givenLatestViewIDInAppstateIsNOTEqualToCurrentViewID_thenShowAlertTrueAndAlertTextTriggered() {
+        let id = UUID()
+        let sut = makeSUT(toastType: .error, viewID: id)
+        var cancellables = Set<AnyCancellable>()
+        sut.container.appState.value.viewIDs = [UUID()]
+
+        let expectation = expectation(description: "Error text set, showAlert true")
+        
+        sut.container.appState.value.errors.append(TestError.testError)
+        
+        sut.$alertText
+            .dropFirst()
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.alertText, TestError.testError.localizedDescription)
+        XCTAssertFalse(sut.showAlert)
     }
     
     func test_whenErrorsClearedFromAppState_thenShowAlertTrueAndAlertTextTriggered() {
@@ -89,9 +116,11 @@ class StandardAlertToastViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showAlert)
     }
     
-    func test_whenLatestSuccessToastInAppStateChanges_thenShowAlertTrueAndAlertTextTriggered() {
-        let sut = makeSUT(toastType: .success)
+    func test_whenLatestSuccessToastInAppStateChanges_givenLatestViewIDInAppStateIsSameAsCurrentID_thenShowAlertTrueAndAlertTextTriggered() {
+        let id = UUID()
+        let sut = makeSUT(toastType: .success, viewID: id)
         var cancellables = Set<AnyCancellable>()
+        sut.container.appState.value.viewIDs = [id]
         
         let expectation = expectation(description: "Success toast text set, showAlert true")
         
@@ -112,6 +141,33 @@ class StandardAlertToastViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.alertText, toast.subtitle)
         XCTAssertTrue(sut.showAlert)
+    }
+    
+    func test_whenLatestSuccessToastInAppStateChanges_givenLatestViewIDInAppStateIsNOTSameAsCurrentID_thenShowAlertTrueAndAlertTextTriggered() {
+        let id = UUID()
+        let sut = makeSUT(toastType: .success, viewID: id)
+        var cancellables = Set<AnyCancellable>()
+        sut.container.appState.value.viewIDs = [UUID()]
+        
+        let expectation = expectation(description: "Success toast text set, showAlert true")
+        
+        let toast = SuccessToast(subtitle: "Test toast")
+        
+        sut.container.appState.value.successToasts.append(toast)
+        
+        sut.$alertText
+            .dropFirst()
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.alertText, toast.subtitle)
+        XCTAssertFalse(sut.showAlert)
     }
     
     func test_whenSuccessToastsClearedFromAppState_thenShowAlertTrueAndAlertTextTriggered() {
@@ -142,11 +198,11 @@ class StandardAlertToastViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showAlert)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), toastType: ToastType) -> StandardAlertToastViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), toastType: ToastType, viewID: UUID? = nil) -> StandardAlertToastViewModel {
         let sut = StandardAlertToastViewModel(
             container: container,
             toastType: toastType,
-            viewID: UUID())
+            viewID: viewID ?? UUID())
         
         trackForMemoryLeaks(sut)
         

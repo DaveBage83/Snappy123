@@ -6,65 +6,6 @@
 //
 
 import SwiftUI
-import Combine
-
-class MemberDashboardSettingsViewModel: ObservableObject {
-    let container: DIContainer
-    
-    @Published var showHorizontalItemCards: Bool
-    @Published var showDropdownCategoryMenu: Bool
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    var showMarketingPreferences: Bool {
-        container.appState.value.userData.memberProfile != nil
-    }
-    
-    init(container: DIContainer) {
-        self.container = container
-        self.showHorizontalItemCards = container.appState.value.storeMenu.showHorizontalItemCards
-        self.showDropdownCategoryMenu = container.appState.value.storeMenu.showDropdownCategoryMenu
-        
-        setupItemCardOrientation()
-        setupCategoryDropdownMenu()
-    }
-    
-    func setupItemCardOrientation() {
-        container.appState
-            .map(\.storeMenu.showHorizontalItemCards)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.showHorizontalItemCards, on: self)
-            .store(in: &cancellables)
-        
-        $showHorizontalItemCards
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                guard let self else { return }
-                self.container.appState.value.storeMenu.showHorizontalItemCards = value
-            }
-            .store(in: &cancellables)
-    }
-    
-    func setupCategoryDropdownMenu() {
-        container.appState
-            .map(\.storeMenu.showDropdownCategoryMenu)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.showDropdownCategoryMenu, on: self)
-            .store(in: &cancellables)
-        
-        $showDropdownCategoryMenu
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                guard let self else { return }
-                self.container.appState.value.storeMenu.showDropdownCategoryMenu = value
-            }
-            .store(in: &cancellables)
-    }
-}
 
 struct MemberDashboardSettingsView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -131,9 +72,20 @@ struct MemberDashboardSettingsView: View {
                 if let appVersion = AppV2Constants.Client.appVersion,
                    let bundleVersion = AppV2Constants.Client.bundleVersion
                 {
-                    Text(GeneralStrings.Custom.version.localizedFormat(appVersion, bundleVersion))
-                        .font(.Caption1.semiBold())
-                        .padding(.bottom)
+                    Button(action: {
+                        Task {
+                            await viewModel.versionTapped(
+                                debugInformationCopied: {
+                                    let message = SettingsStrings.DebugInformation.copiedMessage.localized
+                                    viewModel.container.appState.value.successToasts.append(SuccessToast(subtitle: message))
+                                }
+                            )
+                        }
+                    }) {
+                        Text(GeneralStrings.Custom.version.localizedFormat(appVersion, bundleVersion))
+                            .font(.Caption1.semiBold())
+                            .padding(.bottom)
+                    }.buttonStyle(.plain)
                 }
             }
             .background(colorPalette.secondaryWhite)

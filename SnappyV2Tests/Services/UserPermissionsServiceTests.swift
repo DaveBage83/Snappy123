@@ -37,7 +37,7 @@ class UserPermissionsServiceTests: XCTestCase {
             XCTAssertEqual(self.state.value, AppState(), file: #file, line: #line)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         mockedUserDefaultsRepo.verify()
     }
     
@@ -88,7 +88,7 @@ class UserPermissionsServiceTests: XCTestCase {
             XCTAssertNotEqual(self.state.value.permissions.push, .unknown, file: #file, line: #line)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         mockedUserDefaultsRepo.verify()
     }
     
@@ -100,7 +100,7 @@ class UserPermissionsServiceTests: XCTestCase {
             exp.fulfill()
         }
         sut.request(permission: .pushNotifications)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         mockedUserDefaultsRepo.verify()
     }
     

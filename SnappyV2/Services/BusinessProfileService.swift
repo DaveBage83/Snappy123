@@ -7,6 +7,11 @@
 
 import Combine
 import Foundation
+import DeviceCheck
+import OSLog
+
+// 3rd party
+import KeychainAccess
 
 enum BusinessProfileServiceError: Swift.Error {
     case unableToPersistResult
@@ -40,11 +45,20 @@ struct BusinessProfileService: BusinessProfileServiceProtocol {
     
     let eventLogger: EventLoggerProtocol
     
-    init(webRepository: BusinessProfileWebRepositoryProtocol, dbRepository: BusinessProfileDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
+    let deviceChecker: DCDeviceCheckerProtocol
+    
+    init(
+        webRepository: BusinessProfileWebRepositoryProtocol,
+        dbRepository: BusinessProfileDBRepositoryProtocol,
+        appState: Store<AppState>,
+        eventLogger: EventLoggerProtocol,
+        deviceChecker: DCDeviceCheckerProtocol = DCDeviceChecker()
+    ) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
         self.eventLogger = eventLogger
+        self.deviceChecker = deviceChecker
     }
     
     func getProfile() async throws {
@@ -76,10 +90,31 @@ struct BusinessProfileService: BusinessProfileServiceProtocol {
         try await dbRepository.clearBusinessProfile(forLocaleCode: currentLocale)
         try await dbRepository.store(businessProfile: profile, forLocaleCode: currentLocale)
         appState.value.businessData.businessProfile = profile
+        
+        // get local known state
+        let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
+        if
+            let orderPlacedPreviouslyString = keychain[AppV2Constants.Business.orderPlacedPreviouslyKey],
+            orderPlacedPreviouslyString == AppV2Constants.Business.keychainTrueValue
+        {
+            appState.value.userData.isFirstOrder = false
+            return
+        }
+        // get server state
+        guard let deviceCheckToken = await deviceChecker.getAppleDeviceToken() else { return }
+        do {
+            let result = try await webRepository.checkPreviousOrderedDeviceState(deviceCheckToken: deviceCheckToken)
+            if result.deviceOrderPlacedBitSet {
+                keychain[AppV2Constants.Business.orderPlacedPreviouslyKey] = AppV2Constants.Business.keychainTrueValue
+                keychain[AppV2Constants.Business.deviceOrderPlacedBitSetKey] = AppV2Constants.Business.keychainTrueValue
+                appState.value.userData.isFirstOrder = false
+            }
+        } catch {
+            Logger.deviceChecking.error("Failed to fetch from server ordered device state: \(error.localizedDescription)")
+        }
     }
-    
 }
 
 struct StubBusinessProfileService: BusinessProfileServiceProtocol {
-    func getProfile() async throws { }    
+    func getProfile() async throws { }
 }

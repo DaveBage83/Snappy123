@@ -103,7 +103,8 @@ final class BasketWebRepositoryTests: XCTestCase {
             "businessId": AppV2Constants.Business.id,
             "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             "menuItem": basketItemRequest,
-            "fulfilmentMethod": RetailStoreOrderMethodType.delivery
+            "fulfilmentMethod": RetailStoreOrderMethodType.delivery,
+            "isFirstOrder": false
         ]
 
         try mock(.addItem(parameters), result: .success(data))
@@ -111,7 +112,8 @@ final class BasketWebRepositoryTests: XCTestCase {
         let result = try await sut.addItem(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             item: basketItemRequest,
-            fulfilmentMethod: RetailStoreOrderMethodType.delivery
+            fulfilmentMethod: RetailStoreOrderMethodType.delivery,
+            isFirstOrder: false
         )
         
         XCTAssertEqual(result, data, file: #file, line: #line)
@@ -151,7 +153,8 @@ final class BasketWebRepositoryTests: XCTestCase {
             "businessId": AppV2Constants.Business.id,
             "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             "basketLineId": 129,
-            "menuItem": basketItemRequest
+            "menuItem": basketItemRequest,
+            "isFirstOrder": false
         ]
 
         try mock(.updateItem(parameters), result: .success(data))
@@ -159,7 +162,8 @@ final class BasketWebRepositoryTests: XCTestCase {
         let result = try await sut.updateItem(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             basketLineId: 129,
-            item: basketItemRequest
+            item: basketItemRequest,
+            isFirstOrder: false
         )
         
         XCTAssertEqual(result, data, file: #file, line: #line)
@@ -175,7 +179,8 @@ final class BasketWebRepositoryTests: XCTestCase {
             "businessId": AppV2Constants.Business.id,
             "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             "basketLineId": 129,
-            "menuItem": 2
+            "menuItem": 2,
+            "isFirstOrder": false
         ]
 
         try mock(.changeItemQuantity(parameters), result: .success(data))
@@ -183,7 +188,8 @@ final class BasketWebRepositoryTests: XCTestCase {
         let result = try await sut.changeItemQuantity(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             basketLineId: 129,
-            changeQuantity: 2
+            changeQuantity: 2,
+            isFirstOrder: false
         )
         
         XCTAssertEqual(result, data, file: #file, line: #line)
@@ -198,14 +204,16 @@ final class BasketWebRepositoryTests: XCTestCase {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
-            "coupon": "FIVE4FREE"
+            "coupon": "FIVE4FREE",
+            "isFirstOrder": false
         ]
 
         try mock(.applyCoupon(parameters), result: .success(data))
 
         let result = try await sut.applyCoupon(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
-            code: "FIVE4FREE"
+            code: "FIVE4FREE",
+            isFirstOrder: false
         )
         
         XCTAssertEqual(result, data, file: #file, line: #line)

@@ -24,4 +24,5 @@ extension Logger {
     static let pushNotification = Logger(subsystem: subsystem, category: "PushNotification")
     static let imageCache = Logger(subsystem: subsystem, category: "Image Cache")
     static let searchHistoryStorage = Logger(subsystem: subsystem, category: "Postcode storage")
+    static let deviceChecking = Logger(subsystem: subsystem, category: "DeviceChecking")
 }

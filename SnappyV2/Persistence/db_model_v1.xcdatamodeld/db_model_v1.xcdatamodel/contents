@@ -457,6 +457,7 @@
         <attribute name="ordersPaused" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="pausedMessage" optional="YES" attributeType="String"/>
         <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="searchIsFirstOrder" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="searchPostcode" optional="YES" attributeType="String"/>
         <attribute name="storeName" optional="YES" attributeType="String"/>
         <attribute name="telephone" optional="YES" attributeType="String"/>
@@ -657,6 +658,7 @@
     </entity>
     <entity name="RetailStoresSearch" representedClassName="RetailStoresSearchMO" syncable="YES" codeGenerationType="class">
         <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="isFirstOrder" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="postcode" optional="YES" attributeType="String"/>

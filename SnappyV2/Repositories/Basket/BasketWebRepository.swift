@@ -25,11 +25,11 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     // func addItem(basketToken: String?, item: BasketItemRequest, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
     func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String,  fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) async throws -> Basket
     func removeItem(basketToken: String, basketLineId: Int) async throws -> Basket
-    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket
-    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int) async throws -> Basket
-    func applyCoupon(basketToken: String, code: String) async throws -> Basket
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest, isFirstOrder: Bool) async throws -> Basket
+    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int, isFirstOrder: Bool) async throws -> Basket
+    func applyCoupon(basketToken: String, code: String, isFirstOrder: Bool) async throws -> Basket
     func removeCoupon(basketToken: String) async throws -> Basket
     func clearItems(basketToken: String) async throws -> Basket
     func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) async throws -> Basket
@@ -85,13 +85,18 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         return try await call(endpoint: API.reserveTimeSlot(parameters)).singleOutput()
     }
     
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
-        let parameters: [String: Any] = [
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) async throws -> Basket {
+        var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "menuItem": item,
-            "fulfilmentMethod": fulfilmentMethod.rawValue
+            "fulfilmentMethod": fulfilmentMethod.rawValue,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
 
         return try await call(endpoint: API.addItem(parameters)).singleOutput()
     }
@@ -106,34 +111,49 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         return try await call(endpoint: API.removeItem(parameters)).singleOutput()
     }
     
-    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket {
-        let parameters: [String: Any] = [
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest, isFirstOrder: Bool) async throws -> Basket {
+        var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "basketLineId": basketLineId,
-            "menuItem": item
+            "menuItem": item,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
 
         return try await call(endpoint: API.updateItem(parameters)).singleOutput()
     }
     
-    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int) async throws -> Basket {
-        let parameters: [String: Any] = [
+    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int, isFirstOrder: Bool) async throws -> Basket {
+        var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "basketLineId": basketLineId,
-            "quantity": changeQuantity
+            "quantity": changeQuantity,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
 
         return try await call(endpoint: API.changeItemQuantity(parameters)).singleOutput()
     }
     
-    func applyCoupon(basketToken: String, code: String) async throws -> Basket {
-        let parameters: [String: Any] = [
+    func applyCoupon(basketToken: String, code: String, isFirstOrder: Bool) async throws -> Basket {
+        var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
-            "coupon": code
+            "coupon": code,
+            "isFirstOrder": isFirstOrder
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
 
         return try await call(endpoint: API.applyCoupon(parameters)).singleOutput()
     }

@@ -553,7 +553,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil)
+            searchPostcode: nil,
+            searchIsFirstOrder: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
         let sut = makeSUT(container: container)
         XCTAssertEqual(sut.allowedMarketingChannels, allowedMarketingChannels)
@@ -604,7 +605,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil)
+            searchPostcode: nil,
+            searchIsFirstOrder: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
         let sut = makeSUT(container: container)
         XCTAssertNil(sut.allowedMarketingChannels)
@@ -648,7 +650,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil)
+            searchPostcode: nil,
+            searchIsFirstOrder: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
         let sut = makeSUT(container: container)
         XCTAssertNil(sut.allowedMarketingChannels)
@@ -1078,7 +1081,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil)
+            searchPostcode: nil,
+            searchIsFirstOrder: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
 
         let sut = makeSUT(container: container)
@@ -1288,7 +1292,8 @@ class CheckoutRootViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil)
+            searchPostcode: nil,
+            searchIsFirstOrder: nil)
         
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setContactDetails(details: request)]))
         

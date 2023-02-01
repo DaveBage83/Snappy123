@@ -8,6 +8,9 @@
 import Foundation
 import SwiftUI
 
+// 3rd party
+import KeychainAccess
+
 struct AppV2Constants {
     
     struct Client {
@@ -49,6 +52,21 @@ struct AppV2Constants {
         static let systemVersion = UIDevice.current.systemVersion
         static var userDeviceIdentifier: String? = {
             return UIDevice.current.identifierForVendor?.uuidString
+        }()
+        // A more persistent version of userDeviceIdentifier based on logic from the v1 app. This
+        // is relied on for preventing one time discount fraud in addition to the even more robust
+        // service enabled via Business.serverDeviceChecking
+        static let deviceIdentifier: String? = {
+            let UUIDKeyChainStore = "UUIDString\(AppV2Constants.Business.id)"
+            let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
+            if let uuidFromkeyStore = keychain[UUIDKeyChainStore] {
+                return uuidFromkeyStore
+            }
+            if let uniqueSystemIdentifier = AppV2Constants.Client.userDeviceIdentifier {
+                keychain[UUIDKeyChainStore] = uniqueSystemIdentifier
+                return uniqueSystemIdentifier
+            }
+            return nil
         }()
     }
     
@@ -112,7 +130,17 @@ struct AppV2Constants {
         static let expiryWarningThreshold: Double = 300 // 5 mins
         static let todayTimeslotDeadline: Double = 900 // 15 mins
         static let minForgetMeCodeCharacters = 6
+        
         static let globalSearchItemResultsPerPage = 20
+
+        // Generate tokens that can be marked on the Apple Server and later
+        // consulted after an order has been placed with a device. Other UDIDs
+        // can change after an app is deleted or device reset. Key kept the
+        // same as v1 to maintain compatability when updating the apps.
+        static let serverDeviceChecking = true
+        static let orderPlacedPreviouslyKey = "orderPlacedPreviously"
+        static let deviceOrderPlacedBitSetKey = "deviceOrderPlacedBitSet"
+        static let keychainTrueValue = "true"
     }
     
     struct Driver {

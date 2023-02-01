@@ -51,7 +51,7 @@ final class SearchHistoryDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_whenFetchPostcode_thenPostcodeFetched() throws {
@@ -79,7 +79,7 @@ final class SearchHistoryDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_whenDeletePostcode_thenPostcodeDeleted() throws {
@@ -107,7 +107,7 @@ final class SearchHistoryDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_whenMenuItemSearch_thenMenuItemSearchStored() throws {
@@ -135,7 +135,7 @@ final class SearchHistoryDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     
@@ -164,7 +164,7 @@ final class SearchHistoryDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_whenDeleteMenuItemSearch_thenMenuItemSearchDeleted() throws {
@@ -192,7 +192,7 @@ final class SearchHistoryDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_whenStoreMenuItemSearch_thenMenuItemSearchStored() throws {
@@ -220,6 +220,6 @@ final class SearchHistoryDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
 }

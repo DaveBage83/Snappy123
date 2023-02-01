@@ -201,7 +201,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 // look for a result in the database and if no matches then fetch from
                 // the API and store the result
                 dbRepository
-                    .retailStoresSearch(forPostcode: postcode)
+                    .retailStoresSearch(forPostcode: postcode, isFirstOrder: appState.value.userData.isFirstOrder)
                     .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
                         if storesSearch != nil {
                             // return the result in the database
@@ -388,7 +388,10 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 // look for a result in the database and if no matches then fetch from
                 // the API and store the result
                 dbRepository
-                    .retailStoresSearch(forLocation: location)
+                    .retailStoresSearch(
+                        forLocation: location,
+                        isFirstOrder: appState.value.userData.isFirstOrder
+                    )
                     .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
                         if storesSearch != nil {
                             // return the result in the database
@@ -425,19 +428,28 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
 
     private func loadAndStoreSearchFromWeb(postcode: String, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoresSearch?, Error> {
+        let isFirstOrder = appState.value.userData.isFirstOrder
         return webRepository
-            .loadRetailStores(postcode: postcode)
+            .loadRetailStores(postcode: postcode, isFirstOrder: isFirstOrder)
             .ensureTimeSpan(requestHoldBackTimeInterval)
             .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
                 if clearCacheAfterNewFetchedResult {
                     return dbRepository
                         .clearSearches()
                         .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
-                            dbRepository.store(searchResult: storesSearch, forPostode: postcode)
+                            dbRepository.store(
+                                searchResult: storesSearch,
+                                forPostode: postcode,
+                                isFirstOrder: isFirstOrder
+                            )
                         }
                         .eraseToAnyPublisher()
                 } else {
-                    return dbRepository.store(searchResult: storesSearch, forPostode: postcode)
+                    return dbRepository.store(
+                        searchResult: storesSearch,
+                        forPostode: postcode,
+                        isFirstOrder: isFirstOrder
+                    )
                 }
             }
             .receive(on: RunLoop.main)
@@ -445,19 +457,28 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
     
     private func loadAndStoreSearchFromWeb(location: CLLocationCoordinate2D, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoresSearch?, Error> {
+        let isFirstOrder = appState.value.userData.isFirstOrder
         return webRepository
-            .loadRetailStores(location: location)
+            .loadRetailStores(location: location, isFirstOrder: isFirstOrder)
             .ensureTimeSpan(requestHoldBackTimeInterval)
             .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
                 if clearCacheAfterNewFetchedResult {
                     return dbRepository
                         .clearSearches()
                         .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
-                            dbRepository.store(searchResult: storesSearch, location: location)
+                            dbRepository.store(
+                                searchResult: storesSearch,
+                                location: location,
+                                isFirstOrder: isFirstOrder
+                            )
                         }
                         .eraseToAnyPublisher()
                 } else {
-                    return dbRepository.store(searchResult: storesSearch, location: location)
+                    return dbRepository.store(
+                        searchResult: storesSearch,
+                        location: location,
+                        isFirstOrder: isFirstOrder
+                    )
                 }
             }
             .eraseToAnyPublisher()
@@ -493,7 +514,11 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 // look for a result in the database and if no matches then fetch from
                 // the API and store the result
                 dbRepository
-                    .retailStoreDetails(forStoreId: storeId, postcode: postcode)
+                    .retailStoreDetails(
+                        forStoreId: storeId,
+                        postcode: postcode,
+                        isFirstOrder: appState.value.userData.isFirstOrder
+                    )
                     .flatMap { storeDetails -> AnyPublisher<RetailStoreDetails?, Error> in
                         if storeDetails != nil {
                             // return the result in the database
@@ -589,19 +614,32 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
     
     private func loadAndStoreRetailStoreDetailsFromWeb(forStoreId storeId: Int, postcode: String, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoreDetails?, Error> {
+        let isFirstOrder = appState.value.userData.isFirstOrder
         return webRepository
-            .loadRetailStoreDetails(storeId: storeId, postcode: postcode)
+            .loadRetailStoreDetails(
+                storeId: storeId,
+                postcode: postcode,
+                isFirstOrder: isFirstOrder
+            )
             .ensureTimeSpan(requestHoldBackTimeInterval)
             .flatMap { detailsResult -> AnyPublisher<RetailStoreDetails?, Error> in
                 if clearCacheAfterNewFetchedResult {
                     return dbRepository
                         .clearRetailStoreDetails()
                         .flatMap { _ -> AnyPublisher<RetailStoreDetails?, Error> in
-                            dbRepository.store(storeDetails: detailsResult, forPostode: postcode)
+                            dbRepository.store(
+                                storeDetails: detailsResult,
+                                forPostode: postcode,
+                                isFirstOrder: isFirstOrder
+                            )
                         }
                         .eraseToAnyPublisher()
                 } else {
-                    return dbRepository.store(storeDetails: detailsResult, forPostode: postcode)
+                    return dbRepository.store(
+                        storeDetails: detailsResult,
+                        forPostode: postcode,
+                        isFirstOrder: isFirstOrder
+                    )
                 }
             }
             .receive(on: RunLoop.main)

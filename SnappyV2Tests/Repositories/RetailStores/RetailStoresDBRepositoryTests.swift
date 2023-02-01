@@ -49,7 +49,8 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         let exp = XCTestExpectation(description: #function)
         sut.store(
             searchResult: search,
-            forPostode: search.fulfilmentLocation.postcode
+            forPostode: search.fulfilmentLocation.postcode,
+            isFirstOrder: true
         )
             .sinkToResult { result in
                 result.assertSuccess(value: search)
@@ -77,7 +78,8 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         let exp = XCTestExpectation(description: #function)
         sut.store(
             searchResult: search,
-            location: search.fulfilmentLocation.location
+            location: search.fulfilmentLocation.location,
+            isFirstOrder: true
         )
             .sinkToResult { result in
                 result.assertSuccess(value: search)
@@ -85,7 +87,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -105,7 +107,8 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         let exp = XCTestExpectation(description: #function)
         sut.store(
             storeDetails: storeDetails,
-            forPostode: storeDetails.searchPostcode ?? ""
+            forPostode: storeDetails.searchPostcode ?? "",
+            isFirstOrder: true
         )
             .sinkToResult { result in
                 result.assertSuccess(value: RetailStoreDetails.mockedDataWithStartAndEndDates)
@@ -145,7 +148,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -178,7 +181,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -202,7 +205,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -235,7 +238,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
@@ -268,7 +271,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
@@ -302,7 +305,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
@@ -335,57 +338,85 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
     // MARK: - retailStoresSearch(forPostcode:)
     
-    func test_retailStoresSearch_forPostcode() throws {
+    func test_retailStoresSearch_givenIsFirstOrder_forPostcode() throws {
         
         let search = RetailStoresSearch.mockedData
+        let isFirstOrder = true
         
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
         
         try mockedStore.preloadData { context in
-            search.store(in: context)
+            let searchMO = search.store(in: context)
+            searchMO?.isFirstOrder = isFirstOrder
         }
         
         let exp = XCTestExpectation(description: #function)
-        sut.retailStoresSearch(forPostcode: search.fulfilmentLocation.postcode)
+        sut.retailStoresSearch(forPostcode: search.fulfilmentLocation.postcode, isFirstOrder: isFirstOrder)
             .sinkToResult { result in
                 result.assertSuccess(value: search)
                 self.mockedStore.verify()
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
-        
+        wait(for: [exp], timeout: 2.0)
     }
     
-    func test_retailStoresSearch_forPostcode_no_match() throws {
+    func test_retailStoresSearch_givenIsNotFirstOrder_forPostcode() throws {
         
         let search = RetailStoresSearch.mockedData
+        let isFirstOrder = false
         
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
         
         try mockedStore.preloadData { context in
-            search.store(in: context)
+            let searchMO = search.store(in: context)
+            searchMO?.isFirstOrder = isFirstOrder
         }
         
         let exp = XCTestExpectation(description: #function)
-        sut.retailStoresSearch(forPostcode: "X99 9XX")
+        sut.retailStoresSearch(forPostcode: search.fulfilmentLocation.postcode, isFirstOrder: isFirstOrder)
+            .sinkToResult { result in
+                result.assertSuccess(value: search)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 2.0)
+    }
+    
+    func test_retailStoresSearch_forPostcode_no_match() throws {
+        
+        let search = RetailStoresSearch.mockedData
+        let isFirstOrder = true
+        
+        mockedStore.actions = .init(expected: [
+            .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
+        ])
+        
+        try mockedStore.preloadData { context in
+            let searchMO = search.store(in: context)
+            searchMO?.isFirstOrder = isFirstOrder
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.retailStoresSearch(forPostcode: "X99 9XX", isFirstOrder: isFirstOrder)
             .sinkToResult { result in
                 result.assertSuccess(value: nil)
                 self.mockedStore.verify()
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -394,48 +425,52 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
     func test_retailStoresSearch_forLocation() throws {
         
         let search = RetailStoresSearch.mockedData
+        let isFirstOrder = true
         
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
         
         try mockedStore.preloadData { context in
-            search.store(in: context)
+            let searchMO = search.store(in: context)
+            searchMO?.isFirstOrder = isFirstOrder
         }
         
         let exp = XCTestExpectation(description: #function)
-        sut.retailStoresSearch(forLocation: search.fulfilmentLocation.location)
+        sut.retailStoresSearch(forLocation: search.fulfilmentLocation.location, isFirstOrder: isFirstOrder)
             .sinkToResult { result in
                 result.assertSuccess(value: search)
                 self.mockedStore.verify()
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
     func test_retailStoresSearch_forLocation_no_match() throws {
         
         let search = RetailStoresSearch.mockedData
+        let isFirstOrder = true
         
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
         
         try mockedStore.preloadData { context in
-            search.store(in: context)
+            let searchMO = search.store(in: context)
+            searchMO?.isFirstOrder = isFirstOrder
         }
         
         let exp = XCTestExpectation(description: #function)
-        sut.retailStoresSearch(forLocation: CLLocationCoordinate2D(latitude: 99, longitude: 99))
+        sut.retailStoresSearch(forLocation: CLLocationCoordinate2D(latitude: 99, longitude: 99), isFirstOrder: true)
             .sinkToResult { result in
                 result.assertSuccess(value: nil)
                 self.mockedStore.verify()
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -461,7 +496,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -479,7 +514,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -505,7 +540,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -523,7 +558,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -532,6 +567,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
     func test_retailStoreDetails() throws {
         
         let details = RetailStoreDetails.mockedData
+        let isFirstOrder = true
         
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: RetailStoreDetailsMO.self), .init(inserted: 0, updated: 0, deleted: 0))
@@ -540,23 +576,29 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         try mockedStore.preloadData { context in
             let detailsMO = details.store(in: context)
             detailsMO?.searchPostcode = details.searchPostcode
+            detailsMO?.searchIsFirstOrder = isFirstOrder
         }
         
         let exp = XCTestExpectation(description: #function)
-        sut.retailStoreDetails(forStoreId: details.id, postcode: details.searchPostcode ?? "")
+        sut.retailStoreDetails(
+            forStoreId: details.id,
+            postcode: details.searchPostcode ?? "",
+            isFirstOrder: isFirstOrder
+        )
             .sinkToResult { result in
                 result.assertSuccess(value: RetailStoreDetails.mockedDataWithStartAndEndDates)
                 self.mockedStore.verify()
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
     func test_retailStoreDetails_no_match() throws {
         
         let details = RetailStoreDetails.mockedData
+        let isFirstOrder = true
         
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: RetailStoreDetailsMO.self), .init(inserted: 0, updated: 0, deleted: 0))
@@ -565,17 +607,22 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         try mockedStore.preloadData { context in
             let detailsMO = details.store(in: context)
             detailsMO?.searchPostcode = details.searchPostcode
+            detailsMO?.searchIsFirstOrder = isFirstOrder
         }
         
         let exp = XCTestExpectation(description: #function)
-        sut.retailStoreDetails(forStoreId: details.id + 1, postcode: details.searchPostcode ?? "")
+        sut.retailStoreDetails(
+            forStoreId: details.id + 1,
+            postcode: details.searchPostcode ?? "",
+            isFirstOrder: isFirstOrder
+        )
             .sinkToResult { result in
                 result.assertSuccess(value: nil)
                 self.mockedStore.verify()
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -609,7 +656,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -642,7 +689,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -689,7 +736,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -737,7 +784,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     

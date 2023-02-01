@@ -821,7 +821,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -929,7 +930,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1025,7 +1027,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1133,7 +1136,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1241,7 +1245,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedEUROData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1349,7 +1354,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: RetailStoreCustomer.mockedDataWithMembership,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1446,7 +1452,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1554,7 +1561,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1662,7 +1670,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1770,7 +1779,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1882,7 +1892,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -1991,7 +2002,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -2102,7 +2114,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -2210,7 +2223,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -2345,7 +2359,8 @@ extension RetailStoreDetails {
             timeZone: timeZone,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -2458,7 +2473,8 @@ extension RetailStoreDetails {
             timeZone: timeZone,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     
@@ -2566,7 +2582,8 @@ extension RetailStoreDetails {
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: "DD1 3JA"
+            searchPostcode: "DD1 3JA",
+            searchIsFirstOrder: true
         )
     }
     

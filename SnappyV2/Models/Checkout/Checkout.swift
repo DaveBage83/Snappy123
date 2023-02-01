@@ -231,3 +231,7 @@ struct CheckoutCardDetails: Equatable {
     let cvv: String
     let cardName: String
 }
+
+struct SetPreviousOrderedDeviceStateResult: Codable, Equatable {
+    let success: Bool
+}

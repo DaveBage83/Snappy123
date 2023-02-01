@@ -190,3 +190,7 @@ struct BusinessProfileColor: Codable, Equatable {
         return profileColor
     }
 }
+
+struct CheckPreviousOrderedDeviceStateResult: Codable, Equatable {
+    let deviceOrderPlacedBitSet: Bool
+}

@@ -569,7 +569,8 @@ extension RetailStoreDetails {
             ),
             retailCustomer: retailCustomer,
             // populated by request and cached data
-            searchPostcode: managedObject.searchPostcode
+            searchPostcode: managedObject.searchPostcode,
+            searchIsFirstOrder: managedObject.searchIsFirstOrder
         )
     }
     

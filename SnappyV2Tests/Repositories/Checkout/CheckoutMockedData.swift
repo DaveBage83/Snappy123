@@ -288,3 +288,8 @@ extension CheckoutCom3DSURLs {
         failUrl: URL(string: "https://www.snappyshopper.co.uk")!
     )
 }
+
+extension SetPreviousOrderedDeviceStateResult {
+    static let mockedSuccessfullySet = SetPreviousOrderedDeviceStateResult(success: true)
+    static let mockedUnsuccessfullySet = SetPreviousOrderedDeviceStateResult(success: false)
+}

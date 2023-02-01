@@ -950,6 +950,10 @@ enum Strings {
             case enable = "settings.pushnotifications.enable"
             case marketingOptionDescription = "settings.pushnotifications.marketingoptiondescription"
         }
+        
+        enum DebugInformation: String, IterableSnappyString {
+            case copiedMessage = "settings.debuginformation.copiedmessage"
+        }
     }
     
     enum FormErrors: String, IterableSnappyString {

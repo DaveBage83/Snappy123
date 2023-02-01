@@ -35,7 +35,7 @@ final class CheckoutWebRepositoryTests: XCTestCase {
 
         let data = DraftOrderResult.mockedCashData
 
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             "fulfilmentDetails": DraftOrderFulfilmentDetailsRequest(
                 time: DraftOrderFulfilmentDetailsTimeRequest(
@@ -54,6 +54,10 @@ final class CheckoutWebRepositoryTests: XCTestCase {
             "platform": AppV2Constants.Client.platform,
             "messagingDeviceId": "740f4707bebcf74f9b7c25d48e3358945f6aa01da5ddb387462c7eaf61bb78ad"
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
 
         try mock(.createDraftOrder(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")

@@ -70,8 +70,10 @@ final class ConditionallyGetBasketTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.selectedFulfilmentMethod = .delivery
@@ -83,7 +85,7 @@ final class ConditionallyGetBasketTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .removeCoupon(basketToken: basket.basketToken)
         ])
@@ -117,8 +119,10 @@ final class ConditionallyGetBasketTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.selectedFulfilmentMethod = .delivery
@@ -130,7 +134,7 @@ final class ConditionallyGetBasketTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .removeCoupon(basketToken: basket.basketToken)
         ])
@@ -216,8 +220,10 @@ final class RestoreBasketTests: BasketServiceTests {
         
         let basket = Basket.mockedData
         let store = RetailStoreDetails.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.selectedFulfilmentMethod = .delivery
         
@@ -229,7 +235,7 @@ final class RestoreBasketTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: nil,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -262,8 +268,10 @@ final class RestoreBasketTests: BasketServiceTests {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let basket = Basket.mockedData
         let store = RetailStoreDetails.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.selectedFulfilmentMethod = .delivery
         
@@ -275,7 +283,7 @@ final class RestoreBasketTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: nil,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -349,8 +357,10 @@ final class UpdateFulfilmentMethodAndStoreTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -360,7 +370,7 @@ final class UpdateFulfilmentMethodAndStoreTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -390,8 +400,10 @@ final class UpdateFulfilmentMethodAndStoreTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.basket = basket
@@ -402,7 +414,7 @@ final class UpdateFulfilmentMethodAndStoreTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -477,8 +489,10 @@ final class ReserveTimeSlotTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -488,7 +502,7 @@ final class ReserveTimeSlotTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .reserveTimeSlot(
                 basketToken: basket.basketToken,
@@ -618,7 +632,7 @@ final class AddItemTests: BasketServiceTests {
         self.mockedEventLogger.verify()
     }
     
-    func test_successAddItem_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
+    func test_successAddItem_whenSelectedStoreAndFulfilmentLocationWithoutBasketAndIsFirstOrder_setAppStateBasket() async {
         
         let itemRequest = BasketItemRequest.mockedData
         let store = RetailStoreDetails.mockedData
@@ -628,8 +642,10 @@ final class AddItemTests: BasketServiceTests {
         
         let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
         let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -639,12 +655,110 @@ final class AddItemTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .addItem(
                 basketToken: basket.basketToken,
                 item: itemRequest,
-                fulfilmentMethod: basket.fulfilmentMethod.type
+                fulfilmentMethod: basket.fulfilmentMethod.type,
+                isFirstOrder: isFirstOrder
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket),
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        
+        let appsFlyerEventParameters: [String: Any] = [
+            AFEventParamPrice:          item.price.price,
+            AFEventParamContent:        item.eposCode ?? "",
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 1,
+            "product_name":             item.name
+        ]
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: item.name,
+            .contentID: contentId,
+            .contentType: "product",
+            .numItems: itemRequest.quantity ?? 1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        let facebookEventParameters: [String: Any] = [
+            "valueToSum": item.price.price,
+            "facebookParams": facebookParams
+        ]
+        
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: itemRequest.quantity ?? 1,
+            AnalyticsParameterPrice: NSDecimalNumber(value: item.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: item.price.price * Double(itemRequest.quantity ?? 1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .addToBasket, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .addToBasket, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getBasketResponse = .success(basket)
+        mockedWebRepo.addItemResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        do {
+            try await sut.addItem(basketItemRequest: itemRequest, item: item)
+            
+            XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successAddItem_whenSelectedStoreAndFulfilmentLocationWithoutBasketAndIsNotFirstOrder_setAppStateBasket() async {
+        
+        let itemRequest = BasketItemRequest.mockedData
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        let item = basket.items.first!.menuItem
+        
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
+        let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getBasket(
+                basketToken: nil,
+                storeId: store.id,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                fulfilmentLocation: searchResult.fulfilmentLocation,
+                isFirstOrder: isFirstOrder
+            ),
+            .addItem(
+                basketToken: basket.basketToken,
+                item: itemRequest,
+                fulfilmentMethod: basket.fulfilmentMethod.type,
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -722,8 +836,10 @@ final class AddItemTests: BasketServiceTests {
         
         let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
         let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.basket = basket
@@ -732,7 +848,8 @@ final class AddItemTests: BasketServiceTests {
             .addItem(
                 basketToken: basket.basketToken,
                 item: itemRequest,
-                fulfilmentMethod: basket.fulfilmentMethod.type
+                fulfilmentMethod: basket.fulfilmentMethod.type,
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -849,7 +966,7 @@ final class UpdateItemTests: BasketServiceTests {
         self.mockedEventLogger.verify()
     }
     
-    func test_successUpdateItem_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
+    func test_successUpdateItem_whenSelectedStoreAndFulfilmentLocationWithoutBasketAndIsFirstOrder_setAppStateBasket() async {
         
         let itemRequest = BasketItemRequest.mockedData
         let store = RetailStoreDetails.mockedData
@@ -858,8 +975,10 @@ final class UpdateItemTests: BasketServiceTests {
         
         let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)"
         let currencyCode = store.currency.currencyCode
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -869,12 +988,111 @@ final class UpdateItemTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .updateItem(
                 basketToken: basket.basketToken,
                 basketLineId: basket.items.first!.basketLineId,
-                item: itemRequest
+                item: itemRequest,
+                isFirstOrder: isFirstOrder
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket),
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        
+        var appsFlyerEventParameters: [String: Any] = [
+            AFEventParamPrice:          basket.items.first!.menuItem.price.price,
+            AFEventParamContentId:      basket.items.first!.menuItem.id,
+            AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
+            AFEventParamCurrency:       currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 2,
+            "product_name":             basket.items.first!.menuItem.name
+        ]
+        if let eposCode = basket.items.first!.menuItem.eposCode {
+            appsFlyerEventParameters[AFEventParamContent] = eposCode
+        }
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: basket.items.first!.menuItem.name,
+            .contentID: contentId,
+            .contentType: "product",
+            .numItems: itemRequest.quantity ?? 2,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        let facebookEventParameters: [String: Any] = [
+            "valueToSum": basket.items.first!.menuItem.price.price,
+            "facebookParams": facebookParams
+        ]
+        
+        let addedItem: [String: Any] = [
+            AnalyticsParameterItemID: contentId,
+            AnalyticsParameterQuantity: itemRequest.quantity ?? 2,
+            AnalyticsParameterPrice: NSDecimalNumber(value: basket.items.first!.menuItem.price.price).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        let firebaseEventParams: [String: Any] = [
+            AnalyticsParameterCurrency: currencyCode,
+            AnalyticsParameterItems: [addedItem],
+            AnalyticsParameterValue: NSDecimalNumber(value: basket.items.first!.menuItem.price.price * Double(itemRequest.quantity ?? 1)).rounding(accordingToBehavior: EventLogger.decimalBehavior).doubleValue
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .updateCart, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .addToBasket, with: .firebaseAnalytics, params: firebaseEventParams)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getBasketResponse = .success(basket)
+        mockedWebRepo.updateItemResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        do {
+            try await sut.updateItem(basketItemRequest: itemRequest, basketItem: basket.items.first!)
+            
+            XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successUpdateItem_whenSelectedStoreAndFulfilmentLocationWithoutBasketAndNotIsFirstOrder_setAppStateBasket() async {
+        
+        let itemRequest = BasketItemRequest.mockedData
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        
+        let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)"
+        let currencyCode = store.currency.currencyCode
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getBasket(
+                basketToken: nil,
+                storeId: store.id,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                fulfilmentLocation: searchResult.fulfilmentLocation,
+                isFirstOrder: isFirstOrder
+            ),
+            .updateItem(
+                basketToken: basket.basketToken,
+                basketLineId: basket.items.first!.basketLineId,
+                item: itemRequest,
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -953,8 +1171,10 @@ final class UpdateItemTests: BasketServiceTests {
         
         let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)"
         let currencyCode = store.currency.currencyCode
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.basket = basket
@@ -963,7 +1183,8 @@ final class UpdateItemTests: BasketServiceTests {
             .updateItem(
                 basketToken: basket.basketToken,
                 basketLineId: basket.items[0].basketLineId,
-                item: itemRequest
+                item: itemRequest,
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -1088,8 +1309,10 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)"
         let currencyCode = store.currency.currencyCode
         let changeQuantity = 2
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -1099,12 +1322,14 @@ final class ChangeItemQuantityTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .changeItemQuantity(
                 basketToken: basket.basketToken,
                 basketLineId: basketItem.basketLineId,
-                changeQuantity: changeQuantity)
+                changeQuantity: changeQuantity,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearBasket,
@@ -1183,8 +1408,10 @@ final class ChangeItemQuantityTests: BasketServiceTests {
         let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)"
         let currencyCode = store.currency.currencyCode
         let changeQuantity = 2
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.basket = basket
@@ -1193,7 +1420,9 @@ final class ChangeItemQuantityTests: BasketServiceTests {
             .changeItemQuantity(
                 basketToken: basket.basketToken,
                 basketLineId: basketItem.basketLineId,
-                changeQuantity: changeQuantity)
+                changeQuantity: changeQuantity,
+                isFirstOrder: isFirstOrder
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearBasket,
@@ -1320,8 +1549,10 @@ final class RemoveItemTests: BasketServiceTests {
         
         let contentId = AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)"
         let currencyCode = store.currency.currencyCode
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -1331,7 +1562,7 @@ final class RemoveItemTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .removeItem(
                 basketToken: basket.basketToken,
@@ -1535,13 +1766,15 @@ final class ApplyCouponTests: BasketServiceTests {
         self.mockedDBRepo.verify()
     }
     
-    func test_successApplyCoupon_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
+    func test_successApplyCoupon_whenSelectedStoreAndFulfilmentLocationWithoutBasketIsFirstOrder_setAppStateBasket() async {
         
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -1551,11 +1784,82 @@ final class ApplyCouponTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .applyCoupon(
                 basketToken: basket.basketToken,
-                code: "COUPONCODE"
+                code: "COUPONCODE",
+                isFirstOrder: isFirstOrder
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket),
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        
+        // Configuring expected events
+        let params: [String: Any] = [
+            "coupon_code": basket.coupon?.code ?? "",
+            "coupon_name":basket.coupon?.name ?? "",
+            "coupon_discount_applied": basket.coupon?.deductCost ?? 0,
+            "coupon_type": basket.coupon?.type ?? "",
+            "coupon_value": basket.coupon?.value ?? 0,
+            "coupon_free_delivery": basket.coupon?.freeDelivery ?? false,
+            "campaign_id": basket.coupon?.iterableCampaignId ?? 1
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(
+                for: .applyCoupon,
+                with: .appsFlyer,
+                params: params
+            )
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getBasketResponse = .success(basket)
+        mockedWebRepo.applyCouponResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        do {
+            try await sut.applyCoupon(code: "COUPONCODE")
+            
+            XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successApplyCoupon_whenSelectedStoreAndFulfilmentLocationWithoutBasketAndIsNotFirstOrder_setAppStateBasket() async {
+        
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        let isFirstOrder = false
+        
+        // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getBasket(
+                basketToken: nil,
+                storeId: store.id,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                fulfilmentLocation: searchResult.fulfilmentLocation,
+                isFirstOrder: isFirstOrder
+            ),
+            .applyCoupon(
+                basketToken: basket.basketToken,
+                code: "COUPONCODE",
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -1607,8 +1911,10 @@ final class ApplyCouponTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.basket = basket
@@ -1616,7 +1922,8 @@ final class ApplyCouponTests: BasketServiceTests {
         mockedWebRepo.actions = .init(expected: [
             .applyCoupon(
                 basketToken: basket.basketToken,
-                code: "COUPONCODE"
+                code: "COUPONCODE",
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -1691,8 +1998,10 @@ final class RemoveCouponTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -1702,7 +2011,7 @@ final class RemoveCouponTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .removeCoupon(basketToken: basket.basketToken)
         ])
@@ -1817,8 +2126,10 @@ final class ClearItemsTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -1828,7 +2139,7 @@ final class ClearItemsTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .clearItems(basketToken: basket.basketToken)
         ])
@@ -1947,8 +2258,10 @@ final class SetContactDetailsTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -1958,7 +2271,7 @@ final class SetContactDetailsTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .setContactDetails(
                 basketToken: basket.basketToken,
@@ -2084,8 +2397,10 @@ final class SetDeliveryAddressTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -2095,7 +2410,7 @@ final class SetDeliveryAddressTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .setDeliveryAddress(
                 basketToken: basket.basketToken,
@@ -2265,8 +2580,10 @@ final class SetBillingAddressTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -2276,7 +2593,7 @@ final class SetBillingAddressTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .setBillingAddress(
                 basketToken: basket.basketToken,
@@ -2402,8 +2719,10 @@ final class UpdateTipTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -2413,7 +2732,7 @@ final class UpdateTipTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .updateTip(
                 basketToken: basket.basketToken,
@@ -2534,8 +2853,10 @@ final class PopulateRepeatOrderTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -2545,7 +2866,7 @@ final class PopulateRepeatOrderTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -2580,8 +2901,10 @@ final class PopulateRepeatOrderTests: BasketServiceTests {
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
         let member = MemberProfile.mockedData
+        let isFirstOrder = true
         
         // Configuring app prexisting states
+        appState.value.userData.isFirstOrder = isFirstOrder
         appState.value.userData.selectedStore = .loaded(store)
         appState.value.userData.searchResult = .loaded(searchResult)
         appState.value.userData.memberProfile = member
@@ -2592,7 +2915,7 @@ final class PopulateRepeatOrderTests: BasketServiceTests {
                 storeId: store.id,
                 fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                 fulfilmentLocation: searchResult.fulfilmentLocation,
-                isFirstOrder: true
+                isFirstOrder: isFirstOrder
             ),
             .populateRepeatOrder(
                 basketToken: basket.basketToken,

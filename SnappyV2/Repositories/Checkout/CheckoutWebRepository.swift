@@ -34,6 +34,8 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
     func getDriverLocation(forBusinessOrderId: Int) async throws -> DriverLocation
     
     func getOrder(forBusinessOrderId: Int, withHash: String) async throws -> PlacedOrder
+    
+    func setPreviousOrderedDeviceState(deviceCheckToken: String) async throws -> SetPreviousOrderedDeviceStateResult
 }
 
 struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
@@ -63,6 +65,10 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
             "paymentGateway": paymentGateway.rawValue,
             "storeId": storeId
         ]
+        
+        if let deviceIdentifier = AppV2Constants.Client.deviceIdentifier {
+            parameters["deviceId"] = deviceIdentifier
+        }
         
         if let instructions {
             parameters["instructions"] = instructions
@@ -166,6 +172,14 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         
         return try await call(endpoint: API.getOrderByHash(parameters)).singleOutput()
     }
+    
+    func setPreviousOrderedDeviceState(deviceCheckToken: String) async throws -> SetPreviousOrderedDeviceStateResult {
+        let parameters: [String: Any] = [
+            "deviceCheckToken": deviceCheckToken
+        ]
+        
+        return try await call(endpoint: API.setPreviousOrderedDeviceState(parameters)).singleOutput()
+    }
 }
 
 // MARK: - Endpoints
@@ -181,6 +195,7 @@ extension CheckoutWebRepository {
         case getDriverLocation([String: Any]?)
         case getOrderByHash([String: Any]?)
         case makePayment([String: Any]?)
+        case setPreviousOrderedDeviceState([String: Any]?)
     }
 }
 
@@ -205,11 +220,13 @@ extension CheckoutWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/order/getOrderByHash.json"
         case .makePayment:
             return AppV2Constants.Client.languageCode + "/payments/makePayment.json"
+        case .setPreviousOrderedDeviceState:
+            return "\(AppV2Constants.Client.languageCode)/device/\(AppV2Constants.Client.platform)/setPreviousOrderedState.json"
         }
     }
     var method: String {
         switch self {
-        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyCheckoutcomPayment, .getPlacedOrderStatus, .getDriverLocation, .getOrderByHash, .makePayment:
+        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyCheckoutcomPayment, .getPlacedOrderStatus, .getDriverLocation, .getOrderByHash, .makePayment, .setPreviousOrderedDeviceState:
             return "POST"
         }
     }
@@ -232,6 +249,8 @@ extension CheckoutWebRepository.API: APICall {
         case let .getOrderByHash(parameters):
             return parameters
         case let .makePayment(parameters):
+            return parameters
+        case let .setPreviousOrderedDeviceState(parameters):
             return parameters
         }
     }

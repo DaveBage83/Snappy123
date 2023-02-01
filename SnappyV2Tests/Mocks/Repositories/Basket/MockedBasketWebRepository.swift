@@ -14,11 +14,11 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     enum Action: Equatable {
         case getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?, isFirstOrder: Bool)
         case reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType)
-        case addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType)
+        case addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool)
         case removeItem(basketToken: String, basketLineId: Int)
-        case updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest)
-        case changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int)
-        case applyCoupon(basketToken: String, code: String)
+        case updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest, isFirstOrder: Bool)
+        case changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int, isFirstOrder: Bool)
+        case applyCoupon(basketToken: String, code: String, isFirstOrder: Bool)
         case removeCoupon(basketToken: String)
         case clearItems(basketToken: String)
         case setContactDetails(basketToken: String, details: BasketContactDetailsRequest)
@@ -64,8 +64,8 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         }
     }
     
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
-        register(.addItem(basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod))
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) async throws -> Basket {
+        register(.addItem(basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod, isFirstOrder: isFirstOrder))
         switch addItemResponse {
         case .success(let result):
             return result
@@ -84,8 +84,8 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         }
     }
     
-    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket {
-        register(.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item))
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest, isFirstOrder: Bool) async throws -> Basket {
+        register(.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item, isFirstOrder: isFirstOrder))
         switch updateItemResponse {
         case .success(let result):
             return result
@@ -94,8 +94,8 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         }
     }
     
-    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int) async throws -> Basket {
-        register(.changeItemQuantity(basketToken: basketToken, basketLineId: basketLineId, changeQuantity: changeQuantity))
+    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int, isFirstOrder: Bool) async throws -> Basket {
+        register(.changeItemQuantity(basketToken: basketToken, basketLineId: basketLineId, changeQuantity: changeQuantity, isFirstOrder: isFirstOrder))
         switch changeItemQuantityResponse {
         case .success(let result):
             return result
@@ -104,8 +104,8 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         }
     }
     
-    func applyCoupon(basketToken: String, code: String) async throws -> Basket {
-        register(.applyCoupon(basketToken: basketToken, code: code))
+    func applyCoupon(basketToken: String, code: String, isFirstOrder: Bool) async throws -> Basket {
+        register(.applyCoupon(basketToken: basketToken, code: code, isFirstOrder: isFirstOrder))
         switch applyCouponResponse {
         case .success(let result):
             return result

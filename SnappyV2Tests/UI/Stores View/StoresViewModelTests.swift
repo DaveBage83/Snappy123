@@ -469,7 +469,8 @@ class StoresViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil
+            searchPostcode: nil,
+            searchIsFirstOrder: nil
         )
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
@@ -530,7 +531,8 @@ class StoresViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil
+            searchPostcode: nil,
+            searchIsFirstOrder: nil
         )
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
@@ -579,7 +581,8 @@ class StoresViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil
+            searchPostcode: nil,
+            searchIsFirstOrder: nil
         )
         
         sut.storeSearchResult = .loaded(.mockedData)
@@ -627,7 +630,8 @@ class StoresViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil)
+            searchPostcode: nil,
+            searchIsFirstOrder: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
                                                  freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)
@@ -682,7 +686,8 @@ class StoresViewModelTests: XCTestCase {
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
             retailCustomer: nil,
-            searchPostcode: nil)
+            searchPostcode: nil,
+            searchIsFirstOrder: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil,
                                                  freeFulfilmentMessage: nil, deliveryTiers: nil, freeFrom: nil, minSpend: nil, earliestOpeningDate: nil)

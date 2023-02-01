@@ -21,25 +21,31 @@ struct LoadingDotsView: View {
         static let thirdCircleDelay: CGFloat = 0.9
     }
     
+    let color: Color
+    
+    init(color: Color = .white) {
+        self.color = color
+    }
+    
     var body: some View {
         HStack {
             Circle()
-                .fill(Color.white)
+                .fill(color)
                 .frame(width: Constants.size, height: Constants.size)
                 .scaleEffect(shouldAnimate ? Constants.maxScale : Constants.minScale)
                 .animation(Animation.easeInOut(duration: Constants.animationDuration).repeatForever(), value: shouldAnimate)
             Circle()
-                .fill(Color.white)
+                .fill(color)
                 .frame(width: Constants.size, height: Constants.size)
                 .scaleEffect(shouldAnimate ? Constants.maxScale : Constants.minScale)
                 .animation(Animation.easeInOut(duration: Constants.animationDuration).repeatForever().delay(Constants.firstCircleDelay), value: shouldAnimate)
             Circle()
-                .fill(Color.white)
+                .fill(color)
                 .frame(width: Constants.size, height: Constants.size)
                 .scaleEffect(shouldAnimate ? Constants.maxScale : Constants.minScale)
                 .animation(Animation.easeInOut(duration: Constants.animationDuration).repeatForever().delay(Constants.secondCircleDelay), value: shouldAnimate)
             Circle()
-                .fill(Color.white)
+                .fill(color)
                 .frame(width: Constants.size, height: Constants.size)
                 .scaleEffect(shouldAnimate ? Constants.maxScale : Constants.minScale)
                 .animation(Animation.easeInOut(duration: Constants.animationDuration).repeatForever().delay(Constants.thirdCircleDelay), value: shouldAnimate)

@@ -48,7 +48,7 @@ struct DigitalHighstreet: View {
     private var colorPalette: ColorPalette {
         .init(container: viewModel.container, colorScheme: colorScheme)
     }
-    
+        
     // MARK: - Main body
     var body: some View {
         VStack {
@@ -96,10 +96,10 @@ struct DigitalHighstreet: View {
                     })
                 }
                 .padding(.horizontal)
-                .transition(.scale)
-                
+                .transition(.scale(scale: 0.0, anchor: .top))
             } else {
                 pillView
+                    .animation(Animation.default.delay(viewModel.pillCarouselAnimationDelay))
                     .transition(.slide)
             }
         }
@@ -137,28 +137,36 @@ struct DigitalHighstreet: View {
     // MARK: - Store types - pill carousel
     private var pillView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Constants.PillView.hSpacing) {
-                Button(action: {
-                    viewModel.selectStoreType(type: nil)
-                }) {
-                    categoryPill(
-                        text: Strings.DigitalHighstreet.allStores.localized,
-                        isSelected: $viewModel.allStoresSelected)
-                }
-                
-                if let storeTypes = viewModel.retailStoreTypes {
-                    ForEach(storeTypes, id: \.self) { storeType in
-                        Button(action: {
-                            viewModel.selectStoreType(type: storeType.id)
-                        }) {
-                            categoryPill(
-                                text: storeType.name,
-                                isSelected: .constant(viewModel.isSelectedStoreType(storeTypeID: storeType.id)))
+            ScrollViewReader { value in
+                HStack(spacing: Constants.PillView.hSpacing) {
+                    Button(action: {
+                        viewModel.selectStoreType(type: nil)
+                    }) {
+                        categoryPill(
+                            text: Strings.DigitalHighstreet.allStores.localized,
+                            isSelected: $viewModel.allStoresSelected)
+                    }
+                    
+                    if let storeTypes = viewModel.retailStoreTypes {
+                        ForEach(storeTypes, id: \.self) { storeType in
+                            Button(action: {
+                                viewModel.selectStoreType(type: storeType.id)
+                            }) {
+                                categoryPill(
+                                    text: storeType.name,
+                                    isSelected: .constant(viewModel.isSelectedStoreType(storeTypeID: storeType.id)))
+                            }
+                            .id(storeType.id)
                         }
                     }
                 }
+                .padding(.horizontal)
+                .onAppear {
+                    withAnimation {
+                        value.scrollTo(viewModel.selectedStoreTypeID, anchor: .center)
+                    }
+                }
             }
-            .padding(.horizontal)
         }
     }
     

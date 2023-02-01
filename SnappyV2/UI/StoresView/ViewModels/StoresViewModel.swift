@@ -84,6 +84,8 @@ class StoresViewModel: ObservableObject {
         return Array(retailStoreTypes.dropFirst())
     }
     
+    @Published var pillCarouselAnimationDelay: CGFloat = 0.0
+    
     init(container: DIContainer,
          locationManager: LocationManager = LocationManager()) {
         self.container = container
@@ -104,6 +106,17 @@ class StoresViewModel: ObservableObject {
         setupOrderMethodStatusSections()
         setupPostcodeError()
         setupSelectedStoreID()
+        setupShowDigitalHighstreetView()
+    }
+    
+    func setupShowDigitalHighstreetView() {
+        $showDigitalHighstreetView
+            .receive(on: RunLoop.main)
+            .sink { [weak self] show in
+                guard let self else { return }
+                self.pillCarouselAnimationDelay = show ? 0.2 : 0
+            }
+            .store(in: &cancellables)
     }
     
     func clearPostcodeSearchResults() {

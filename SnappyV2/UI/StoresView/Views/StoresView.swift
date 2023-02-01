@@ -206,17 +206,7 @@ struct StoresView: View {
                 })
         }
     }
-    
-    @ViewBuilder private func categoryPill(text: String, isSelected: Binding<Bool>) -> some View {
-        Text(text)
-            .font(.Body2.semiBold())
-            .foregroundColor(isSelected.wrappedValue ? .white : colorPalette.typefacePrimary)
-            .padding(8)
-            .background(isSelected.wrappedValue ? colorPalette.secondaryDark : colorPalette.typefaceInvert)
-            .standardPillFormat(outlineColor: colorPalette.typefacePrimary)
-            .padding(.vertical, 3)
-    }
-    
+
     private var unsuccessfulStoreSearch: some View {
         VStack {
             Text(FailedSearchStrings.notInArea.localized)

@@ -399,13 +399,9 @@ class StoresViewModel: ObservableObject {
             }
         }
     }
-
+    
     func selectFilteredRetailStoreType(id: Int?) {
-        if filteredRetailStoreType == id {
-            clearFilteredRetailStoreType()
-        } else {
-            filteredRetailStoreType = id
-        }
+        filteredRetailStoreType = id
     }
     
     func selectAllStoreTypes() {

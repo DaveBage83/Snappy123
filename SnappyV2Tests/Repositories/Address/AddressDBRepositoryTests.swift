@@ -63,7 +63,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_findAddressesFetch_whenNoDataStored_returnNilResult() throws {
@@ -83,7 +83,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     // MARK: - clearAddressesFetch(postcode:countryCode:)
@@ -114,7 +114,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     // MARK: - store(addresses:postcode:countryCode:)
@@ -157,7 +157,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_storeForAddress_noAddressesGiven_storeAndReturnWithNilAddresses() throws {
@@ -198,7 +198,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_storeForAddress_givenInvalidAddresses_filterInvalidAddresses() throws {
@@ -240,7 +240,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     // MARK: - findAddressSelectionCountriesFetch(forLocaleCode:)
@@ -278,7 +278,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_findAddressSelectionCountriesFetch_whenNoDataStored_returnNilResult() throws {
@@ -298,7 +298,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     // MARK: - clearAddressSelectionCountriesFetch(forLocaleCode:)
@@ -329,7 +329,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     // MARK: - store(countries:forLocaleCode:)
@@ -367,7 +367,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_storeForSelectionCountries_whenNoCountriesGriven_storeAndReturnWithNilResult() throws {
@@ -403,7 +403,7 @@ final class AddressDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
 
 }

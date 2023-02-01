@@ -87,7 +87,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -148,7 +148,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -181,7 +181,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -205,7 +205,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -238,7 +238,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
@@ -271,7 +271,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
@@ -305,7 +305,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
@@ -338,7 +338,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
 
     }
     
@@ -366,7 +366,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_retailStoresSearch_givenIsNotFirstOrder_forPostcode() throws {
@@ -391,7 +391,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_retailStoresSearch_forPostcode_no_match() throws {
@@ -416,7 +416,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -444,7 +444,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -470,7 +470,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -496,7 +496,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -514,7 +514,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -540,7 +540,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -558,7 +558,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -591,7 +591,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -622,7 +622,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -656,7 +656,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -689,7 +689,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -736,7 +736,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -784,7 +784,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     

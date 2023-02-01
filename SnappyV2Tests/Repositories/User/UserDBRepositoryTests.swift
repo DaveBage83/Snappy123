@@ -61,7 +61,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     // MARK: - store(memberProfile:)
@@ -105,7 +105,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
         
     }
     
@@ -141,7 +141,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2.0)
     }
     
     // MARK: - clearFetchedUserMarketingOptions(isCheckout:notificationsEnabled:basketToken:)

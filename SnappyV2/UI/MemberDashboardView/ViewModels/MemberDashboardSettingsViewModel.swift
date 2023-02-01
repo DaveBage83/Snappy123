@@ -5,7 +5,7 @@
 //  Created by Kevin Palser on 22/01/2023.
 //
 
-import SwiftUI
+import UIKit // required for UIPasteboard
 import Combine
 import DeviceCheck
 

@@ -322,7 +322,6 @@ final class CheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    #warning("Add firstPurchase flag when api changes are through")
     private func sendPurchaseEventsAndUpdateOrderedStates(firstPurchase: Bool, businessOrderId: Int, paymentType: PaymentGatewayType) async {
         
         let currencyCode = appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode

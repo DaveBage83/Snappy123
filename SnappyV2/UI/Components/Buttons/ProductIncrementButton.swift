@@ -101,7 +101,7 @@ struct ProductIncrementButton: View {
                         Image.Icons.TrashXmark.standard
                             .renderingMode(.template)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(height: size.height)
                             .foregroundColor(colorPalette.alertWarning)
                     }

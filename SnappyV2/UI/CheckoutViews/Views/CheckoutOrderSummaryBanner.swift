@@ -43,10 +43,9 @@ struct CheckoutOrderSummaryBanner: View {
                         Text(orderTotalPriceString)
                     }
                     
-                    Spacer()
-                    
-                    CheckoutSlotExpiryView(viewModel: .init(
-                        container: checkoutRootViewModel.container))
+                #warning("Not using this component for now.")
+//                    CheckoutSlotExpiryView(viewModel: .init(
+//                        container: checkoutRootViewModel.container))
                 }
                 .font(.button2())
                 .foregroundColor(colorPalette.primaryBlue)

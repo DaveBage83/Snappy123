@@ -11,6 +11,7 @@ import Combine
 struct BasketListItemView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.mainWindowSize) var mainWindowSize
     
     struct Constants {
         static let cornerRadius: CGFloat = 4
@@ -24,12 +25,25 @@ struct BasketListItemView: View {
             static let cornerRadius: CGFloat = 8
             static let missedPromosPadding: CGFloat = 8
         }
+        
+        struct Grid {
+            static let widthMultiplier: CGFloat = 0.45
+            static let spacing: CGFloat = 10
+        }
     }
     
     @StateObject var viewModel: BasketListItemViewModel
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    private var columns: [GridItem] {
+        [
+            GridItem(.fixed(mainWindowSize.width * Constants.Grid.widthMultiplier), alignment: .leading),
+            GridItem(.flexible(), alignment: .trailing),
+            GridItem(.flexible(), alignment: .trailing)
+        ]
     }
     
     var body: some View {
@@ -60,36 +74,21 @@ struct BasketListItemView: View {
     }
     
     private var listItem: some View {
-        HStack(spacing: Constants.Main.spacing) {
-            
-            itemImage
-            
+        LazyVGrid(columns: columns, spacing: Constants.Grid.spacing) {
             VStack(alignment: .leading, spacing: Constants.ProductInfo.spacing) {
                 Text(viewModel.item.menuItem.name + viewModel.sizeText)
                     .font(.Body1.regular())
                     .foregroundColor(colorPalette.typefacePrimary)
                 
                 OptionsTexts()
-                
-                Text(Strings.PlacedOrders.CustomOrderListItem.each.localizedFormat(viewModel.priceString))
-                    .fixedSize(horizontal: true, vertical: false)
-                    .multilineTextAlignment(.leading)
-                    .font(.Body2.semiBold())
-                    .foregroundColor(colorPalette.typefacePrimary)
             }
             
-            Spacer()
+            Text(viewModel.totalPriceString)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
             
-            VStack(alignment: .trailing) {
-                productIncrementButton
-                
-                Text(viewModel.totalPriceString)
-                    .font(.heading4())
-                    .foregroundColor(colorPalette.primaryBlue)
-            }
-            
+            productIncrementButton
         }
-        .cornerRadius(Constants.Main.cornerRadius, corners: [.topLeft, .topRight])
     }
     
     private var productIncrementButton: some View {

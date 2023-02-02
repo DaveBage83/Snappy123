@@ -217,7 +217,7 @@
 "basketview.listentry.chargeinfo" = "Charge info";
 "basketview.listentry.gotit" = "Got it";
 "basketview.listentry.missed" = "MISSED: ";
-"basketview.total" = "Order Total";
+"basketview.total" = "Total Cost";
 "basketview.drivertips" = "Delivery Driver Tips";
 "basketview.title" = "Basket";
 "basketview.noitems" = "You haven't added any items to your basket";

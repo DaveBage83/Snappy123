@@ -336,15 +336,7 @@ struct BasketView: View {
                 }
                 .padding(.bottom, Constants.BasketItems.bottomPadding)
             }
-            
-            // Sub-total
-            if let orderSubtotalPriceString = viewModel.orderSubtotalPriceString {
-                listEntry(text: Strings.BasketView.subtotal.localized, amount: orderSubtotalPriceString, feeDescription: nil)
-                    .foregroundColor(viewModel.minimumSpendReached ? colorPalette.typefacePrimary : colorPalette.primaryRed)
-                
-                Divider()
-            }
-            
+
             // Savings
             if let savings = viewModel.basket?.savings {
                 ForEach(savings, id: \.self) { saving in

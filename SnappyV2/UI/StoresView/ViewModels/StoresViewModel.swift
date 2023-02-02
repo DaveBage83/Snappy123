@@ -178,6 +178,7 @@ class StoresViewModel: ObservableObject {
                 if let stores = result.value?.stores {
                     self.retailStores = stores
                     self.showDigitalHighstreetView = true
+                    self.selectedStoreTypeID = nil
                 } else {
                     self.retailStores = []
                 }

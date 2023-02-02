@@ -40,11 +40,17 @@ class ToastableViewModel: ObservableObject {
                 self.container.appState.value.successToasts = successes
             }
         }
+        
+        container.appState.value.viewIDs.removeAll(where: { $0 == id })
     }
     
     func manageToastsOnAppear() {
         // When the view appears we first need to clear errors and toasts from the appState
         clearErrorsAndToasts()
+        
+        if !container.appState.value.viewIDs.contains(where: {$0 == id}) {
+            container.appState.value.viewIDs.append(id)
+        }
     }
 }
 
@@ -62,8 +68,8 @@ struct ToastableViewContainer<Content: View>: View {
     
     var body: some View {
         VStack(content: content)
-            .withAlertToast(container: viewModel.container, toastType: .error)
-            .withAlertToast(container: viewModel.container, toastType: .success)
+            .withAlertToast(container: viewModel.container, toastType: .error, viewID: viewModel.id)
+            .withAlertToast(container: viewModel.container, toastType: .success, viewID: viewModel.id)
             .onDisappear {
                 viewModel.manageToastsOnDisappear()
             }

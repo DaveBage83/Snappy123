@@ -87,10 +87,12 @@ class StandardAlertToastViewModel: ObservableObject {
     @Published var alertText = ""
     
     private var cancellables = Set<AnyCancellable>()
+    let viewID: UUID
     let toastType: ToastType // Error or success
     
-    init(container: DIContainer, toastType: ToastType) {
+    init(container: DIContainer, toastType: ToastType, viewID: UUID) {
         self.container = container
+        self.viewID = viewID
         self.toastType = toastType
         let appState = container.appState
         
@@ -146,7 +148,9 @@ class StandardAlertToastViewModel: ObservableObject {
                 guard let self else { return }
                 // Set text of toast and present
                 self.alertText = toastString
-                self.showAlert = true
+                if self.viewID == self.container.appState.value.latestViewID {
+                    self.showAlert = true
+                }
             }
             
         } else {
@@ -372,10 +376,11 @@ extension View {
 extension View {
     /// Modifier which reacts to changes in 2 AppState arrays:  'errors' and 'successToasts', and presents toasts on top of the parent view
     /// when changes detected
-    func withAlertToast(container: DIContainer, toastType: ToastType) -> some View {
+    func withAlertToast(container: DIContainer, toastType: ToastType, viewID: UUID) -> some View {
         modifier(StandardAlertToast(viewModel: .init(
             container: container,
-            toastType: toastType)))
+            toastType: toastType,
+            viewID: viewID)))
     }
 }
 

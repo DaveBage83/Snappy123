@@ -85,13 +85,13 @@ struct DigitalHighstreet: View {
             if viewModel.showDigitalHighstreetView {
                 VStack {
                     if let heroStoreType = viewModel.heroStoreType {
-                        storeTypeCard(storeType: heroStoreType, isHeroCategory: true)
+                        storeTypeCard(storeType: heroStoreType)
                             .frame(maxWidth: .infinity)
                     }
                     
                     LazyVGrid(columns: columns, content: {
                         ForEach(viewModel.standardStoreTypes, id: \.id) { storeType in
-                            storeTypeCard(storeType: storeType, isHeroCategory: true)
+                            storeTypeCard(storeType: storeType)
                         }
                     })
                 }
@@ -106,7 +106,7 @@ struct DigitalHighstreet: View {
     }
     
     // MARK: - Store types - card
-    private func storeTypeCard(storeType: RetailStoreProductType, isHeroCategory: Bool) -> some View {
+    private func storeTypeCard(storeType: RetailStoreProductType) -> some View {
         Button {
             withAnimation {
                 viewModel.selectStoreType(type: storeType.id)
@@ -144,7 +144,7 @@ struct DigitalHighstreet: View {
                     }) {
                         categoryPill(
                             text: Strings.DigitalHighstreet.allStores.localized,
-                            isSelected: $viewModel.allStoresSelected)
+                            isSelected: viewModel.allStoresSelected)
                     }
                     
                     if let storeTypes = viewModel.retailStoreTypes {
@@ -154,7 +154,7 @@ struct DigitalHighstreet: View {
                             }) {
                                 categoryPill(
                                     text: storeType.name,
-                                    isSelected: .constant(viewModel.isSelectedStoreType(storeTypeID: storeType.id)))
+                                    isSelected: viewModel.isSelectedStoreType(storeTypeID: storeType.id))
                             }
                             .id(storeType.id)
                         }
@@ -171,12 +171,12 @@ struct DigitalHighstreet: View {
     }
     
     // MARK: - Store types - individual pill factory
-    @ViewBuilder private func categoryPill(text: String, isSelected: Binding<Bool>) -> some View {
+    @ViewBuilder private func categoryPill(text: String, isSelected: Bool) -> some View {
         Text(text)
             .font(.Body2.semiBold())
-            .foregroundColor(isSelected.wrappedValue ? .white : colorPalette.typefacePrimary)
+            .foregroundColor(isSelected ? .white : colorPalette.typefacePrimary)
             .padding(Constants.CategoryPill.padding)
-            .background(isSelected.wrappedValue ? colorPalette.secondaryDark : colorPalette.typefaceInvert)
+            .background(isSelected ? colorPalette.secondaryDark : colorPalette.typefaceInvert)
             .standardPillFormat(outlineColor: colorPalette.typefacePrimary)
             .padding(.vertical, Constants.CategoryPill.vPadding)
     }

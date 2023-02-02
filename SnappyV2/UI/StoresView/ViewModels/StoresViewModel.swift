@@ -178,7 +178,6 @@ class StoresViewModel: ObservableObject {
                 if let stores = result.value?.stores {
                     self.retailStores = stores
                     self.showDigitalHighstreetView = true
-                    self.selectedStoreTypeID = nil
                 } else {
                     self.retailStores = []
                 }
@@ -368,6 +367,7 @@ class StoresViewModel: ObservableObject {
     func postcodeSearchTapped() async throws {
         do {
             try await searchPostcode()
+            self.selectedStoreTypeID = nil
         } catch {
             if error as? APIErrorResult != nil {
                 self.retailStores = []

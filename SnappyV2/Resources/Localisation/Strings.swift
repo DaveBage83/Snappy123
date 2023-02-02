@@ -1066,4 +1066,10 @@ enum Strings {
         case moreItems = "pagination.moreitems"
         case unableToSearch = "pagination.unabletosearch"
     }
+    
+    enum DigitalHighstreet: String, IterableSnappyString {
+        case allStores = "digitalhighstreet.allstores"
+        case selectStore = "digitalhighstreet.selectstore"
+        case buildAndPay = "digitalhighstreet.buildandpay"
+    }
 }

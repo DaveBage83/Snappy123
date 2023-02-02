@@ -27,6 +27,11 @@ class StoresViewModel: ObservableObject {
     @Published var invalidPostcodeError: Bool = false
     @Published var storeLoadingId: Int? // Used to identify which store we apply the activity indicator to
     
+    // MARK: - Digital highstreet publishers
+    @Published var showDigitalHighstreetView = false
+    @Published var allStoresSelected = true
+    @Published var selectedStoreTypeID: Int?
+
     @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
     @Published var showPreorderStores = [RetailStore]()
@@ -70,6 +75,17 @@ class StoresViewModel: ObservableObject {
         return nil
     }
     
+    // MARK: - Digital highstreet computed variables
+    var heroStoreType: RetailStoreProductType? {
+        retailStoreTypes.first
+    }
+
+    var standardStoreTypes: [RetailStoreProductType] {
+        return Array(retailStoreTypes.dropFirst())
+    }
+    
+    @Published var pillCarouselAnimationDelay: CGFloat = 0.0
+    
     init(container: DIContainer,
          locationManager: LocationManager = LocationManager()) {
         self.container = container
@@ -89,6 +105,18 @@ class StoresViewModel: ObservableObject {
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
         setupOrderMethodStatusSections()
         setupPostcodeError()
+        setupSelectedStoreID()
+        setupShowDigitalHighstreetView()
+    }
+    
+    func setupShowDigitalHighstreetView() {
+        $showDigitalHighstreetView
+            .receive(on: RunLoop.main)
+            .sink { [weak self] show in
+                guard let self else { return }
+                self.pillCarouselAnimationDelay = show ? 0.2 : 0
+            }
+            .store(in: &cancellables)
     }
     
     func clearPostcodeSearchResults() {
@@ -149,11 +177,34 @@ class StoresViewModel: ObservableObject {
                 guard let self = self else { return }
                 if let stores = result.value?.stores {
                     self.retailStores = stores
+                    self.showDigitalHighstreetView = true
                 } else {
                     self.retailStores = []
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    private func setupSelectedStoreID() {
+        $selectedStoreTypeID
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] storeTypeID in
+                guard let self else { return }
+                // If storeTypeID is nil, then no specific categories selected and so we know all must be selected
+                self.allStoresSelected = storeTypeID == nil
+                self.selectFilteredRetailStoreType(id: storeTypeID)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func isSelectedStoreType(storeTypeID: Int) -> Bool {
+        selectedStoreTypeID == storeTypeID
+    }
+    
+    func selectStoreType(type: Int?) {
+        showDigitalHighstreetView = false
+        selectedStoreTypeID = type
     }
 
     private func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
@@ -316,6 +367,7 @@ class StoresViewModel: ObservableObject {
     func postcodeSearchTapped() async throws {
         do {
             try await searchPostcode()
+            self.selectedStoreTypeID = nil
         } catch {
             if error as? APIErrorResult != nil {
                 self.retailStores = []
@@ -361,13 +413,13 @@ class StoresViewModel: ObservableObject {
             }
         }
     }
-
-    func selectFilteredRetailStoreType(id: Int) {
-        if filteredRetailStoreType == id {
-            clearFilteredRetailStoreType()
-        } else {
-            filteredRetailStoreType = id
-        }
+    
+    func selectFilteredRetailStoreType(id: Int?) {
+        filteredRetailStoreType = id
+    }
+    
+    func selectAllStoreTypes() {
+        clearFilteredRetailStoreType()
     }
     
     func clearFilteredRetailStoreType() {
@@ -376,5 +428,9 @@ class StoresViewModel: ObservableObject {
     
     func onAppearSendEvent() {
         container.eventLogger.sendEvent(for: .viewScreen(.outside, .storeListSelection), with: .appsFlyer, params: [:])
+    }
+    
+    func isSelectedCategory(id: Int) -> Bool {
+        filteredRetailStoreType == id
     }
 }

@@ -838,6 +838,97 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.postcodeSearchString, "PG43AG")
     }
     
+    func test_whenRetailStoreTypesPopulated_thenHeroStoreTypePopulated() {
+        let sut = makeSUT()
+        
+        let retailStoreTypes: [RetailStoreProductType] = [
+            .init(id: 123, name: "test1", image: nil),
+            .init(id: 456, name: "test2", image: nil),
+            .init(id: 789, name: "test3", image: nil)
+        ]
+        
+        sut.retailStoreTypes = retailStoreTypes
+        
+        XCTAssertEqual(sut.heroStoreType, retailStoreTypes.first)
+    }
+    
+    
+    func test_whenRetailStoreTypesPopulated_thenStandardStoreTypesPopulated() {
+        let sut = makeSUT()
+        
+        let retailStoreTypes: [RetailStoreProductType] = [
+            .init(id: 123, name: "test1", image: nil),
+            .init(id: 456, name: "test2", image: nil),
+            .init(id: 789, name: "test3", image: nil)
+        ]
+        
+        sut.retailStoreTypes = retailStoreTypes
+        
+        XCTAssertEqual(sut.standardStoreTypes, [.init(id: 456, name: "test2", image: nil), .init(id: 789, name: "test3", image: nil)])
+    }
+    
+    func test_whenStoreTypeSelected_givenIDIsNotNil_thenAllStoresSelectedIsFalseAndFilteredRetailStoreTypeSetAndFilteredRetailStoreTypeIDSet() {
+        let sut = makeSUT()
+        sut.selectedStoreTypeID = 2
+        let expectation = expectation(description: "all stores selected false, filtered retail store type set")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedStoreTypeID
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.allStoresSelected)
+        XCTAssertEqual(sut.filteredRetailStoreType, 2)
+    }
+    
+    func test_whenStoreTypeSelected_givenIDIsNil_thenAllStoresSelectedIsTrue() {
+        let sut = makeSUT()
+        sut.selectedStoreTypeID = nil
+        let expectation = expectation(description: "all stores selected false, filtered retail store type set")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedStoreTypeID
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.allStoresSelected)
+    }
+    
+    func test_whenIsSelectedStoreTypeCalled_givenSelectedStoreTypeIDIsSameAsInjectedID_thenReturnTrue() {
+        let sut = makeSUT()
+        sut.selectedStoreTypeID = 2
+        
+        XCTAssertTrue(sut.isSelectedStoreType(storeTypeID: 2))
+    }
+    
+    func test_whenIsSelectedStoreTypeCalled_givenSelectedStoreTypeIDIsNOTSameAsInjectedID_thenReturnFalse() {
+        let sut = makeSUT()
+        sut.selectedStoreTypeID = 3
+        
+        XCTAssertFalse(sut.isSelectedStoreType(storeTypeID: 2))
+    }
+    
+    
+    func test_whenSelectStoreTypeCalled_thenShowDigitalHighstreetViewFalseAndSelectedStoreTypeIDSet() {
+        let sut = makeSUT()
+        
+        sut.selectStoreType(type: 2)
+        XCTAssertFalse(sut.showDigitalHighstreetView)
+        XCTAssertEqual(sut.selectedStoreTypeID, 2)
+    }
+    
     /*Location manager is difficult to mock via protocols, so it is being partially mocked by subclassing the real locationManager
      and manually passing in the location/authorisation data required for testing. */
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()),

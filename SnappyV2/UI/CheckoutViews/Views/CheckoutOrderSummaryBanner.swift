@@ -42,8 +42,7 @@ struct CheckoutOrderSummaryBanner: View {
                         Text("|")
                         Text(orderTotalPriceString)
                     }
-                    
-                #warning("Not using this component for now.")
+                #warning("Not using this component for now which presented a countdown timer for users to see how long they have left to checkout before slot expires. Still functions though and so can be reinstated if needed.")
 //                    CheckoutSlotExpiryView(viewModel: .init(
 //                        container: checkoutRootViewModel.container))
                 }
